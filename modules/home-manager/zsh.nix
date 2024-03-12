@@ -1,0 +1,48 @@
+{ config, pkgs, ... }: {
+  programs.zsh = {
+    enable = true;
+    enableAutosuggestions = true;
+    enableCompletion = true;
+    enableVteIntegration = true;
+    syntaxHighlighting.enable = true;
+
+    # initExtra = ''
+    #   [[ ! -f ${./p10k.zsh} ]] || source ${./p10k.zsh}
+    # '';
+    plugins = [
+      {
+        name = "powerlevel10k";
+        src = pkgs.zsh-powerlevel10k;
+        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+      }
+      {
+        name = "powerlevel10k-config";
+        src = ./p10k-config;
+        file = "p10k.zsh";
+      }
+    ];
+
+    oh-my-zsh = {
+      enable = true;
+      plugins = [
+        "git"
+        # "zsh-autosuggestions"
+        # "zsh-syntax-highlighting"
+        "sudo"
+        "zsh-navigation-tools"
+      ];
+    };
+
+    shellAliases = {
+      update = "sudo nixos-rebuild switch";
+      ls = "eza";
+      ll = "eza -l";
+      update2 = ""
+        "";
+
+    };
+
+    history.size = 10000;
+    history.path = "${config.xdg.dataHome}/zsh/history";
+  };
+}
