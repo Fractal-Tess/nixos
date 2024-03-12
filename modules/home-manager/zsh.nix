@@ -34,12 +34,9 @@
     };
 
     shellAliases = {
-      update = "sudo nixos-rebuild switch";
+      update = "~/nixos/update.sh";
       ls = "eza";
       ll = "eza -l";
-      update2 = ""
-        "";
-
     };
 
     history.size = 10000;
