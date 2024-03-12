@@ -37,6 +37,7 @@
       ll = "eza -l";
       cat = "bat";
       update = "~/nixos/update.sh";
+      wakevd = "wakeonlan 00:D8:61:2E:DD:A9";
 
     };
 
