@@ -11,6 +11,8 @@
       ../../modules/home-manager/nextcloud.nix
 
       ../../modules/home-manager/flameshot/default.nix
+      ../../modules/home-manager/git/default.nix
+      ../../modules/home-manager/eza/default.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
