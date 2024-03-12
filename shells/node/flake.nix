@@ -1,6 +1,6 @@
 {
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     systems.url = "github:nix-systems/default";
   };
 
@@ -19,18 +19,20 @@
     {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
+          shellHook = ''
+            zsh
+          '';
           buildInputs = [
             # pkgs.nodejs
             # You can set the major version of Node.js to a specific one instead
             # of the default version
-            pkgs.nodejs-19_x
+            pkgs.nodejs_20
 
             # You can choose pnpm, yarn, or none (npm).
             pkgs.nodePackages.pnpm
-            # pkgs.yarn
-
-            pkgs.nodePackages.typescript
-            pkgs.nodePackages.typescript-language-server
+            pkgs.yarn
+            # pkgs.nodePackages.typescript
+            # pkgs.nodePackages.typescript-language-server
           ];
         };
       });
