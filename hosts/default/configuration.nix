@@ -149,6 +149,7 @@
     openssl
     ffmpeg
     nmap
+    hping
 
     # Needed to use clipcopy & nvim clipboard buffer with yank
     xclip
