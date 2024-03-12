@@ -129,77 +129,77 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    # Basic tools
-    unzip
-    ripgrep
-    oha
-    lf
-    lm_sensors
-    openvpn
-    wakeonlan
-    brightnessctl
-    light
-    trash-cli
-    openssl
-    ffmpeg
-    nmap
-    hping
-
-    # Needed to use clipcopy & nvim clipboard buffer with yank
-    xclip
-
     # Required for sddm's theme
     libsForQt5.qt5.qtgraphicaleffects
 
-    nomacs
-    gimp
-    blender
-    inkscape
-    steam
-    libreoffice
+    # ------------
+    # Neovim setup
+    #Lua
+    lua
+    stylua
 
+    # ------------
+
+    # Nix
+    nixpkgs-fmt
+
+
+    # GUI
+    polybarFull
+    nomacs
+    pcmanfm
+    xfce.thunar
+    lxappearance
+    cava
+    neofetch
+    lolcat
+    rofi
+    rofi-power-menu
+    font-manager
+    font-awesome
+    nitrogen
     # Themes
     arc-icon-theme
     arc-theme
     quintom-cursor-theme
 
-    pcmanfm
-    xfce.thunar
-
-
-    #Lua
-    lua
-    stylua
-
-    # Nix
-    nixpkgs-fmt
-
-    # TODO: Try to remove these
-    polybarFull
-    cava
+    # Utils
     lm_sensors
-    lolcat
-    neofetch
-    rofi
-    rofi-power-menu
-    font-manager
-    lxappearance
-    bitwarden
-    font-awesome
+    unzip
+    ripgrep
+    lf
+    lm_sensors
+    trash-cli
+    openssl
+    xclip
+    # Settings
+    light
+    brightnessctl
+    # Video
+    ffmpeg
+    # networking
+    nmap
+    oha
+    openvpn
+    wakeonlan
+    hping
 
-    filezilla
+    # Commmunication
+    discord
 
     # Browsers
     microsoft-edge
-
-    # Window manager
-    leftwm
-
-    # Wallpaper manager
-    nitrogen
-
     google-chrome
-    discord
+
+    # Tools
+    bitwarden
+    filezilla
+    kicad
+    gimp
+    blender
+    inkscape
+    steam
+    libreoffice
   ];
 
 
