@@ -32,7 +32,6 @@
     };
 
     shellAliases = {
-      # update = "~/nixos/update.sh";
       ls = "eza";
       ll = "eza -l";
       cat = "bat";
