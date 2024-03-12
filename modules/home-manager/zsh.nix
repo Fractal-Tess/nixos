@@ -36,6 +36,7 @@
       ls = "eza";
       ll = "eza -l";
       cat = "bat";
+      update = "echo hello";
     };
     shellGlobalAlias =
       {
@@ -56,7 +57,6 @@
         #   git push origin main || echo "Failed to push to origin"
         #   popd
         # '';
-        update = "echo hello";
       };
 
     history.size = 10000;
