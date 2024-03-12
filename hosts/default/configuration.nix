@@ -10,6 +10,7 @@
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
       ../../modules/nixos/auto-cpufreq/default.nix
+      ../../modules/nixos/sddm/default.nix
     ];
 
   # Bootloader.
