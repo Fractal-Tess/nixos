@@ -10,9 +10,7 @@
         saveAfterCopy = true;
         copyPathAfterSave = true;
         copyAndCloseAfterUpload = true;
-        antialisingPinZoom = true;
         uploadWithoutConfirmation = true;
-        jpegQuality = 75;
       };
     };
   };
