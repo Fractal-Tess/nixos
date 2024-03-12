@@ -1,5 +1,6 @@
 set -e
 pushd ~/nixos
+git add .
 nixpkgs-fmt . &>/dev/null
 # git diff -U0 *.nix
 git diff -U0 ':!*.log'

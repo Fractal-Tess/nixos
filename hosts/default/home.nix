@@ -10,6 +10,7 @@
       ../../modules/home-manager/dunst.nix
       ../../modules/home-manager/nextcloud.nix
 
+      ../../modules/home-manager/flameshot/default.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
