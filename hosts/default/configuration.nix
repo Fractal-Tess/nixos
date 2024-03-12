@@ -9,6 +9,7 @@
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
+      ../../modules/nixos/auto-cpufreq/default.nix
     ];
 
   # Bootloader.
@@ -72,10 +73,6 @@
 
   # services.xserver.displayManager.gdm.enable = true;
   # services.xserver.desktopManager.gnome.enable = true;
-  services.xserver.displayManager.sddm = {
-    enable = true;
-    theme = "/etc/nixos/modules/nixos/sddm/sugar-dark";
-  };
   services.xserver.windowManager.leftwm.enable = true;
 
   # Configure keymap in X11
@@ -86,23 +83,6 @@
     };
   };
 
-  # Auto-cpufreq
-  programs.auto-cpufreq =
-    {
-      enable = true;
-      settings =
-        {
-          charger = {
-            governor = "performance";
-            turbo = "auto";
-          };
-
-          battery = {
-            governor = "powersave";
-            turbo = "auto";
-          };
-        };
-    };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
