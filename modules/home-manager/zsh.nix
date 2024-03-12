@@ -32,6 +32,7 @@
     };
 
     shellAliases = {
+      ns = "nix search nixpkgs";
       ls = "eza";
       ll = "eza -l";
       cat = "bat";
