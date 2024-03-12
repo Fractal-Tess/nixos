@@ -20,7 +20,8 @@
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
-            zsh
+            zsh;
+            exit 0;
           '';
           buildInputs = [
             # pkgs.nodejs

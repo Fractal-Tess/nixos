@@ -34,6 +34,10 @@
       devShells = eachSystem (pkgs: {
         # Based on a discussion at https://github.com/oxalica/rust-overlay/issues/129
         default = pkgs.mkShell (with pkgs; {
+          shellHook = ''
+            zsh;
+            exit 0;
+          '';
           nativeBuildInputs = [
             clang
             # Use mold when we are runnning in Linux

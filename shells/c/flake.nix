@@ -34,6 +34,12 @@
       in
       {
         devShell = p.mkShell.override { stdenv = p.clangStdenv; } rec {
+
+          shellHook = ''
+            zsh
+            exit
+          '';
+
           packages = with p; [
             # builder
             gnumake

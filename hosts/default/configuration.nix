@@ -61,8 +61,6 @@
   environment.variables.EDITOR = "nvim";
   environment.variables.VISUAL = "nvim";
   environment.variables.SUDO_EDITOR = "nvim";
-  programs.neovim.defaultEditor = true;
-  programs.neovim.enable = true;
 
   # Needed for zsh
   environment.pathsToLink = [ "/share/zsh" ];
@@ -134,11 +132,9 @@
     # Basic tools
     unzip
     ripgrep
-    bat
     oha
     lf
     lm_sensors
-    neovim
     openvpn
     wakeonlan
     brightnessctl
@@ -171,29 +167,12 @@
     xfce.thunar
 
 
-    # Python
-    python3
-
-    # C/C++
-    gcc
-    clang
-
     #Lua
     lua
     stylua
 
     # Nix
     nixpkgs-fmt
-
-    # Rust
-    rustup
-
-    # Nodejs
-    nodejs_20
-    nodePackages.pnpm
-    yarn
-
-    # -------------
 
     # TODO: Try to remove these
     polybarFull
@@ -207,13 +186,10 @@
     lxappearance
     bitwarden
     font-awesome
-    gh
 
-    discord
     filezilla
 
     # Browsers
-    google-chrome
     microsoft-edge
 
     # Window manager
@@ -221,6 +197,9 @@
 
     # Wallpaper manager
     nitrogen
+
+    google-chrome
+    discord
   ];
 
 
