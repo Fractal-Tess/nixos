@@ -14,8 +14,8 @@
       ../../modules/home-manager/git/default.nix
       ../../modules/home-manager/eza/default.nix
       # ../../modules/home-manager/gh/default.nix
-      # ../../modules/home-manager/bat/default.nix
-      # ../../modules/home-manager/neovim/default.nix
+      ../../modules/home-manager/bat/default.nix
+      ../../modules/home-manager/neovim/default.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
