@@ -34,8 +34,8 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 71 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
-      { keys = [ 72 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ 63 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
+      { keys = [ 64 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
     ];
   };
 
