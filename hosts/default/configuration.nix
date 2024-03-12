@@ -144,10 +144,11 @@
     openvpn
     wakeonlan
     brightnessctl
+    light
     trash-cli
     openssl
     ffmpeg
-
+    nmap
 
     # Needed to use clipcopy & nvim clipboard buffer with yank
     xclip
