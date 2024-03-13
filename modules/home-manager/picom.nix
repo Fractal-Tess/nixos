@@ -16,6 +16,9 @@
     };
     opacityRules = [
       "75:class_g = 'kitty'"
+      "100:class_g *?= 'vlc'"
+      "100:class_g *?= 'mpv'"
+      "100:"
     ];
   };
 

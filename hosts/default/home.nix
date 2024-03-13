@@ -10,12 +10,14 @@
       ../../modules/home-manager/dunst.nix
       ../../modules/home-manager/nextcloud.nix
 
-      ../../modules/home-manager/flameshot/default.nix
-      ../../modules/home-manager/git/default.nix
-      ../../modules/home-manager/eza/default.nix
-      ../../modules/home-manager/gh/default.nix
       ../../modules/home-manager/bat/default.nix
+      ../../modules/home-manager/eza/default.nix
+      ../../modules/home-manager/flameshot/default.nix
+      ../../modules/home-manager/gh/default.nix
+      ../../modules/home-manager/git/default.nix
+      ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
+      ../../modules/home-manager/yt-dlp/default.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
