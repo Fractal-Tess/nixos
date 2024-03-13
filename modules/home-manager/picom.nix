@@ -4,6 +4,7 @@
     activeOpacity = 1.0;
     inactiveOpacity = 0.85;
     shadow = true;
+    backend = "glx";
     settings = {
       method = "guassian";
       size = 10;
