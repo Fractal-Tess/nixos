@@ -165,6 +165,7 @@
 
     # Utils
     lm_sensors
+    geekbench
     htop
     unzip
     ripgrep
