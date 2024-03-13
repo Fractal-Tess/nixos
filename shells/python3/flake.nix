@@ -15,6 +15,10 @@
     in
     rec {
       devShell = pkgs.mkShell {
+        shellHook = ''
+          zsh;
+          exit 0;
+        '';
         buildInputs = with pkgs; [
           python3
         ];
