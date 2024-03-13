@@ -41,6 +41,7 @@
       ndr = "nix develop ~/nixos/shells/rust";
       ndt = "nix develop ~/nixos/shells/tauri";
       ndn = "nix develop ~/nixos/shells/node";
+      ndp = "nix develop ~/nixos/shells/python";
       rt = "trash";
     };
 
