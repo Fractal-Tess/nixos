@@ -6,7 +6,7 @@
     shadow = true;
     backend = "glx";
     settings = {
-      vsync = "opengl-swc";
+      vsync = true;
       glx-copy-from-front = true;
       glx-swap-method = 2;
       xrendr-sync = true;
