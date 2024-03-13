@@ -33,8 +33,6 @@
 
     shellAliases = {
       ns = "nix search nixpkgs";
-      ls = "eza";
-      ll = "eza -l";
       cat = "bat";
       vpn = "openvpn ~/stuff/vpn/vpn.ovpn";
       update = "~/nixos/update.sh";
