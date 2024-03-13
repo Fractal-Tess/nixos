@@ -6,6 +6,11 @@
     shadow = true;
     backend = "glx";
     settings = {
+      vsync = "opengl-swc";
+      glx-copy-from-front = true;
+      glx-swap-method = 2;
+      xrendr-sync = true;
+      xrender-sync-fence = true;
       method = "guassian";
       size = 10;
       deviation = 5.0;
