@@ -10,7 +10,7 @@
     settings = {
       scrollback_lines = 10000;
       window_padding_width = 4;
-      background_opacity = "0.65";
+      background_opacity = "0.75";
       update_check_interval = 0;
       enable_audio_bell = false;
       disable_ligatures = "never";
