@@ -9,7 +9,7 @@
     };
     settings = {
       scrollback_lines = 10000;
-      window_padding_width = 4;
+      # window_padding_width = 4;
       background_opacity = "0.85";
       background_blur = 64;
       update_check_interval = 0;
