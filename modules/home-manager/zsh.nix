@@ -41,6 +41,7 @@
       ndc = "nix develop ~/nixos/shells/c";
       ndr = "nix develop ~/nixos/shells/rust";
       ndt = "nix develop ~/nixos/shells/tauri";
+      ndn = "nix develop ~/nixos/shells/node";
     };
 
     history.size = 10000;

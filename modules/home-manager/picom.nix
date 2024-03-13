@@ -16,6 +16,7 @@
     };
     opacityRules = [
       "75:class_g = 'kitty'"
+      # TODO: Fix these matchers
       "100:class_g *?= 'vlc'"
       "100:class_g *?= 'mpv'"
       "100:name *?= 'youtube'"
