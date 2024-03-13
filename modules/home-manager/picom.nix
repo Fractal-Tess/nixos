@@ -11,7 +11,6 @@
       blur-background = true;
       blur-background-frame = true;
       blur-background-fixed = true;
-      blur-method = "kawase";
       corner-radius = 10;
     };
     opacityRules = [
