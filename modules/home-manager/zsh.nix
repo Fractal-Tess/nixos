@@ -36,6 +36,7 @@
       ls = "eza";
       ll = "eza -l";
       cat = "bat";
+      vpn = "openvpn ~/stuff/vpn/vpn.ovpn";
       update = "~/nixos/update.sh";
       wakevd = "wakeonlan 00:D8:61:2E:DD:A9";
       ndc = "nix develop ~/nixos/shells/c";
