@@ -2,22 +2,22 @@
 
   imports =
     [
-      ../../modules/home-manager/btop.nix
-      ../../modules/home-manager/kitty.nix
-      ../../modules/home-manager/zsh.nix
-      ../../modules/home-manager/zoxide.nix
-      ../../modules/home-manager/picom.nix
-      ../../modules/home-manager/dunst.nix
-      ../../modules/home-manager/nextcloud.nix
-
       ../../modules/home-manager/bat/default.nix
+      ../../modules/home-manager/btop/default.nix
+      ../../modules/home-manager/dunst/default.nix
       ../../modules/home-manager/eza/default.nix
       ../../modules/home-manager/flameshot/default.nix
       ../../modules/home-manager/gh/default.nix
       ../../modules/home-manager/git/default.nix
+      ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
+      ../../modules/home-manager/nextcloud/default.nix
+      ../../modules/home-manager/obs-studio/default.nix
+      ../../modules/home-manager/picom/default.nix
       ../../modules/home-manager/yt-dlp/default.nix
+      ../../modules/home-manager/zoxide/default.nix
+      ../../modules/home-manager/zsh/default.nix
     ];
   # Home Manager needs a bit of information about you and the paths it should
   # manage.
@@ -85,7 +85,9 @@
   #  /etc/profiles/per-user/fractal-tess/etc/profile.d/hm-session-vars.sh
   #
   home.sessionVariables = {
-    # EDITOR = "emacs";
+    EDITOR = "nvim";
+    VISUAL = "nvim";
+    SUDO_EDITOR = "nvim";
   };
 
   # Let Home Manager install and manage itself.

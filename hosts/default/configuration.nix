@@ -58,9 +58,9 @@
   };
 
   # Setting default editor to neovim
-  environment.variables.EDITOR = "nvim";
-  environment.variables.VISUAL = "nvim";
-  environment.variables.SUDO_EDITOR = "nvim";
+  # environment.variables.EDITOR = "nvim";
+  # environment.variables.VISUAL = "nvim";
+  # environment.variables.SUDO_EDITOR = "nvim";
 
   # Needed for zsh
   environment.pathsToLink = [ "/share/zsh" ];
