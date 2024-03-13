@@ -165,6 +165,7 @@
 
     # Utils
     lm_sensors
+    htop
     unzip
     ripgrep
     lf
@@ -193,6 +194,7 @@
 
     # Tools
     bitwarden
+    gparted
     filezilla
     kicad
     gimp

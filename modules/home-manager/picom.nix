@@ -15,7 +15,8 @@
       corner-radius = 8;
     };
     opacityRules = [
-      "75:class_g = 'kitty'"
+      "70:class_g = 'kitty'"
+      "100:class_g = 'google-chrome'"
       # TODO: Fix these matchers
       "100:class_g *?= 'vlc'"
       "100:class_g *?= 'mpv'"
