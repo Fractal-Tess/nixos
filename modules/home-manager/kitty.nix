@@ -9,11 +9,9 @@
     };
     settings = {
       scrollback_lines = 10000;
-      window_padding_width = 4;
+      window_padding_width = 6;
       background_opacity = "0.85";
-      background_blur = 64;
-      linux_display_server = "x11";
-      dynamic_background_opacity = "yes";
+      background_blur = 128;
       update_check_interval = 0;
       enable_audio_bell = false;
       disable_ligatures = "never";
