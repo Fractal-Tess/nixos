@@ -8,10 +8,10 @@
       method = "guassian";
       size = 10;
       deviation = 5.0;
-      blur-background = true;
+      # blur-background = true;
       blur-background-frame = true;
       blur-background-fixed = true;
-      corner-radius = 10;
+      corner-radius = 8;
     };
     opacityRules = [
       "75:class_g = 'kitty'"
