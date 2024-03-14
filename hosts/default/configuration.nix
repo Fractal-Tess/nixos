@@ -34,8 +34,8 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 244 ]; events = [ "key" ]; command = "sudo light -A 10"; }
-      { keys = [ 243 ]; events = [ "key" ]; command = "sudo light -U 10"; }
+      { keys = [ 244 ]; events = [ "key" ]; command = "light -A 10"; }
+      { keys = [ 243 ]; events = [ "key" ]; command = "light -U 10"; }
     ];
   };
 
