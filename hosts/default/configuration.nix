@@ -34,12 +34,12 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 244 ]; events = [ "key" ]; command = "light -A 10"; }
-      { keys = [ 243 ]; events = [ "key" ]; command = "light -U 10"; }
+      { keys = [ 244 ]; events = [ "key" ]; command = "sudo light -A 10"; }
+      { keys = [ 243 ]; events = [ "key" ]; command = "sudo light -U 10"; }
     ];
   };
 
-  # Set your time zone.
+  # Set your time zonesudo
   time.timeZone = "Europe/Sofia";
 
   # Select internationalisation properties.
@@ -109,7 +109,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     # packages = with pkgs; [];
     # description = "";
   };
@@ -129,20 +129,6 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    # Required for sddm's theme
-    libsForQt5.qt5.qtgraphicaleffects
-
-    # ------------
-    # Neovim setup
-    #Lua
-    lua
-    stylua
-
-    # ------------
-
-    # Nix
-    nixpkgs-fmt
-
 
     # GUI
     polybarFull
