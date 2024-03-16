@@ -36,6 +36,8 @@
     bindings = [
       { keys = [ 244 ]; events = [ "key" ]; command = "sudo light -A 10"; }
       { keys = [ 243 ]; events = [ "key" ]; command = "sudo light -U 10"; }
+      { keys = [ 104 ]; events = [ "key" ]; command = "amixer set 'Master' 10%- "; }
+      { keys = [ 105 ]; events = [ "key" ]; command = "amixer set 'Master' 10%+ "; }
     ];
   };
 
