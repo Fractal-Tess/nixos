@@ -30,16 +30,12 @@
 
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  programs.light.enable = true;
+  programs.light.enable = true; # Needed for the /run/wrappers/bin/light SUID wrapper.
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 244 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/ light -A 10"; }
-      { keys = [ 243 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
-      { keys = [ 121 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer -q set Master toggle"; }
-      { keys = [ 122 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%-"; }
-      { keys = [ 123 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%+"; }
-
+      { keys = [ 224 ]; events = [ "key" ]; command = "/run/wrappers/bin/light -A 10"; }
+      { keys = [ 225 ]; events = [ "key" ]; command = "/run/wrappers/bin/light -U 10"; }
     ];
   };
 
