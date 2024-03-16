@@ -139,6 +139,7 @@
     cava
     neofetch
     lolcat
+    pavucontrol
     rofi
     rofi-power-menu
     font-manager
