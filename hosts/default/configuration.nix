@@ -36,9 +36,9 @@
     bindings = [
       { keys = [ 244 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/ light -A 10"; }
       { keys = [ 243 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
-      { keys = [ 104 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%-"; }
+      { keys = [ 121 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer -q set Master toggle"; }
+      { keys = [ 122 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%-"; }
       { keys = [ 123 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%+"; }
-      { keys = [ 124 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer -q set Master toggle"; }
 
     ];
   };
