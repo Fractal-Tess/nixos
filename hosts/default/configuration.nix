@@ -31,14 +31,12 @@
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   programs.light.enable = true; # Needed for the /run/wrappers/bin/light SUID wrapper.
+  sound.mediaKeys.enable = true;
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 113 ]; events = [ "key" ]; command = "sudo /run/current-system/sw/bin/amixer set 'Master' toggle"; }
-      { keys = [ 114 ]; events = [ "key" ]; command = "amixer set 'Master' 10%-"; }
-      { keys = [ 115 ]; events = [ "key" ]; command = "echo 'world' >> /home/fractal-tess/ss.txt"; }
-      # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
-      # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
     ];
   };
 
