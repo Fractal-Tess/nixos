@@ -30,6 +30,14 @@
 
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
+  programs.light.enable = true; # Needed for the /run/wrappers/bin/light SUID wrapper.
+  services.actkbd = {
+    enable = true;
+    bindings = [
+      { keys = [ 224 ]; events = [ "key" ]; command = "echo 'sda' >> /home/fractal-tess/out.txt"; }
+      { keys = [ 225 ]; events = [ "key" ]; command = "/run/wrappers/bin/light -U 10"; }
+    ];
+  };
 
   # Set your time zonesudo
   time.timeZone = "Europe/Sofia";
