@@ -30,13 +30,12 @@
 
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  programs.light.enable = true; # Needed for the /run/wrappers/bin/light SUID wrapper.
   sound.mediaKeys.enable = true;
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
-      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ 224 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
     ];
   };
 
