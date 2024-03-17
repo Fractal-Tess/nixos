@@ -34,7 +34,7 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 121 ]; events = [ "key" ]; command = "echo 'sda' >> /home/fractal-tess/out.txt"; }
+      { keys = [ 113 ]; events = [ "key" ]; command = "echo 'sda' >> /home/fractal-tess/out.txt"; }
       { keys = [ 225 ]; events = [ "key" ]; command = "/run/wrappers/bin/light -U 10"; }
     ];
   };
