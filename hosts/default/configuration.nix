@@ -36,7 +36,7 @@
     bindings = [
       { keys = [ 113 ]; events = [ "key" ]; command = "sudo /run/current-system/sw/bin/amixer set 'Master' toggle"; }
       { keys = [ 114 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%-"; }
-      { keys = [ 115 ]; events = [ "key" ]; command = "ehco 'hello' /home/fractal-tess/ss.txt"; }
+      { keys = [ 115 ]; events = [ "key" ]; command = "echo 'hello' >> /home/fractal-tess/ss.txt"; }
       # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
       # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
     ];
