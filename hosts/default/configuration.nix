@@ -34,6 +34,7 @@
   services.actkbd = {
     enable = true;
     bindings = [
+      { keys = [ 113 ]; events = [ "key" ]; command = "echo 'hello' >> /home/fractal-tess/ss.txt"; }
       { keys = [ 224 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
       { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
     ];
