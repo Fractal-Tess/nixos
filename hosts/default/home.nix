@@ -1,4 +1,4 @@
-{ config, pkgs, ... }: {
+{ ... }: {
 
   imports =
     [
@@ -15,6 +15,7 @@
       ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/picom/default.nix
+      ../../modules/home-manager/rofi/default.nix
       ../../modules/home-manager/yt-dlp/default.nix
       ../../modules/home-manager/zoxide/default.nix
       ../../modules/home-manager/zsh/default.nix

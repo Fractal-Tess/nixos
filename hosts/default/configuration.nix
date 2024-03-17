@@ -141,8 +141,6 @@
     neofetch
     lolcat
     pavucontrol
-    rofi
-    rofi-power-menu
     font-manager
     font-awesome
     nitrogen
