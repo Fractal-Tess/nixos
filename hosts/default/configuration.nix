@@ -34,9 +34,9 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 113 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l YOUR_USER -c 'amixer -q set Master toggle'"; }
-      { keys = [ 114 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l YOUR_USER -c 'amixer -q set Master 5%- unmute'"; }
-      { keys = [ 115 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l YOUR_USER -c 'amixer -q set Master 5%+ unmute'"; }
+      { keys = [ 113 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master toggle'"; }
+      { keys = [ 114 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master 5%- unmute'"; }
+      { keys = [ 115 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master 5%+ unmute'"; }
 
       { keys = [ 224 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
       { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
