@@ -30,14 +30,10 @@
 
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
-  sound.mediaKeys.enable = true;
+
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 113 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master toggle'"; }
-      { keys = [ 114 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master 5%- unmute'"; }
-      { keys = [ 115 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/runuser -l fractal-tess -c 'amixer -q set Master 5%+ unmute'"; }
-
       { keys = [ 224 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
       { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -A 10"; }
     ];
@@ -100,7 +96,7 @@
     alsa.support32Bit = true;
     pulse.enable = true;
     # If you want to use JACK applications, uncomment this
-    jack.enable = true;
+    # jack.enable = true;
 
     # use the example session manager (no others are packaged yet so this is enabled by default,
     # no need to redefine it in your config for now)
