@@ -34,8 +34,11 @@
   services.actkbd = {
     enable = true;
     bindings = [
-      { keys = [ 113 ]; events = [ "key" ]; command = "echo 'sda' >> /home/fractal-tess/out.txt"; }
-      { keys = [ 225 ]; events = [ "key" ]; command = "/run/wrappers/bin/light -U 10"; }
+      { keys = [ 113 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' toggle"; }
+      { keys = [ 114 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%-"; }
+      { keys = [ 115 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/amixer set 'Master' 10%+"; }
+      # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
+      # { keys = [ 225 ]; events = [ "key" ]; command = "/run/current-system/sw/bin/light -U 10"; }
     ];
   };
 
