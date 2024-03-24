@@ -32,7 +32,7 @@
     };
 
     shellAliases = {
-      pcuptime = "uptime | awk '{ print $3 }' | sed  's/,//g'";
+      pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
       ns = "nix search nixpkgs";
       cat = "bat";
       vpn = "openvpn ~/stuff/vpn/vpn.ovpn";
