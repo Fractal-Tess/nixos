@@ -179,6 +179,7 @@
     # Browsers
     microsoft-edge
     google-chrome
+    firefox
 
     # Tools
     bitwarden
