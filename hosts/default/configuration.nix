@@ -129,6 +129,7 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
+    ngrok
     vscode
     burpsuite
     asciidoctor
