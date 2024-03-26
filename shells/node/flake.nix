@@ -34,6 +34,7 @@
             pkgs.yarn
             # pkgs.nodePackages.typescript
             # pkgs.nodePackages.typescript-language-server
+            pkgs.nodePackages."npm-check-updates"
           ];
         };
       });

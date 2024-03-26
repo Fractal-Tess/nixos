@@ -31,6 +31,8 @@
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  zramSwap.enable = true;
+
   services.actkbd = {
     enable = true;
     bindings = [
