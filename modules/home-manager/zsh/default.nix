@@ -32,6 +32,7 @@
     };
 
     shellAliases = {
+      echk = "echo";
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
       ns = "nix search nixpkgs";
       cat = "bat";
