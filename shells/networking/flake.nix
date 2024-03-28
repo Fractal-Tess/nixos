@@ -27,6 +27,10 @@
             pkgs.bettercap
             pkgs.iw
             pkgs.wirelesstools
+            pkgs.wireshark
+
+
+            pkgs.tcpdump
           ];
         };
       });
