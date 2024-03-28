@@ -108,10 +108,13 @@
   # Enable touchpad support (enabled default in most desktopManager).
   services.xserver.libinput.enable = true;
 
+  # Docker
+  virtualisation.docker.enable = true;
+
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
     # packages = with pkgs; [];
     # description = "";
   };
@@ -131,11 +134,14 @@
 
   # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
-    ngrok
+    docker-compose
+    buildkit
+
     vscode
     burpsuite
     asciidoctor
     pulseaudio
+
     # GUI
     polybarFull
     nomacs
@@ -171,6 +177,7 @@
     # Video
     ffmpeg
     # networking
+    ngrok
     nmap
     oha
     openvpn

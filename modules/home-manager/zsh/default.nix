@@ -44,6 +44,7 @@
       ndt = "nix develop ~/nixos/shells/tauri";
       ndn = "nix develop ~/nixos/shells/node";
       ndp = "nix develop ~/nixos/shells/python3";
+      ndnet = "nix develop ~/nixos/shells/networking";
       rt = "trash";
     };
 
