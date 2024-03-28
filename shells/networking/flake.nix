@@ -25,6 +25,8 @@
           '';
           buildInputs = [
             pkgs.bettercap
+            pkgs.iw
+            pkgs.wirelesstools
           ];
         };
       });
