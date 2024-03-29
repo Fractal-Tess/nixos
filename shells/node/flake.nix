@@ -35,6 +35,8 @@
             # pkgs.nodePackages.typescript
             # pkgs.nodePackages.typescript-language-server
             pkgs.nodePackages."npm-check-updates"
+            pkgs.nodePackages."npkill"
+            pkgs.nodePackages."webtorrent-cli"
           ];
         };
       });
