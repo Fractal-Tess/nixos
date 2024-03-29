@@ -31,6 +31,7 @@
   # Flakes
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
+  # Zram 
   zramSwap.enable = true;
 
   services.actkbd = {
@@ -115,9 +116,12 @@
   users.users.fractal-tess = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
+    password = "password";
     # packages = with pkgs; [];
     # description = "";
   };
+  # Make users mutable - allows them to change their password with passwd
+  users.mutableUsers = true;
 
   # Home-Manger
   home-manager = {
@@ -132,7 +136,6 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  # List packages installed in system profile. To search, run:
   environment.systemPackages = with pkgs; [
     docker-compose
     buildkit
@@ -228,11 +231,18 @@
   # List services that you want to enable:
 
   # Enable the OpenSSH daemon.
-  # services.openssh.enable = true;
+  services.openssh = {
+    enable = true;
+    ports = [ 22 ];
+    settings = {
+      PermitRootLogin = "no";
+      PasswordAuthentication = true;
+    };
+  };
 
   # Open ports in the firewall.
-  # networking.firewall.allowedTCPPorts = [ ... ];
-  # networking.firewall.allowedUDPPorts = [ ... ];
+  networking.firewall.allowedTCPPorts = [ 9 22 3000 4173 5173 ];
+  networking.firewall.allowedUDPPorts = [ 9 22 3000 4173 5173 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 
@@ -243,5 +253,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "23.11"; # Did you read the comment?
-
 }
