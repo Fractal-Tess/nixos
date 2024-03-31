@@ -35,8 +35,12 @@
             # pkgs.nodePackages.typescript
             # pkgs.nodePackages.typescript-language-server
             pkgs.nodePackages."npm-check-updates"
-            pkgs.nodePackages."npkill"
             pkgs.nodePackages."webtorrent-cli"
+            pkgs.nodePackages."node2nix"
+            pkgs.nodePackages."nodemon"
+            pkgs.nodePackages."ts-node"
+            pkgs.nodePackages."prisma"
+            pkgs.nodePackages."prettier"
           ];
         };
       });
