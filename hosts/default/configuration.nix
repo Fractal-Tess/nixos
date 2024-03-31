@@ -2,17 +2,23 @@
 # your system.  Help is available in the configuration.nix(5) man page
 # and in the NixOS manual (accessible by running ‘nixos-help’).
 
-{ config, pkgs, inputs, ... }:
+{ pkgs, inputs, ... }:
 {
   imports =
     [
       # Include the results of the hardware scan.
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
-      ../../modules/nixos/auto-cpufreq/default.nix
       ../../modules/nixos/sddm/default.nix
-      ../../modules/nixos/warp-terminal/default.nix
+      ../../modules/nixos/auto-cpufreq/default.nix
     ];
+
+  nix.settings = {
+    # Flakes
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+    warn-dirty = true;
+  };
 
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
@@ -29,8 +35,6 @@
   networking.networkmanager.enable = true;
   programs.nm-applet.enable = true;
 
-  # Flakes
-  nix.settings.experimental-features = [ "nix-command" "flakes" ];
 
   # Zram 
   zramSwap.enable = true;
@@ -126,6 +130,8 @@
 
   # Home-Manger
   home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
     extraSpecialArgs = {
       inherit inputs;
     };
