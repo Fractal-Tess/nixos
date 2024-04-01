@@ -1,25 +1,20 @@
 {
   "prefs": {
-    "ExperimentId": "923e6743-907d-4af6-b0d8-a1da7125ca60",
-    "VimKeybindingsBannerState": "\"Dismissed\"",
-    "VimModeEnabled": "true",
-    "AutosuggestionAcceptedCount": "2",
     "TelemetryEnabled": "false",
+    "ShouldDimInactivePanes": "true",
+    "ExperimentId": "8cf7f642-3c52-43cd-8ffb-691342c08816",
+    "NotebookFontSize": "14.0",
     "FontSize": "12.0",
-    "AIAssistantRequestLimitInfo": "{\"limit\":100,\"num_requests_used_since_refresh\":3,\"next_refresh_time\":\"2024-04-01T14:56:05.256094Z\"}",
-    "AliasExpansionBannerSeen": "true",
-    "ReceivedReferralTheme": "\"Inactive\"",
-    "WelcomeTipsCompleted": "true",
-    "InputMode": "\"Waterfall\"",
-    "WelcomeTipsFeaturesUsed": "[{\"Action\":\"WarpAI\"},{\"Hint\":\"BlockSelect\"},{\"Action\":\"CommandPalette\"},{\"Hint\":\"BlockAction\"},{\"Action\":\"ThemePicker\"},{\"Action\":\"AiCommandSearch\"},{\"Action\":\"OpenWarpDrive\"},{\"Hint\":\"CreateBlock\"},{\"Action\":\"CommandSearch\"}]",
     "Theme": "\"CyberWave\"",
-    "EnforceMinimumContrast": "\"OnlyNamedColors\"",
-    "ChangelogVersions": "{\"v0.2024.03.19.08.01.stable_01\":true}",
-    "HasAutoOpenedWelcomeFolder": "true",
+    "HonorPS1": "true",
     "Shortcuts": "true",
-    "HasDismissedWarpDriveWelcome": "true",
-    "OverrideOpacity": "70",
-    "ShouldDimInactivePanes": "false",
-    "FontName": "\"CaskaydiaCove Nerd Font Mono\""
+    "CrashReportingEnabled": "true",
+    "WelcomeTipsFeaturesUsed": "[{\"Hint\":\"BlockSelect\"},{\"Hint\":\"CreateBlock\"},{\"Action\":\"ThemePicker\"}]",
+    "AIAssistantRequestLimitInfo": "{\"limit\":100,\"num_requests_used_since_refresh\":0,\"next_refresh_time\":\"2024-04-02T20:54:06.417517011Z\"}",
+    "OverrideOpacity": "75",
+    "ChangelogVersions": "{\"v0.2024.03.19.08.01.stable_01\":true}",
+    "ReceivedReferralTheme": "\"Inactive\"",
+    "FontName": "\"CaskaydiaCove Nerd Font\"",
+    "AliasExpansionBannerSeen": "true"
   }
 }
