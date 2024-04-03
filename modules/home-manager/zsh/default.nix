@@ -35,17 +35,21 @@
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
       ns = "nix search nixpkgs";
       cat = "bat";
-      vpn = "openvpn ~/stuff/vpn/vpn.ovpn";
+
+      vpn = "sudo openvpn ~/stuff/vpn/vpn.ovpn";
       update = "~/nixos/update.sh";
       wakevd = "sudo wakeonlan 00:D8:61:2E:DD:A9";
-      ndm = "nix develop ~/nixos/shells/maui";
-      ndc = "nix develop ~/nixos/shells/c";
-      ndr = "nix develop ~/nixos/shells/rust";
-      ndt = "nix develop ~/nixos/shells/tauri";
-      ndn = "nix develop ~/nixos/shells/node";
-      ndp = "nix develop ~/nixos/shells/python3";
-      ndnet = "nix develop ~/nixos/shells/networking";
       rt = "trash";
+
+      ndmaui = "nix develop ~/nixos/shells/maui";
+      ndcsharp = "nix develop ~/nixos/shells/csharp";
+      ndc = "nix develop ~/nixos/shells/c";
+      ndgo = "nix develop ~/nixos/shells/go";
+      ndrust = "nix develop ~/nixos/shells/rust";
+      ndtauri = "nix develop ~/nixos/shells/tauri";
+      ndnode = "nix develop ~/nixos/shells/node";
+      ndpython = "nix develop ~/nixos/shells/python3";
+      ndnet = "nix develop ~/nixos/shells/networking";
     };
 
     history.size = 10000;
