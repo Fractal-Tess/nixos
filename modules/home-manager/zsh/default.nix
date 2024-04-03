@@ -32,13 +32,13 @@
     };
 
     shellAliases = {
-      echk = "echo";
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
       ns = "nix search nixpkgs";
       cat = "bat";
       vpn = "openvpn ~/stuff/vpn/vpn.ovpn";
       update = "~/nixos/update.sh";
       wakevd = "sudo wakeonlan 00:D8:61:2E:DD:A9";
+      ndm = "nix develop ~/nixos/shells/maui";
       ndc = "nix develop ~/nixos/shells/c";
       ndr = "nix develop ~/nixos/shells/rust";
       ndt = "nix develop ~/nixos/shells/tauri";
