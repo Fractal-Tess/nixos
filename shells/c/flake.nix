@@ -41,6 +41,8 @@
           '';
 
           packages = with p; [
+            libgcc
+            gcc
             # builder
             gnumake
             cmake
