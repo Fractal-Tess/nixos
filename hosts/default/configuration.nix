@@ -143,76 +143,7 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
-  environment.systemPackages = with pkgs; [
-    docker-compose
-    buildkit
-
-    vscode
-    burpsuite
-    asciidoctor
-    pulseaudio
-
-    # GUI
-    polybarFull
-    nomacs
-    pcmanfm
-    xfce.thunar
-    lxappearance
-    cava
-    neofetch
-    lolcat
-    pavucontrol
-    font-manager
-    font-awesome
-    nitrogen
-    # Themes
-    arc-icon-theme
-    arc-theme
-    quintom-cursor-theme
-
-    # Utils
-    lm_sensors
-    geekbench
-    htop
-    unzip
-    ripgrep
-    lf
-    lm_sensors
-    trash-cli
-    openssl
-    xclip
-    # Settings
-    light
-    brightnessctl
-    # Video
-    ffmpeg
-    # networking
-    ngrok
-    nmap
-    oha
-    openvpn
-    wakeonlan
-    hping
-
-    # Commmunication
-    discord
-
-    # Browsers
-    microsoft-edge
-    google-chrome
-    firefox
-
-    # Tools
-    bitwarden
-    gparted
-    filezilla
-    kicad
-    gimp
-    blender
-    inkscape
-    steam
-    libreoffice
-  ];
+  environment.systemPackages = with pkgs; [ ];
 
 
   security.sudo.extraRules = [

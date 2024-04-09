@@ -1,4 +1,4 @@
-{ ... }: {
+{ pkgs, ... }: {
   imports =
     [
       ../../modules/home-manager/bat/default.nix
@@ -9,11 +9,13 @@
       ../../modules/home-manager/gh/default.nix
       ../../modules/home-manager/git/default.nix
       ../../modules/home-manager/kitty/default.nix
+      ../../modules/home-manager/lf/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
       ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/picom/default.nix
+      ../../modules/home-manager/ripgrep/default.nix
       ../../modules/home-manager/rofi/default.nix
       ../../modules/home-manager/warp-terminal/default.nix
       ../../modules/home-manager/yt-dlp/default.nix
@@ -38,7 +40,7 @@
 
   # The home.packages option allows you to install Nix packages into your
   # environment.
-  home.packages = [
+  home.packages = with pkgs; [
     # # Adds the 'hello' command to your environment. It prints a friendly
     # # "Hello, world!" when run.
     # pkgs.hello
@@ -55,6 +57,74 @@
     # (pkgs.writeShellScriptBin "my-hello" ''
     #   echo "Hello, ${config.home.username}!"
     # '')
+
+    # Docker
+    docker-compose
+    buildkit
+
+    # Development
+    vscode
+
+    # General gui
+    polybarFull # Full polybar with all modules
+    nomacs # Image viewer
+    pcmanfm # File manager
+    lxappearance # GTK theme switcher
+    font-manager # Font manager
+    # font-viewer # Font previewer
+    pavucontrol # Pulseaudio volume control
+    nitrogen # Wallpaper setter
+    pulseaudio # Audio channel manager
+    bitwarden # Password manager
+    gparted # Partition manager
+    kicad # PCB design
+    gimp # Image editor
+    blender # 3D modeling
+    inkscape # Vector graphics
+    steam # Gaming platform
+    libreoffice # Office suite
+    discord # Chat platform
+
+    # Theme
+    arc-icon-theme # Icon theme
+    arc-theme # GTK theme
+    quintom-cursor-theme # Cursor theme
+
+
+    # Utils 
+    lm_sensors # System sensors
+    geekbench # System benchmark
+    htop # System monitor
+    unzip # Unzip files
+    trash-cli # Trash files
+    openssl # SSL
+    xclip # Stdout to  clipboard 
+    light # Screen brightness
+    # brightnessctl # Screen brightness
+    ffmpeg # Video converter
+
+    # Browsers
+    microsoft-edge # Edge browser
+    google-chrome # Chrome browser
+    firefox # Firefox browser
+
+    # Networking
+    filezilla # FTP client
+    burpsuite # Web pentesting
+    ngrok # Tunneling
+    nmap # Network scanner
+    oha # HTTP bentchmarker
+    openvpn # VPN
+    wakeonlan # Wake on lan util
+    hping # Network ping(ICMP) tool
+
+    # Flex
+    cava # Audio visualizer
+    lolcat # Colorful gradient stdin to stdout
+    neofetch # System info
+    # screenfetch # System info
+
+
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
