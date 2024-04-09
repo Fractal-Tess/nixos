@@ -84,6 +84,8 @@
     steam # Gaming platform
     libreoffice # Office suite
     discord # Chat platform
+    slack # Chat platform
+    thunderbird # Email client
 
     # Theme
     arc-icon-theme # Icon theme
