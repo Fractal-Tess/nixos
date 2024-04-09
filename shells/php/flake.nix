@@ -13,6 +13,10 @@
     {
       devShells = forEachSupportedSystem ({ pkgs }: {
         default = pkgs.mkShell {
+          shellHook = ''
+            zsh;
+            exit 0;
+          '';
           packages = with pkgs; [ php phpPackages.composer ];
         };
       });
