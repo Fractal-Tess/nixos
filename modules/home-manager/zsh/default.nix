@@ -50,6 +50,7 @@
       ndnode = "nix develop ~/nixos/shells/node";
       ndpython = "nix develop ~/nixos/shells/python3";
       ndnet = "nix develop ~/nixos/shells/networking";
+      ndphp = "nix develop ~/nixos/shells/php";
     };
 
     history.size = 10000;
