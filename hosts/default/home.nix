@@ -63,7 +63,8 @@
     buildkit
 
     # Development
-    vscode
+    vscode # Code editor
+    man-pages # Linux development manual pages
 
     # General gui
     polybarFull # Full polybar with all modules
