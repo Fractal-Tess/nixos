@@ -37,6 +37,9 @@
 
   # Mobile dev
   programs.adb.enable = true;
+  # services.udev.packages = [
+  #   pkgs.android-udev-rules
+  # ];
 
   # Zram 
   zramSwap.enable = true;
@@ -182,8 +185,8 @@
   };
 
   # Open ports in the firewall.
-  networking.firewall.allowedTCPPorts = [ 9 22 3000 4173 5173 ];
-  networking.firewall.allowedUDPPorts = [ 9 22 3000 4173 5173 ];
+  networking.firewall.allowedTCPPorts = [ 9 22 3000 4173 5173 8000 8080 8081 9000 ];
+  networking.firewall.allowedUDPPorts = [ 9 22 3000 4173 5173 8000 8080 8081 9000 ];
   # Or disable the firewall altogether.
   # networking.firewall.enable = false;
 

@@ -13,7 +13,7 @@
         inherit system;
       };
     in
-    rec {
+    {
       devShell = pkgs.mkShell {
         shellHook = ''
           zsh;
