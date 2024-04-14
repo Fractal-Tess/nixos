@@ -122,7 +122,7 @@
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "docker" "adbusers" ];
     password = "password";
     # packages = with pkgs; [];
     # description = "";
