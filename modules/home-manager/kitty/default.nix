@@ -4,7 +4,7 @@
     font = {
       package = null;
       # Download font from here https://github.com/ryanoasis/nerd-fonts/releases/download/v3.1.1/CascadiaCode.zip
-      name = "CaskaydiaCoveNerdFontMono";
+      name = "CaskaydiaCoveNerdFont";
       size = 12;
     };
     settings = {
