@@ -35,6 +35,8 @@
   networking.networkmanager.enable = true;
   programs.nm-applet.enable = true;
 
+  # Mobile dev
+  programs.adb.enable = true;
 
   # Zram 
   zramSwap.enable = true;
