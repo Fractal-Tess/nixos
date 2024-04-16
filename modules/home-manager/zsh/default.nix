@@ -51,6 +51,7 @@
       ndpython = "nix develop ~/nixos/shells/python3";
       ndnet = "nix develop ~/nixos/shells/networking";
       ndphp = "nix develop ~/nixos/shells/php";
+      ndreact-native = "nix develop ~/nixos/shells/react-native";
     };
 
     history.size = 10000;
