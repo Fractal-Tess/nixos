@@ -27,7 +27,7 @@
       plugins = [
         # "git"
         "sudo"
-        # "zsh-navigation-tools"
+        "zsh-navigation-tools"
       ];
     };
 
