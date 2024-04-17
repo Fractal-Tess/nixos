@@ -104,7 +104,7 @@
     xclip # Stdout to  clipboard 
     light # Screen brightness
     # brightnessctl # Screen brightness
-    ffmpeg # Video converter
+    ffmpeg-full # Video converter
 
     # Browsers
     microsoft-edge # Edge browser
