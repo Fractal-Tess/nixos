@@ -23,24 +23,25 @@
             zsh;
             exit 0;
           '';
-          buildInputs = [
+          buildInputs = with pkgs; [
             # pkgs.nodejs
             # You can set the major version of Node.js to a specific one instead
             # of the default version
-            pkgs.nodejs_20
+            nodejs_20
 
             # You can choose pnpm, yarn, or none (npm).
-            pkgs.nodePackages.pnpm
-            pkgs.yarn
+            nodePackages.pnpm
+            nodePackages.yarn
             # pkgs.nodePackages.typescript
             # pkgs.nodePackages.typescript-language-server
-            pkgs.nodePackages."npm-check-updates"
-            pkgs.nodePackages."webtorrent-cli"
-            pkgs.nodePackages."node2nix"
-            pkgs.nodePackages."nodemon"
-            pkgs.nodePackages."ts-node"
-            pkgs.nodePackages."prisma"
-            pkgs.nodePackages."prettier"
+            nodePackages."npm-check-updates"
+            nodePackages."webtorrent-cli"
+            nodePackages."node2nix"
+            nodePackages."nodemon"
+            nodePackages."ts-node"
+            nodePackages."prisma"
+            nodePackages."prettier"
+            prettierd
           ];
         };
       });
