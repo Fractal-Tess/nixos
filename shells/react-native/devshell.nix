@@ -30,5 +30,8 @@ devshell.mkShell {
     gradle
     jdk
     nodePackages.yarn
+    nodePackages.pnpm
+    prettierd
+    biome
   ];
 }

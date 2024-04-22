@@ -42,6 +42,7 @@
             nodePackages."prisma"
             nodePackages."prettier"
             prettierd
+            biome
           ];
         };
       });

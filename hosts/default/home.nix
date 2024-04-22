@@ -98,6 +98,7 @@
     lm_sensors # System sensors
     geekbench # System benchmark
     htop # System monitor
+    zenith
     unzip # Unzip files
     trash-cli # Trash files
     openssl # SSL
