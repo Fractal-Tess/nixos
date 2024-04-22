@@ -87,6 +87,7 @@
     discord # Chat platform
     slack # Chat platform
     thunderbird # Email client
+    postman # API testing
 
     # Theme
     arc-icon-theme # Icon theme
@@ -97,8 +98,8 @@
     # Utils 
     lm_sensors # System sensors
     geekbench # System benchmark
-    htop # System monitor
-    zenith
+    # htop # System monitor
+    # zenith # System monitor
     unzip # Unzip files
     trash-cli # Trash files
     openssl # SSL
