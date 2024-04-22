@@ -100,6 +100,7 @@
     geekbench # System benchmark
     # htop # System monitor
     # zenith # System monitor
+    dust # Disk usage
     unzip # Unzip files
     trash-cli # Trash files
     openssl # SSL
