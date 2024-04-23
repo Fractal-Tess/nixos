@@ -98,6 +98,7 @@
     # Utils 
     lm_sensors # System sensors
     geekbench # System benchmark
+    jq # JSON parser
     # htop # System monitor
     # zenith # System monitor
     dust # Disk usage
