@@ -33,5 +33,6 @@ devshell.mkShell {
     nodePackages.pnpm
     prettierd
     biome
+    nodePackages.eas-cli
   ];
 }

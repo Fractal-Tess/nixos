@@ -99,6 +99,15 @@
     lm_sensors # System sensors
     geekbench # System benchmark
     jq # JSON parser
+    carbon-now-cli # Code to image
+    hyperfine # Command benchmark
+    skim # Fuzzy finder
+    sd # Sed alternative
+    bottom # System monitor
+    # ytop # System monitor -- archived
+    procs # ps replacement
+    fd # Find replacement
+    tokei # Code stats
     # htop # System monitor
     # zenith # System monitor
     dust # Disk usage
