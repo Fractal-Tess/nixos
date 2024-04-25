@@ -69,7 +69,14 @@
     # General gui
     polybarFull # Full polybar with all modules
     nomacs # Image viewer
+    obsidian # Note taking
+    logseq # Note taking
+    gitkraken # Git GUI
+    vlc # Media player
     pcmanfm # File manager
+    audacity # Audio editor
+    avidemux # Video editor
+
     lxappearance # GTK theme switcher
     font-manager # Font manager
     # font-viewer # Font previewer
@@ -88,6 +95,7 @@
     slack # Chat platform
     thunderbird # Email client
     postman # API testing
+    insomnia # API testing
 
     # Theme
     arc-icon-theme # Icon theme
