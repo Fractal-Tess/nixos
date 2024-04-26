@@ -6,7 +6,7 @@
       ../../modules/home-manager/dunst/default.nix
       ../../modules/home-manager/eza/default.nix
       ../../modules/home-manager/flameshot/default.nix
-      ../../modules/home-manager/gh/default.nix
+      # ../../modules/home-manager/gh/default.nix
       ../../modules/home-manager/git/default.nix
       ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/lf/default.nix
@@ -123,6 +123,7 @@
     trash-cli # Trash files
     openssl # SSL
     xclip # Stdout to  clipboard 
+    gh # Github CLI
     light # Screen brightness
     # brightnessctl # Screen brightness
     ffmpeg-full # Video converter
