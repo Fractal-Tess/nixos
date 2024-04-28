@@ -121,6 +121,8 @@
 
   # Docker
   virtualisation.docker.enable = true;
+  # Netbird
+  services.netbird.enable = true;
 
   # Define a user account. Don't forget to set a password with ‘passwd’.
   users.users.fractal-tess = {
