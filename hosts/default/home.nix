@@ -96,6 +96,7 @@
     thunderbird # Email client
     postman # API testing
     insomnia # API testing
+    netbird # Netbird network vpn mesh
     netbird-ui # UI for netbird
     # netbird-dashboard # Dashboard for netbird
 
