@@ -96,6 +96,8 @@
     thunderbird # Email client
     postman # API testing
     insomnia # API testing
+    netbird-ui # UI for netbird
+    # netbird-dashboard # Dashboard for netbird
 
     # Theme
     arc-icon-theme # Icon theme
