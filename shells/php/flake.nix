@@ -20,6 +20,7 @@
           packages = with pkgs; [
             php
             phpPackages.composer
+
             phpPackages.php-cs-fixer
             phpPackages.phan
             phpactor
