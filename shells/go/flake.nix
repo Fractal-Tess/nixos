@@ -1,5 +1,5 @@
 {
-  description = "A Nix-flake-based Go 1.22 development environment";
+  description = "Go 22 environment";
 
   inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
 

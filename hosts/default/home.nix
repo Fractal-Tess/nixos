@@ -92,6 +92,7 @@
     steam # Gaming platform
     libreoffice # Office suite
     discord # Chat platform
+    # viber # Chat platform  -- uses openssl-1.1.1w which is insecure
     slack # Chat platform
     thunderbird # Email client
     postman # API testing
@@ -107,6 +108,7 @@
 
     # Utils 
     lm_sensors # System sensors
+    gpick # Color picker
     geekbench # System benchmark
     jq # JSON parser
     carbon-now-cli # Code to image
@@ -123,7 +125,7 @@
     dust # Disk usage
     unzip # Unzip files
     trash-cli # Trash files
-    openssl # SSL
+    openssl_3_3 # SSL
     xclip # Stdout to  clipboard 
     gh # Github CLI
     light # Screen brightness

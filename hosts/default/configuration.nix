@@ -19,7 +19,7 @@
     auto-optimise-store = true;
     warn-dirty = true;
   };
-
+  #
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
