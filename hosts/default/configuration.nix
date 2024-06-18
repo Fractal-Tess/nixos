@@ -150,6 +150,9 @@
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
+  # Direnv 
+  programs.direnv.enable = true;
+
   environment.systemPackages = with pkgs; [ ];
 
 
