@@ -99,6 +99,7 @@
     insomnia # API testing
     netbird-ui # UI for netbird
     # netbird-dashboard # Dashboard for netbird
+    lazygit # Git GUI
 
     # Theme
     arc-icon-theme # Icon theme
