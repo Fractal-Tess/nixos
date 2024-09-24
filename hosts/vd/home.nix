@@ -9,7 +9,7 @@
       ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
-      ../../modules/home-manager/nextcloud/default.nix
+      # ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/ripgrep/default.nix
       ../../modules/home-manager/warp-terminal/default.nix
@@ -22,6 +22,9 @@
   # Home Manager 
   home.username = "fractal-tess";
   home.homeDirectory = "/home/fractal-tess";
+
+  # File sync
+  services.syncthing.enable = true;
 
   # Direnv
   programs = {
@@ -207,6 +210,7 @@
     tokei # Code stats --
     dust # Disk usage
     unzip # Unzip files
+    p7zip # 7zip
     trash-cli # Trash files
     mate.engrampa # Archive manager
     nh # Nix cli 

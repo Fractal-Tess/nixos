@@ -38,6 +38,23 @@
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  xdg.mime.defaultApplications = {
+    # Media files for VLC
+    "audio/mpeg" = "vlc.desktop";
+    "video/mp4" = "vlc.desktop";
+    "video/mpeg" = "vlc.desktop";
+    "video/x-matroska" = "vlc.desktop";
+    "video/x-msvideo" = "vlc.desktop";
+
+    # Image files for Nomacs
+    "image/jpeg" = "org.nomacs.ImageLounge.desktop";
+    "image/png" = "org.nomacs.ImageLounge.desktop";
+    "image/gif" = "org.nomacs.ImageLounge.desktop";
+    "image/bmp" = "org.nomacs.ImageLounge.desktop";
+
+    # SVG files for Inkscape
+    "image/svg+xml" = "org.inkscape.Inkscape.desktop";
+  };
 
   # ---
   # Mobile dev

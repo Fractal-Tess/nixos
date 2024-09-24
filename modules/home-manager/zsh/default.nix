@@ -34,6 +34,7 @@
     shellAliases = {
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
       cat = "bat";
+      cc = "clipcopy";
 
       direnv-init = "echo \"use flake\" >> .envrc && direnv allow";
       ncs-nodejs = "cp ~/nixos/shells/node/* ./";
