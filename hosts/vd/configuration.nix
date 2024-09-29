@@ -9,10 +9,15 @@
   # Overlays
   nixpkgs.overlays = [ inputs.polymc.overlay ]; ## Within configuration.nix
 
+  # Allow unfree packages
+  nixpkgs.config.allowUnfree = true;
+
   # Insecure packages
   nixpkgs.config.permittedInsecurePackages = [
     "electron-27.3.11"
   ];
+
+  #environment.systemPackages = with pkgs; [ ];
 
   security.polkit.enable = true;
   # Flakes
@@ -20,7 +25,7 @@
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
   };
-  programs.dconf.enable = true;
+
   # Bootloader.
   boot.loader.systemd-boot.enable = true;
   boot.loader.efi.canTouchEfiVariables = true;
@@ -28,16 +33,28 @@
   # boot.loader.grub.device = "nodev";
   # boot.loader.grub.useOSProber = true;
 
-  networking.hostName = "vd";
 
-  # ---
   # Networking
+  networking.hostName = "vd";
   networking.networkmanager.enable = true;
+  # networking.networkmanager.enable = true;
+  # programs.nm-applet.enable = true;
+
+  # Configure network proxy if necessary
+  # networking.proxy.default = "http://user:password@proxy:port/";
+  # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
+
+  # Mobile dev
+  programs.adb.enable = true;
+  # services.udev.packages = [
+  #   pkgs.android-udev-rules
+  # ];
 
   # Network proxy 
   # networking.proxy.default = "http://user:password@proxy:port/";
   # networking.proxy.noProxy = "127.0.0.1,localhost,internal.domain";
 
+  # Default applications
   xdg.mime.defaultApplications = {
     # Media files for VLC
     "audio/mpeg" = "vlc.desktop";
@@ -55,18 +72,6 @@
     # SVG files for Inkscape
     "image/svg+xml" = "org.inkscape.Inkscape.desktop";
   };
-
-  # ---
-  # Mobile dev
-  # programs.adb.enable = true;
-  #   services.udev.packages = [
-  #  pkgs.android-udev-rules
-  # ];
-
-  # ---
-  # Zram 
-  # zramSwap.enable = true;
-
 
   # ---
   # Timezone 
@@ -87,8 +92,6 @@
     LC_TIME = "en_US.UTF-8";
   };
 
-
-  # ---
   # User accounts
   users.users.fractal-tess = {
     isNormalUser = true;
@@ -100,7 +103,18 @@
   # Make users mutable - allows them to change their password with passwd
   users.mutableUsers = true;
 
+  # Home-Manger
+  home-manager = {
+    useGlobalPkgs = true;
+    useUserPackages = true;
+    extraSpecialArgs = {
+      inherit inputs;
+    };
+    users = {
+      "fractal-tess" = import ./home.nix;
+    };
 
+  };
 
   security.sudo.extraRules = [
     {
@@ -113,13 +127,6 @@
       ];
     }
   ];
-
-
-  ## Things to rehost
-  # Dozzle
-  # Indecisive
-  # Minio
-
 
   # Shell (zsh)
   environment.pathsToLink = [ "/share/zsh" ];
@@ -136,10 +143,6 @@
       PasswordAuthentication = false;
     };
   };
-  users.users.root.openssh.authorizedKeys.keys = [
-    "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIE7pnb7H32DEXK262OZw0bgBZswsTRDJON2uLyUYXfsS root@coolify"
-  ];
-
 
   # Hyprland
   programs.hyprland = {
@@ -149,6 +152,14 @@
     xwayland.enable = true;
   };
 
+  # Communication between windows
+  xdg.portal = {
+    enable = true;
+    extraPortals = with pkgs;[
+      xdg-desktop-portal-gtk
+      #xdg-desktop-portal-hyprland
+    ];
+  };
 
   xdg.mime.defaultApplications = {
     "x-scheme-handler/http" = "google-chrome-stable.desktop";
@@ -217,28 +228,7 @@
 
   };
 
-  # Communication between windows
-  xdg.portal = {
-    enable = true;
-    extraPortals = with pkgs;[
-      xdg-desktop-portal-gtk
-      #xdg-desktop-portal-hyprland
-    ];
-  };
 
-  # ---
-  # Home-Manger
-  home-manager = {
-    useGlobalPkgs = true;
-    useUserPackages = true;
-    extraSpecialArgs = {
-      inherit inputs;
-    };
-    users = {
-      "fractal-tess" = import ./home.nix;
-    };
-
-  };
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -259,9 +249,6 @@
     pulse.enable = true;
     jack.enable = true;
   };
-
-  # Enable touchpad support (enabled default in most desktopManager).
-  services.libinput.enable = true;
 
   # ---
   # Virtualisation & containers
@@ -292,8 +279,6 @@
     '';
   };
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
 
   # Dbus
   services.dbus.enable = true;
@@ -305,9 +290,6 @@
     (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
   ];
 
-  #environment.systemPackages = with pkgs; [
-  #   polymc
-  # ];
 
 
   # Some programs need SUID wrappers, can be configured further or are
