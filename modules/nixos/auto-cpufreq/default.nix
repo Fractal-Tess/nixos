@@ -6,11 +6,11 @@
         {
           charger = {
             governor = "performance";
-            turbo = "auto";
+            turbo = "always";
           };
 
           battery = {
-            governor = "powersave";
+            governor = "balanced";
             turbo = "auto";
           };
         };

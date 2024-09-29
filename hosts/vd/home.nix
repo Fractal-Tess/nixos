@@ -26,19 +26,18 @@
   # File sync
   services.syncthing.enable = true;
 
-  # Direnv
   programs = {
+    # Yazi
     yazi = {
       enable = true;
     };
 
+    # Direnv
     direnv = {
       enable = true;
-      enableBashIntegration = true; # see note on other shells below
+      enableZshIntegration = true; # see note on other shells below
       nix-direnv.enable = true;
     };
-
-    bash.enable = true; # see note on other shells below
   };
 
   # Eenvironment variables

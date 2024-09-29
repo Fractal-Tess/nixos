@@ -2,5 +2,4 @@
   programs.rofi = {
     enable = true;
   };
-
 }

@@ -3,6 +3,10 @@
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
+    autosuggestion.strategy = [
+      "history"
+      "completion"
+    ];
     enableVteIntegration = true;
     syntaxHighlighting.enable = true;
 
