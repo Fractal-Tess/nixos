@@ -25,9 +25,10 @@
     ];
 
   # Home Manager needs a bit of information about you and the paths it should
-  # manage.
   home.username = "fractal-tess";
   home.homeDirectory = "/home/fractal-tess";
+
+
 
   # Eenvironment variables
   home.sessionVariables = {
