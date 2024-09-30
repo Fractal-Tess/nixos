@@ -1,4 +1,4 @@
-{ pkgs, ... }: {
+{ pkgs, username, osConfig, lib, ... }: {
   imports =
     [
       ../../modules/home-manager/bat/default.nix
@@ -9,7 +9,7 @@
       ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
-      # ../../modules/home-manager/nextcloud/default.nix
+      ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/ripgrep/default.nix
       ../../modules/home-manager/warp-terminal/default.nix
@@ -20,25 +20,11 @@
     ];
 
   # Home Manager 
-  home.username = "fractal-tess";
-  home.homeDirectory = "/home/fractal-tess";
+  home.username = username;
+  home.homeDirectory = "/home/${username}";
 
   # File sync
   services.syncthing.enable = true;
-
-  programs = {
-    # Yazi
-    yazi = {
-      enable = true;
-    };
-
-    # Direnv
-    direnv = {
-      enable = true;
-      enableZshIntegration = true; # see note on other shells below
-      nix-direnv.enable = true;
-    };
-  };
 
   # Eenvironment variables
   home.sessionVariables = {
@@ -100,13 +86,11 @@
     docker-compose
     buildkit
 
+    nixd
 
     # Wallpaper manager
     swww
     waypaper
-
-    # Waybar
-    (pkgs.waybar.overrideAttrs (oldAttrs: { mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ]; }))
 
     # Notifications 
     swaynotificationcenter
@@ -150,6 +134,8 @@
     logseq # Note taking
     vlc # Media player
     pcmanfm # File manager
+    lxmenu-data
+    shared-mime-info
 
     nvtopPackages.nvidia
 
@@ -245,6 +231,15 @@
     #   org.gradle.daemon.idletimeout=3600000
     # '';
   };
+  xdg.configFile.hypr = lib.mkIf osConfig.modules.display.hyprland.enable {
+    source = ../../modules/nixos/display/hyprland/config;
+    recursive = true;
+  };
+  xdg.configFile.waybar = lib.mkIf osConfig.modules.display.waybar.enable {
+    source = ../../modules/nixos/display/waybar/config;
+    recursive = true;
+  };
+
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. If you don't want to manage your shell through Home

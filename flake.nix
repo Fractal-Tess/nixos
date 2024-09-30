@@ -6,9 +6,11 @@
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
     polymc.url = "github:PolyMC/PolyMC";
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
+
   outputs = { self, nixpkgs, ... }@inputs:
     let
       mkHost = { hostname, username }: nixpkgs.lib.nixosSystem {
