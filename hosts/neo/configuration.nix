@@ -81,7 +81,6 @@
   modules.services.docker = {
     enable = true;
     rootless = true;
-    nvidia = true;
   };
 
 
