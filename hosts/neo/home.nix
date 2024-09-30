@@ -135,8 +135,6 @@
     lxmenu-data
     shared-mime-info
 
-    nvtopPackages.nvidia
-
     # Audio
     playerctl
     pamixer
@@ -157,7 +155,6 @@
     cliphist # Clipboard history
 
 
-
     # Communication
     bitwarden # Password manager
     gparted # Partition manager
@@ -167,7 +164,6 @@
     viber # Chat platform 
     slack # Chat platform
     thunderbird # Email client
-    # netbird-dashboard # Dashboard for netbird
 
 
     # Games 
