@@ -8,7 +8,6 @@
       ../../modules/nixos/audio/default.nix
       ../../modules/nixos/boot/default.nix
       ../../modules/nixos/networking/default.nix
-      ../../modules/nixos/nvidia/default.nix
       ../../modules/nixos/display/all.nix
       ../../modules/nixos/programs/all.nix
       ../../modules/nixos/services/all.nix
