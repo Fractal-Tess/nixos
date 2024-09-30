@@ -49,13 +49,9 @@
   };
 
 
-  # Enable nvidia  ---------------------------------------------------------
-  modules.hardware.nvidia.enable = true;
-
   # Window Manager & compositor --------------------------------------------
   modules.display.hyprland = {
     enable = true;
-    videoDrivers = [ "nvidia" ];
     greetd.enable = true;
     greetd.autoLogin = true;
   };
@@ -100,7 +96,6 @@
 
   ## Zsh
   modules.programs.zsh.enable = true;
-
 
 
 

@@ -13,6 +13,7 @@
       # TODO: Move these to a devshell
       bun
       deno
+      nixd
 
       # Svelte
       nodePackages.svelte-language-server

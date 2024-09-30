@@ -86,8 +86,6 @@
     docker-compose
     buildkit
 
-    nixd
-
     # Wallpaper manager
     swww
     waypaper
