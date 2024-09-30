@@ -49,7 +49,13 @@
   services.libinput.enable = true;
 
   # Docker
-  virtualisation.docker.enable = true;
+  virtualisation.docker =
+    {
+      enable = true;
+      nvidia = true;
+      rootless = true;
+    };
+
 
   # Zram 
   zramSwap.enable = true;
