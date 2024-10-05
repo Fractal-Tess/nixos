@@ -10,6 +10,7 @@
     enableVteIntegration = true;
     syntaxHighlighting.enable = true;
 
+
     # initExtra = ''
     #   [[ ! -f ${./p10k.zsh} ]] || source ${./p10k.zsh}
     # '';
@@ -29,6 +30,7 @@
     oh-my-zsh = {
       enable = true;
       plugins = [
+        "direnv"
         "git"
         "sudo"
         "zsh-navigation-tools"

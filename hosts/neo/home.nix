@@ -28,6 +28,10 @@
 
   # Eenvironment variables
   home.sessionVariables = {
+    # Drivers
+    LIBVA_DRIVER_NAME = "radeonsi";
+    VDPAU_DRIVER = "radeonsi";
+
     GTK_THEME = "Nordic";
     XCURSOR_THEME = "Nordzy-cursors";
     XCURSOR_SIZE = "24";
@@ -209,6 +213,7 @@
     lolcat # Colorful gradient stdin to stdout
     neofetch # System info
     nitch # System info
+    nvtopPackages.amd # Amd gpu monitor
   ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage

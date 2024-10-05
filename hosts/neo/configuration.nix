@@ -31,8 +31,15 @@
     "electron-27.3.11"
   ];
 
-  environment.systemPackages = with pkgs; [ ];
+  # Kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
 
+  environment.systemPackages = with pkgs; [
+    # https://claude.ai/chat/c4669859-f224-409d-bed1-516fd26758e8
+    amdvlk
+    rocm-opencl-icd
+    rocm-opencl-runtime
+  ];
 
   # Enable audio -----------------------------------------------------------
   modules.audio.enable = true;
@@ -41,23 +48,36 @@
   modules.networking = {
     enable = true;
     firewall = {
-      allowedPorts = [ 9 22 ];
+      allowedPorts = [ 9 22 4321 3000 ];
     };
     vpn.netbird.enable = true;
-
   };
-
 
   # Window Manager & compositor --------------------------------------------
   modules.display.hyprland = {
     enable = true;
     greetd.enable = true;
     greetd.autoLogin = true;
+    videoDrivers = [ "amdgpu" ];
+    openGL = {
+      enable = true;
+      extraPackages = with pkgs; [
+        libvdpau-va-gl
+        amdvlk
+        rocm-opencl-icd
+        rocm-opencl-runtime
+      ];
+      extraPackages32 = with pkgs;[
+        driversi686Linux.amdvlk
+      ];
+
+    };
   };
   modules.display.waybar.enable = true;
 
   # Boot -------------------------------------------------------------------
   modules.boot.useCustomConfig = true;
+
 
 
 
@@ -82,7 +102,8 @@
     enable = true;
     rootless = true;
   };
-
+  # auto-cpufreq
+  modules.services.auto_cpu.enable = false;
 
 
   # Programs ---------------------------------------------------------------
@@ -95,6 +116,12 @@
   ## Zsh
   modules.programs.zsh.enable = true;
 
+  # Extra ------------------------------------------------------------------
+  zramSwap.enable = true;
+  swapDevices = [{
+    device = "/swapfile";
+    size = 16 * 1024; # 16GB
+  }];
 
 
   # Users  -----------------------------------------------------------------
