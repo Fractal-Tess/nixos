@@ -6,7 +6,6 @@ in
 {
   options.modules.display.hyprland = {
     enable = mkEnableOption "Hyprland";
-    xwayland = mkEnableOption "Xwayland support";
 
     xdgPortal = {
       enable = mkOption {
@@ -41,15 +40,20 @@ in
         default = [ pkgs.libvdpau-va-gl ];
         description = "Extra packages to install for OpenGL.";
       };
+      extraPackages32 = mkOption {
+        type = types.listOf types.package;
+        default = [ ];
+        description = "Extra packages to install for 32-bit OpenGL.";
+      };
     };
-  };
 
+  };
   config = mkIf cfg.enable {
     # Hyprland
     programs.hyprland = {
       enable = true;
-      xwayland.enable = cfg.xwayland;
-      package = inputs.hyprland.packages.${pkgs.system}.hyprland;
+      xwayland.enable = true;
+      package = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
       portalPackage = inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
     };
 
@@ -80,7 +84,9 @@ in
     # Enable OpenGL
     hardware.graphics = mkIf cfg.openGL.enable {
       enable = true;
+      enable32Bit = true;
       extraPackages = cfg.openGL.extraPackages;
+      extraPackages32 = cfg.openGL.extraPackages32;
     };
   };
 }

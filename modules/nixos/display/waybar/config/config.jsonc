@@ -4,7 +4,8 @@
     "position": "top",
     "mod": "dock",
     "output": [
-      "HDMI-A-1"
+      "HDMI-A-1",
+      "eDP-1"
     ],
     "margin-left": 8,
     "margin-right": 8,
@@ -16,7 +17,9 @@
     "gtk-layer-shell": true,
     "reload_style_on_change": true,
     "modules-left": [
-      "custom/smallspacer",
+      "custom/padd",
+      "custom/l_end",
+      "custom/spacer",
       "custom/nixos",
       "custom/spacer",
       "hyprland/workspaces",
@@ -26,6 +29,7 @@
     "modules-right": [
       "custom/padd",
       "custom/l_end",
+      "disk#root",
       "custom/spacer",
       "pulseaudio",
       "custom/spacer",
@@ -37,7 +41,6 @@
       "custom/cliphist",
       "battery",
       "cpu",
-      "custom/gpu",
       "memory",
       "custom/spacer",
       "hyprland/language",
@@ -46,8 +49,15 @@
       "custom/spacer",
       "custom/notification",
       "custom/spacer",
+      "tray",
       "custom/padd"
     ],
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
     "memory": {
       "interval": 1,
       "rotate": 270,
@@ -65,7 +75,7 @@
       ],
       "max-length": 10
     },
-    "custom/gpu": {
+    "custom/gpu-nvidia": {
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
@@ -178,7 +188,7 @@
       "tooltip": true
     },
     "custom/smallspacer": {
-      "format": " "
+      "format": "  "
     },
     "clock": {
       "format": "{:%I:%M %p}",
@@ -226,9 +236,9 @@
         "󰪤",
         "󰪥"
       ],
+      "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
       //  "format-icons": ["","","","","","","",""],  
       //"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-      "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
       //  "format-icons": [<i class='fa-solid fa-wifi-slash'></i>],
     },
     "network": {
@@ -242,6 +252,7 @@
       ],
       "rotate": 0,
       "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
+      "format-wifi": "{icon}  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
       "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
       "format-linked": "󰈀 {ifname} (No IP)",
       "format-disconnected": " ",
@@ -401,9 +412,6 @@
       "custom/spacer",
       "custom/padd"
     ],
-    "custom/smallspacer": {
-      "format": " "
-    },
     "memory": {
       "interval": 1,
       "rotate": 270,

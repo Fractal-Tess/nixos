@@ -9,6 +9,8 @@
 @define-color bg1 #0f0f17;
 @define-color bg2 #1a1a1a;
 
+@define-color green #e8edf0;
+
 * {
   font-family: "JetBrains Mono Nerd Font";
   /* font-family: "JetBrainsMono Nerd Font"; */
@@ -45,6 +47,7 @@
 }
 
 #cava {
+  margin: 0 0.5rem;
   color: @text;
 }
 
@@ -85,12 +88,10 @@
   transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
-#custom-spacer {
-  opacity: 0;
-}
-#custom-smallspacer {
-  opacity: 0;
-}
+/*#custom-spacer {*/
+/*  opacity: 0;*/
+/*  margin: 0 0.5rem;*/
+/*}*/
 
 #custom-mouse {
   font-size: 1rem;
@@ -108,17 +109,6 @@
   padding-right: 2px;
 }
 #bluetooth,
-#battery {
-  font-weight: normal;
-  font-size: 22px;
-  color: #a6d189;
-  background: rgba(23, 23, 23, 0);
-  opacity: 1;
-  margin: 0px 0px 0px 0px;
-  padding-left: 0px;
-  padding-right: 0px;
-}
-
 #clock {
   color: @text;
   font-size: 1rem;
@@ -145,10 +135,19 @@
 #custom-gpu,
 #memory,
 #cpu,
+#memory,
 #memory {
   font-weight: normal;
-  font-size: 2rem;
+}
+#memory {
   color: @col2;
+}
+#battery.charging,
+#battery.plugged {
+  color: @green;
+}
+#battery.critical:not(.charging) {
+  color: red;
 }
 
 #cpu {
@@ -160,7 +159,7 @@
 
 #disk {
   font-size: 0.8rem;
-  margin: 0.5rem 0;
+  margin: 0.5rem 0.5rem;
   color: @muted;
   border: 2px solid rgba(255, 255, 255, 0.1);
   border-radius: 0.5rem;
@@ -187,13 +186,4 @@
 #network.ethernet {
   color: @text;
   min-width: 250px;
-}
-
-#battery.charging,
-#battery.plugged {
-  color: #e8edf0;
-}
-
-#battery.critical:not(.charging) {
-  color: red;
 }
