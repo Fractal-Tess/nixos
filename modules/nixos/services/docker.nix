@@ -1,4 +1,4 @@
-{ config, lib, username, ... }:
+{ config, lib, username, pkgs, ... }:
 
 with lib;
 
@@ -19,6 +19,7 @@ in
     hardware.nvidia-container-toolkit.enable = cfg.nvidia;
 
     virtualisation.docker = {
+      package = (pkgs.docker.override (args: { buildxSupport = true; }));
       enable = true;
       rootless = mkIf cfg.rootless {
         enable = true;
