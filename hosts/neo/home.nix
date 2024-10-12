@@ -106,6 +106,7 @@
 
     # Development
     vscode # Code editor
+    code-cursor # AI code editor
     flyctl # Fly.io CLI
     gh # Github CLI
     lazygit # Git GUI
@@ -138,6 +139,8 @@
     pcmanfm # File manager
     lxmenu-data
     shared-mime-info
+    gnumake42
+
 
     # Audio
     playerctl
@@ -151,6 +154,7 @@
     blender # 3D modeling
     inkscape # Vector graphics
     ffmpeg-full # Video converter
+    tiled # Tile map editor
 
     # Fonts & Themes
     nordic # Theme
