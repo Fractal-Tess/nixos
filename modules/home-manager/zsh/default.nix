@@ -11,9 +11,6 @@
     syntaxHighlighting.enable = true;
 
 
-    # initExtra = ''
-    #   [[ ! -f ${./p10k.zsh} ]] || source ${./p10k.zsh}
-    # '';
     plugins = [
       {
         name = "powerlevel10k";
