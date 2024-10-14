@@ -88,10 +88,10 @@
   transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
 }
 
-/*#custom-spacer {*/
-/*  opacity: 0;*/
-/*  margin: 0 0.5rem;*/
-/*}*/
+#custom-spacer {
+  opacity: 0;
+  margin: 0 0.5rem;
+}
 
 #custom-mouse {
   font-size: 1rem;
@@ -132,16 +132,27 @@
   padding-right: 3px;
 }
 
-#custom-gpu,
-#memory,
+/* CPU/GPU/MEMORY */
 #cpu,
-#memory,
+#custom-gpu,
 #memory {
-  font-weight: normal;
+  font-weight: bold;
+  font-size: 1.2rem;
 }
+
+#cpu {
+  color: @col1;
+}
+
+#custom-gpu_nvidia {
+  color: @col4;
+}
+
 #memory {
   color: @col2;
 }
+
+/* Battery */
 #battery.charging,
 #battery.plugged {
   color: @green;
@@ -150,13 +161,7 @@
   color: red;
 }
 
-#cpu {
-  color: @col1;
-}
-#custom-gpu {
-  color: @col4;
-}
-
+/* Disk */
 #disk {
   font-size: 0.8rem;
   margin: 0.5rem 0.5rem;
