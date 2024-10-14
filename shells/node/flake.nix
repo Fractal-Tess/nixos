@@ -23,7 +23,7 @@
         default = pkgs.mkShell {
           # Slant font https://patorjk.com/software/taag/#p=testall&f=Doom&t=NodeJS
           shellHook = ''
-            echo " 
+            echo "#
             #      _   __          __         _______
             #     / | / /___  ____/ /__      / / ___/
             #    /  |/ / __ \/ __  / _ \__  / /\__ \ 
