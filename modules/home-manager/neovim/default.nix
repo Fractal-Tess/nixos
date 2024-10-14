@@ -5,33 +5,33 @@
     viAlias = true;
     vimAlias = true;
     extraPackages = with pkgs;[
-      nodejs_20
-      yarn
-      nodePackages.pnpm
-      gcc
+      # Prettier
+      prettierd
 
-      # TODO: Move these to a devshell
-      bun
-      deno
-      nixd
+      # LSPs ---
 
       # Svelte
-      nodePackages.svelte-language-server
+      svelte-language-server
+
       # Html snippets 
       emmet-language-server
+
       # Tailwind
       tailwindcss-language-server
-      # LSP
-      typescript
+
+      # Typescript
       typescript-language-server
+
+      # Astro
       astro-language-server
+
+      # Docker
       docker-compose-language-service
       dockerfile-language-server-nodejs
 
-      # Prettier
-      prettierd
       # Rust
       rust-analyzer
+
       # Lua
       lua-language-server
       stylua
@@ -39,21 +39,21 @@
       # Nginx
       nginx-language-server
 
+      # Php
+      phpactor
 
       # Nixos
-      nil
+      nixd
       nixpkgs-fmt
 
-      # This package seems to have html, css, json and eslint servers
+      # HTML/CSS/JSON/ESLint language servers extracted from vscode
       vscode-langservers-extracted
-      # Json
-      vscode-langservers-extracted
-      # pkgs.nodePackages.vscode-css-languageserver-bin
-      # pkgs.nodePackages.vscode-html-languageserver-bin
 
       # Sql
       sqls
 
+      # Go
+      gopls
     ];
   };
 }
