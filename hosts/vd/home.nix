@@ -90,6 +90,28 @@
     swww
     waypaper
 
+    gnumake42
+    code-cursor
+    tiled
+
+    # Package managers ---
+    yarn
+    pnpm
+
+    # Runtimes
+    bun
+    deno
+    php
+    nodejs_20
+
+    # Other misc tools
+    laravel
+    phpPackages.composer
+    gcc
+    # clang # -- for some reason cannot install clang
+    clang-tools
+
+
     # Notifications 
     swaynotificationcenter
 
