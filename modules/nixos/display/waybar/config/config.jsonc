@@ -4,8 +4,7 @@
     "position": "top",
     "mod": "dock",
     "output": [
-      "HDMI-A-1",
-      "eDP-1"
+      "HDMI-A-1"
     ],
     "margin-left": 8,
     "margin-right": 8,
@@ -18,29 +17,28 @@
     "reload_style_on_change": true,
     "modules-left": [
       "custom/padd",
-      "custom/l_end",
-      "custom/spacer",
       "custom/nixos",
       "custom/spacer",
       "hyprland/workspaces",
-      "custom/spacer"
+      "custom/padd"
     ],
     "modules-center": [],
     "modules-right": [
       "custom/padd",
-      "custom/l_end",
-      "disk#root",
-      "custom/spacer",
       "pulseaudio",
-      "custom/spacer",
-      "pulseaudio#microphone",
       "custom/spacer",
       "cava",
       "custom/spacer",
+      "disk#root",
+      "custom/spacer",
+      "disk#vault",
+      "custom/spacer",
+      "disk#backup",
+      "custom/spacer",
       "network",
-      "custom/cliphist",
-      "battery",
+      "custom/spacer",
       "cpu",
+      "custom/gpu#nvidia",
       "memory",
       "custom/spacer",
       "hyprland/language",
@@ -55,6 +53,18 @@
     "disk#root": {
       "interval": 30,
       "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#vault": {
+      "interval": 30,
+      "path": "/mnt/vault/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup/",
       "format": "/ {percentage_used}%",
       "unit": "GB"
     },
@@ -75,7 +85,7 @@
       ],
       "max-length": 10
     },
-    "custom/gpu-nvidia": {
+    "custom/gpu#nvidia": {
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
@@ -139,7 +149,6 @@
       "format-icons": {
         "default": "",
         "active": ""
-        
         //"1": "ﭮ",
         //"2": "",
         //"3": "",
@@ -187,9 +196,6 @@
       "interval": 86400,
       "tooltip": true
     },
-    "custom/smallspacer": {
-      "format": "  "
-    },
     "clock": {
       "format": "{:%I:%M %p}",
       "rotate": 0,
@@ -214,36 +220,8 @@
         "on-scroll-down": "shift_down"
       }
     },
-    "battery": {
-      "states": {
-        "good": 95,
-        "warning": 30,
-        "critical": 20
-      },
-      "format": "{icon}",
-      "rotate": 270,
-      "format-charging": "󰂄",
-      "format-plugged": "󰂄",
-      // "format-alt": "<<span weight='bold' color='#c2864a'>{time} <span weight='bold' color='white'>| <span weight='bold' color='#82d457'>{capacity}%</span></span></span>",
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ],
-      "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
-      //  "format-icons": ["","","","","","","",""],  
-      //"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
-      //  "format-icons": [<i class='fa-solid fa-wifi-slash'></i>],
-    },
     "network": {
       "tooltip": true,
-      "format-wifi": "{icon} ",
       "format-icons": [
         "󰤟",
         "󰤢",
@@ -251,7 +229,7 @@
         "󰤨"
       ],
       "rotate": 0,
-      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
+      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
       "format-wifi": "{icon}  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
       "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
       "format-linked": "󰈀 {ifname} (No IP)",
@@ -337,41 +315,13 @@
       "format": "{}",
       "exec": "~/.config/hypr/scripts/tools/expand arrow-icon"
     },
-    // modules for padding //
-    "custom/l_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/r_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/sl_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/sr_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/rl_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/rr_end": {
-      "format": " ",
-      "interval": "once",
-      "tooltip": false
-    },
     "custom/padd": {
       "format": "  ",
       "interval": "once",
       "tooltip": false
+    },
+    "custom/smallspacer": {
+      "format": " "
     }
   },
   {
@@ -379,7 +329,7 @@
     "position": "top",
     "mod": "dock",
     "output": [
-      "DP-3"
+      "eDP-1"
     ],
     "margin-left": 8,
     "margin-right": 8,
@@ -390,28 +340,46 @@
     "passthrough": false,
     "gtk-layer-shell": true,
     "reload_style_on_change": true,
-    "modules-left": [],
-    "modules-center": [
-      "hyprland/window"
+    "modules-left": [
+      "custom/padd",
+      "custom/spacer",
+      "custom/nixos",
+      "custom/spacer",
+      "hyprland/workspaces",
+      "custom/spacer"
     ],
+    "modules-center": [],
     "modules-right": [
       "custom/padd",
-      "custom/l_end",
-      "custom/spacer",
-      "mpris",
-      "custom/spacer",
       "disk#root",
       "custom/spacer",
-      "disk#vault",
+      "pulseaudio",
       "custom/spacer",
-      "disk#backup",
+      "pulseaudio#microphone",
       "custom/spacer",
+      "cava",
       "custom/spacer",
+      "network",
+      "custom/cliphist",
+      "battery",
+      "cpu",
+      "memory",
+      "custom/spacer",
+      "hyprland/language",
+      "custom/spacer",
+      "clock",
+      "custom/spacer",
+      "custom/notification",
       "custom/spacer",
       "tray",
-      "custom/spacer",
       "custom/padd"
     ],
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
     "memory": {
       "interval": 1,
       "rotate": 270,
@@ -445,54 +413,10 @@
         "󰪥"
       ]
     },
-    "mpris": {
-      "dynamic-order": [
-        "position",
-        "length",
-        "title",
-        "artist",
-        "album"
-      ],
-      "format": "{player_icon} {dynamic}",
-      "ellipsis": "...",
-      "interval": 1,
-      "on-click": "playerctl play-pause",
-      // "on-click-right": "playerctl stop",
-      "on-scroll-up": "playerctl position 1000+",
-      "on-scroll-down": "playerctl position 1000-",
-      "tooltip": false,
-      "format-paused": "{status_icon} <i>{dynamic}</i>",
-      "max-length": 50,
-      "player-icons": {
-        "default": "⏸",
-        "mpv": "🎵"
-      },
-      "status-icons": {
-        "paused": "▶"
-      }
-      // "ignored-players": ["firefox"]
-    },
     "tray": {
       "icon-size": 16,
       "rotate": 0,
       "spacing": 3
-    },
-    "group/expand": {
-      "orientation": "horizontal",
-      "drawer": {
-        "transition-duration": 600,
-        "children-class": "not-power",
-        "transition-to-left": true,
-        "click-to-reveal": true
-      },
-      "modules": [
-        "custom/menu",
-        "custom/spacer",
-        "tray"
-      ]
-    },
-    "custom/menu": {
-      "format": "󰅃"
     },
     "custom/notification": {
       "tooltip": false,
@@ -514,113 +438,51 @@
       "on-click": "swaync-client -t -sw",
       "escape": true
     },
-    "hyprland/window": {
-      "format": "<span  weight='bold'>{class}</span>",
-      "max-length": 120,
-      "icon": true,
-      "icon-size": 12
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "default": "",
+        "active": ""
+      },
+      "persistent-workspaces": {
+        "*": 6
+      }
     },
-    "custom/power": {
-      "format": "@{}",
-      "rotate": 0,
-      "on-click": "ags -t ControlPanel",
-      "on-click-right": "pkill ags",
-      "tooltip": true
+    "cava": {
+      "framerate": 60,
+      "autosens": 1,
+      "bars": 14,
+      "lower_cutoff_freq": 50,
+      "higher_cutoff_freq": 10000,
+      "method": "pulse",
+      "source": "auto",
+      "stereo": true,
+      "reverse": false,
+      "bar_delimiter": 0,
+      "monstercat": false,
+      "waves": false,
+      "noise_reduction": 0.77,
+      "input_delay": 2,
+      "format-icons": [
+        "▁",
+        "▂",
+        "▃",
+        "▄",
+        "▅",
+        "▆",
+        "▇",
+        "█"
+      ],
+      "actions": {
+        "on-click-right": "mode"
+      }
     },
-    "custom/spacer": {
-      "format": "|"
-    },
-    "custom/script": {
-      "on-click": "~/.config/waybar/volume.sh toggle",
-      "format": ""
-    },
-    "custom/cliphist": {
-      "format": "{}",
-      "rotate": 0,
-      "exec": "echo ; echo 󰅇 clipboard history",
-      "on-click": "sleep 0.1 && cliphist.sh c",
-      "on-click-right": "sleep 0.1 && cliphist.sh d",
-      "on-click-middle": "sleep 0.1 && cliphist.sh w",
-      "interval": 86400, // once every day
-      "tooltip": true
-    },
-    "custom/wbar": {
-      "format": "𐌏{}", //    //
-      "rotate": 0,
-      "exec": "echo ; echo show app menu",
+    "custom/nixos": {
+      "format": "",
+      "exec": "echo ; echo Show wofi drun menu",
       "on-click": "wofi --show drun",
-      "on-click-right": "wbarconfgen.sh p",
-      "on-click-middle": "sleep 0.1 && quickapps.sh kitty firefox spotify code dolphin",
       "interval": 86400,
       "tooltip": true
-    },
-    "custom/theme": {
-      "format": "{}",
-      "rotate": 0,
-      "exec": "echo ; echo 󰟡 pick color",
-      "on-click": "hyprpicker",
-      "on-click-right": "themeswitch.sh -p",
-      "on-click-middle": "sleep 0.1 && themeselect.sh",
-      "interval": 86400, // once every day
-      "tooltip": true
-    },
-    "custom/wallchange": {
-      "format": "{}",
-      "rotate": 0,
-      "exec": "echo ; echo 󰆊 switch wallpaper",
-      "on-click": "swww img --transition-type grow --transition-pos 0.071,0.988 --transition-step 255 --transition-fps 60 /home/anik/Downloads/skyway.jpg",
-      "on-click-right": "swww img --transition-type grow --transition-pos 0.071,0.988 --transition-step 255 --transition-fps 60 /home/anik/Downloads/cloud.png",
-      "on-click-middle": "swww img --transition-type grow --transition-pos 0.071,0.988 --transition-step 255 --transition-fps 60 /home/anik/Downloads/gradient.jpg",
-      "on-scroll-up": "swww img --transition-type grow --transition-pos 0.071,0.988 --transition-step 255 --transition-fps 60 /home/anik/Downloads/torvalds.png",
-      "on-scroll-down": "swww img --transition-type grow --transition-pos 0.071,0.988 --transition-step 255 --transition-fps 60 /home/anik/Downloads/night.png",
-      "interval": 86400, // once every day
-      "tooltip": true
-    },
-    "custom/mouse": {
-      "format": "",
-      "format-alt": "",
-      "on-click": "m8mouse -dpi 1 -led 2 -speed 4",
-      "on-click-right": "m8mouse -dpi 1 -led 4 -speed 4",
-      "on-click-middle": "m8mouse -dpi 1 -led 7 -speed 4",
-      "tooltip": true
-    },
-    "wlr/taskbar": {
-      "format": "{icon}",
-      "rotate": 0,
-      "icon-size": 18,
-      "icon-theme": "Tela-circle-dracula",
-      "spacing": 0,
-      "tooltip-format": "{title}",
-      "on-click": "activate",
-      "on-click-middle": "close",
-      "ignore-list": [
-        "Alacritty"
-      ],
-      "app_ids-mapping": {
-        "firefoxdeveloperedition": "firefox-developer-edition"
-      }
-    },
-    "custom/spotify": {
-      "exec": "mediaplayer.py --player spotify",
-      "format": " {}",
-      "rotate": 0,
-      "return-type": "json",
-      "on-click": "playerctl play-pause --player spotify",
-      "on-click-right": "playerctl next --player spotify",
-      "on-click-middle": "playerctl previous --player spotify",
-      "on-scroll-up": "volumecontrol.sh -p spotify i",
-      "on-scroll-down": "volumecontrol.sh -p spotify d",
-      "max-length": 25,
-      "escape": true,
-      "tooltip": true
-    },
-    "idle_inhibitor": {
-      "format": "{icon}",
-      "rotate": 0,
-      "format-icons": {
-        "activated": "󰥔",
-        "deactivated": ""
-      }
     },
     "clock": {
       "format": "{:%I:%M %p}",
@@ -646,25 +508,6 @@
         "on-scroll-down": "shift_down"
       }
     },
-    "disk#root": {
-      "interval": 30,
-      "path": "/",
-      "format": "/ {percentage_used}%",
-      "unit": "GB"
-    },
-    "disk#vault": {
-      "path": "/mnt/vault",
-      "interval": 30,
-      "format": "vault {percentage_used}%",
-      "unit": "GB"
-    },
-    "disk#backup": {
-      "path": "/mnt/backup",
-      "interval": 30,
-      "format": "backup {percentage_used}%",
-      "unit": "GB"
-    },
-    // 0.25 GB out of 2000.00 GB available. Alternatively 241.3MiB out of 1.9TiB available.
     "battery": {
       "states": {
         "good": 95,
@@ -675,7 +518,6 @@
       "rotate": 270,
       "format-charging": "󰂄",
       "format-plugged": "󰂄",
-      // "format-alt": "<<span weight='bold' color='#c2864a'>{time} <span weight='bold' color='white'>| <span weight='bold' color='#82d457'>{capacity}%</span></span></span>",
       "format-icons": [
         "󰝦",
         "󰪞",
@@ -687,79 +529,60 @@
         "󰪤",
         "󰪥"
       ],
-      //  "format-icons": ["","","","","","","",""],  
-      //"format-icons": ["󰂎", "󰁺", "󰁻", "󰁼", "󰁽", "󰁾", "󰁿", "󰂀", "󰂁", "󰂂", "󰁹"],
       "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
-      //  "format-icons": [<i class='fa-solid fa-wifi-slash'></i>],
-    },
-    "backlight": {
-      "device": "intel_backlight",
-      "rotate": 0,
-      "format": "{icon}",
-      "format-alt": "{icon} {percent}%",
-      "format-icons": [
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        "",
-        ""
-      ],
-      "on-click-right": "m8mouse -dpi 1 -led 2 -speed 4",
-      "on-click-middle": "m8mouse -dpi 1 -led 7 -speed 4",
-      "scroll-step": 1,
-      "min-length": 2
     },
     "network": {
       "tooltip": true,
-      "format-wifi": "{icon} ",
+      "format-wifi": "{icon} ",
       "format-icons": [
         "󰤟",
         "󰤢",
         "󰤥",
         "󰤨"
       ],
-      //  "format-wifi": "<i class='fa-solid fa-wifi-slash'></i>",
       "rotate": 0,
-      "format-ethernet": "󰈀  <small>{bandwidthDownBytes} {bandwidthUpBytes}</small>",
+      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
+      "format-wifi": "{icon}  {bandwidthDownBytes}   {bandwidthUpBytes}  ",
       "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
       "format-linked": "󰈀 {ifname} (No IP)",
-      "format-disconnected": " ",
+      "format-disconnected": " ",
       "tooltip-format-disconnected": "Disconnected",
-      // "on-click": "/usr/local/bin/ags -t ControlPanel",
-      "interval": 2
+      "interval": 1
+    },
+    "hyprland/language": {
+      "format": "{}",
+      "format-en": "en",
+      "format-bg": "bg",
+      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard-1"
     },
     "pulseaudio": {
-      "format": "{icon}",
-      "format-alt": "{icon} {volume}",
+      "format": "{volume} {icon}",
       "rotate": 0,
-      "format-muted": "婢",
-      "on-click-right": "pavucontrol",
-      "on-click-middle": "volumecontrol.sh -o m",
+      "format-muted": "婢",
+      "on-click-right": "pactl set-default-sink $(pactl list short sinks | awk -v current=\"$(pactl get-default-sink)\" '$2 != current {print $2; exit}')",
+      "on-click": "pactl set-sink-mute 0 toggle",
       "tooltip-format": "{icon} {desc} // {volume}%",
       "scroll-step": 5,
       "format-icons": {
-        "headphone": "",
-        "hands-free": "",
-        "headset": "",
-        "phone": "",
-        "portable": "",
-        "car": "",
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "hdmi": "",
+        "phone": "",
+        "portable": "",
+        "car": "",
         "default": [
-          "",
-          "",
-          ""
+          "",
+          "",
+          ""
         ]
       }
     },
     "pulseaudio#microphone": {
       "format": "{format_source}",
       "rotate": 0,
-      "format-source": "",
-      "format-source-muted": "",
+      "format-source": "",
+      "format-source-muted": "",
       "on-click": "pavucontrol -t 4",
       "on-click-middle": "volumecontrol.sh -i m",
       "on-scroll-up": "volumecontrol.sh -i i",
@@ -767,43 +590,6 @@
       "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
       "scroll-step": 5
     },
-    "custom/notifications": {
-      "format": "{icon} {}",
-      "rotate": 0,
-      "format-icons": {
-        "email-notification": "<span foreground='white'><sup></sup></span>",
-        "chat-notification": "󱋊<span foreground='white'><sup></sup></span>",
-        "warning-notification": "󱨪<span foreground='yellow'><sup></sup></span>",
-        "error-notification": "󱨪<span foreground='red'><sup></sup></span>",
-        "network-notification": "󱂇<span foreground='white'><sup></sup></span>",
-        "battery-notification": "󰁺<span foreground='white'><sup></sup></span>",
-        "update-notification": "󰚰<span foreground='white'><sup></sup></span>",
-        "music-notification": "󰝚<span foreground='white'><sup></sup></span>",
-        "volume-notification": "󰕿<span foreground='white'><sup></sup></span>",
-        "notification": "<span foreground='white'><sup></sup></span>",
-        "none": ""
-      },
-      "return-type": "json",
-      "exec-if": "which dunstctl",
-      "exec": "notifications.py",
-      "on-click": "sleep 0.1 && dunstctl history-pop",
-      "on-click-middle": "dunstctl history-clear",
-      "on-click-right": "dunstctl close-all",
-      "interval": 1,
-      "tooltip": true,
-      "escape": true
-    },
-    "custom/keybindhint": {
-      "format": " ",
-      "rotate": 0,
-      "on-click": "keybinds_hint.sh"
-    },
-    "custom/expand": {
-      "on-click": "~/.config/hypr/scripts/expand_toolbar",
-      "format": "{}",
-      "exec": "~/.config/hypr/scripts/tools/expand arrow-icon"
-    },
-    // modules for padding //
     "custom/l_end": {
       "format": " ",
       "interval": "once",
