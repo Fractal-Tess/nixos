@@ -5,6 +5,11 @@
     viAlias = true;
     vimAlias = true;
     extraPackages = with pkgs;[
+      # Needed fro plugins
+      gcc
+      deno
+
+
       # Prettier
       prettierd
 
