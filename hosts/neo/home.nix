@@ -93,7 +93,6 @@
     # Wallpaper manager
     swww
     waypaper
-
     # Notifications 
     swaynotificationcenter
 
@@ -103,6 +102,12 @@
 
     # Pactl
     pulseaudio
+
+    unityhub
+    bluez
+    bluetuith
+    bluez-tools
+    obex_data_server
 
     # Development
     vscode # Code editor

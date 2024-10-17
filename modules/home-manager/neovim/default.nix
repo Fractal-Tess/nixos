@@ -7,8 +7,8 @@
     extraPackages = with pkgs;[
       # Needed fro plugins
       gcc
+      nodejs_20
       deno
-
 
       # Prettier
       prettierd

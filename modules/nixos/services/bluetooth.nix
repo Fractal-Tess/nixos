@@ -42,11 +42,6 @@ in
 
   config = mkIf cfg.enable {
 
-    # bluez
-    # bluetuith
-    # bluez
-    # bluez-tools
-    # obex_data_server
 
     # Bluetooth
     services.blueman.enable = false;
