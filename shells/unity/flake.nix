@@ -34,9 +34,6 @@
             zsh'
           '';
           nativeBuildInputs = with pkgs; [
-            # IDE 
-            jetbrains.rider
-
             # Unity hub
             unityhub
 
