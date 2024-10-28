@@ -16,6 +16,21 @@
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
   services.blueman.enable = true;
+  services.tor = {
+    enable = true;
+    openFirewall = true;
+    relay = {
+      enable = true;
+      role = "relay";
+    };
+    settings = {
+      ContactInfo = "toradmin@example.org";
+      Nickname = "toradmin";
+      ORPort = 9001;
+      ControlPort = 9051;
+      BandWidthRate = "1 MBytes";
+    };
+  };
 
   # Flakes
   nix.settings = {

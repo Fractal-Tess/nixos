@@ -28,6 +28,9 @@
 
   # Eenvironment variables
   home.sessionVariables = {
+    # Fixes viber not lanuching
+    QT_QPA_PLATFORM = "xcb";
+
     # Drivers
     LIBVA_DRIVER_NAME = "radeonsi";
     VDPAU_DRIVER = "radeonsi";
@@ -104,10 +107,13 @@
     pulseaudio
 
     unityhub
+    # IDE 
+    jetbrains.rider
     bluez
     bluetuith
     bluez-tools
     obex_data_server
+    tor-browser-bundle-bin
 
     # Development
     vscode # Code editor
