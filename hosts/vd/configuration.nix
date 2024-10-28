@@ -14,7 +14,25 @@
       ../../modules/nixos/services/all.nix
     ];
 
-  # Flakes
+
+  # Tor services -------------------------------------------------------------
+  services.tor = {
+    enable = true;
+    openFirewall = true;
+    relay = {
+      enable = true;
+      role = "relay";
+    };
+    settings = {
+      ContactInfo = "toradmin@example.org";
+      Nickname = "toradmin";
+      ORPort = 9001;
+      ControlPort = 9051;
+      BandWidthRate = "1 MBytes";
+    };
+  };
+
+  # Flakes -------------------------------------------------------------------
   nix.settings = {
     experimental-features = [ "nix-command" "flakes" ];
     auto-optimise-store = true;
@@ -24,15 +42,15 @@
   # Packages and overlays
   nixpkgs.overlays = [ inputs.polymc.overlay ]; ## Within configuration.nix
 
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
+  nixpkgs.config = {
+    # Allow unfree packages
+    allowUnfree = true;
 
-  # Insecure packages
-  nixpkgs.config.permittedInsecurePackages = [
-    "electron-27.3.11"
-  ];
-
-  environment.systemPackages = with pkgs; [ ];
+    # Insecure packages
+    permittedInsecurePackages = [
+      "electron-27.3.11"
+    ];
+  };
 
 
   # Enable audio -----------------------------------------------------------
