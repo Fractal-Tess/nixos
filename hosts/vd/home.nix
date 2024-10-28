@@ -54,6 +54,7 @@
 
 
 
+
   # Theming
   gtk = {
     enable = true;
@@ -93,6 +94,7 @@
     gnumake42
     code-cursor
     tiled
+    tor-browser-bundle-bin
 
     # Package managers ---
     yarn

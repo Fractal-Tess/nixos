@@ -11,6 +11,7 @@
     syntaxHighlighting.enable = true;
 
 
+
     plugins = [
       {
         name = "powerlevel10k";
@@ -52,6 +53,7 @@
       ndpython = "nix develop ~/nixos/shells/python3";
       ndnet = "nix develop ~/nixos/shells/networking";
       ndphp = "nix develop ~/nixos/shells/php";
+      ndunity = "nix develop ~/nixos/shells/unity";
       ndreact-native = "nix develop ~/nixos/shells/react-native";
     };
 
