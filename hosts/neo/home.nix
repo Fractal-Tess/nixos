@@ -94,10 +94,11 @@
     buildkit
 
     # Wallpaper manager
-    swww
-    waypaper
+    swww # Required for waypaper
+    waypaper # Wallpaper manager
     # Notifications 
-    swaynotificationcenter
+    swaynotificationcenter # Notification center
+    libnotify # Sends notifications - notify-send
 
     # Rofi 
     wofi
