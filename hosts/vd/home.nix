@@ -86,6 +86,8 @@
     # Docker
     docker-compose
     buildkit
+    unityhub
+    qbittorrent-enhanced
 
     # Wallpaper manager
     swww
@@ -229,7 +231,7 @@
     # Browsers
     microsoft-edge # Edge browser
     google-chrome # Chrome browser
-    firefox # Firefox browser # Clipboard for neovim
+    # firefox # Firefox browser # Clipboard for neovim
 
 
     # Flex
