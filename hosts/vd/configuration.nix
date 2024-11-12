@@ -5,14 +5,35 @@
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
 
-      ../../modules/nixos/audio/default.nix
+      ../../modules/nixos/core/networking.nix
+      ../../modules/nixos/core/audio.nix
+
       ../../modules/nixos/boot/default.nix
-      ../../modules/nixos/networking/default.nix
       ../../modules/nixos/nvidia/default.nix
       ../../modules/nixos/display/all.nix
       ../../modules/nixos/programs/all.nix
       ../../modules/nixos/services/all.nix
     ];
+
+
+
+  # Networking 
+  modules.networking = {
+
+    firewall = {
+      # 9 - magic packet Wake-on-LAN
+      # 22 - SSH
+      allowedPorts = [ 9 22 ];
+    };
+
+    # VPN
+    vpn.netbird.enable = true;
+  };
+
+
+
+
+
 
 
   # Tor services -------------------------------------------------------------
@@ -55,17 +76,6 @@
 
   # Enable audio -----------------------------------------------------------
   modules.audio.enable = true;
-
-  # Enable networking ------------------------------------------------------
-  modules.networking = {
-    enable = true;
-    firewall = {
-      allowedPorts = [ 9 22 ];
-    };
-    vpn.netbird.enable = true;
-
-  };
-
 
   # Enable nvidia  ---------------------------------------------------------
   modules.hardware.nvidia.enable = true;
