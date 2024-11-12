@@ -1,17 +1,23 @@
 { config, lib, hostname, ... }:
-
 with lib;
-
 let
   cfg = config.modules.networking;
 in
 {
-
+  # Networking
   options.modules.networking = {
-    enable = mkEnableOption "Networking";
+
+    # Networking is enabled by default
+    enable = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Enable networking";
+    };
 
 
+    # NetworkManager
     networkmanager = {
+      # NetworkManager is enabled by default
       enable = mkOption {
         type = types.bool;
         default = true;
@@ -19,7 +25,10 @@ in
       };
     };
 
+
+    # Wireless
     wireless = {
+      # Wireless is disabled by default
       enable = mkOption {
         type = types.bool;
         default = false;
@@ -27,18 +36,28 @@ in
       };
     };
 
+    # nm-applet
     nm-applet = {
+      # nm-applet is disabled by default
       enable = mkOption {
         type = types.bool;
-        default = true;
+        default = false;
         description = "Enable nm-applet";
       };
     };
 
+    # Firewall 
     firewall = {
+      # Firewall is enabled by default
+      enabled = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Enable firewall";
+      };
+
       allowedPorts = mkOption {
         type = types.listOf types.int;
-        default = [ 9 22 ];
+        default = [ ];
         description = "List of allowed ports";
       };
 
@@ -53,6 +72,7 @@ in
       };
     };
 
+    # VPN 
     vpn = {
       netbird = {
         enable = mkOption {
@@ -62,7 +82,6 @@ in
         };
       };
     };
-
   };
   config = mkIf cfg.enable {
     assertions = [
@@ -80,7 +99,7 @@ in
 
     # Firewall
     networking.firewall = {
-      enable = true;
+      enable = cfg.firewall.enabled;
       allowedTCPPorts = cfg.firewall.allowedPorts;
       allowedUDPPorts = cfg.firewall.allowedPorts;
       extraCommands = cfg.firewall.extraCommands;

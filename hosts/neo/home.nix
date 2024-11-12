@@ -142,13 +142,12 @@
     wakeonlan # Wake on lan util
     hping # Network ping  util
 
-    # General 
     kooha # Screen recorder
     nomacs # Image viewer
     obsidian # Note taking
     logseq # Note taking
     vlc # Media player
-    pcmanfm # File manager
+    pcmanfm
     lxmenu-data
     shared-mime-info
     gnumake42
