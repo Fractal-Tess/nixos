@@ -52,9 +52,6 @@
     MOZ_USE_XINPUT2 = 1;
   };
 
-
-
-
   # Theming
   gtk = {
     enable = true;
@@ -87,54 +84,54 @@
     docker-compose
     buildkit
 
-     prettierd
+    prettierd
 
-      # LSPs ---
+    # LSPs ---
 
-      # Svelte
-      svelte-language-server
+    # Svelte
+    svelte-language-server
 
-      # Html snippets 
-      emmet-language-server
+    # Html snippets 
+    emmet-language-server
 
-      # Tailwind
-      tailwindcss-language-server
+    # Tailwind
+    tailwindcss-language-server
 
-      # Typescript
-      typescript-language-server
+    # Typescript
+    typescript-language-server
 
-      # Astro
-      astro-language-server
+    # Astro
+    astro-language-server
 
-      # Docker
-      docker-compose-language-service
-      dockerfile-language-server-nodejs
+    # Docker
+    docker-compose-language-service
+    dockerfile-language-server-nodejs
 
-      # Rust
-      rust-analyzer
+    # Rust
+    rust-analyzer
 
-      # Lua
-      lua-language-server
-      stylua
+    # Lua
+    lua-language-server
+    stylua
 
-      # Nginx
-      nginx-language-server
+    # Nginx
+    nginx-language-server
 
-      # Php
-      phpactor
+    # Php
+    phpactor
 
-      # Nixos
-      nixd
-      nixpkgs-fmt
+    # Nixos
+    nixd
+    nixpkgs-fmt
 
-      # HTML/CSS/JSON/ESLint language servers extracted from vscode
-      vscode-langservers-extracted
+    # HTML/CSS/JSON/ESLint language servers extracted from vscode
+    vscode-langservers-extracted
 
-      # Sql
-      sqls
+    # Sql
+    sqls
 
-      # Go
-      gopls
+    # Go
+    gopls
 
 
     unityhub

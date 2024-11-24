@@ -7,8 +7,8 @@
 
       ../../modules/nixos/core/networking.nix
       ../../modules/nixos/core/audio.nix
+      ../../modules/nixos/core/boot.nix
 
-      ../../modules/nixos/boot/default.nix
       ../../modules/nixos/nvidia/default.nix
       ../../modules/nixos/display/all.nix
       ../../modules/nixos/programs/all.nix
@@ -17,7 +17,7 @@
 
 
 
-  # Networking 
+  # Networking  -------------------------------------------------------------
   modules.networking = {
 
     firewall = {
@@ -30,6 +30,13 @@
     vpn.netbird.enable = true;
   };
 
+
+  # Default audio ------------------------------------------------------------
+
+
+  # Boot ---------------------------------------------------------------------
+
+  modules.boot.useCustomConfig = true;
 
 
 
@@ -89,8 +96,6 @@
   };
   modules.display.waybar.enable = true;
 
-  # Boot -------------------------------------------------------------------
-  modules.boot.useCustomConfig = true;
 
 
 
