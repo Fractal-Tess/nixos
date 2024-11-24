@@ -9,12 +9,14 @@ in
   options.modules.audio = {
     enable = mkEnableOption "Audio";
 
+    # rtkit
     rtkit = mkOption {
       type = types.bool;
       default = true;
       description = "Audio servers like PulseAudio or PipeWire rely on rtkit to operate in real-time mode. They request real-time scheduling through rtkit to provide smooth and low-latency audio playback or recording.";
     };
 
+    # PipeWire 
     pipeWire = {
       enable = mkOption {
         type = types.bool;
@@ -54,12 +56,15 @@ in
       };
     };
 
+    # PulseAudio 
     pulseAudio = {
       enable = mkOption {
         type = types.bool;
         default = false;
         description = "Enable pulseaudio";
       };
+
+      #  Disables volume ramping
       flatVolumes = mkOption {
         type = types.enum [ "yes" "no" ];
         default = "yes";

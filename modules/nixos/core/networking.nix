@@ -113,6 +113,7 @@ in
 
     # VPN
     services.netbird.enable = cfg.vpn.netbird.enable;
+    # TODO: Add wireguard client
   };
 }
 
