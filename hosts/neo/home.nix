@@ -110,9 +110,6 @@
     unityhub
     # IDE 
     jetbrains.rider
-    bluez
-    bluetuith
-    bluez-tools
     obex_data_server
     tor-browser-bundle-bin
 
@@ -224,7 +221,7 @@
 
 
     # Flex
-    cava # Audio visualizer
+    # cava # Audio visualizer
     lolcat # Colorful gradient stdin to stdout
     neofetch # System info
     nitch # System info

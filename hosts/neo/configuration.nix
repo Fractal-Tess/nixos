@@ -5,19 +5,50 @@
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
 
-      ../../modules/nixos/audio/default.nix
-      ../../modules/nixos/boot/default.nix
-      ../../modules/nixos/networking/default.nix
+      ../../modules/nixos/core/audio.nix
+      ../../modules/nixos/core/boot.nix
+      ../../modules/nixos/core/networking.nix
+
       ../../modules/nixos/display/all.nix
       ../../modules/nixos/programs/all.nix
       ../../modules/nixos/services/all.nix
     ];
 
-  programs.light.enable = true;
+  # -------
+  # Audio
+  modules.audio = {
+    enable = true;
+  };
 
+  # -------
+  # Boot
+  modules.boot = {
+    useCustomConfig = true;
+  };
+
+  # -------
+  # Networking  
+  modules.networking = {
+
+    firewall = {
+      # 9 - magic packet Wake-on-LAN
+      # 22 - SSH
+      allowedPorts = [ 9 22 ];
+    };
+
+    # VPN
+    vpn.netbird.enable = true;
+  };
+
+
+
+  # tmp
   hardware.bluetooth.enable = true; # enables support for Bluetooth
   hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-  services.blueman.enable = true;
+  services.blueman.enable = true; # enables the Bluetooth manager 
+
+  programs.light.enable = true;
+
   services.tor = {
     enable = true;
     openFirewall = true;
@@ -58,21 +89,11 @@
   environment.systemPackages = with pkgs; [
     # https://claude.ai/chat/c4669859-f224-409d-bed1-516fd26758e8
     amdvlk
-    rocm-opencl-icd
-    rocm-opencl-runtime
+    # rocm-opencl-icd
+    # rocm-opencl-runtime
   ];
 
-  # Enable audio -----------------------------------------------------------
-  modules.audio.enable = true;
 
-  # Enable networking ------------------------------------------------------
-  modules.networking = {
-    enable = true;
-    firewall = {
-      allowedPorts = [ 9 22 4321 3000 ];
-    };
-    vpn.netbird.enable = true;
-  };
 
   # Window Manager & compositor --------------------------------------------
   modules.display.hyprland = {
@@ -85,8 +106,8 @@
       extraPackages = with pkgs; [
         libvdpau-va-gl
         amdvlk
-        rocm-opencl-icd
-        rocm-opencl-runtime
+        # rocm-opencl-icd
+        # rocm-opencl-runtime
       ];
       extraPackages32 = with pkgs;[
         driversi686Linux.amdvlk
@@ -95,12 +116,6 @@
     };
   };
   modules.display.waybar.enable = true;
-
-  # Boot -------------------------------------------------------------------
-  modules.boot.useCustomConfig = true;
-
-
-
 
   # Services ---------------------------------------------------------------
   ## Enable CUPS to print documents.

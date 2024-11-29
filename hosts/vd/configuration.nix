@@ -5,9 +5,9 @@
       ./hardware-configuration.nix
       inputs.home-manager.nixosModules.default
 
-      ../../modules/nixos/core/networking.nix
       ../../modules/nixos/core/audio.nix
       ../../modules/nixos/core/boot.nix
+      ../../modules/nixos/core/networking.nix
 
       ../../modules/nixos/nvidia/default.nix
       ../../modules/nixos/display/all.nix
@@ -16,8 +16,19 @@
     ];
 
 
+  # -------
+  # Audio
 
-  # Networking  -------------------------------------------------------------
+
+
+  # -------
+  # Boot
+  modules.boot = {
+    useCustomConfig = true;
+  };
+
+  # -------
+  # Networking  
   modules.networking = {
 
     firewall = {
@@ -29,16 +40,6 @@
     # VPN
     vpn.netbird.enable = true;
   };
-
-
-  # Default audio ------------------------------------------------------------
-
-
-  # Boot ---------------------------------------------------------------------
-
-  modules.boot.useCustomConfig = true;
-
-
 
 
 

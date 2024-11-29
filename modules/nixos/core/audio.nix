@@ -45,7 +45,7 @@ in
           };
       };
 
-      # Pulse
+      # Alsa
       alsa = {
         enable =
           mkOption {
