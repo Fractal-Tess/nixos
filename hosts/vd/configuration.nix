@@ -16,10 +16,12 @@
     ];
 
 
+  environment.systemPackages = with pkgs; [
+    fontconfig
+  ];
+
   # -------
   # Audio
-
-
 
   # -------
   # Boot

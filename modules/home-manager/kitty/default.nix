@@ -19,6 +19,5 @@
     shellIntegration = {
       enableZshIntegration = true;
     };
-    theme = "GitHub Dark";
   };
 }

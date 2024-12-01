@@ -1,8 +1,8 @@
 { ... }: {
   programs.eza = {
     enable = true;
-    icons = true;
     git = true;
+    colors = "auto";
     enableZshIntegration = true;
     extraOptions = [
       "--group-directories-first"

@@ -10,7 +10,11 @@
     enableVteIntegration = true;
     syntaxHighlighting.enable = true;
 
-
+    initExtra = ''
+      if [ -f "$HOME/.secrets.sh" ]; then
+        source "$HOME/.secrets.sh"
+      fi
+    '';
 
     plugins = [
       {
