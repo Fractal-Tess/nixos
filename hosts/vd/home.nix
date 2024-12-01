@@ -23,6 +23,7 @@
   home.username = username;
   home.homeDirectory = "/home/${username}";
 
+
   # File sync
   services.syncthing.enable = true;
 
@@ -85,6 +86,9 @@
     buildkit
 
     prettierd
+
+    # AI 
+    aider-chat
 
     # LSPs ---
 
@@ -283,7 +287,7 @@
 
 
     # Flex
-    cava # Audio visualizer
+    # cava # Audio visualizer
     lolcat # Colorful gradient stdin to stdout
     neofetch # System info
     nitch # System info
