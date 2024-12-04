@@ -1,5 +1,6 @@
 {
   description = "Fractal-tess's NixOS configuration";
+
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     home-manager = {
@@ -9,15 +10,26 @@
 
     polymc.url = "github:PolyMC/PolyMC";
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
+
+    responsively = {
+      url = "github:Fractal-Tess/responsively-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, ... }@inputs:
+  outputs = { self, nixpkgs, responsively, polymc, ... }@inputs:
     let
       mkHost = { hostname, username }: nixpkgs.lib.nixosSystem {
         system = "x86_64-linux";
         specialArgs = { inherit inputs hostname username; };
         modules = [
           ./hosts/${hostname}/configuration.nix
+          {
+            nixpkgs.overlays = [
+              inputs.polymc.overlay
+              (inputs.responsively.overlay."x86_64-linux") # Adjust system here
+            ];
+          }
         ];
       };
     in

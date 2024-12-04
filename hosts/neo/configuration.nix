@@ -14,6 +14,8 @@
       ../../modules/nixos/services/all.nix
     ];
 
+
+
   # -------
   # Audio
   modules.audio = {
@@ -72,15 +74,13 @@
   };
 
 
-  # Packages and overlays
-  nixpkgs.overlays = [ inputs.polymc.overlay ]; ## Within configuration.nix
-
   # Allow unfree packages
   nixpkgs.config.allowUnfree = true;
 
   # Insecure packages
   nixpkgs.config.permittedInsecurePackages = [
     "electron-27.3.11"
+    "dotnet-sdk-7.0.410"
   ];
 
   # Kernel
@@ -89,9 +89,11 @@
   environment.systemPackages = with pkgs; [
     # https://claude.ai/chat/c4669859-f224-409d-bed1-516fd26758e8
     amdvlk
+    # responsively
     # rocm-opencl-icd
     # rocm-opencl-runtime
   ];
+
 
 
 
@@ -189,7 +191,7 @@
     font-awesome
     powerline-fonts
     powerline-symbols
-    (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
+    # (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
   ];
 
 
