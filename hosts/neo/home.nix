@@ -218,7 +218,7 @@
     microsoft-edge # Edge browser
     google-chrome # Chrome browser
     firefox # Firefox browser # Clipboard for neovim
-
+    responsively # Developer responsive web browser
 
     # Flex
     # cava # Audio visualizer
