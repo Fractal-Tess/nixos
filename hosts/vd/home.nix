@@ -195,7 +195,7 @@
     postman # API testing
     insomnia # API testing
     filezilla # FTP client
-    burpsuite # Web pentesting
+    # burpsuite # Web pentesting
     ngrok # Tunneling
     nmap # Network scanner
     oha # HTTP bentchmarker
@@ -284,6 +284,7 @@
     microsoft-edge # Edge browser
     google-chrome # Chrome browser
     # firefox # Firefox browser # Clipboard for neovim
+    responsively
 
 
     # Flex
