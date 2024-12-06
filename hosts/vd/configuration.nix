@@ -70,9 +70,6 @@
   };
 
 
-  # Packages and overlays
-  nixpkgs.overlays = [ inputs.polymc.overlay ]; ## Within configuration.nix
-
   nixpkgs.config = {
     # Allow unfree packages
     allowUnfree = true;
@@ -169,7 +166,6 @@
     font-awesome
     powerline-fonts
     powerline-symbols
-    (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
   ];
 
 
