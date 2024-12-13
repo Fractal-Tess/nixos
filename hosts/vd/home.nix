@@ -288,7 +288,7 @@
 
 
     # Flex
-    # cava # Audio visualizer
+    cava # Audio visualizer
     lolcat # Colorful gradient stdin to stdout
     neofetch # System info
     nitch # System info

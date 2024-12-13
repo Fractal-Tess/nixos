@@ -26,8 +26,8 @@
           ./hosts/${hostname}/configuration.nix
           {
             nixpkgs.overlays = [
-              inputs.polymc.overlay
-              (inputs.responsively.overlay."x86_64-linux") # Adjust system here
+              polymc.overlay
+              responsively.overlay."x86_64-linux" # Adjust system here
             ];
           }
         ];
