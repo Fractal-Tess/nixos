@@ -6,77 +6,78 @@ let
   cfg = config.modules.audio;
 in
 {
+  # Audio
   options.modules.audio = {
+
+    # Audio is disabled by default
     enable = mkEnableOption "Audio";
 
-    # rtkit
+    # RTKit
     rtkit = mkOption {
       type = types.bool;
       default = true;
       description = "Audio servers like PulseAudio or PipeWire rely on rtkit to operate in real-time mode. They request real-time scheduling through rtkit to provide smooth and low-latency audio playback or recording.";
     };
 
-    # PipeWire 
+    # PipeWire
     pipeWire = {
+      # PipeWire is enabled by default
       enable = mkOption {
         type = types.bool;
         default = true;
         description = "Enable pipewire";
       };
 
-
       # Jack
       jack = {
-        enable =
-          mkOption {
-            type = types.bool;
-            default = true;
-            description = "Enable jack";
-          };
+        # Jack is enabled by default
+        enable = mkOption {
+          type = types.bool;
+          default = true;
+          description = "Enable jack";
+        };
       };
 
       # Pulse
       pulse = {
-        enable =
-          mkOption {
-            type = types.bool;
-            default = true;
-            description = "Enable pulseaudio emulation";
-          };
+        # Pulse is enabled by default
+        enable = mkOption {
+          type = types.bool;
+          default = true;
+          description = "Enable pulseaudio emulation";
+        };
       };
 
-      # Alsa
+      # ALSA
       alsa = {
-        enable =
-          mkOption {
-            type = types.bool;
-            default = true;
-            description = "Enable alsa";
-          };
+        # ALSA is enabled by default
+        enable = mkOption {
+          type = types.bool;
+          default = true;
+          description = "Enable alsa";
+        };
       };
     };
 
-    # PulseAudio 
+    # PulseAudio
     pulseAudio = {
+      # PulseAudio is disabled by default
       enable = mkOption {
         type = types.bool;
         default = false;
         description = "Enable pulseaudio";
       };
 
-      #  Disables volume ramping
+      # Flat volumes
       flatVolumes = mkOption {
         type = types.enum [ "yes" "no" ];
         default = "yes";
         description = "Enable flat volumes";
       };
     };
-
-
   };
 
   config = mkIf cfg.enable {
-
     # Pulseaudio realtime priority
     security.rtkit.enable = cfg.rtkit;
 
@@ -92,7 +93,7 @@ in
     };
 
     # PulseAudio
-    hardware.pulseaudio = {
+    services.pulseaudio = {
       enable = cfg.pulseAudio.enable;
       daemon.config = {
         flat-volumes = cfg.pulseAudio.flatVolumes;

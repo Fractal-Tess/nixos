@@ -15,8 +15,12 @@
       ../../modules/nixos/services/all.nix
     ];
 
+  # --------------------- CORE --------------------------
 
   environment.systemPackages = with pkgs; [
+    tor-browser
+    telegram-desktop
+    firefox
   ];
 
   # -------
@@ -41,8 +45,6 @@
     # VPN
     vpn.netbird.enable = true;
   };
-
-
 
 
   # Tor services -------------------------------------------------------------
@@ -119,6 +121,7 @@
     enable = true;
     rootless = true;
     nvidia = true;
+    devtools = true;
   };
 
 
@@ -136,8 +139,7 @@
 
 
 
-  # Users  -----------------------------------------------------------------
-  ## User accounts
+  # ------------------- User accounts -------------------
   users.users.fractal-tess = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
@@ -176,13 +178,13 @@
         {
           # Removes the need for a password when using sudo
           command = "ALL";
-          options = [ "NOPASSWD" ]; # "SETENV" # Adding the following could be a good idea
+          options = [ "NOPASSWD" ];
         }
       ];
     }
   ];
 
-  security.polkit.enable = true;
+  # security.polkit.enable = true;
 
   # Some programs need SUID wrappers, can be configured further or are
   # started in user sessions.
@@ -193,13 +195,9 @@
   # };
 
 
-  # Timezone 
+  # --------------------- Timezone --------------------------
   time.timeZone = "Europe/Sofia";
-
-  ## Internationalisation
   i18n.defaultLocale = "en_US.UTF-8";
-
-  ## Extra locale settings
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
