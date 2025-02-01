@@ -46,9 +46,10 @@
   # Networking  
   modules.networking = {
     firewall = {
-      # 9 - magic packet Wake-on-LAN
-      # 22 - SSH
-      allowedPorts = [ 9 22 ];
+      allowedPorts = [
+        9 # Magic packet
+        22 # SSH
+      ];
     };
 
     # VPN
@@ -97,8 +98,9 @@
   # SSHD
   modules.services.sshd.enable = true;
 
-  # Programs ---------------------------------------------------------------
-  ## Enable direnv
+  # --------------------- Programs --------------------------
+
+  # Direnv
   modules.programs.direnv.enable = true;
 
   ## Enable Yazi
@@ -107,16 +109,19 @@
   ## Zsh
   modules.programs.zsh.enable = true;
 
-  # ------------------- User accounts -------------------
+  # ------------------- User accounts ------------------------
+
+  # User
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ]
+      ++ lib.optional config.modules.services.docker.enable "docker";
     password = "password";
     description = "default user";
     # packages = with pkgs; []
   };
 
-  ## Make users mutable 
+  # Make users mutable 
   users.mutableUsers = true;
 
   # Home-Manger
@@ -155,7 +160,7 @@
   #   enableSSHSupport = true;
   # };
 
-  # --------------------- Timezone --------------------------
+  # Timezone
   time.timeZone = "Europe/Sofia";
   i18n.defaultLocale = "en_US.UTF-8";
   i18n.extraLocaleSettings = {
