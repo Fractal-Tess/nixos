@@ -2,10 +2,8 @@
 
 with lib;
 
-let
-  cfg = config.modules.hardware.nvidia;
-in
-{
+let cfg = config.modules.hardware.nvidia;
+in {
   options.modules.hardware.nvidia = {
     enable = mkEnableOption "NVIDIA configuration";
 
@@ -25,7 +23,8 @@ in
       finegrained = mkOption {
         type = types.bool;
         default = false;
-        description = "Enable fine-grained power management for modern NVIDIA GPUs";
+        description =
+          "Enable fine-grained power management for modern NVIDIA GPUs";
       };
     };
 
@@ -44,7 +43,8 @@ in
     package = mkOption {
       type = types.package;
       default = config.boot.kernelPackages.nvidiaPackages.stable;
-      defaultText = literalExpression "config.boot.kernelPackages.nvidiaPackages.stable";
+      defaultText =
+        literalExpression "config.boot.kernelPackages.nvidiaPackages.stable";
       description = "NVIDIA driver package to use";
     };
   };
