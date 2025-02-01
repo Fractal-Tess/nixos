@@ -121,7 +121,6 @@
     enable = true;
     rootless = true;
     nvidia = true;
-    devtools = true;
   };
 
 
