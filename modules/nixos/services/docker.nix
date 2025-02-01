@@ -34,7 +34,7 @@ in
     };
 
     environment.systemPackages = with pkgs;
-      (optionals cfg.devtools [ lazydocker dive ]) ++
+      (optionals cfg.devtools [ lazydocker dive htop ]) ++
       (optionals cfg.kubernetes.enable (
         [ kubernetes-helm ] ++
         (optionals cfg.kubernetes.kubectl [ kubectl ]) ++
