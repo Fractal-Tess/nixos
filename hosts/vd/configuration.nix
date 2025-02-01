@@ -1,4 +1,4 @@
-{ pkgs, inputs, username, ... }: {
+{ pkgs, inputs, username, config, ... }: {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
@@ -115,7 +115,7 @@
   users.users.fractal-tess = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" ]
-      ++ (if modules.services.docker.enable then [ "docker" ] else [ ]);
+      ++ (if config.modules.services.docker.enable then [ "docker" ] else [ ]);
     password = "password";
     description = "default user";
     # packages = with pkgs; []
