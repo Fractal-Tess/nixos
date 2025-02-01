@@ -9,7 +9,6 @@
       ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
-      ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/ripgrep/default.nix
       ../../modules/home-manager/warp-terminal/default.nix
@@ -144,10 +143,11 @@
     obsidian # Note taking
     logseq # Note taking
     vlc # Media player
-    pcmanfm
-    lxmenu-data
+    nextcloud-client # Nextcloud client
+    pcmanfm # File manager
+    lxmenu-data # File manager
     shared-mime-info
-    gnumake42
+    gnumake42 # Make
 
 
     # Audio
@@ -192,7 +192,7 @@
     woeusb-ng # Windows USB creator
     stress # Cpu stress
     lm_sensors # System sensors
-    gpick # Color picker
+    # gpick # Color picker
     geekbench # System benchmark
     jq # JSON parser
     carbon-now-cli # Code to image

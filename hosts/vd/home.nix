@@ -9,7 +9,6 @@
       ../../modules/home-manager/kitty/default.nix
       ../../modules/home-manager/mpv/default.nix
       ../../modules/home-manager/neovim/default.nix
-      ../../modules/home-manager/nextcloud/default.nix
       ../../modules/home-manager/obs-studio/default.nix
       ../../modules/home-manager/ripgrep/default.nix
       ../../modules/home-manager/warp-terminal/default.nix
@@ -84,7 +83,9 @@
     # Docker
     docker-compose
     buildkit
+    lazydocker
 
+    telegram-desktop
     prettierd
 
     # AI 
@@ -173,7 +174,6 @@
 
     # Rofi 
     wofi
-    xfce.thunar
 
     # Pactl
     pulseaudio
@@ -210,6 +210,7 @@
     logseq # Note taking
     vlc # Media player
     pcmanfm # File manager
+    nextcloud-client # Nextcloud client
     lxmenu-data
     shared-mime-info
 
@@ -234,8 +235,6 @@
 
     cliphist # Clipboard history
 
-
-
     # Communication
     bitwarden # Password manager
     gparted # Partition manager
@@ -245,20 +244,26 @@
     viber # Chat platform 
     slack # Chat platform
     thunderbird # Email client
-    # netbird-dashboard # Dashboard for netbird
-
 
     # Games 
     steam # Gaming platform
     polymc # Minecraft launcher
 
+    wineWowPackages.stable # support both 32-bit and 64-bit applications
+    (lutris.override {
+      extraPkgs = pkgs: [
+        # List package dependencies here
+      ];
+    })
+    # winetricks # winetricks (all versions)
+    # wineWowPackages.waylandFull # native wayland support (unstable)
 
     # Utils 
     ventoy-full # Bootable USB creator
     woeusb-ng # Windows USB creator
     stress # Cpu stress
     lm_sensors # System sensors
-    gpick # Color picker
+    # gpick # Color picker
     geekbench # System benchmark
     jq # JSON parser
     carbon-now-cli # Code to image
@@ -283,7 +288,8 @@
     # Browsers
     microsoft-edge # Edge browser
     google-chrome # Chrome browser
-    # firefox # Firefox browser # Clipboard for neovim
+    firefox
+    tor-browser
     responsively
 
 
