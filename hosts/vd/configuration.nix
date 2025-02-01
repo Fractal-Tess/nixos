@@ -8,6 +8,7 @@
     ../../modules/nixos/core/networking.nix
 
     ../../modules/nixos/drivers/nvidia.nix
+
     ../../modules/nixos/display/all.nix
     ../../modules/nixos/programs/all.nix
     ../../modules/nixos/services/all.nix
