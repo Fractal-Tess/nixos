@@ -1,22 +1,31 @@
-{ pkgs, inputs, username, ... }:
-{
-  imports =
-    [
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.default
+{ pkgs, inputs, username, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
 
-      ../../modules/nixos/core/audio.nix
-      ../../modules/nixos/core/boot.nix
-      ../../modules/nixos/core/networking.nix
+    ../../modules/nixos/core/audio.nix
+    ../../modules/nixos/core/boot.nix
+    ../../modules/nixos/core/networking.nix
 
-      ../../modules/nixos/nvidia/default.nix
-      ../../modules/nixos/display/all.nix
-      ../../modules/nixos/programs/all.nix
-      ../../modules/nixos/services/all.nix
-    ];
+    ../../modules/nixos/nvidia/default.nix
+    ../../modules/nixos/display/all.nix
+    ../../modules/nixos/programs/all.nix
+    ../../modules/nixos/services/all.nix
+  ];
 
-  # --------------------- CORE --------------------------
+  # Flakes 
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+  };
 
+  # Nixpkgs config
+  nixpkgs.config = {
+    # Allow unfree packages
+    allowUnfree = true;
+  };
+
+  # Packages
   environment.systemPackages = with pkgs; [
     tor-browser
     telegram-desktop
@@ -24,19 +33,16 @@
     nixfmt
   ];
 
+  # --------------------- CORE --------------------------
 
-
-# Audio
+  # Audio
   modules.audio.enable = true;
 
   # Boot
-  modules.boot = {
-    useCustomConfig = true;
-  };
+  modules.boot = { useCustomConfig = true; };
 
   # Networking  
   modules.networking = {
-
     firewall = {
       # 9 - magic packet Wake-on-LAN
       # 22 - SSH
@@ -46,43 +52,6 @@
     # VPN
     vpn.netbird.enable = true;
   };
-
-
-  # Tor services -------------------------------------------------------------
-  services.tor = {
-    enable = true;
-    openFirewall = true;
-    relay = {
-      enable = true;
-      role = "relay";
-    };
-    settings = {
-      ContactInfo = "toradmin@example.org";
-      Nickname = "toradmin";
-      ORPort = 9001;
-      ControlPort = 9051;
-      BandWidthRate = "1 MBytes";
-    };
-  };
-
-  # Flakes -------------------------------------------------------------------
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-
-
-  nixpkgs.config = {
-    # Allow unfree packages
-    allowUnfree = true;
-
-    # Insecure packages
-    permittedInsecurePackages = [
-      "electron-27.3.11"
-    ];
-  };
-
-
 
   # Enable nvidia  ---------------------------------------------------------
   modules.hardware.nvidia.enable = true;
@@ -95,9 +64,6 @@
     greetd.autoLogin = true;
   };
   modules.display.waybar.enable = true;
-
-
-
 
   # Services ---------------------------------------------------------------
   ## Enable CUPS to print documents.
@@ -122,8 +88,6 @@
     nvidia = true;
   };
 
-
-
   # Programs ---------------------------------------------------------------
   ## Enable direnv
   modules.programs.direnv.enable = true;
@@ -133,9 +97,6 @@
 
   ## Zsh
   modules.programs.zsh.enable = true;
-
-
-
 
   # ------------------- User accounts -------------------
   users.users.fractal-tess = {
@@ -153,9 +114,7 @@
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = {
-      inherit inputs username;
-    };
+    extraSpecialArgs = { inherit inputs username; };
     users."${username}" = import ./home.nix;
     backupFileExtension = "hm-bak";
   };
@@ -167,20 +126,15 @@
     powerline-symbols
   ];
 
-
   # Security
-  security.sudo.extraRules = [
-    {
-      users = [ username ];
-      commands = [
-        {
-          # Removes the need for a password when using sudo
-          command = "ALL";
-          options = [ "NOPASSWD" ];
-        }
-      ];
-    }
-  ];
+  security.sudo.extraRules = [{
+    users = [ username ];
+    commands = [{
+      # Removes the need for a password when using sudo
+      command = "ALL";
+      options = [ "NOPASSWD" ];
+    }];
+  }];
 
   # security.polkit.enable = true;
 
@@ -191,7 +145,6 @@
   #   enable = true;
   #   enableSSHSupport = true;
   # };
-
 
   # --------------------- Timezone --------------------------
   time.timeZone = "Europe/Sofia";
