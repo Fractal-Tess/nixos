@@ -33,24 +33,17 @@ in
       };
     };
 
-    # Kubernetes related configuration
-    environment.systemPackages = lib.mkIf cfg.kubernetes.enable (
-      config.environment.systemPackages ++
-      [ pkgs.kubernetes-helm ] ++
-      (optionals cfg.kubernetes.kubectl [ pkgs.kubectl ]) ++
-      (optionals cfg.kubernetes.minikube [ pkgs.minikube ])
-    );
-
-    environment.systemPackages = mkIf cfg.devtools (with pkgs; [
-      lazydocker
-      dive
-    ]);
+    environment.systemPackages = with pkgs;
+      (optionals cfg.devtools [ lazydocker dive ]) ++
+      (optionals cfg.kubernetes.enable (
+        [ kubernetes-helm ] ++
+        (optionals cfg.kubernetes.kubectl [ kubectl ]) ++
+        (optionals cfg.kubernetes.minikube [ minikube ])
+      ));
 
     # Enable required services for Minikube
     virtualisation.virtualbox.host.enable = mkIf (cfg.kubernetes.enable && cfg.kubernetes.minikube) {
       enable = true;
     };
   };
-
-
 }
