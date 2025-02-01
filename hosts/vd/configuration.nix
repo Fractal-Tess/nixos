@@ -7,7 +7,7 @@
     ../../modules/nixos/core/boot.nix
     ../../modules/nixos/core/networking.nix
 
-    ../../modules/nixos/nvidia/default.nix
+    ../../modules/nixos/drivers/nvidia.nix
     ../../modules/nixos/display/all.nix
     ../../modules/nixos/programs/all.nix
     ../../modules/nixos/services/all.nix
