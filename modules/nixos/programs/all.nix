@@ -1,7 +1,1 @@
-{ ... }: {
-  imports = [
-    ./direnv.nix
-    ./yazi.nix
-    ./zsh.nix
-  ];
-}
+{ ... }: { imports = [ ./browsers.nix ./direnv.nix ./yazi.nix ./shells.nix ]; }
