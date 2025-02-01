@@ -115,7 +115,7 @@
   users.users.fractal-tess = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" ]
-      ++ lib.optional config.modules.services.docker.enable "docker";
+      ++ (if config.modules.services.docker.enable then [ "docker" ] else [ ]);
     password = "password";
     description = "default user";
     # packages = with pkgs; []
