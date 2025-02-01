@@ -21,18 +21,19 @@
     tor-browser
     telegram-desktop
     firefox
+    nixfmt
   ];
 
-  # -------
-  # Audio
 
-  # -------
+
+# Audio
+  modules.audio.enable = true;
+
   # Boot
   modules.boot = {
     useCustomConfig = true;
   };
 
-  # -------
   # Networking  
   modules.networking = {
 
@@ -82,8 +83,6 @@
   };
 
 
-  # Enable audio -----------------------------------------------------------
-  modules.audio.enable = true;
 
   # Enable nvidia  ---------------------------------------------------------
   modules.hardware.nvidia.enable = true;
