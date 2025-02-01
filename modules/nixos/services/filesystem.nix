@@ -2,10 +2,8 @@
 
 with lib;
 
-let
-  cfg = config.modules.services.filesystemExtraServices;
-in
-{
+let cfg = config.modules.services.filesystemExtraServices;
+in {
   options.modules.services.filesystemExtraServices = {
     enable = mkEnableOption "Filesystem utilities";
   };
@@ -14,7 +12,7 @@ in
     # Filesystem utilities
     services.udisks2.enable = true;
     services.devmon.enable = true;
-    services.udev.packages = [ pkgs.android-udev-rules ];
+    services.udev.packages = with pkgs; [ android-udev-rules ];
     services.gvfs.enable = true;
   };
 }

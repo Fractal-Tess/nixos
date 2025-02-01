@@ -55,40 +55,47 @@
     vpn.netbird.enable = true;
   };
 
-  # Enable nvidia  ---------------------------------------------------------
+  # --------------------- Drivers --------------------------
+
+  # Nvidia
   modules.hardware.nvidia.enable = true;
 
-  # Window Manager & compositor --------------------------------------------
+  # --------------------- Display --------------------------
+
+  # Window manager
   modules.display.hyprland = {
     enable = true;
     videoDrivers = [ "nvidia" ];
     greetd.enable = true;
     greetd.autoLogin = true;
   };
+
+  # Bar
   modules.display.waybar.enable = true;
 
-  # Services ---------------------------------------------------------------
-  ## Enable CUPS to print documents.
+  # --------------------- Services --------------------------
+
+  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  ## Dbus
+  # DBUS
   services.dbus.enable = true;
 
-  ## Enable the OpenSSH daemon.
-  modules.services.sshd.enable = true;
-
-  ## Add additional filesystme services
-  modules.services.filesystemExtraServices.enable = true;
-
-  ## Andorid Debug Bridge
+  # Andorid Debug Bridge
   modules.services.adb.enable = true;
 
-  ## Docker 
+  # Docker 
   modules.services.docker = {
     enable = true;
     rootless = true;
     nvidia = true;
   };
+
+  # Filesystem
+  modules.services.filesystemExtraServices.enable = true;
+
+  # SSHD
+  modules.services.sshd.enable = true;
 
   # Programs ---------------------------------------------------------------
   ## Enable direnv
