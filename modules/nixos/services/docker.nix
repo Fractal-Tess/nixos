@@ -34,7 +34,8 @@ in
     };
 
     # Kubernetes related configuration
-    environment.systemPackages = mkIf cfg.kubernetes.enable (
+    environment.systemPackages = lib.mkIf cfg.kubernetes.enable (
+      config.environment.systemPackages ++
       [ pkgs.kubernetes-helm ] ++
       (optionals cfg.kubernetes.kubectl [ pkgs.kubectl ]) ++
       (optionals cfg.kubernetes.minikube [ pkgs.minikube ])
