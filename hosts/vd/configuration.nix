@@ -32,7 +32,7 @@
     tor-browser
     telegram-desktop
     firefox
-    nixfmt
+    nixfmt-classic
   ];
 
   # --------------------- CORE --------------------------
