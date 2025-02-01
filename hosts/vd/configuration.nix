@@ -100,6 +100,8 @@
 
   # --------------------- Programs --------------------------
 
+  modules.programs.browsers.enable = true;
+
   # Direnv
   modules.programs.direnv.enable = true;
 

@@ -1,27 +1,25 @@
 { pkgs, username, osConfig, lib, ... }: {
-  imports =
-    [
-      ../../modules/home-manager/bat/default.nix
-      ../../modules/home-manager/btop/default.nix
-      ../../modules/home-manager/eza/default.nix
-      ../../modules/home-manager/gh/default.nix
-      ../../modules/home-manager/git/default.nix
-      ../../modules/home-manager/kitty/default.nix
-      ../../modules/home-manager/mpv/default.nix
-      ../../modules/home-manager/neovim/default.nix
-      ../../modules/home-manager/obs-studio/default.nix
-      ../../modules/home-manager/ripgrep/default.nix
-      ../../modules/home-manager/warp-terminal/default.nix
-      ../../modules/home-manager/yt-dlp/default.nix
-      ../../modules/home-manager/zathura/default.nix
-      ../../modules/home-manager/zoxide/default.nix
-      ../../modules/home-manager/zsh/default.nix
-    ];
+  imports = [
+    ../../modules/home-manager/bat/default.nix
+    ../../modules/home-manager/btop/default.nix
+    ../../modules/home-manager/eza/default.nix
+    ../../modules/home-manager/gh/default.nix
+    ../../modules/home-manager/git/default.nix
+    ../../modules/home-manager/kitty/default.nix
+    ../../modules/home-manager/mpv/default.nix
+    ../../modules/home-manager/neovim/default.nix
+    ../../modules/home-manager/obs-studio/default.nix
+    ../../modules/home-manager/ripgrep/default.nix
+    ../../modules/home-manager/warp-terminal/default.nix
+    ../../modules/home-manager/yt-dlp/default.nix
+    ../../modules/home-manager/zathura/default.nix
+    ../../modules/home-manager/zoxide/default.nix
+    ../../modules/home-manager/zsh/default.nix
+  ];
 
   # Home Manager 
   home.username = username;
   home.homeDirectory = "/home/${username}";
-
 
   # File sync
   services.syncthing.enable = true;
@@ -31,7 +29,6 @@
     GTK_THEME = "Nordic";
     XCURSOR_THEME = "Nordzy-cursors";
     XCURSOR_SIZE = "24";
-
 
     # Silence direnv env loading ouput
     DIRENV_LOG_FORMAT = "";
@@ -75,9 +72,7 @@
     platformTheme.name = "gtk";
   };
 
-
   home.stateVersion = "24.05";
-
 
   home.packages = with pkgs; [
     # Docker
@@ -138,7 +133,6 @@
     # Go
     gopls
 
-
     unityhub
     qbittorrent-enhanced
 
@@ -167,7 +161,6 @@
     gcc
     # clang # -- for some reason cannot install clang
     clang-tools
-
 
     # Notifications 
     swaynotificationcenter
@@ -241,7 +234,7 @@
     kicad # PCB design
     libreoffice # Office suite
     discord # Chat platform
-    viber # Chat platform 
+    viber # Chat platform
     slack # Chat platform
     thunderbird # Email client
 
@@ -251,9 +244,10 @@
 
     wineWowPackages.stable # support both 32-bit and 64-bit applications
     (lutris.override {
-      extraPkgs = pkgs: [
-        # List package dependencies here
-      ];
+      extraPkgs = pkgs:
+        [
+          # List package dependencies here
+        ];
     })
     # winetricks # winetricks (all versions)
     # wineWowPackages.waylandFull # native wayland support (unstable)
@@ -267,7 +261,7 @@
     geekbench # System benchmark
     jq # JSON parser
     carbon-now-cli # Code to image
-    hyperfine # Command benchmark -- 
+    hyperfine # Command benchmark --
     skim # Fuzzy finder
     sd # Sed alternative
     bottom # System monitor
@@ -279,19 +273,13 @@
     p7zip # 7zip
     trash-cli # Trash files
     mate.engrampa # Archive manager
-    nh # Nix cli 
+    nh # Nix cli
 
     wl-clipboard # Clipboard for neovim
     grim # Wayland screenshotter
     slurp # Screen coordinates picker
 
-    # Browsers
-    microsoft-edge # Edge browser
-    google-chrome # Chrome browser
-    firefox
-    tor-browser
     responsively
-
 
     # Flex
     cava # Audio visualizer
@@ -322,7 +310,6 @@
     source = ../../modules/nixos/display/waybar/config;
     recursive = true;
   };
-
 
   # Home Manager can also manage your environment variables through
   # 'home.sessionVariables'. If you don't want to manage your shell through Home
