@@ -113,29 +113,6 @@
   # SSHD
   modules.services.sshd.enable = true;
 
-  # --------------------- Programs --------------------------
-
-  # Enable CUPS to print documents.
-  services.printing.enable = true;
-
-  # Dbus
-  services.dbus.enable = true;
-
-  # Enable the OpenSSH daemon.
-  modules.services.sshd.enable = true;
-
-  # Add additional filesystme services
-  modules.services.filesystemExtraServices.enable = true;
-
-  # Andorid Debug Bridge
-  modules.services.adb.enable = true;
-
-  # Docker 
-  modules.services.docker = {
-    enable = true;
-    rootless = true;
-  };
-
   # Zram
   zramSwap.enable = true;
   swapDevices = [{
