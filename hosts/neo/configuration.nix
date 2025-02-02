@@ -1,107 +1,78 @@
-{ pkgs, inputs, username, ... }:
-{
-  imports =
-    [
-      ./hardware-configuration.nix
-      inputs.home-manager.nixosModules.default
+{ pkgs, inputs, username, ... }: {
+  imports = [
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
 
-      ../../modules/nixos/core/audio.nix
-      ../../modules/nixos/core/boot.nix
-      ../../modules/nixos/core/networking.nix
+    ../../modules/nixos/core/audio.nix
+    ../../modules/nixos/core/boot.nix
+    ../../modules/nixos/core/networking.nix
 
-      ../../modules/nixos/display/all.nix
-      ../../modules/nixos/programs/all.nix
-      ../../modules/nixos/services/all.nix
-    ];
+    ../../modules/nixos/display/all.nix
+    ../../modules/nixos/services.nix
+    ../../modules/nixos/programs.nix
+  ];
 
+  # Shell
+  programs.zsh.enable = true;
+  users.defaultUserShell = pkgs.zsh;
 
+  environment.systemPackages = with pkgs; [ ];
 
-  # -------
+  # Flakes 
+  nix.settings = {
+    experimental-features = [ "nix-command" "flakes" ];
+    auto-optimise-store = true;
+  };
+
+  # Nixpkgs config
+  nixpkgs.config = {
+    # Allow unfree packages
+    allowUnfree = true;
+    permittedInsecurePackages = [ "electron-27.3.11" ];
+  };
+
+  # Bluetooth
+  hardware.bluetooth.enable = true; # enables support for Bluetooth
+  hardware.bluetooth.powerOnBoot =
+    true; # powers up the default Bluetooth controller on boot
+  services.blueman.enable = true; # enables the Bluetooth manager
+
+  # Light
+  programs.light.enable = true;
+
+  # Kernel
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
+  # --------------------- CORE --------------------------
+
   # Audio
-  modules.audio = {
-    enable = true;
-  };
+  modules.audio.enable = true;
 
-  # -------
   # Boot
-  modules.boot = {
-    useCustomConfig = true;
-  };
+  modules.boot = { useCustomConfig = true; };
 
-  # -------
   # Networking  
   modules.networking = {
-
     firewall = {
-      # 9 - magic packet Wake-on-LAN
-      # 22 - SSH
-      allowedPorts = [ 9 22 ];
+      allowedPorts = [
+        9 # Magic packet
+        22 # SSH
+      ];
     };
 
     # VPN
     vpn.netbird.enable = true;
   };
 
+  # --------------------- Drivers -----------------------
 
+  # --------------------- Display ------------------------
 
-  # tmp
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot = true; # powers up the default Bluetooth controller on boot
-  services.blueman.enable = true; # enables the Bluetooth manager 
-
-  programs.light.enable = true;
-
-  services.tor = {
-    enable = true;
-    openFirewall = true;
-    relay = {
-      enable = true;
-      role = "relay";
-    };
-    settings = {
-      ContactInfo = "toradmin@example.org";
-      Nickname = "toradmin";
-      ORPort = 9001;
-      ControlPort = 9051;
-      BandWidthRate = "1 MBytes";
-    };
-  };
-
-  # Flakes
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-
-
-  # Allow unfree packages
-  nixpkgs.config.allowUnfree = true;
-
-  # Insecure packages
-  nixpkgs.config.permittedInsecurePackages = [
-    "electron-27.3.11"
-    "dotnet-sdk-7.0.410"
-  ];
-
-  # Kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  environment.systemPackages = with pkgs; [
-    # https://claude.ai/chat/c4669859-f224-409d-bed1-516fd26758e8
-    amdvlk
-    # responsively
-    # rocm-opencl-icd
-    # rocm-opencl-runtime
-  ];
-
-
-
-
-  # Window Manager & compositor --------------------------------------------
+  # Window manager
   modules.display.hyprland = {
     enable = true;
     greetd.enable = true;
-    greetd.autoLogin = true;
+    greetd.autoLogin = false;
     videoDrivers = [ "amdgpu" ];
     openGL = {
       enable = true;
@@ -111,77 +82,108 @@
         # rocm-opencl-icd
         # rocm-opencl-runtime
       ];
-      extraPackages32 = with pkgs;[
-        driversi686Linux.amdvlk
-      ];
+      extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
 
     };
   };
+
+  # Bar
   modules.display.waybar.enable = true;
 
-  # Services ---------------------------------------------------------------
-  ## Enable CUPS to print documents.
+  # --------------------- Services ------------------------
+
+  # Enable CUPS to print documents.
   services.printing.enable = true;
 
-  ## Dbus
+  # DBUS
   services.dbus.enable = true;
 
-  ## Enable the OpenSSH daemon.
-  modules.services.sshd.enable = true;
-
-  ## Add additional filesystme services
-  modules.services.filesystemExtraServices.enable = true;
-
-  ## Andorid Debug Bridge
+  # Andorid Debug Bridge
   modules.services.adb.enable = true;
 
-  ## Docker 
+  # Docker 
   modules.services.docker = {
     enable = true;
     rootless = true;
   };
-  # auto-cpufreq
-  modules.services.auto_cpu.enable = false;
 
+  # Filesystem
+  modules.services.filesystemExtraServices.enable = true;
 
-  # Programs ---------------------------------------------------------------
-  ## Enable direnv
-  modules.programs.direnv.enable = true;
+  # SSHD
+  modules.services.sshd.enable = true;
 
-  ## Enable Yazi
-  modules.programs.yazi.enable = true;
+  # --------------------- Programs --------------------------
 
-  ## Zsh
-  modules.programs.zsh.enable = true;
+  # Enable CUPS to print documents.
+  services.printing.enable = true;
 
-  # Extra ------------------------------------------------------------------
+  # Dbus
+  services.dbus.enable = true;
+
+  # Enable the OpenSSH daemon.
+  modules.services.sshd.enable = true;
+
+  # Add additional filesystme services
+  modules.services.filesystemExtraServices.enable = true;
+
+  # Andorid Debug Bridge
+  modules.services.adb.enable = true;
+
+  # Docker 
+  modules.services.docker = {
+    enable = true;
+    rootless = true;
+  };
+
+  # Zram
   zramSwap.enable = true;
   swapDevices = [{
     device = "/swapfile";
     size = 16 * 1024; # 16GB
   }];
 
+  # --------------------- Programs --------------------------
+  modules.programs = {
+    enable = true;
+    cli = {
+      core = true;
+      devtools = true;
+      language-servers = true;
+      extra = true;
+    };
+    gui = {
+      core = true;
+      communication = true;
+      browsers = true;
+      office = true;
+      devtools = true;
+      games = true;
+      fonts = true;
+      extra = true;
+    };
+  };
 
-  # Users  -----------------------------------------------------------------
-  ## User accounts
+  # ------------------- User accounts -----------------------
+
+  # User
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "docker" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ]
+      ++ (if config.modules.services.docker.enable then [ "docker" ] else [ ]);
     password = "password";
     description = "default user";
     # packages = with pkgs; []
   };
 
-  ## Make users mutable 
+  # Make users mutable 
   users.mutableUsers = true;
 
   # Home-Manger
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
-    extraSpecialArgs = {
-      inherit inputs username;
-    };
+    extraSpecialArgs = { inherit inputs username; };
     users."${username}" = import ./home.nix;
     backupFileExtension = "hm-bak";
   };
@@ -191,42 +193,21 @@
     font-awesome
     powerline-fonts
     powerline-symbols
-    # (nerdfonts.override { fonts = [ "NerdFontsSymbolsOnly" ]; })
   ];
-
 
   # Security
-  security.sudo.extraRules = [
-    {
-      users = [ username ];
-      commands = [
-        {
-          # Removes the need for a password when using sudo
-          command = "ALL";
-          options = [ "NOPASSWD" ]; # "SETENV" # Adding the following could be a good idea
-        }
-      ];
-    }
-  ];
+  security.sudo.extraRules = [{
+    users = [ username ];
+    commands = [{
+      # Removes the need for a password when using sudo
+      command = "ALL";
+      options = [ "NOPASSWD" ];
+    }];
+  }];
 
-  security.polkit.enable = true;
-
-  # Some programs need SUID wrappers, can be configured further or are
-  # started in user sessions.
-  # programs.mtr.enable = true;
-  # programs.gnupg.agent = {
-  #   enable = true;
-  #   enableSSHSupport = true;
-  # };
-
-
-  # Timezone 
+  # Timezone & locale
   time.timeZone = "Europe/Sofia";
-
-  ## Internationalisation
   i18n.defaultLocale = "en_US.UTF-8";
-
-  ## Extra locale settings
   i18n.extraLocaleSettings = {
     LC_ADDRESS = "en_US.UTF-8";
     LC_IDENTIFICATION = "en_US.UTF-8";
@@ -247,5 +228,4 @@
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
 }
-
 
