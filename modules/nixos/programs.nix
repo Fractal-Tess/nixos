@@ -48,7 +48,6 @@ in
         trash-cli # Trash files
         yazi # File manager
         btop # Top replacement
-        zoxide # Zoxide
       ])
 
       (with pkgs;
