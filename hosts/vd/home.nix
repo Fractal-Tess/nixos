@@ -1,23 +1,11 @@
-{ pkgs, username, osConfig, lib, ... }: {
-  imports = [
-    ../../modules/home-manager/bat/default.nix
-    ../../modules/home-manager/btop/default.nix
-    ../../modules/home-manager/eza/default.nix
-    ../../modules/home-manager/gh/default.nix
-    ../../modules/home-manager/git/default.nix
-    ../../modules/home-manager/kitty/default.nix
-    ../../modules/home-manager/mpv/default.nix
-    ../../modules/home-manager/neovim/default.nix
-    ../../modules/home-manager/obs-studio/default.nix
-    ../../modules/home-manager/ripgrep/default.nix
-    ../../modules/home-manager/warp-terminal/default.nix
-    ../../modules/home-manager/yt-dlp/default.nix
-    ../../modules/home-manager/zathura/default.nix
-    ../../modules/home-manager/zoxide/default.nix
-    ../../modules/home-manager/zsh/default.nix
-  ];
+{ pkgs, username, lib, osConfig, ... }:
 
-  # Home Manager 
+with lib;
+let cfg = osConfig;
+in {
+  imports = [ ../../modules/home-manager/default.nix ];
+
+  # Home Manager
   home.username = username;
   home.homeDirectory = "/home/${username}";
 
@@ -72,6 +60,8 @@
     platformTheme.name = "gtk";
   };
 
+  home.packages = with pkgs; [ ];
+
   home.stateVersion = "24.05";
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
@@ -88,11 +78,11 @@
     #   org.gradle.daemon.idletimeout=3600000
     # '';
   };
-  xdg.configFile.hypr = lib.mkIf osConfig.modules.display.hyprland.enable {
+  xdg.configFile.hypr = mkIf cfg.modules.display.hyprland.enable {
     source = ../../modules/nixos/display/hyprland/config;
     recursive = true;
   };
-  xdg.configFile.waybar = lib.mkIf osConfig.modules.display.waybar.enable {
+  xdg.configFile.waybar = mkIf cfg.modules.display.waybar.enable {
     source = ../../modules/nixos/display/waybar/config;
     recursive = true;
   };
