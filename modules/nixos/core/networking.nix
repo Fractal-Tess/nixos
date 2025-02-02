@@ -1,9 +1,7 @@
 { config, lib, hostname, ... }:
 with lib;
-let
-  cfg = config.modules.networking;
-in
-{
+let cfg = config.modules.networking;
+in {
   # Networking
   options.modules.networking = {
 
@@ -14,7 +12,6 @@ in
       description = "Enable networking";
     };
 
-
     # NetworkManager
     networkmanager = {
       # NetworkManager is enabled by default
@@ -24,7 +21,6 @@ in
         description = "Enable NetworkManager";
       };
     };
-
 
     # Wireless
     wireless = {
@@ -65,9 +61,7 @@ in
         type = types.str;
         # iptables -I INPUT 1 -i docker0 -p tcp -d 172.17.0.1 -j ACCEPT
         # iptables -I INPUT 2 -i docker0 -p udp -d 172.17.0.1 -j ACCEPT
-        default =
-          ''
-          '';
+        default = "";
         description = "Extra commands to run after the firewall is set up";
       };
     };
@@ -84,12 +78,10 @@ in
     };
   };
   config = mkIf cfg.enable {
-    assertions = [
-      {
-        assertion = !(cfg.networkmanager.enable && cfg.wireless.enable);
-        message = "NetworkManager and wireless support are mutually exclusive";
-      }
-    ];
+    assertions = [{
+      assertion = !(cfg.networkmanager.enable && cfg.wireless.enable);
+      message = "NetworkManager and wireless support are mutually exclusive";
+    }];
 
     # Networking
     networking.hostName = hostname;
