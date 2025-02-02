@@ -188,6 +188,7 @@
       man = "batman";
       grep = "batgrep";
       watch = "batwatch";
+      z = "zoxide";
 
       direnv-init = ''echo "use flake" >> .envrc && direnv allow'';
       ncs-nodejs = "cp ~/nixos/shells/node/* ./";
