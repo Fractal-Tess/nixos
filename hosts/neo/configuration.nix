@@ -1,4 +1,4 @@
-{ pkgs, inputs, username, ... }: {
+{ pkgs, inputs, username, config, ... }: {
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
