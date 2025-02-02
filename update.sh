@@ -18,7 +18,7 @@ git diff -U0 **/*.nix
 
 echo "Rebuilding NixOS with flake at ~/nixos..."
 sleep_function
-sudo nixos-rebuild switch --flake ~/nixos --show-trace | tee nixos-switch.log || (cat nixos-switch.log | rg error && false)
+sudo nixos-rebuild switch --flake ~/nixos --show-trace --impure | tee nixos-switch.log || (cat nixos-switch.log | rg error && false)
 
 gen=$(nixos-rebuild list-generations | head -n 2 | tail -1 | awk '{print $1}')
 
