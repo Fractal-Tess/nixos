@@ -1,14 +1,13 @@
 { config, lib, pkgs, ... }:
 with lib;
-let
-  cfg = config.modules.boot;
-in
-{
+let cfg = config.modules.boot;
+in {
   options.modules.boot = {
     useCustomConfig = mkOption {
       type = types.bool;
       default = false;
-      description = "Whether to use the custom boot configuration. If false, it will use NixOS defaults.";
+      description =
+        "Whether to use the custom boot configuration. If false, it will use NixOS defaults.";
     };
 
     loader = {
@@ -39,7 +38,8 @@ in
         useOSProber = mkOption {
           type = types.bool;
           default = true;
-          description = "Whether to use OS-prober to detect other operating systems.";
+          description =
+            "Whether to use OS-prober to detect other operating systems.";
         };
         theme = mkOption {
           type = types.str;

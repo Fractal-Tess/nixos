@@ -1,18 +1,20 @@
 { config, pkgs, ... }: {
+  environment.pathsToLink = [ "/share/zsh" ];
+  users.defaultUserShell = pkgs.zsh;
+
   programs.zsh = {
     enable = true;
     enableCompletion = true;
     autosuggestion.enable = true;
-    autosuggestion.strategy = [
-      "history"
-      "completion"
-    ];
+    autosuggestion.strategy = [ "history" "completion" ];
     enableVteIntegration = true;
     syntaxHighlighting.enable = true;
 
     initExtra = ''
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
+      else
+        echo ".secrets.sh is missing"
       fi
     '';
 
@@ -31,12 +33,7 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = [
-        "direnv"
-        "git"
-        "sudo"
-        "zsh-navigation-tools"
-      ];
+      plugins = [ "direnv" "git" "sudo" "zsh-navigation-tools" ];
     };
 
     shellAliases = {
@@ -44,7 +41,7 @@
       cat = "bat";
       cc = "clipcopy";
 
-      direnv-init = "echo \"use flake\" >> .envrc && direnv allow";
+      direnv-init = ''echo "use flake" >> .envrc && direnv allow'';
       ncs-nodejs = "cp ~/nixos/shells/node/* ./";
 
       ndmaui = "nix develop ~/nixos/shells/maui";

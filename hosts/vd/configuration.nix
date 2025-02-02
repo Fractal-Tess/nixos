@@ -9,9 +9,9 @@
 
     ../../modules/nixos/drivers/nvidia.nix
 
+    ../../modules/programs.nix
+    ../../modules/services.nix
     ../../modules/nixos/display/all.nix
-    ../../modules/nixos/programs/all.nix
-    ../../modules/nixos/services/all.nix
   ];
 
   # Flakes 
@@ -26,14 +26,6 @@
     allowUnfree = true;
     permittedInsecurePackages = [ "electron-27.3.11" ];
   };
-
-  # Packages
-  environment.systemPackages = with pkgs; [
-    tor-browser
-    telegram-desktop
-    firefox
-    nixfmt-classic
-  ];
 
   # --------------------- CORE --------------------------
 
@@ -56,12 +48,12 @@
     vpn.netbird.enable = true;
   };
 
-  # --------------------- Drivers --------------------------
+  # --------------------- Drivers -----------------------
 
   # Nvidia
   modules.hardware.nvidia.enable = true;
 
-  # --------------------- Display --------------------------
+  # --------------------- Display ------------------------
 
   # Window manager
   modules.display.hyprland = {
@@ -74,7 +66,7 @@
   # Bar
   modules.display.waybar.enable = true;
 
-  # --------------------- Services --------------------------
+  # --------------------- Services ------------------------
 
   # Enable CUPS to print documents.
   services.printing.enable = true;
@@ -100,18 +92,27 @@
 
   # --------------------- Programs --------------------------
 
-  modules.programs.browsers.enable = true;
+  modules.programs = {
+    enable = true;
+    cli = {
+      core = true;
+      devtools = true;
+      language-servers = true;
+      extra = true;
+    };
+    gui = {
+      core = true;
+      communication = true;
+      browsers = true;
+      office = true;
+      devtools = true;
+      games = true;
+      fonts = true;
+      extra = true;
+    };
+  };
 
-  # Direnv
-  modules.programs.direnv.enable = true;
-
-  ## Enable Yazi
-  modules.programs.yazi.enable = true;
-
-  ## Zsh
-  modules.programs.zsh.enable = true;
-
-  # ------------------- User accounts ------------------------
+  # ------------------- User accounts -----------------------
 
   # User
   users.users.fractal-tess = {

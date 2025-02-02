@@ -2,10 +2,8 @@
 
 with lib;
 
-let
-  cfg = config.modules.audio;
-in
-{
+let cfg = config.modules.audio;
+in {
   # Audio
   options.modules.audio = {
 
@@ -16,7 +14,8 @@ in
     rtkit = mkOption {
       type = types.bool;
       default = true;
-      description = "Audio servers like PulseAudio or PipeWire rely on rtkit to operate in real-time mode. They request real-time scheduling through rtkit to provide smooth and low-latency audio playback or recording.";
+      description =
+        "Audio servers like PulseAudio or PipeWire rely on rtkit to operate in real-time mode. They request real-time scheduling through rtkit to provide smooth and low-latency audio playback or recording.";
     };
 
     # PipeWire
@@ -81,6 +80,13 @@ in
     # Pulseaudio realtime priority
     security.rtkit.enable = cfg.rtkit;
 
+    environment.systemPackages = with pkgs; [
+      playerctl
+      # pulseaudio 
+      pamixer
+      pavucontrol # Pulseaudio volume control
+    ];
+
     # PipeWire
     services.pipewire = {
       enable = cfg.pipeWire.enable;
@@ -95,9 +101,7 @@ in
     # PulseAudio
     services.pulseaudio = {
       enable = cfg.pulseAudio.enable;
-      daemon.config = {
-        flat-volumes = cfg.pulseAudio.flatVolumes;
-      };
+      daemon.config = { flat-volumes = cfg.pulseAudio.flatVolumes; };
     };
   };
 }
