@@ -10,6 +10,8 @@
     ../../modules/nixos/display/all.nix
     ../../modules/nixos/services.nix
     ../../modules/nixos/programs.nix
+
+    ../../modules/nixos/services/index.nix
   ];
 
   # Shell
@@ -146,8 +148,7 @@
   # User
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" ]
-      ++ (if config.modules.services.docker.enable then [ "docker" ] else [ ]);
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     password = "password";
     description = "default user";
     # packages = with pkgs; []
