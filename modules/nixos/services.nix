@@ -40,18 +40,6 @@ in {
       };
     };
 
-    docker = {
-      enable = mkEnableOption "Docker";
-      rootless = mkEnableOption "Rootless Docker";
-      nvidia = mkEnableOption "Nvidia support";
-      devtools = mkEnableOption "Devtools";
-      kubernetes = {
-        enable = mkEnableOption "Kubernetes support";
-        minikube = mkEnableOption "Minikube - Local Kubernetes cluster";
-        kubectl = mkEnableOption "kubectl - Kubernetes command-line tool";
-      };
-    };
-
     filesystemExtraServices = {
       enable = mkEnableOption "Filesystem utilities";
     };
@@ -99,33 +87,6 @@ in {
         };
       };
     };
-
-    # Docker Configuration
-    users.extraGroups.docker.members = mkIf cfg.docker.enable [ username ];
-    hardware.nvidia-container-toolkit.enable = cfg.docker.nvidia;
-    virtualisation.docker = mkIf cfg.docker.enable {
-      package = (pkgs.docker.override (args: { buildxSupport = true; }));
-      enable = true;
-      rootless = mkIf cfg.docker.rootless {
-        enable = true;
-        setSocketVariable = true;
-      };
-    };
-
-    environment.systemPackages = with pkgs;
-      (optionals (cfg.docker.enable && cfg.docker.devtools) [
-        dive
-        docker-compose
-        buildkit
-        lazydocker
-      ]) ++ (optionals cfg.docker.kubernetes.enable ([ kubernetes-helm ]
-      ++ (optionals cfg.docker.kubernetes.kubectl [ kubectl ])
-      ++ (optionals cfg.docker.kubernetes.minikube [ minikube ])));
-
-    # Enable required services for Minikube
-    virtualisation.virtualbox.host.enable =
-      mkIf (cfg.docker.kubernetes.enable && cfg.docker.kubernetes.minikube)
-        true;
 
     # All services configuration
     services = {
