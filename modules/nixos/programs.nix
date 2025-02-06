@@ -143,12 +143,8 @@ in
       (with pkgs;
       optionals gui.core [
         qbittorrent-enhanced # Torrent client
-        audacity # Audio editor
-        gimp # Image editor
-        blender # 3D modeling
-        inkscape # Vector graphics
-        wofi # Application launcher
         ulauncher # Application launcher
+        wofi # Used for cliphist
 
         firefox # Firefox
         google-chrome # Chrome
@@ -222,6 +218,9 @@ in
       optionals gui.extra [
         blender # 3D modeling
         kicad # PCB design
+        audacity # Audio editor
+        gimp # Image editor
+        inkscape # Vector graphics
       ])
     ];
   };
