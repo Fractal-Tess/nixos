@@ -148,6 +148,7 @@ in
         blender # 3D modeling
         inkscape # Vector graphics
         wofi # Application launcher
+        ulauncher # Application launcher
 
         firefox # Firefox
         google-chrome # Chrome

@@ -1,0 +1,3 @@
+[submodule "modules/nixos/display/hyprland/config/rofi-themes-collection"]
+	path = modules/nixos/display/hyprland/config/rofi-themes-collection
+	url = https://github.com/newmanls/rofi-themes-collection.git
