@@ -144,7 +144,7 @@ in
       optionals gui.core [
         qbittorrent-enhanced # Torrent client
         ulauncher # Application launcher
-        python313Packages.fuzzywuzzy
+        python313Packages.fuzzywuzzy # Fuzzywuzzy Module
         wofi # Used for cliphist
 
         firefox # Firefox
