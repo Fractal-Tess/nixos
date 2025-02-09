@@ -3,6 +3,8 @@
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
 
+    ../../modules/nixos/tempalte.nix
+
     ../../modules/nixos/core/audio.nix
     ../../modules/nixos/core/boot.nix
     ../../modules/nixos/core/networking.nix
@@ -14,6 +16,12 @@
 
     ../../modules/nixos/services/index.nix
   ];
+
+  # Enable the desktop template (/modules/template)
+  modules.template.desktop = true;
+
+  # Remove sudo need for password
+  modules.security.noSudoPassword = true;
 
   # Shell
   programs.zsh.enable = true;
@@ -33,9 +41,6 @@
     allowUnfree = true;
     permittedInsecurePackages = [ "electron-27.3.11" ];
   };
-
-  # Kernel
-  # boot.kernelPackages = pkgs.linuxPackages_latest;
 
   # --------------------- CORE --------------------------
 
@@ -152,31 +157,6 @@
     powerline-fonts
     powerline-symbols
   ];
-
-  # Security
-  security.sudo.extraRules = [{
-    users = [ username ];
-    commands = [{
-      # Removes the need for a password when using sudo
-      command = "ALL";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
-
-  # Timezone & locale
-  time.timeZone = "Europe/Sofia";
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
