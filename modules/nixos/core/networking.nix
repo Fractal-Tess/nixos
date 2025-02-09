@@ -1,5 +1,7 @@
 { config, lib, hostname, ... }:
+
 with lib;
+
 let cfg = config.modules.networking;
 in {
   # Networking
