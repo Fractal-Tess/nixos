@@ -2,35 +2,18 @@
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
-
-    ../../modules/nixos/core/audio.nix
-    ../../modules/nixos/core/boot.nix
-    ../../modules/nixos/core/networking.nix
-
-    ../../modules/nixos/display/all.nix
-    ../../modules/nixos/services.nix
-    ../../modules/nixos/programs.nix
-
-    ../../modules/nixos/services/index.nix
+    ../../modules/nixos/tempalte.nix
   ];
 
-  # Shell
-  programs.zsh.enable = true;
-  users.defaultUserShell = pkgs.zsh;
+  modules = {
+    # Template
+    template.desktop = true;
 
-  environment.systemPackages = with pkgs; [ ];
+    # Drivers
+    drivers.amd = true;
 
-  # Flakes 
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
-  };
-
-  # Nixpkgs config
-  nixpkgs.config = {
-    # Allow unfree packages
-    allowUnfree = true;
-    permittedInsecurePackages = [ "electron-27.3.11" ];
+    # Security
+    security.noSudoPassword = true;
   };
 
   # Bluetooth
@@ -42,31 +25,6 @@
   # Light
   programs.light.enable = true;
 
-  # Kernel
-  boot.kernelPackages = pkgs.linuxPackages_latest;
-
-  # --------------------- CORE --------------------------
-
-  # Audio
-  modules.audio.enable = true;
-
-  # Boot
-  modules.boot = { useCustomConfig = true; };
-
-  # Networking  
-  modules.networking = {
-    firewall = {
-      allowedPorts = [
-        9 # Magic packet
-        22 # SSH
-      ];
-    };
-
-    # VPN
-    vpn.netbird.enable = true;
-  };
-
-  # --------------------- Drivers -----------------------
 
   # --------------------- Display ------------------------
 
@@ -81,13 +39,19 @@
       extraPackages = with pkgs; [
         libvdpau-va-gl
         amdvlk
+        driversi686Linux.amdvlk
         # rocm-opencl-icd
         # rocm-opencl-runtime
       ];
-      extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
+      # extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
 
     };
   };
+
+hardware.graphics = {
+  enable = true;
+  enable32Bit = true;
+};
 
   # Bar
   modules.display.waybar.enable = true;
