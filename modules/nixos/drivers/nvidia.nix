@@ -2,55 +2,11 @@
 
 with lib;
 
-let cfg = config.modules.hardware.nvidia;
-in {
-  options.modules.hardware.nvidia = {
-    # Enable or disable the NVIDIA configuration module.
-    enable = mkEnableOption "NVIDIA configuration";
-
-    powerManagement = {
-      # Enable or disable NVIDIA power management (experimental).
-      enable = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Enable NVIDIA power management (experimental)";
-      };
-
-      # Enable or disable fine-grained power management for modern NVIDIA GPUs.
-      finegrained = mkOption {
-        type = types.bool;
-        default = false;
-        description =
-          "Enable fine-grained power management for modern NVIDIA GPUs (turing and after)";
-      };
-    };
-
-    # Use the NVIDIA open source kernel module.
-    open = mkOption {
-      type = types.bool;
-      default = false;
-      description = "Use the NVIDIA open source kernel module";
-    };
-
-    # Enable or disable the NVIDIA settings menu.
-    nvidiaSettings = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Enable the NVIDIA settings menu";
-    };
-
-    # Select the NVIDIA driver package to use.
-    package = mkOption {
-      type = types.enum [ "stable" "beta" "production" "vulkan_beta" ];
-      default = "stable";
-      description =
-        "NVIDIA driver package to use: stable, beta, production, or vulkan_beta";
-    };
-  };
-
-  config = mkIf cfg.enable {
+{
+  config = mkIf config.modules.drivers.nvidia {
     # Add nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = [ "nvidia" ];
+    services.xserver.videoDrivers =
+      mkIf config.modules.template.desktop [ "nvidia" ];
 
     hardware.nvidia = {
       # Modesetting is required.
@@ -61,10 +17,10 @@ in {
       # up from sleep. This fixes it by saving the entire VRAM memory to /tmp/ instead 
       # of just the bare essentials.
       powerManagement = {
-        enable = cfg.powerManagement.enable;
+        enable = false; # Default value
         # Fine-grained power management. Turns off GPU when not in use.
         # Experimental and only works on modern Nvidia GPUs (Turing or newer).
-        finegrained = cfg.powerManagement.finegrained;
+        finegrained = false; # Default value
       };
 
       # Use the NVidia open source kernel module (not to be confused with the
@@ -73,14 +29,15 @@ in {
       # supported GPUs is at: 
       # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
       # Only available from driver 515.43.04+
-      open = cfg.open;
+      open = false; # Default value
 
       # Enable the Nvidia settings menu,
       # accessible via `nvidia-settings`
-      nvidiaSettings = cfg.nvidiaSettings;
+      nvidiaSettings = true; # Default value
 
       # Optionally, you may need to select the appropriate driver version for your specific GPU.
-      package = config.boot.kernelPackages.nvidiaPackages.${cfg.package};
+      package =
+        config.boot.kernelPackages.nvidiaPackages.stable; # Default value
     };
   };
 }
