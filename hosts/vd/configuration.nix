@@ -6,14 +6,16 @@
     ../../modules/nixos/tempalte.nix
   ];
 
-  # Enable the desktop template (/modules/template)
-  modules.template.desktop = true;
+  modules = {
+    # Template
+    template.desktop = true;
 
-  # Nvidia
-  modules.drivers.nvidia = true;
+    # Drivers
+    drivers.nvidia = true;
 
-  # Remove the need for password when using sudo
-  modules.security.noSudoPassword = true;
+    #Security
+    security.noSudoPassword = true;
+  };
 
   # --------------------- Display ------------------------
 
