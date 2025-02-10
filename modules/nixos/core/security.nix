@@ -15,12 +15,13 @@ in {
       users = [ username ];
       commands = [{
         # Removes the need for a password when using sudo
-        command = "ALL";
-        options =
-          if config.modules.security.noSudoPassword then
+        command = mkDefault "ALL";
+        options = mkMerge [
+          (if config.modules.security.noSudoPassword then
             [ "NOPASSWD" ]
           else
-            [ ];
+            [ ])
+        ];
       }];
     }];
 
