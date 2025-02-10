@@ -2,6 +2,8 @@
 with lib; {
 
   boot = {
+    kernelPackages = mkDefault pkgs.linuxPackages;
+
     loader = {
       efi.canTouchEfiVariables = mkDefault true;
       grub = {
