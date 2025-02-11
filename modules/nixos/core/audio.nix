@@ -13,7 +13,7 @@ in {
     };
   };
 
-  config = mkIf cfg.enable {
+  config = {
     security.rtkit.enable = mkDefault true;
 
     environment.systemPackages =
