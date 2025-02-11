@@ -8,7 +8,7 @@ in {
     # Automatically enable this if this is a desktop install
     # This can also manually be enabled by using "modules.audio.enable = true;"
     enable = mkEnableOption {
-      default = config.modules.template.desktop;
+      default = true;
       description = "Enable audio configuration";
     };
   };
