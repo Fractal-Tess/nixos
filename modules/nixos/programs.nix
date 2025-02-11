@@ -34,6 +34,7 @@ in
       (with pkgs;
       optionals cli.core [
         neovim # Text editor
+        usbutils # USB utils
         lm_sensors # System sensors
         jq # JSON processor
         hyperfine # Command benchmark
