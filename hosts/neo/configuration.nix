@@ -26,7 +26,6 @@
   # Light
   programs.light.enable = true;
 
-
   # --------------------- Display ------------------------
 
   # Window manager
