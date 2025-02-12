@@ -1,27 +1,39 @@
 {
-  description = "Go 22 environment";
+  description = "Nixos go development environment";
 
-  inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    systems.url = "github:fractal-tess/nix-systems";
+  };
 
-  outputs = { self, nixpkgs }:
+  outputs = { systems, nixpkgs, ... }:
     let
       goVersion = 22; # Change this to update the whole stack
       overlays = [ (final: prev: { go = prev."go_1_${toString goVersion}"; }) ];
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { inherit overlays system; };
-      });
+      eachSystem = f:
+        nixpkgs.lib.genAttrs (import systems) (
+          system:
+          f (import nixpkgs { inherit overlays system; })
+        );
     in
     {
-      devShells = forEachSupportedSystem ({ pkgs }: {
+      devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
-            zsh
-            exit
+            echo "#
+            #     ______      
+            #    / ____/___  
+            #   / / __/ __ \ 
+            #  / /_/ / /_/ / 
+            #  \____/\____/  
+            #
+            Go - $(${pkgs.go}/bin/go version)
+            " | ${pkgs.lolcat}/bin/lolcat
           '';
           packages = with pkgs; [
             # go 1.20 (specified by overlay)
             go
+            lolcat
 
             # goimports, godoc, etc.
             gotools
