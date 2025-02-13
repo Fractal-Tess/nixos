@@ -6,7 +6,7 @@
   programs.zsh = {
 
     # Enable zsh
-    enable = true;
+    enable = false;
     # Enable zsh completion for all interactive shells
     enableCompletion = true;
 
