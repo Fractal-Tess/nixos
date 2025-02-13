@@ -9,36 +9,7 @@
   services.syncthing.enable = true;
 
   # Eenvironment variables
-  home.sessionVariables = {
-    # Fixes viber not lanuching
-    QT_QPA_PLATFORM = "xcb";
-
-    # Drivers
-    LIBVA_DRIVER_NAME = "radeonsi";
-    VDPAU_DRIVER = "radeonsi";
-
-    GTK_THEME = "Nordic";
-    XCURSOR_THEME = "Nordzy-cursors";
-    XCURSOR_SIZE = "24";
-
-    # Silence direnv env loading ouput
-    DIRENV_LOG_FORMAT = "";
-
-    # If cursor becomes invisible
-    # WLR_NO_HARDWARE_CURSORS = "1";
-
-    # Hint to electron apps to use wayland
-    NIXOS_OZONE_WL = "1";
-
-    # Editor
-    VISUAL = "nvim";
-    SUDO_EDITOR = "nvim";
-    EDITOR = "nvim";
-
-    # Firefox
-    MOZ_USE_WAYLAND = 1;
-    MOZ_USE_XINPUT2 = 1;
-  };
+  home.sessionVariables = { };
 
   # Theming
   gtk = {
