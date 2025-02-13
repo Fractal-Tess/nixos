@@ -29,6 +29,7 @@
     startInBackground = true;
   };
 
+  # git signing
   home.file.".ssh/allowed_signers".text =
     "* ${builtins.readFile /home/${config.home.username}/.ssh/id_ed25519.pub}";
 
@@ -75,9 +76,9 @@
     };
     settings = {
       scrollback_lines = 10000;
-      # background_opacity = "0.85";
-      background_opacity = "1.0";
-      # background_blur = 64;
+      background_opacity = "0.85";
+      # background_opacity = "1.0";
+      background_blur = 64;
       update_check_interval = 0;
       enable_audio_bell = false;
       disable_ligatures = "never";
@@ -141,10 +142,10 @@
       fi
     '';
 
-    plugins = [
+    plugins = with pkgs; [
       {
         name = "powerlevel10k";
-        src = pkgs.zsh-powerlevel10k;
+        src = zsh-powerlevel10k;
         file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
       }
       {
@@ -155,7 +156,7 @@
       {
         name = "direnv";
         file = "plugins/direnv/direnv.plugin.zsh";
-        src = pkgs.fetchFromGitHub {
+        src = fetchFromGitHub {
           owner = "ohmyzsh";
           repo = "ohmyzsh";
           rev = "1bae19973671dde75506c541ba576de4dae8cb29";
@@ -164,7 +165,7 @@
       }
       {
         name = "sudo";
-        src = pkgs.fetchFromGitHub {
+        src = fetchFromGitHub {
           owner = "ohmyzsh";
           repo = "ohmyzsh";
           rev = "f8bf8f0029a475831ebfba0799975ede20e08742";
@@ -174,7 +175,7 @@
       }
       # {
       #   name = "zsh-navigation-tools";
-      #   src = pkgs.fetchFromGitHub {
+      #   src = fetchFromGitHub {
       #     owner = "ohmyzsh";
       #     repo = "ohmyzsh";
       #     rev = "d78275fdbb876cee9c55f5c2731b8c1fac7be6d2";
