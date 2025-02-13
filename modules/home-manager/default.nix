@@ -195,19 +195,30 @@
       grep = "batgrep";
       watch = "batwatch";
 
-      direnv-init = ''echo "use flake" >> .envrc && direnv allow'';
-      ncs-c = "cp ~/nixos/shells/c/* ./ && direnv-init";
-      ncs-csharp = "cp ~/nixos/shells/csharp/* ./ && direnv-init";
-      ncs-go = "cp ~/nixos/shells/go/* ./ && direnv-init";
-      ncs-java = "cp ~/nixos/shells/java/* ./ && direnv-init";
-      ncs-maui = "cp ~/nixos/shells/maui/* ./ && direnv-init";
-      ncs-php = "cp ~/nixos/shells/php/* ./ && direnv-init";
-      ncs-nodejs = "cp ~/nixos/shells/node/* ./ && direnv-init";
-      ncs-python = "cp ~/nixos/shells/python3/* ./ && direnv-init";
-      ncs-react-native = "cp ~/nixos/shells/react-native/* ./ && direnv-init";
-      ncs-rust = "cp ~/nixos/shells/rust/* ./ && direnv-init";
-      ncs-tauri = "cp ~/nixos/shells/tauri/* ./ && direnv-init";
-      ncs-unity = "cp ~/nixos/shells/unity/* ./ && direnv-init";
+      # Base direnv initialization
+      direnv-init =
+        ''echo "use flake" >> .envrc && git add .envrc && direnv allow'';
+
+      # Initialize git if needed and add flake files
+      git-init-flake =
+        "([ -d .git ] || git init) && git add flake.nix flake.lock";
+
+      # Copy shell files and setup direnv
+      ncs-setup = "cp ~/nixos/shells/$1/* ./ && git-init-flake && direnv-init";
+
+      # Individual language shell setup commands
+      ncs-c = "ncs-setup c";
+      ncs-csharp = "ncs-setup csharp";
+      ncs-go = "ncs-setup go";
+      ncs-java = "ncs-setup java";
+      ncs-maui = "ncs-setup maui";
+      ncs-php = "ncs-setup php";
+      ncs-nodejs = "ncs-setup node";
+      ncs-python = "ncs-setup python3";
+      ncs-react-native = "ncs-setup react-native";
+      ncs-rust = "ncs-setup rust";
+      ncs-tauri = "ncs-setup tauri";
+      ncs-unity = "ncs-setup unity";
 
       # Alternative commands that just execute nix develop
       nas-c = "nix develop ~/nixos/shells/c";
