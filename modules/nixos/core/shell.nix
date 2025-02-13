@@ -25,6 +25,8 @@
         echo "The file '.secrets.sh' is missing from ~/ . No secret environment variables will be loaded!"
       fi
     '';
+    promptInit =
+      "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
 
     history.size = 10000;
     history.path = "${config.xdg.dataHome}/.zsh_history";
