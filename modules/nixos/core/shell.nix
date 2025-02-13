@@ -18,7 +18,7 @@
 
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "sudo" "direnv" ];
+      plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" ];
       theme = "powerlevel10k";
     };
 
@@ -33,36 +33,6 @@
         src = ./config;
         file = "p10k.config.zsh";
       }
-      # {
-      #   name = "direnv";
-      #   file = "plugins/direnv/direnv.plugin.zsh";
-      #   src = fetchFromGitHub {
-      #     owner = "ohmyzsh";
-      #     repo = "ohmyzsh";
-      #     rev = "1bae19973671dde75506c541ba576de4dae8cb29";
-      #     sha256 = "sha256-fR4lxt1XRDZUBfQ2tAe7oLk2xpQTuOVH37o+njRvgxo=";
-      #   };
-      # }
-      # {
-      #   name = "sudo";
-      #   src = fetchFromGitHub {
-      #     owner = "ohmyzsh";
-      #     repo = "ohmyzsh";
-      #     rev = "f8bf8f0029a475831ebfba0799975ede20e08742";
-      #     sha256 = "sha256-fR4lxt1XRDZUBfQ2tAe7oLk2xpQTuOVH37o+njRvgxo=";
-      #   };
-      #   file = "plugins/sudo/sudo.plugin.zsh";
-      # }
-      # {
-      #   name = "zsh-navigation-tools";
-      #   src = fetchFromGitHub {
-      #     owner = "ohmyzsh";
-      #     repo = "ohmyzsh";
-      #     rev = "d78275fdbb876cee9c55f5c2731b8c1fac7be6d2";
-      #     sha256 = "sha256-fR4lxt1XRDZUBfQ2tAe7oLk2xpQTuOVH37o+njRvgxo=";
-      #   };
-      #   file = "plugins/zsh-navigation-tools/zsh-navigation-tools.plugin.zsh";
-      # }
     ];
 
     shellAliases = {
