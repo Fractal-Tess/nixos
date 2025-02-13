@@ -195,22 +195,14 @@
       grep = "batgrep";
       watch = "batwatch";
 
-      # Base direnv initialization
-      direnv-init =
-        ''echo "use flake" >> .envrc && git add .envrc && direnv allow'';
-
-      # Initialize git if needed and add flake files
-      git-init-flake =
-        "([ -d .git ] || git init) && git add flake.nix flake.lock";
-
-      # Copy shell files and setup direnv
       ncs-setup =
-        "cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && git-init-flake && direnv-init";
-
-      testtt = "echo This is a test $1";
+        "function _ncs_setup() { cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && _git_init_flake && _direnv_init; }; _ncs_setup";
+      git-init-flake =
+        "function _git_init_flake() { if [ ! -d .git ]; then git init; fi && git add flake.nix flake.lock; }; _git_init_flake";
+      direnv-init =
+        "function _direnv_init() { echo 'use flake' > .envrc && direnv allow; }; _direnv_init";
 
       # Individual language shell setup commands
-      ncs-setup-test = "ncs-setup $1";
       ncs-c = "ncs-setup c";
       ncs-csharp = "ncs-setup csharp";
       ncs-go = "ncs-setup go";
