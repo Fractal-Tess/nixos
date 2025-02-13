@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 with lib;
 
@@ -55,11 +55,7 @@ in {
       }
     ];
 
-    # Enable ZSH  as the default shell (config is done in home-manager)
-    programs.zsh.enable = true;
-    users.defaultUserShell = pkgs.zsh;
-
-    environment.systemPackages = with pkgs; [ ];
+    environment.systemPackages = [ ];
 
     # Nix settings
     nix.settings = {
