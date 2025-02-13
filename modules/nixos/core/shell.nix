@@ -1,11 +1,21 @@
 { config, pkgs, ... }: {
 
   programs.zsh = {
+    # Enable zsh
     enable = true;
+    # Enable zsh completion for all interactive shells
     enableCompletion = true;
-    autosuggestion.enable = true;
-    autosuggestion.strategy = [ "history" "completion" ];
-    enableVteIntegration = true;
+
+    # Autosuggestions
+    autosuggestion = {
+      # Enable autosuggestions
+      enable = true;
+      # Fetch suggestions asynchronously
+      async = true;
+      # Use history and completion strategies
+      strategy = [ "history" "completion" "match_prev_cmd" ];
+    };
+    # Syntax highlighting
     syntaxHighlighting.enable = true;
 
     initExtra = ''
@@ -16,10 +26,12 @@
       fi
     '';
 
+    history.size = 10000;
+    history.path = "${config.xdg.dataHome}/.zsh_history";
+
     oh-my-zsh = {
       enable = true;
       plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" ];
-      theme = "powerlevel10k";
     };
 
     plugins = with pkgs; [
@@ -81,8 +93,6 @@
       nas-unity = "nix develop ~/nixos/shells/unity";
     };
 
-    history.size = 10000;
-    history.path = "${config.xdg.dataHome}/zsh/history";
   };
 }
 
