@@ -207,7 +207,10 @@
       ncs-setup =
         "cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && git-init-flake && direnv-init";
 
+      testtt = "echo This is a test $1";
+
       # Individual language shell setup commands
+      ncs-setup-test = "ncs-setup $1";
       ncs-c = "ncs-setup c";
       ncs-csharp = "ncs-setup csharp";
       ncs-go = "ncs-setup go";
