@@ -6,17 +6,11 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs =
-    { systems
-    , nixpkgs
-    , ...
-    } @ inputs:
+  outputs = { systems, nixpkgs, ... }@inputs:
     let
       eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems) (
-          system:
-          f nixpkgs.legacyPackages.${system}
-        );
+        nixpkgs.lib.genAttrs (import systems)
+          (system: f nixpkgs.legacyPackages.${system});
     in
     {
       devShells = eachSystem (pkgs: {
@@ -37,7 +31,7 @@
             " | lolcat
           '';
           nativeBuildInputs = with pkgs; [
-            nodejs_20
+            nodejs_22
 
             # Package managers
             pnpm
@@ -49,7 +43,6 @@
             # Additional tools
             nodePackages."npm-check-updates"
             npkill
-
           ];
         };
       });

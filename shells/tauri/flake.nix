@@ -22,6 +22,7 @@
           dbus
           openssl_3
           librsvg
+          mold
         ];
 
       packages = pkgs:
@@ -36,7 +37,17 @@
           libsoup
           webkitgtk
           librsvg
-
+          clang
+          mold
+          cargo
+          rustc
+          rustfmt
+          nodejs_22
+          pnpm
+          yarn
+          prettierd
+          nodePackages."npm-check-updates"
+          npkill
           lolcat
         ];
     in
@@ -54,7 +65,10 @@
             #/_/  \__,_/\__,_/_/  /_/   
             #
             Tauri Development Environment
+            NodeJS - $(${pkgs.nodejs_22}/bin/node --version)
+            Rustc - $(${pkgs.rustc}/bin/rustc --version)
             " | lolcat
+
 
             export LD_LIBRARY_PATH=${
               pkgs.lib.makeLibraryPath (libraries pkgs)
