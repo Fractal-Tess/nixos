@@ -1,4 +1,6 @@
-{ config, pkgs, ... }: {
+{ pkgs, ... }:
+
+{
   # Enable ZSH  as the default shell (config is done in home-manager)
   users.defaultUserShell = pkgs.zsh;
 
@@ -6,12 +8,12 @@
   programs.zsh = {
 
     # Enable zsh
-    enable = false;
+    enable = true;
     # Enable zsh completion for all interactive shells
     enableCompletion = true;
 
     # Autosuggestions
-    autosuggestion = {
+    autosuggestions = {
       # Enable autosuggestions
       enable = true;
       # Fetch suggestions asynchronously
@@ -22,36 +24,56 @@
     # Syntax highlighting
     syntaxHighlighting.enable = true;
 
-    initExtra = ''
+    promptInit = ''
+      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
       else
         echo "The file '.secrets.sh' is missing from ~/ . No secret environment variables will be loaded!"
       fi
+
+      # Direnv & Shell helpers 
+      function _ncs_setup() {
+        cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./
+        _git_init_flake
+        _direnv_init
+      }
+
+      function _git_init_flake() {
+        if [ ! -d .git ]; then
+          git init
+        fi
+        git add flake.nix flake.lock
+      }
+
+      function _direnv_init() {
+        echo 'use flake' > .envrc
+        direnv allow
+      }
     '';
     # promptInit =
     #   "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
 
-    history.size = 10000;
-    history.path = "${config.xdg.dataHome}/.zsh_history";
+    histSize = 10000;
+    histFile = "$HOME/.zsh_history";
 
     oh-my-zsh = {
       enable = true;
-      plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" ];
+      plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
     };
 
-    plugins = with pkgs; [
-      {
-        name = "powerlevel10k";
-        src = zsh-powerlevel10k;
-        file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-      }
-      {
-        name = "powerlevel10k-config";
-        src = ./config;
-        file = "p10k.config.zsh";
-      }
-    ];
+    # plugins = with pkgs; [
+    #   # {
+    #   #   name = "powerlevel10k";
+    #   #   src = zsh-powerlevel10k;
+    #   #   file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
+    #   # }
+    #   {
+    #     name = "powerlevel10k-config";
+    #     src = ./config;
+    #     file = "p10k.config.zsh";
+    #   }
+    # ];
 
     shellAliases = {
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
@@ -61,14 +83,10 @@
       diff = "batdiff";
       man = "batman";
 
-      update = "~/nixos/update.sh";
+      ll = "eza -l";
+      ls = "eza";
 
-      ncs-setup =
-        "function _ncs_setup() { cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && _git_init_flake && _direnv_init; }; _ncs_setup";
-      git-init-flake =
-        "function _git_init_flake() { if [ ! -d .git ]; then git init; fi && git add flake.nix flake.lock; }; _git_init_flake";
-      direnv-init =
-        "function _direnv_init() { echo 'use flake' > .envrc && direnv allow; }; _direnv_init";
+      update = "~/nixos/update.sh";
 
       # Individual language shell setup commands
       ncs-c = "ncs-setup c";
