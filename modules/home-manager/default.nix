@@ -192,8 +192,8 @@
       # Bat-extras aliases
       diff = "batdiff";
       man = "batman";
-      grep = "batgrep";
-      watch = "batwatch";
+
+      update = "~/nixos/update.sh";
 
       ncs-setup =
         "function _ncs_setup() { cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && _git_init_flake && _direnv_init; }; _ncs_setup";
