@@ -172,16 +172,16 @@
         };
         file = "plugins/sudo/sudo.plugin.zsh";
       }
-      {
-        name = "zsh-navigation-tools";
-        src = pkgs.fetchFromGitHub {
-          owner = "ohmyzsh";
-          repo = "ohmyzsh";
-          rev = "d78275fdbb876cee9c55f5c2731b8c1fac7be6d2";
-          sha256 = "sha256-fR4lxt1XRDZUBfQ2tAe7oLk2xpQTuOVH37o+njRvgxo=";
-        };
-        file = "plugins/zsh-navigation-tools/zsh-navigation-tools.plugin.zsh";
-      }
+      # {
+      #   name = "zsh-navigation-tools";
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "ohmyzsh";
+      #     repo = "ohmyzsh";
+      #     rev = "d78275fdbb876cee9c55f5c2731b8c1fac7be6d2";
+      #     sha256 = "sha256-fR4lxt1XRDZUBfQ2tAe7oLk2xpQTuOVH37o+njRvgxo=";
+      #   };
+      #   file = "plugins/zsh-navigation-tools/zsh-navigation-tools.plugin.zsh";
+      # }
     ];
 
     shellAliases = {
@@ -195,20 +195,32 @@
       watch = "batwatch";
 
       direnv-init = ''echo "use flake" >> .envrc && direnv allow'';
-      ncs-nodejs = "cp ~/nixos/shells/node/* ./";
+      ncs-c = "cp ~/nixos/shells/c/* ./ && direnv-init";
+      ncs-csharp = "cp ~/nixos/shells/csharp/* ./ && direnv-init";
+      ncs-go = "cp ~/nixos/shells/go/* ./ && direnv-init";
+      ncs-java = "cp ~/nixos/shells/java/* ./ && direnv-init";
+      ncs-maui = "cp ~/nixos/shells/maui/* ./ && direnv-init";
+      ncs-php = "cp ~/nixos/shells/php/* ./ && direnv-init";
+      ncs-nodejs = "cp ~/nixos/shells/node/* ./ && direnv-init";
+      ncs-python = "cp ~/nixos/shells/python3/* ./ && direnv-init";
+      ncs-react-native = "cp ~/nixos/shells/react-native/* ./ && direnv-init";
+      ncs-rust = "cp ~/nixos/shells/rust/* ./ && direnv-init";
+      ncs-tauri = "cp ~/nixos/shells/tauri/* ./ && direnv-init";
+      ncs-unity = "cp ~/nixos/shells/unity/* ./ && direnv-init";
 
-      ndmaui = "nix develop ~/nixos/shells/maui";
-      ndcsharp = "nix develop ~/nixos/shells/csharp";
-      ndc = "nix develop ~/nixos/shells/c";
-      ndgo = "nix develop ~/nixos/shells/go";
-      ndrust = "nix develop ~/nixos/shells/rust";
-      ndtauri = "nix develop ~/nixos/shells/tauri";
-      ndnode = "nix develop ~/nixos/shells/node --command zsh";
-      ndpython = "nix develop ~/nixos/shells/python3";
-      ndnet = "nix develop ~/nixos/shells/networking";
-      ndphp = "nix develop ~/nixos/shells/php";
-      ndunity = "nix develop ~/nixos/shells/unity";
-      ndreact-native = "nix develop ~/nixos/shells/react-native";
+      # Alternative commands that just execute nix develop
+      nas-c = "nix develop ~/nixos/shells/c";
+      nas-csharp = "nix develop ~/nixos/shells/csharp";
+      nas-go = "nix develop ~/nixos/shells/go";
+      nas-java = "nix develop ~/nixos/shells/java";
+      nas-maui = "nix develop ~/nixos/shells/maui";
+      nas-php = "nix develop ~/nixos/shells/php";
+      nas-nodejs = "nix develop ~/nixos/shells/node";
+      nas-python = "nix develop ~/nixos/shells/python3";
+      nas-react-native = "nix develop ~/nixos/shells/react-native";
+      nas-rust = "nix develop ~/nixos/shells/rust";
+      nas-tauri = "nix develop ~/nixos/shells/tauri";
+      nas-unity = "nix develop ~/nixos/shells/unity";
     };
 
     history.size = 10000;
