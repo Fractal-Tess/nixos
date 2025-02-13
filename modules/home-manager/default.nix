@@ -76,9 +76,9 @@
     };
     settings = {
       scrollback_lines = 10000;
-      background_opacity = "0.85";
+      background_opacity = "0.75";
       # background_opacity = "1.0";
-      background_blur = 64;
+      background_blur = 96;
       update_check_interval = 0;
       enable_audio_bell = false;
       disable_ligatures = "never";
