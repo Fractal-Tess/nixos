@@ -29,9 +29,6 @@
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
       # Powerlevel10k config
       source ~/nixos/modules/nixos/core/config/.p10k.zsh
-      # Direnv
-      source ~/nixos/modules/nixos/core/config/.direnv.zsh
-
       # Secrets
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
