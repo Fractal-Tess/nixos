@@ -54,7 +54,7 @@ in {
       }
     ];
 
-    # Shell
+    # Enable ZSH  as the default shell (config is done in home-manager)
     programs.zsh.enable = true;
     users.defaultUserShell = pkgs.zsh;
 
