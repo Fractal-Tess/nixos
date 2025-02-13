@@ -25,8 +25,13 @@
     syntaxHighlighting.enable = true;
 
     promptInit = ''
+      # Powerlevel10k
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+      # Powerlevel10k config
+      source ~/nixos/modules/nixos/core/config/.p10k.zsh
+      # Direnv
       source ~/nixos/modules/nixos/core/config/.direnv.zsh
+
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
       else
@@ -57,18 +62,18 @@
       update = "~/nixos/update.sh";
 
       # Individual language shell setup commands
-      ncs-c = "ncs-setup c";
-      ncs-csharp = "ncs-setup csharp";
-      ncs-go = "ncs-setup go";
-      ncs-java = "ncs-setup java";
-      ncs-maui = "ncs-setup maui";
-      ncs-php = "ncs-setup php";
-      ncs-nodejs = "ncs-setup node";
-      ncs-python = "ncs-setup python3";
-      ncs-react-native = "ncs-setup react-native";
-      ncs-rust = "ncs-setup rust";
-      ncs-tauri = "ncs-setup tauri";
-      ncs-unity = "ncs-setup unity";
+      ncs-c = "_ncs_setup c";
+      ncs-csharp = "_ncs_setup csharp";
+      ncs-go = "_ncs_setup go";
+      ncs-java = "_ncs_setup java";
+      ncs-maui = "_ncs_setup maui";
+      ncs-php = "_ncs_setup php";
+      ncs-nodejs = "_ncs_setup node";
+      ncs-python = "_ncs_setup python3";
+      ncs-react-native = "_ncs_setup react-native";
+      ncs-rust = "_ncs_setup rust";
+      ncs-tauri = "_ncs_setup tauri";
+      ncs-unity = "_ncs_setup unity";
 
       # Alternative commands that just execute nix develop
       nas-c = "nix develop ~/nixos/shells/c";
