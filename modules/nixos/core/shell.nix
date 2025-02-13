@@ -26,33 +26,14 @@
 
     promptInit = ''
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+      source ~/nixos/modules/nixos/core/config/.direnv.zsh
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
       else
         echo "The file '.secrets.sh' is missing from ~/ . No secret environment variables will be loaded!"
       fi
 
-      # Direnv & Shell helpers 
-      function _ncs_setup() {
-        cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./
-        _git_init_flake
-        _direnv_init
-      }
-
-      function _git_init_flake() {
-        if [ ! -d .git ]; then
-          git init
-        fi
-        git add flake.nix flake.lock
-      }
-
-      function _direnv_init() {
-        echo 'use flake' > .envrc
-        direnv allow
-      }
     '';
-    # promptInit =
-    #   "source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
 
     histSize = 10000;
     histFile = "$HOME/.zsh_history";
@@ -61,19 +42,6 @@
       enable = true;
       plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
     };
-
-    # plugins = with pkgs; [
-    #   # {
-    #   #   name = "powerlevel10k";
-    #   #   src = zsh-powerlevel10k;
-    #   #   file = "share/zsh-powerlevel10k/powerlevel10k.zsh-theme";
-    #   # }
-    #   {
-    #     name = "powerlevel10k-config";
-    #     src = ./config;
-    #     file = "p10k.config.zsh";
-    #   }
-    # ];
 
     shellAliases = {
       pcuptime = "uptime | awk '{print $3}' | sed 's/,//'";
