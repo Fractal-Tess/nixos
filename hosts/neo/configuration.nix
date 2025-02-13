@@ -32,7 +32,7 @@
   modules.display.hyprland = {
     enable = true;
     greetd.enable = true;
-    greetd.autoLogin = false;
+    greetd.autoLogin = true;
     videoDrivers = [ "amdgpu" ];
     openGL = {
       enable = true;
