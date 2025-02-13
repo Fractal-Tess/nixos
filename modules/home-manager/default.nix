@@ -204,7 +204,8 @@
         "([ -d .git ] || git init) && git add flake.nix flake.lock";
 
       # Copy shell files and setup direnv
-      ncs-setup = "cp ~/nixos/shells/$1/* ./ && git-init-flake && direnv-init";
+      ncs-setup =
+        "cp ~/nixos/shells/$1/{flake.nix,flake.lock} ./ && git-init-flake && direnv-init";
 
       # Individual language shell setup commands
       ncs-c = "ncs-setup c";
