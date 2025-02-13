@@ -32,6 +32,7 @@
       # Direnv
       source ~/nixos/modules/nixos/core/config/.direnv.zsh
 
+      # Secrets
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
       else
