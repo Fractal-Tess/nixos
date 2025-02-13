@@ -1,6 +1,10 @@
 { config, pkgs, ... }: {
+  # Enable ZSH  as the default shell (config is done in home-manager)
+  users.defaultUserShell = pkgs.zsh;
 
+  # ZSH
   programs.zsh = {
+
     # Enable zsh
     enable = true;
     # Enable zsh completion for all interactive shells
