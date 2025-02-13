@@ -28,6 +28,7 @@ in {
     ./core/locale.nix
     ./core/networking.nix
     ./core/security.nix
+    ./core/shell.nix
     ./core/time.nix
 
     ./drivers/nvidia.nix
