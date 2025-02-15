@@ -1,18 +1,13 @@
-{ pkgs, username, osConfig, lib, ... }: {
+{ pkgs, username, osConfig, lib, ... }:
+with lib; {
   imports = [ ../../modules/home-manager/default.nix ];
 
   # Home Manager 
   home.username = username;
   home.homeDirectory = "/home/${username}";
 
-  # File sync
-  services.syncthing.enable = true;
-
-  # Eenvironment variables
-  home.sessionVariables = { };
-
   # Theming
-  gtk = {
+  gtk = mkIf osConfig.modules.template.desktop {
     enable = true;
     theme = {
       name = "Nordic-darker";
@@ -29,14 +24,14 @@
     };
   };
 
-  qt = {
-    enable = true;
-    platformTheme.name = "gtk";
-  };
+  # qt = {
+  #   enable = true;
+  #   platformTheme.name = "gtk";
+  # };
 
   home.stateVersion = "24.05";
 
-  home.packages = with pkgs; [ ];
+  home.packages = [ ];
 
   # Home Manager is pretty good at managing dotfiles. The primary way to manage
   # plain files is through 'home.file'.
@@ -51,31 +46,23 @@
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
+
+
+    # Zsh - p10k config
+    ".p10k.config.zsh".source = ../../config/zsh/.p10k.config.zsh;
   };
-  xdg.configFile.hypr = lib.mkIf osConfig.modules.display.hyprland.enable {
-    source = ../../modules/nixos/display/hyprland/config;
-    recursive = true;
-  };
-  xdg.configFile.waybar = lib.mkIf osConfig.modules.display.waybar.enable {
-    source = ../../modules/nixos/display/waybar/config;
+
+  # Hyprland
+  xdg.configFile.hypr = mkIf osConfig.modules.display.hyprland.enable {
+    source = ../../config/hypr;
     recursive = true;
   };
 
-  # Home Manager can also manage your environment variables through
-  # 'home.sessionVariables'. If you don't want to manage your shell through Home
-  # Manager then you have to manually source 'hm-session-vars.sh' located at
-  # either
-  #
-  #  ~/.nix-profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  ~/.local/state/nix/profiles/profile/etc/profile.d/hm-session-vars.sh
-  #
-  # or
-  #
-  #  /etc/profiles/per-user/fractal-tess/etc/profile.d/hm-session-vars.sh
-  #
+  # Waybar
+  xdg.configFile.waybar = mkIf osConfig.modules.display.waybar.enable {
+    source = ../../config/waybar;
+    recursive = true;
+  };
 
   # Let Home Manager install and manage itself.
   programs.home-manager.enable = true;
