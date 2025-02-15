@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, inputs, ... }:
 
 with lib;
 
@@ -55,12 +55,19 @@ in {
       }
     ];
 
+    nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+
     environment.systemPackages = [ ];
 
     # Nix settings
     nix.settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
+    };
+
+    hardware.graphics = mkIf cfg.template.desktop {
+      enable = true;
+      enable32Bit = true;
     };
 
     # Allowing unfree and insecure
@@ -108,5 +115,6 @@ in {
       MOZ_USE_WAYLAND = 1;
       MOZ_USE_XINPUT2 = 1;
     };
+
   };
 }
