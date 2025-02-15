@@ -27,8 +27,10 @@
     promptInit = ''
       # Powerlevel10k
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+
       # Powerlevel10k config
-      source ~/nixos/modules/nixos/core/config/.p10k.zsh
+      source ~/.p10k.config.zsh
+
       # Secrets
       if [ -f "$HOME/.secrets.sh" ]; then
         source "$HOME/.secrets.sh"
@@ -41,9 +43,9 @@
     histSize = 10000;
     histFile = "$HOME/.zsh_history";
 
-    oh-my-zsh = {
+    ohMyZsh = {
       enable = true;
-      plugins = [ "git" "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
+      plugins = [ "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
     };
 
     shellAliases = {

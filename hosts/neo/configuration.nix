@@ -2,7 +2,7 @@
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
-    ../../modules/nixos/tempalte.nix
+    ../../modules/nixos/main.nix
   ];
 
   modules = {
@@ -14,8 +14,31 @@
 
     # Security
     security.noSudoPassword = true;
+
+    # Hyprland ( window manager )
+    display.hyprland = {
+      enable = true;
+      # Session manager
+      greetd.enable = true;
+      greetd.autoLogin = true;
+      videoDrivers = [ "amdgpu" ];
+      openGL = {
+        enable = true;
+        extraPackages = with pkgs; [
+          libvdpau-va-gl
+          amdvlk
+          driversi686Linux.amdvlk
+          # rocm-opencl-icd
+          # rocm-opencl-runtime
+        ];
+        # extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
+
+      };
+    };
+
+    # Waybar ( top bar )
+    display.waybar.enable = true;
   };
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
   # Bluetooth
   hardware.bluetooth.enable = true; # enables support for Bluetooth
@@ -27,34 +50,6 @@
   programs.light.enable = true;
 
   # --------------------- Display ------------------------
-
-  # Window manager
-  modules.display.hyprland = {
-    enable = true;
-    greetd.enable = true;
-    greetd.autoLogin = true;
-    videoDrivers = [ "amdgpu" ];
-    openGL = {
-      enable = true;
-      extraPackages = with pkgs; [
-        libvdpau-va-gl
-        amdvlk
-        driversi686Linux.amdvlk
-        # rocm-opencl-icd
-        # rocm-opencl-runtime
-      ];
-      # extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
-
-    };
-  };
-
-  hardware.graphics = {
-    enable = true;
-    enable32Bit = true;
-  };
-
-  # Bar
-  modules.display.waybar.enable = true;
 
   # --------------------- Services ------------------------
 
