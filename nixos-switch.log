@@ -1,2 +1,13 @@
 setting up /etc...
-/nix/store/2nmdvyr4gmsrps8h0xliiqbs2rxihhq9-nixos-system-neo-25.05.20250210.64e75cd
+● docker-portainer.service
+     Loaded: loaded (/etc/systemd/system/docker-portainer.service; enabled; preset: ignored)
+     Active: activating (auto-restart) (Result: exit-code) since Sun 2025-02-16 02:38:31 EET; 30ms ago
+ Invocation: 9a056a05ac9c4e15aa943dcee20ab3fd
+    Process: 611751 ExecStartPre=/nix/store/cvcvnq4nfai4qqd8xrd3f9xlx60rzw9n-pre-start/bin/pre-start (code=exited, status=0/SUCCESS)
+    Process: 611765 ExecStart=/nix/store/1124c1im3zxcckalx80m962j5iy5931i-unit-script-docker-portainer-start/bin/docker-portainer-start (code=exited, status=125)
+    Process: 611793 ExecStopPost=/nix/store/p1g4vv6i4rzylk5dha71x4mlfz0gb2rr-unit-script-docker-portainer-post-stop/bin/docker-portainer-post-stop (code=exited, status=0/SUCCESS)
+   Main PID: 611765 (code=exited, status=125)
+         IP: 0B in, 0B out
+         IO: 0B read, 0B written
+   Mem peak: 10.3M
+        CPU: 137ms

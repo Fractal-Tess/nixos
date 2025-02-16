@@ -2,48 +2,57 @@
   imports = [
     ./hardware-configuration.nix
     inputs.home-manager.nixosModules.default
-
-    ../../modules/nixos/tempalte.nix
+    ../../modules/nixos/main.nix
   ];
 
   modules = {
-    # Template
-    template.desktop = true;
+    gui = true;
 
     # Drivers
     drivers.nvidia = true;
 
     #Security
     security.noSudoPassword = true;
+
+    # Window manager
+    display.hyprland = {
+      enable = true;
+      videoDrivers = [ "nvidia" ];
+      greetd.enable = true;
+      greetd.autoLogin = true;
+    };
+
+    # Bar
+    display.waybar.enable = true;
+
+    # Docker 
+    services.docker = {
+      enable = true;
+      rootless = true;
+      devtools = true;
+      nvidia = true;
+
+      portainer.enable = true;
+    };
+
+    # Filesystem
+    services.filesystemExtraServices.enable = true;
+
+    # SSHD
+    services.sshd.enable = true;
   };
 
-  # --------------------- Display ------------------------
-
-  # Window manager
-  modules.display.hyprland = {
-    enable = true;
-    videoDrivers = [ "nvidia" ];
-    greetd.enable = true;
-    greetd.autoLogin = true;
+  virtualisation.oci-containers.containers.portainer = {
+    image = "portainer/portainer-ce:latest";
+    ports = [ "9000:9000" ];
+    volumes = [
+      "/var/lib/portainer:/data"
+      "/var/run/docker.sock:/var/run/docker.sock"
+    ];
+    extraOptions = [ "--privileged" ];
   };
-
-  # Bar
-  modules.display.waybar.enable = true;
 
   # --------------------- Services ------------------------
-
-  # Docker 
-  modules.services.docker = {
-    enable = true;
-    rootless = true;
-    nvidia = true;
-  };
-
-  # Filesystem
-  modules.services.filesystemExtraServices.enable = true;
-
-  # SSHD
-  modules.services.sshd.enable = true;
 
   # --------------------- Programs --------------------------
 

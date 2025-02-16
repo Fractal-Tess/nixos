@@ -5,8 +5,7 @@ with lib;
 {
   config = mkIf config.modules.drivers.nvidia {
     # Add nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers =
-      mkIf config.modules.template.desktop [ "nvidia" ];
+    services.xserver.videoDrivers = mkIf config.modules.gui [ "nvidia" ];
 
     hardware.nvidia = {
       # Modesetting is required.
