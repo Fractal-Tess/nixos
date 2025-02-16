@@ -42,18 +42,6 @@
     services.sshd.enable = true;
   };
 
-  virtualisation.oci-containers.containers.portainer = {
-    image = "portainer/portainer-ce:latest";
-    ports = [ "9000:9000" ];
-    volumes = [
-      "/var/lib/portainer:/data"
-      "/var/run/docker.sock:/var/run/docker.sock"
-    ];
-    extraOptions = [ "--privileged" ];
-  };
-
-  # --------------------- Services ------------------------
-
   # --------------------- Programs --------------------------
 
   modules.programs = {

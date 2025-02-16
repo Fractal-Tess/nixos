@@ -35,7 +35,6 @@ in {
         PUID = "1000";
         PGID = "1000";
       };
-      # extraOptions = [ "--restart=always" ];
       extraOptions = [ ];
     };
   };
