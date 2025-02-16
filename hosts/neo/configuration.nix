@@ -6,8 +6,7 @@
   ];
 
   modules = {
-    # Template
-    template.desktop = true;
+    gui = true;
 
     # Drivers
     drivers.amd = true;
