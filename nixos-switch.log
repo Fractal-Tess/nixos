@@ -1,15 +1,2 @@
 setting up /etc...
-× docker-portainer.service
-     Loaded: loaded (/etc/systemd/system/docker-portainer.service; enabled; preset: ignored)
-     Active: failed (Result: exit-code) since Sun 2025-02-16 02:46:06 EET; 16ms ago
-   Duration: 91ms
- Invocation: 259dd916fa38417593d042021fd563e0
-    Process: 12131 ExecStartPre=/nix/store/cvcvnq4nfai4qqd8xrd3f9xlx60rzw9n-pre-start/bin/pre-start (code=exited, status=0/SUCCESS)
-    Process: 12147 ExecStart=/nix/store/h53ildp2y3hw6kqqxgilv04sxf5vl3gi-unit-script-docker-portainer-start/bin/docker-portainer-start (code=exited, status=125)
-    Process: 12162 ExecStopPost=/nix/store/p1g4vv6i4rzylk5dha71x4mlfz0gb2rr-unit-script-docker-portainer-post-stop/bin/docker-portainer-post-stop (code=exited, status=0/SUCCESS)
-   Main PID: 12147 (code=exited, status=125)
-
-Feb 16 02:46:06 vd systemd[1]: docker-portainer.service: Scheduled restart job, restart counter is at 5.
-Feb 16 02:46:06 vd systemd[1]: docker-portainer.service: Start request repeated too quickly.
-Feb 16 02:46:06 vd systemd[1]: docker-portainer.service: Failed with result 'exit-code'.
-Feb 16 02:46:06 vd systemd[1]: Failed to start docker-portainer.service.
+/nix/store/d8jhvp0d02k0payifwi4vifyma0jdj72-nixos-system-vd-25.05.20250210.64e75cd

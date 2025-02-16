@@ -19,19 +19,20 @@
 
   outputs = { self, nixpkgs, responsively, polymc, ... }@inputs:
     let
-      mkHost = { hostname, username }: nixpkgs.lib.nixosSystem {
-        system = "x86_64-linux";
-        specialArgs = { inherit inputs hostname username; };
-        modules = [
-          ./hosts/${hostname}/configuration.nix
-          {
-            nixpkgs.overlays = [
-              polymc.overlay
-              responsively.overlay."x86_64-linux" # Adjust system here
-            ];
-          }
-        ];
-      };
+      mkHost = { hostname, username }:
+        nixpkgs.lib.nixosSystem {
+          system = "x86_64-linux";
+          specialArgs = { inherit inputs hostname username; };
+          modules = [
+            ./hosts/${hostname}/configuration.nix
+            {
+              nixpkgs.overlays = [
+                polymc.overlay
+                responsively.overlay."x86_64-linux" # Adjust system here
+              ];
+            }
+          ];
+        };
     in
     {
       nixosConfigurations = {

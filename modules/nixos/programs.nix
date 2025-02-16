@@ -28,7 +28,6 @@ in
     };
   };
 
-
   config = mkIf cfg.enable {
     environment.systemPackages = mkMerge [
       # CLI ------
@@ -190,6 +189,7 @@ in
       (with pkgs;
       optionals gui.devtools [
         code-cursor # Cursor
+        zed-editor # Zed
         gparted # Partition manager
         responsively # Responsive design tool
         tiled # Tile manager
