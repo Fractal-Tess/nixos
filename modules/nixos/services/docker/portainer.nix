@@ -19,7 +19,7 @@ in {
     systemd.tmpfiles.rules = [ "d /var/lib/portainer 0750 portainer docker -" ];
 
     # Define the Portainer service
-    virtualisation.oci-containers.containers.portainer-ce = {
+    virtualisation.oci-containers.containers.portainer = {
       autoStart = true;
       image = "portainer/portainer-ce:latest";
       ports = [
