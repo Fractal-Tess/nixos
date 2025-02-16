@@ -5,23 +5,6 @@ with lib;
 let cfg = config.modules;
 
 in {
-  options.modules = {
-    template = {
-      desktop = mkEnableOption "Enable desktop mode";
-      headless = mkEnableOption "Enable headless mode";
-    };
-    drivers = {
-      nvidia = mkEnableOption "Enable Nvidia drivers";
-      amd = mkEnableOption "Enable AMD drivers";
-    };
-    tools = {
-      dev = {
-        mobile = mkEnableOption "Enable mobile development tools";
-        games = mkEnableOption "Enable game development tools";
-      };
-    };
-  };
-
   imports = [
     ./core/audio.nix
     ./core/boot.nix
@@ -39,21 +22,20 @@ in {
     ./services/index.nix
   ];
 
+  options.modules = {
+    gui = mkEnableOption "Enable graphical user interface";
+    drivers = {
+      nvidia = mkEnableOption "Enable Nvidia drivers";
+      amd = mkEnableOption "Enable AMD drivers";
+    };
+  };
+
   config = {
     # Assert conflicting configs
-    assertions = [
-      {
-        assertion = !(cfg.drivers.nvidia && cfg.drivers.amd);
-        message = "Nvidia and AMD drivers cannot be enabled at the same time.";
-      }
-      {
-
-        assertion = (cfg.template.desktop || cfg.template.headless)
-          && !(cfg.template.desktop && cfg.template.headless);
-        message =
-          "Either desktop or headless mode must be enabled, but not both at the same time.";
-      }
-    ];
+    assertions = [{
+      assertion = !(cfg.drivers.nvidia && cfg.drivers.amd);
+      message = "Nvidia and AMD drivers cannot be enabled at the same time.";
+    }];
 
     nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
@@ -65,7 +47,7 @@ in {
       auto-optimise-store = true;
     };
 
-    hardware.graphics = mkIf cfg.template.desktop {
+    hardware.graphics = mkIf cfg.gui {
       enable = true;
       enable32Bit = true;
     };
@@ -77,43 +59,43 @@ in {
     };
 
     # Enable CUPS to print documents.
-    services.printing.enable = mkIf cfg.template.desktop true;
+    services.printing.enable = mkIf cfg.gui true;
 
     # DBUS
     services.dbus.enable = true;
 
     # Android Debug Bridge
-    modules.services.adb.enable = mkIf cfg.tools.dev.mobile true;
+    # modules.services.adb.enable = mkIf cfg.tools.dev.mobile true;
 
     environment.variables = {
       # Fixes viber not lanuching
-      QT_QPA_PLATFORM = "xcb";
+      QT_QPA_PLATFORM = mkIf cfg.gui "xcb";
 
       # Drivers
-      LIBVA_DRIVER_NAME = "radeonsi";
-      VDPAU_DRIVER = "radeonsi";
+      LIBVA_DRIVER_NAME = mkIf cfg.gui "radeonsi";
+      VDPAU_DRIVER = mkIf cfg.gui "radeonsi";
 
-      GTK_THEME = "Nordic";
-      XCURSOR_THEME = "Nordzy-cursors";
-      XCURSOR_SIZE = "24";
+      GTK_THEME = mkIf cfg.gui "Nordic";
+      XCURSOR_THEME = mkIf cfg.gui "Nordzy-cursors";
+      XCURSOR_SIZE = mkIf cfg.gui "24";
 
-      # Silence direnv env loading ouput
-      DIRENV_LOG_FORMAT = "";
+      # Silence direnv env loading output
+      DIRENV_LOG_FORMAT = mkIf cfg.gui "";
 
       # If cursor becomes invisible
-      # WLR_NO_HARDWARE_CURSORS = "1";
+      # WLR_NO_HARDWARE_CURSORS = mkIf cfg.gui "1";
 
       # Hint to electron apps to use wayland
-      NIXOS_OZONE_WL = "1";
+      NIXOS_OZONE_WL = mkIf cfg.gui "1";
 
       # Editor
-      VISUAL = "nvim";
-      SUDO_EDITOR = "nvim";
-      EDITOR = "nvim";
+      VISUAL = mkIf cfg.gui "nvim";
+      SUDO_EDITOR = mkIf cfg.gui "nvim";
+      EDITOR = mkIf cfg.gui "nvim";
 
       # Firefox
-      MOZ_USE_WAYLAND = 1;
-      MOZ_USE_XINPUT2 = 1;
+      MOZ_USE_WAYLAND = mkIf cfg.gui 1;
+      MOZ_USE_XINPUT2 = mkIf cfg.gui 1;
     };
 
   };

@@ -7,10 +7,7 @@ in {
   options.modules.audio = {
     # Automatically enable this if this is a desktop install
     # This can also manually be enabled by using "modules.audio.enable = true;"
-    enable = mkEnableOption {
-      default = true;
-      description = "Enable audio configuration";
-    };
+    enable = mkDefault config.modules.gui;
   };
 
   config = {
