@@ -7,7 +7,7 @@ with lib; {
   home.homeDirectory = "/home/${username}";
 
   # Theming
-  gtk = mkIf osConfig.modules.template.desktop {
+  gtk = mkIf osConfig.modules.gui {
     enable = true;
     theme = {
       name = "Nordic-darker";
@@ -46,7 +46,6 @@ with lib; {
     #   org.gradle.console=verbose
     #   org.gradle.daemon.idletimeout=3600000
     # '';
-
 
     # Zsh - p10k config
     ".p10k.config.zsh".source = ../../config/zsh/.p10k.config.zsh;
