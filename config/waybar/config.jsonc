@@ -329,7 +329,8 @@
     "position": "top",
     "mod": "dock",
     "output": [
-      "eDP-1"
+      "eDP-1",
+      "DP-1"
     ],
     "margin-left": 8,
     "margin-right": 8,
