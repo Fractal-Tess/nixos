@@ -59,7 +59,16 @@ in {
     };
 
     # Enable CUPS to print documents.
-    services.printing.enable = mkIf cfg.gui true;
+    # Enable CUPS for printing
+    services.printing = mkIf cfg.gui {
+      enable = true;
+      drivers = with pkgs; [
+        lexmark-cup-drivers # Basic Lexmark drivers
+        gutenprint # Additional printer drivers
+        foomatic-filters # Required for many printers
+        ghostscript # PostScript interpreter
+      ];
+    };
 
     # DBUS
     services.dbus.enable = true;
