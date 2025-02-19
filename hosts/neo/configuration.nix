@@ -45,7 +45,6 @@
       enable = true;
       rootless = true;
       devtools = true;
-      nvidia = true;
 
       portainer.enable = true;
     };

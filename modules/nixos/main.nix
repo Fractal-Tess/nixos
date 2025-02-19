@@ -1,4 +1,4 @@
-{ config, lib, inputs, ... }:
+{ config, lib, inputs, pkgs, ... }:
 
 with lib;
 
@@ -63,7 +63,8 @@ in {
     services.printing = mkIf cfg.gui {
       enable = true;
       drivers = with pkgs; [
-        lexmark-cup-drivers # Basic Lexmark drivers
+        lexmark-aex # Lexmark printer drivers
+        postscript-lexmark # PostScript drivers for Lexmark printers
         gutenprint # Additional printer drivers
         foomatic-filters # Required for many printers
         ghostscript # PostScript interpreter
