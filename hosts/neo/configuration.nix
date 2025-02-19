@@ -35,30 +35,26 @@
         # extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
 
       };
-
-      # Bar
-      display.waybar.enable = true;
-
-      # Docker 
-      services.docker = {
-        enable = true;
-        rootless = true;
-        devtools = true;
-        nvidia = true;
-
-        portainer.enable = true;
-      };
-
-      # Filesystem
-      services.filesystemExtraServices.enable = true;
-
-      # SSHD
-      services.sshd.enable = true;
-
     };
 
-    # Waybar ( top bar )
+    # Bar
     display.waybar.enable = true;
+
+    # Docker 
+    services.docker = {
+      enable = true;
+      rootless = true;
+      devtools = true;
+      nvidia = true;
+
+      portainer.enable = true;
+    };
+
+    # Filesystem
+    services.filesystemExtraServices.enable = true;
+
+    # SSHD
+    services.sshd.enable = true;
   };
 
   # Bluetooth
@@ -70,15 +66,6 @@
   # Light
   programs.light.enable = true;
 
-  # --------------------- Display ------------------------
-
-  # --------------------- Services ------------------------
-
-  # Filesystem
-  modules.services.filesystemExtraServices.enable = true;
-
-  # SSHD
-  modules.services.sshd.enable = true;
 
   # Zram
   zramSwap.enable = true;
