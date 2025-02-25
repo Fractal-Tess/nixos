@@ -19,7 +19,7 @@
       enable = true;
       # Session manager
       greetd.enable = true;
-      greetd.autoLogin = true;
+      greetd.autoLogin = false;
 
       # Drivers
       videoDrivers = [ "amdgpu" ];
