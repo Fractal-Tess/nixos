@@ -10,7 +10,7 @@ bindkey -e
 # End of lines configured by zsh-newuser-install
 
 # To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.config.zsh || echo "Error: Failed to load p10k config"
+[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh || echo "Error: Failed to load p10k config"
 
 # Load custom secrets
 [[ -f ~/.secrets.zsh ]] && source  ~/.secrets.zsh || echo "Error: Failed to load secrets"
