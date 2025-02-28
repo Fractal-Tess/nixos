@@ -13,7 +13,7 @@ with lib;
     ".zshrc".source = ../../config/zsh/.zshrc;
 
     # Zsh - p10k config
-    ".p10k.config.zsh".source = ../../config/zsh/.p10k.config.zsh;
+    ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
   };
 
   # Hyprland
