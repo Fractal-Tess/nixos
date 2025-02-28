@@ -54,6 +54,7 @@ in
       (with pkgs;
       optionals cli.devtools [
         aider-chat # AI code assistant
+        claude-code # AI code assistant
 
         yarn # Package manager
         pnpm # Package manager
