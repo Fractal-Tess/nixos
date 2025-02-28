@@ -56,19 +56,19 @@ in
         aider-chat # AI code assistant
         claude-code # AI code assistant
 
-        # yarn # Package manager
-        # pnpm # Package manager
+        yarn # Package manager
+        pnpm # Package manager
 
         # bun # JavaScript runtime
         # deno # JavaScript runtime
-        # nodejs_20 # JavaScript runtime
+        nodejs_20 # JavaScript runtime
 
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
         # laravel # PHP framework
 
-        # gcc # C compiler
-        # clang-tools # C compiler
+        gcc # C compiler
+        clang-tools # C compiler
 
         flyctl # Fly.io CLI
         gh # Github CLI
