@@ -221,7 +221,7 @@ in
       (with pkgs;
       optionals gui.extra [
         blender # 3D modeling
-        kicad # PCB design
+        # kicad # PCB design
         audacity # Audio editor
         gimp # Image editor
         inkscape # Vector graphics
