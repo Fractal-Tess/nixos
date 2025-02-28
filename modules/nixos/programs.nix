@@ -56,19 +56,19 @@ in
         aider-chat # AI code assistant
         claude-code # AI code assistant
 
-        yarn # Package manager
-        pnpm # Package manager
+        # yarn # Package manager
+        # pnpm # Package manager
 
-        bun # JavaScript runtime
-        deno # JavaScript runtime
-        nodejs_20 # JavaScript runtime
+        # bun # JavaScript runtime
+        # deno # JavaScript runtime
+        # nodejs_20 # JavaScript runtime
 
-        php # PHP runtime
-        phpPackages.composer # PHP package manager
-        laravel # PHP framework
+        # php # PHP runtime
+        # phpPackages.composer # PHP package manager
+        # laravel # PHP framework
 
-        gcc # C compiler
-        clang-tools # C compiler
+        # gcc # C compiler
+        # clang-tools # C compiler
 
         flyctl # Fly.io CLI
         gh # Github CLI
@@ -76,12 +76,12 @@ in
         man-pages # Linux development manual pages
 
         # burpsuite # Web pentesting
-        ngrok # Tunneling
-        nmap # Network scanner
+        # ngrok # Tunneling
+        # nmap # Network scanner
         oha # HTTP bentchmarker
-        openvpn # VPN
-        wakeonlan # Wake on lan util
-        hping # Network ping  util
+        # openvpn # VPN
+        # wakeonlan # Wake on lan util
+        # hping # Network ping  util
       ])
 
       (with pkgs;
@@ -115,7 +115,7 @@ in
 
         stress # Cpu stress
         geekbench # System benchmark
-        carbon-now-cli # Code to image
+        # carbon-now-cli # Code to image
 
         tokei # Code stats
 
@@ -135,7 +135,7 @@ in
         slurp # Screen coordinates picker
 
         # Flex
-        neofetch # System info
+        # neofetch # System info
         nitch # System info
         lolcat # Colorful gradient stdin to stdout
         cava # Audio visualizer
@@ -146,15 +146,14 @@ in
       optionals gui.core [
         qbittorrent-enhanced # Torrent client
         ulauncher # Application launcher
-        python313Packages.fuzzywuzzy # Fuzzywuzzy Module
         wofi # Used for cliphist
 
-        firefox # Firefox
+        # firefox # Firefox
         google-chrome # Chrome
-        microsoft-edge # Edge
+        # microsoft-edge # Edge
 
         hyprpicker # Color picker
-        kooha # Screen recorder
+        # kooha # Screen recorder
         nomacs # Image viewer
         vlc # Media player
         pcmanfm # File manager
@@ -177,37 +176,37 @@ in
         bitwarden # Password manager
         viber # Chat platform
         slack # Chat platform
-        thunderbird # Email client
+        # thunderbird # Email client
       ])
 
       (with pkgs;
       optionals gui.office [
-        libreoffice # Office suite
-        obsidian # Note taking
-        logseq # Note taking
+        # libreoffice # Office suite
+        # obsidian # Note taking
+        # logseq # Note taking
       ])
 
       (with pkgs;
       optionals gui.devtools [
         code-cursor # Cursor
         zed-editor # Zed
-        gparted # Partition manager
-        responsively # Responsive design tool
-        tiled # Tile manager
-        unityhub # Unity launcher
-        gitkraken # Git GUI
-        dbgate # DB client
+        # gparted # Partition manager
+        # responsively # Responsive design tool
+        # tiled # Tile manager
+        # unityhub # Unity launcher
+        # gitkraken # Git GUI
+        # dbgate # DB client
         dbeaver-bin # DB client
         postman # API testing
-        insomnia # API testing
-        filezilla # FTP client
+        # insomnia # API testing
+        # filezilla # FTP client
       ])
 
       (with pkgs;
       optionals gui.games [
         steam # Gaming platform
         polymc # Minecraft launcher
-        wineWowPackages.stable # support both 32-bit and 64-bit applications
+        # wineWowPackages.stable # support both 32-bit and 64-bit applications
         (lutris.override { extraPkgs = pkgs: [ ]; })
       ])
 
@@ -220,11 +219,11 @@ in
 
       (with pkgs;
       optionals gui.extra [
-        blender # 3D modeling
+        # blender # 3D modeling
         # kicad # PCB design
-        audacity # Audio editor
-        gimp # Image editor
-        inkscape # Vector graphics
+        # audacity # Audio editor
+        # gimp # Image editor
+        # inkscape # Vector graphics
       ])
     ];
   };
