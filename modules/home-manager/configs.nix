@@ -12,6 +12,9 @@ with lib; {
     #   org.gradle.daemon.idletimeout=3600000
     # '';
 
+    # Zsh config
+    ".zshrc".source = ../../config/zsh/.zshrc;
+
     # Zsh - p10k config
     ".p10k.config.zsh".source = ../../config/zsh/.p10k.config.zsh;
   };

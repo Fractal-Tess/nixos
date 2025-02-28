@@ -25,19 +25,8 @@
     syntaxHighlighting.enable = true;
 
     promptInit = ''
-      # Powerlevel10k
+      # Powerlevel11k
       source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
-
-      # Powerlevel10k config
-      source ~/.p10k.config.zsh
-
-      # Secrets
-      if [ -f "$HOME/.secrets.sh" ]; then
-        source "$HOME/.secrets.sh"
-      else
-        echo "The file '.secrets.sh' is missing from ~/ . No secret environment variables will be loaded!"
-      fi
-
     '';
 
     histSize = 10000;
