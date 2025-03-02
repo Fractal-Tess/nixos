@@ -151,7 +151,7 @@ in
         firefox # Firefox
         google-chrome # Chrome
         microsoft-edge # Edge
-        safari # Safari
+        # safari # Safari
 
         hyprpicker # Color picker
         kooha # Screen recorder
