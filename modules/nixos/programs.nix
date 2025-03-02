@@ -75,13 +75,13 @@ in
         lazygit # Git GUI
         man-pages # Linux development manual pages
 
-        # burpsuite # Web pentesting
-        # ngrok # Tunneling
-        # nmap # Network scanner
+        burpsuite # Web pentesting
+        ngrok # Tunneling
+        nmap # Network scanner
         oha # HTTP bentchmarker
-        # openvpn # VPN
-        # wakeonlan # Wake on lan util
-        # hping # Network ping  util
+        openvpn # VPN
+        wakeonlan # Wake on lan util
+        hping # Network ping  util
       ])
 
       (with pkgs;
@@ -111,11 +111,11 @@ in
       (with pkgs;
       optionals cli.extra [
         ffmpeg-full # Video converter
-        # nvtopPackages.nvidia
+        nvtopPackages.nvidia
 
         stress # Cpu stress
         geekbench # System benchmark
-        # carbon-now-cli # Code to image
+        carbon-now-cli # Code to image
 
         tokei # Code stats
 
@@ -135,7 +135,7 @@ in
         slurp # Screen coordinates picker
 
         # Flex
-        # neofetch # System info
+        neofetch # System info
         nitch # System info
         lolcat # Colorful gradient stdin to stdout
         cava # Audio visualizer
@@ -148,12 +148,13 @@ in
         ulauncher # Application launcher
         wofi # Used for cliphist
 
-        # firefox # Firefox
+        firefox # Firefox
         google-chrome # Chrome
-        # microsoft-edge # Edge
+        microsoft-edge # Edge
+        safari # Safari
 
         hyprpicker # Color picker
-        # kooha # Screen recorder
+        kooha # Screen recorder
         nomacs # Image viewer
         vlc # Media player
         pcmanfm # File manager
@@ -176,37 +177,37 @@ in
         bitwarden # Password manager
         viber # Chat platform
         slack # Chat platform
-        # thunderbird # Email client
+        thunderbird # Email client
       ])
 
       (with pkgs;
       optionals gui.office [
-        # libreoffice # Office suite
-        # obsidian # Note taking
-        # logseq # Note taking
+        libreoffice # Office suite
+        obsidian # Note taking
+        logseq # Note taking
       ])
 
       (with pkgs;
       optionals gui.devtools [
         code-cursor # Cursor
         zed-editor # Zed
-        # gparted # Partition manager
-        # responsively # Responsive design tool
-        # tiled # Tile manager
-        # unityhub # Unity launcher
-        # gitkraken # Git GUI
-        # dbgate # DB client
+        gparted # Partition manager
+        responsively # Responsive design tool
+        tiled # Tile manager
+        unityhub # Unity launcher
+        gitkraken # Git GUI
+        dbgate # DB client
         dbeaver-bin # DB client
         postman # API testing
-        # insomnia # API testing
-        # filezilla # FTP client
+        insomnia # API testing
+        filezilla # FTP client
       ])
 
       (with pkgs;
       optionals gui.games [
         steam # Gaming platform
         polymc # Minecraft launcher
-        # wineWowPackages.stable # support both 32-bit and 64-bit applications
+        wineWowPackages.stable # support both 32-bit and 64-bit applications
         (lutris.override { extraPkgs = pkgs: [ ]; })
       ])
 
@@ -219,11 +220,11 @@ in
 
       (with pkgs;
       optionals gui.extra [
-        # blender # 3D modeling
-        # kicad # PCB design
-        # audacity # Audio editor
-        # gimp # Image editor
-        # inkscape # Vector graphics
+        blender # 3D modeling
+        kicad # PCB design
+        audacity # Audio editor
+        gimp # Image editor
+        inkscape # Vector graphics
       ])
     ];
   };
