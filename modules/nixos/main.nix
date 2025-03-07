@@ -76,6 +76,7 @@ in {
 
     # Android Debug Bridge
     # modules.services.adb.enable = mkIf cfg.tools.dev.mobile true;
+    services.gvfs.enable = true;
 
     environment.variables = {
       # Fixes viber not lanuching
