@@ -182,9 +182,9 @@ in
 
       (with pkgs;
       optionals gui.office [
-        libreoffice # Office suite
-        obsidian # Note taking
-        logseq # Note taking
+        # libreoffice # Office suite
+        # obsidian # Note taking
+        # logseq # Note taking
       ])
 
       (with pkgs;
@@ -195,11 +195,11 @@ in
         responsively # Responsive design tool
         tiled # Tile manager
         unityhub # Unity launcher
-        gitkraken # Git GUI
+        # gitkraken # Git GUI
         dbgate # DB client
-        dbeaver-bin # DB client
+        # dbeaver-bin # DB client
         postman # API testing
-        insomnia # API testing
+        # insomnia # API testing
         filezilla # FTP client
       ])
 
@@ -221,7 +221,7 @@ in
       (with pkgs;
       optionals gui.extra [
         blender # 3D modeling
-        kicad # PCB design
+        # kicad # PCB design
         audacity # Audio editor
         gimp # Image editor
         inkscape # Vector graphics
