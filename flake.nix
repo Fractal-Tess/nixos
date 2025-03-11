@@ -10,14 +10,9 @@
 
     polymc.url = "github:PolyMC/PolyMC";
     hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
-
-    responsively = {
-      url = "github:Fractal-Tess/responsively-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
   };
 
-  outputs = { self, nixpkgs, responsively, polymc, ... }@inputs:
+  outputs = { self, nixpkgs, polymc, ... }@inputs:
     let
       mkHost = { hostname, username }:
         nixpkgs.lib.nixosSystem {
@@ -28,7 +23,6 @@
             {
               nixpkgs.overlays = [
                 polymc.overlay
-                responsively.overlay."x86_64-linux" # Adjust system here
               ];
             }
           ];

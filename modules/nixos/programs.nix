@@ -36,19 +36,27 @@ in
         neovim # Text editor
         usbutils # USB utils
         lm_sensors # System sensors
-        jq # JSON processor
-        hyperfine # Command benchmark
+
         fzf # Fuzzy finder
         ripgrep # Rg
         sd # Sed alternative
         procs # ps replacement
         fd # Find replacement
+
         dust # Disk usage
         unzip # Unzip files
         p7zip # 7zip
         trash-cli # Trash files
         yazi # File manager
+
         btop # Top replacement
+
+        ngrok # Tunneling
+        nmap # Network scanner
+        openvpn # VPN
+        wakeonlan # Wake on lan util
+        hping # Network ping  util
+        oha # HTTP benchmark
       ])
 
       (with pkgs;
@@ -56,7 +64,6 @@ in
         aider-chat # AI code assistant
         claude-code # AI code assistant
 
-        yarn # Package manager
         pnpm # Package manager
 
         # bun # JavaScript runtime
@@ -66,22 +73,17 @@ in
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
         # laravel # PHP framework
-
         gcc # C compiler
         clang-tools # C compiler
 
         flyctl # Fly.io CLI
+
+
+        jq # JSON processor
+        hyperfine # Command benchmark
         gh # Github CLI
         lazygit # Git GUI
-        man-pages # Linux development manual pages
-
         burpsuite # Web pentesting
-        ngrok # Tunneling
-        nmap # Network scanner
-        oha # HTTP bentchmarker
-        openvpn # VPN
-        wakeonlan # Wake on lan util
-        hping # Network ping  util
       ])
 
       (with pkgs;
@@ -111,11 +113,11 @@ in
       (with pkgs;
       optionals cli.extra [
         ffmpeg-full # Video converter
-        nvtopPackages.nvidia
+        # nvtopPackages.nvidia
 
         stress # Cpu stress
-        geekbench # System benchmark
-        carbon-now-cli # Code to image
+        # geekbench # System benchmark
+        # carbon-now-cli # Code to image
 
         tokei # Code stats
 
@@ -144,7 +146,7 @@ in
       # GUI ------
       (with pkgs;
       optionals gui.core [
-        qbittorrent-enhanced # Torrent client
+        # qbittorrent-enhanced # Torrent client
         ulauncher # Application launcher
         wofi # Used for cliphist
 
@@ -191,10 +193,10 @@ in
       optionals gui.devtools [
         code-cursor # Cursor
         zed-editor # Zed
-        gparted # Partition manager
-        responsively # Responsive design tool
-        tiled # Tile manager
-        unityhub # Unity launcher
+        # gparted # Partition manager
+        responsively-app # Responsive web development
+        # tiled # Tile manager
+        # unityhub # Unity launcher
         # gitkraken # Git GUI
         dbgate # DB client
         # dbeaver-bin # DB client
@@ -220,11 +222,11 @@ in
 
       (with pkgs;
       optionals gui.extra [
-        blender # 3D modeling
+        # blender # 3D modeling
         # kicad # PCB design
-        audacity # Audio editor
-        gimp # Image editor
-        inkscape # Vector graphics
+        # audacity # Audio editor
+        # gimp # Image editor
+        # inkscape # Vector graphics
       ])
     ];
   };
