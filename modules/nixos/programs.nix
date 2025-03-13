@@ -53,6 +53,7 @@ in
 
         ngrok # Tunneling
         nmap # Network scanner
+        networkmanagerapplet # Network manager
         openvpn # VPN
         wakeonlan # Wake on lan util
         hping # Network ping  util

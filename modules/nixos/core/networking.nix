@@ -1,14 +1,10 @@
-{ lib, hostname, pkgs, ... }:
+{ lib, hostname, ... }:
 
 with lib;
 
 {
 
   config = {
-
-    environment.systemPackages = mkMerge [
-      pkgs.networkmanagerapplet
-    ];
 
     networking = {
       hostName = hostname;
