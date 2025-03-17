@@ -160,6 +160,7 @@ in
         kooha # Screen recorder
         nomacs # Image viewer
         vlc # Media player
+        mpv # Media player
         pcmanfm # File manager
         mate.engrampa # Archive manager
         nextcloud-client # Nextcloud client
@@ -171,6 +172,8 @@ in
         # shared-mime-info
 
         # avidemux # Video editor
+
+        obs-studio # Recording and streaming
       ])
 
       (with pkgs;
