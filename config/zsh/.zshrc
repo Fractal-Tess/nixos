@@ -30,6 +30,7 @@ function _ncs_setup() {
   if [ -d "$HOME/nixos/shells/$lang" ]; then
     cp -r "$HOME/nixos/shells/$lang/"* "$PWD"
     echo "use flake" > ".envrc"
+    direnv allow
     echo "Direnv for $lang has been set up. Happy coding!"
   else
     echo "No development shell found for $lang"
