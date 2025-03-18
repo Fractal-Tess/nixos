@@ -24,4 +24,16 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
+# Function to set up and copy Nix development shell files
+function _ncs_setup() {
+  local lang="$1"
+  if [ -d "$HOME/nixos/shells/$lang" ]; then
+    mkdir -p "$PWD/.devshell"
+    cp -r "$HOME/nixos/shells/$lang/"* "$PWD/.devshell/"
+    echo "Development shell for $lang has been set up in $PWD/.devshell/"
+  else
+    echo "No development shell found for $lang"
+  fi
+}
+
 
