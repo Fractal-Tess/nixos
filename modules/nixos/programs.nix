@@ -69,13 +69,14 @@ in
 
         # bun # JavaScript runtime
         # deno # JavaScript runtime
-        nodejs_20 # JavaScript runtime
+        nodejs_slim_22 # JavaScript runtime
 
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
         # laravel # PHP framework
         gcc # C compiler
         clang-tools # C compiler
+        gnumake # GNU Make
 
         flyctl # Fly.io CLI
 

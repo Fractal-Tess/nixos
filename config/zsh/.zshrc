@@ -32,8 +32,8 @@ function _ncs_setup() {
     echo "use flake" > ".envrc"
     if [ -d .git ]; then
       git add flake.lock flake.nix .envrc
+      direnv allow
     fi
-    direnv allow
     echo "Direnv for $lang has been set up. Happy coding!"
   else
     echo "No development shell found for $lang"
