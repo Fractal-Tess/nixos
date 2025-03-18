@@ -6,45 +6,49 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { systems, nixpkgs, ... }@inputs:
+  outputs = { systems, nixpkgs, ... }:
     let
+      nodeVersion = 22; # Change this to update the whole stack
+      overlays = [ (final: prev: { nodejs = prev."nodejs-slim_${toString nodeVersion}"; }) ];
       eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems)
-          (system: f nixpkgs.legacyPackages.${system});
+        nixpkgs.lib.genAttrs (import systems) (
+          system:
+          f (import nixpkgs { inherit overlays system; })
+        );
     in
     {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
-          # Slant font https://patorjk.com/software/taag/#p=testall&f=Doom&t=NodeJS
           shellHook = ''
-            echo "#
-            #      _   __          __         _______
-            #     / | / /___  ____/ /__      / / ___/
-            #    /  |/ / __ \/ __  / _ \__  / /\__ \ 
-            #   / /|  / /_/ / /_/ /  __/ /_/ /___/ / 
-            #  /_/ |_/\____/\__,_/\___/\____//____/  
-            #                                        
-            NodeJS - $(${pkgs.nodejs-slim_22}/bin/node --version)
+            echo "
+                  _   __          __         _______
+                 / | / /___  ____/ /__      / / ___/
+                /  |/ / __ \/ __  / _ \__  / /\__ \ 
+               / /|  / /_/ / /_/ /  __/ /_/ /___/ / 
+              /_/ |_/\____/\__,_/\___/\____//____/  
+                                                    
+            NodeJS - $(${pkgs.nodejs}/bin/node --version)
             Pnpm - $(${pkgs.pnpm}/bin/pnpm --version)
-            " | lolcat
+            " | ${pkgs.lolcat}/bin/lolcat
           '';
-          nativeBuildInputs = with pkgs; [
-            # aider-chat
-            # claude-code
+          packages = with pkgs; [
 
+            # Node.js (specified by overlay)
+            nodejs
 
-            nodejs_22
-            #deno
-            #bun
+            # bun
+            # deno
 
             # Package managers
             pnpm
             # yarn
 
+
             # Formatting
             prettierd
             # biome
-            # turbo
+            # eslint
+            # npkill
           ];
         };
       });
