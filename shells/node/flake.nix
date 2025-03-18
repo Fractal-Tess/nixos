@@ -24,25 +24,27 @@
             #   / /|  / /_/ / /_/ /  __/ /_/ /___/ / 
             #  /_/ |_/\____/\__,_/\___/\____//____/  
             #                                        
-            NodeJS - $(${pkgs.nodejs_20}/bin/node --version)
-            Npm - $(${pkgs.nodejs_20}/bin/npm --version)
+            NodeJS - $(${pkgs.nodejs-slim_22}/bin/node --version)
             Pnpm - $(${pkgs.pnpm}/bin/pnpm --version)
-            Yarn - $(${pkgs.yarn}/bin/yarn --version)
             " | lolcat
           '';
           nativeBuildInputs = with pkgs; [
+            # aider-chat
+            # claude-code
+
+
             nodejs_22
+            #deno
+            #bun
 
             # Package managers
             pnpm
-            yarn
+            # yarn
 
             # Formatting
             prettierd
-
-            # Additional tools
-            nodePackages."npm-check-updates"
-            npkill
+            # biome
+            # turbo
           ];
         };
       });
