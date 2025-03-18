@@ -69,7 +69,7 @@ in
 
         # bun # JavaScript runtime
         # deno # JavaScript runtime
-        nodejs_slim_22 # JavaScript runtime
+        nodejs-slim_22 # JavaScript runtime
 
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
