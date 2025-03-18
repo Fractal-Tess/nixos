@@ -28,9 +28,9 @@ esac
 function _ncs_setup() {
   local lang="$1"
   if [ -d "$HOME/nixos/shells/$lang" ]; then
-    mkdir -p "$PWD/.devshell"
-    cp -r "$HOME/nixos/shells/$lang/"* "$PWD/.devshell/"
-    echo "Development shell for $lang has been set up in $PWD/.devshell/"
+    cp -r "$HOME/nixos/shells/$lang/"* "$PWD"
+    echo "use flake" > ".envrc"
+    echo "Direnv for $lang has been set up. Happy coding!"
   else
     echo "No development shell found for $lang"
   fi
