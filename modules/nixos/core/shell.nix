@@ -51,7 +51,8 @@
       update = "~/nixos/update.sh";
 
       # Individual language shell setup commands
-      ncs-c = "_ncs_setup c";
+      ncs = "_ncs_setup";
+
       ncs-csharp = "_ncs_setup csharp";
       ncs-go = "_ncs_setup go";
       ncs-java = "_ncs_setup java";
