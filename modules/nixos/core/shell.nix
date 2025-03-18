@@ -37,7 +37,10 @@
       plugins = [ "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
     };
 
-    initExtra = ''
+    promptInit = ''
+      # Powerlevel11k
+      source ${pkgs.zsh-powerlevel10k}/share/zsh-powerlevel10k/powerlevel10k.zsh-theme
+
       # Function to set up and copy Nix development shell files
       function _ncs_setup() {
         local lang="$1"
