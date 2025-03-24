@@ -9,14 +9,13 @@
   outputs = { systems, nixpkgs, ... }:
     let
       nodeVersion = 22; # Change this to update the whole stack
-      overlays = [ (final: prev: { nodejs = prev."nodejs-slim_${toString nodeVersion}"; }) ];
+      overlays = [
+        (final: prev: { nodejs = prev."nodejs-slim_${toString nodeVersion}"; })
+      ];
       eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems) (
-          system:
-          f (import nixpkgs { inherit overlays system; })
-        );
-    in
-    {
+        nixpkgs.lib.genAttrs (import systems)
+        (system: f (import nixpkgs { inherit overlays system; }));
+    in {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
@@ -42,7 +41,6 @@
             # Package managers
             pnpm
             # yarn
-
 
             # Formatting
             prettierd
