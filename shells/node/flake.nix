@@ -6,7 +6,7 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { systems, nixpkgs, ... }:
+  outputs = { self, systems, nixpkgs, ... }:
     let
       nodeVersion = 22; # Change this to update the whole stack
       overlays = [
@@ -14,8 +14,9 @@
       ];
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-        (system: f (import nixpkgs { inherit overlays system; }));
-    in {
+          (system: f (import nixpkgs { inherit overlays system; }));
+    in
+    {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
