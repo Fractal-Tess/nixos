@@ -6,15 +6,13 @@
     systems.url = "github:fractal-tess/nix-systems";
   };
 
-  outputs = { systems, nixpkgs, ... }:
+  outputs = { self, systems, nixpkgs, ... }:
     let
       goVersion = 22; # Change this to update the whole stack
       overlays = [ (final: prev: { go = prev."go_1_${toString goVersion}"; }) ];
       eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems) (
-          system:
-          f (import nixpkgs { inherit overlays system; })
-        );
+        nixpkgs.lib.genAttrs (import systems)
+          (system: f (import nixpkgs { inherit overlays system; }));
     in
     {
       devShells = eachSystem (pkgs: {
