@@ -175,6 +175,8 @@ in
         # avidemux # Video editor
 
         obs-studio # Recording and streaming
+
+        warp-terminal # Terminal emulator
       ])
 
       (with pkgs;
