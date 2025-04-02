@@ -210,6 +210,7 @@ in
         postman # API testing
         # insomnia # API testing
         filezilla # FTP client
+        wireshark # Network analyzer
       ])
 
       (with pkgs;
