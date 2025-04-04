@@ -191,7 +191,7 @@ in
 
       (with pkgs;
       optionals gui.office [
-        # libreoffice # Office suite
+        libreoffice # Office suite
         # obsidian # Note taking
         # logseq # Note taking
       ])
