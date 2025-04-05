@@ -2,6 +2,7 @@
 
 with lib;
 
+
 let
   cfg = config.modules.programs;
   gui = cfg.gui;
@@ -194,6 +195,7 @@ in
         libreoffice # Office suite
         # obsidian # Note taking
         # logseq # Note taking
+        kdePackages.kdenlive
       ])
 
       (with pkgs;
