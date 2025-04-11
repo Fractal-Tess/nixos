@@ -193,7 +193,7 @@ in
       (with pkgs;
       optionals gui.office [
         libreoffice # Office suite
-        # obsidian # Note taking
+        obsidian # Note taking
         # logseq # Note taking
         kdePackages.kdenlive
       ])
