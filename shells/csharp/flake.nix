@@ -20,8 +20,7 @@
             inherit overlays system;
             config.allowUnfree = true;
           }));
-    in
-    {
+    in {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
@@ -50,12 +49,6 @@
             # Setup temp directory for .NET
             export DOTNET_CLI_HOME="/tmp/dotnet_cli"
             mkdir -p $DOTNET_CLI_HOME
-
-            # Check if zsh is installed and use it as the default shell
-            if command -v zsh &> /dev/null; then
-              zsh;
-              exit 0;
-            fi
           '';
 
           packages = with pkgs; [
