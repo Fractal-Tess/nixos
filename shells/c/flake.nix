@@ -17,9 +17,8 @@
       ];
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-          (system: f (import nixpkgs { inherit overlays system; }));
-    in
-    {
+        (system: f (import nixpkgs { inherit overlays system; }));
+    in {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
@@ -32,8 +31,6 @@
 
               clang version: $(${pkgs.clang}/bin/clang --version | head -n 1)
             " | ${pkgs.lolcat}/bin/lolcat;
-            zsh;
-            exit 0;
           '';
           packages = with pkgs;
             [
