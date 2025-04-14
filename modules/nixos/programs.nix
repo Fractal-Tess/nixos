@@ -201,7 +201,7 @@ in
       (with pkgs;
       optionals gui.devtools [
         code-cursor # Cursor
-        # zed-editor # Zed
+        zed-editor # Zed
         # gparted # Partition manager
         responsively-app # Responsive web development
         # tiled # Tile manager
