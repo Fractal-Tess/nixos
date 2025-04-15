@@ -21,6 +21,7 @@ in {
 
     ./services/index.nix
   ];
+  programs.wireshark.enable = true;
 
   options.modules = {
     gui = mkEnableOption "Enable graphical user interface";
