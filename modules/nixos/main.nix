@@ -21,8 +21,6 @@ in {
 
     ./services/index.nix
   ];
-  programs.wireshark.enable = true;
-
   options.modules = {
     gui = mkEnableOption "Enable graphical user interface";
     drivers = {
@@ -41,6 +39,9 @@ in {
     nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
     environment.systemPackages = [ ];
+
+    programs.wireshark.enable = true;
+
 
     # Nix settings
     nix.settings = {
