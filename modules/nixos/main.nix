@@ -41,6 +41,7 @@ in {
     environment.systemPackages = [ ];
 
     programs.wireshark.enable = true;
+    programs.wireshark.dumpcap.enable = true;
     programs.wireshark.package = pkgs.wireshark;
 
 
