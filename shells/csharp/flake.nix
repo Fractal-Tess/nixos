@@ -20,7 +20,8 @@
             inherit overlays system;
             config.allowUnfree = true;
           }));
-    in {
+    in
+    {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
