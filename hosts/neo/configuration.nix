@@ -99,7 +99,7 @@
   # User
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" ];
+    extraGroups = [ "networkmanager" "wheel" "video" "wireshark" ];
     password = "password";
     description = "default user";
     # packages = with pkgs; []
