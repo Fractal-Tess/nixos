@@ -41,6 +41,7 @@ in {
     environment.systemPackages = [ ];
 
     programs.wireshark.enable = true;
+    programs.wireshark.package = pkgs.wireshark;
 
 
     # Nix settings
