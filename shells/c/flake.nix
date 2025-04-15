@@ -17,8 +17,9 @@
       ];
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-        (system: f (import nixpkgs { inherit overlays system; }));
-    in {
+          (system: f (import nixpkgs { inherit overlays system; }));
+    in
+    {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
