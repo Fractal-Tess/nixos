@@ -157,6 +157,7 @@ in
         google-chrome # Chrome
         microsoft-edge # Edge
         # safari # Safari
+        tor-browser # Tor browser
 
         hyprpicker # Color picker
         kooha # Screen recorder
