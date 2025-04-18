@@ -2,7 +2,6 @@
 
 with lib;
 
-
 let
   cfg = config.modules.programs;
   gui = cfg.gui;
@@ -71,6 +70,7 @@ in
         # bun # JavaScript runtime
         # deno # JavaScript runtime
         nodejs_22 # JavaScript runtime
+        mold
 
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
@@ -80,7 +80,6 @@ in
         gnumake # GNU Make
 
         flyctl # Fly.io CLI
-
 
         jq # JSON processor
         hyperfine # Command benchmark
