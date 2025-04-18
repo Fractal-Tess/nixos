@@ -70,7 +70,6 @@ in
         # bun # JavaScript runtime
         # deno # JavaScript runtime
         nodejs_22 # JavaScript runtime
-        mold
 
         # php # PHP runtime
         # phpPackages.composer # PHP package manager
