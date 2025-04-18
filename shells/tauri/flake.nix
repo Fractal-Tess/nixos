@@ -42,11 +42,12 @@
           cargo
           rustc
           rustfmt
+
+          # Node
           nodejs_22
           pnpm
           yarn
           prettierd
-          nodePackages."npm-check-updates"
           npkill
           lolcat
         ];
