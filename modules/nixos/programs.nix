@@ -157,6 +157,8 @@ in
         # safari # Safari
         tor-browser # Tor browser
 
+
+        qbittorrent-enhanced # Torrenter
         hyprpicker # Color picker
         kooha # Screen recorder
         nomacs # Image viewer
