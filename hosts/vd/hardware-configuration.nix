@@ -4,40 +4,34 @@
 { config, lib, pkgs, modulesPath, ... }:
 
 {
-  imports =
-    [
-      (modulesPath + "/installer/scan/not-detected.nix")
-    ];
+  imports = [ (modulesPath + "/installer/scan/not-detected.nix") ];
 
-  boot.initrd.availableKernelModules = [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" ];
+  boot.initrd.availableKernelModules =
+    [ "nvme" "xhci_pci" "ahci" "usb_storage" "usbhid" "sd_mod" "pcie_aspm" ];
   boot.initrd.kernelModules = [ ];
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
 
-  fileSystems."/" =
-    {
-      device = "/dev/disk/by-uuid/1ac4c4ac-2d64-4d6b-a363-50ac2ab59865";
-      fsType = "ext4";
-    };
+  fileSystems."/" = {
+    device = "/dev/disk/by-uuid/1ac4c4ac-2d64-4d6b-a363-50ac2ab59865";
+    fsType = "ext4";
+  };
 
-  fileSystems."/boot" =
-    {
-      device = "/dev/disk/by-uuid/2188-A86F";
-      fsType = "vfat";
-      options = [ "fmask=0077" "dmask=0077" ];
-    };
+  fileSystems."/boot" = {
+    device = "/dev/disk/by-uuid/2188-A86F";
+    fsType = "vfat";
+    options = [ "fmask=0077" "dmask=0077" ];
+  };
 
-  fileSystems."/mnt/vault" =
-    {
-      device = "/dev/disk/by-uuid/f9afd82b-22de-4d54-ba51-c9c95969474d";
-      fsType = "ext4";
-    };
+  fileSystems."/mnt/vault" = {
+    device = "/dev/disk/by-uuid/f9afd82b-22de-4d54-ba51-c9c95969474d";
+    fsType = "ext4";
+  };
 
-  fileSystems."/mnt/backup" =
-    {
-      device = "/dev/disk/by-uuid/afc07c5c-4ae0-41c5-8c28-4ac771e222ba";
-      fsType = "ext4";
-    };
+  fileSystems."/mnt/backup" = {
+    device = "/dev/disk/by-uuid/afc07c5c-4ae0-41c5-8c28-4ac771e222ba";
+    fsType = "ext4";
+  };
 
   swapDevices =
     [{ device = "/dev/disk/by-uuid/02e4b41d-2e74-45b3-8ab8-df7f9409c929"; }];
@@ -53,5 +47,6 @@
   # networking.interfaces.veth3b1cf21.useDHCP = lib.mkDefault true;
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-  hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+  hardware.cpu.amd.updateMicrocode =
+    lib.mkDefault config.hardware.enableRedistributableFirmware;
 }
