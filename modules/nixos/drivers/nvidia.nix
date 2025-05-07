@@ -10,8 +10,6 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Add nvidia driver for Xorg and Wayland
-    services.xserver.videoDrivers = mkDefault [ "nvidia" ];
 
     hardware.nvidia = {
       # Modesetting is required.
