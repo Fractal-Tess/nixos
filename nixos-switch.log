@@ -1,24 +1,3 @@
 warning: Git tree '/home/fractal-tess/nixos' is dirty
-error:
-       … while calling the 'seq' builtin
-         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:359:18:
-          358|         options = checked options;
-          359|         config = checked (removeAttrs config [ "_module" ]);
-             |                  ^
-          360|         _module = checked (config._module);
-
-       … while calling the 'throw' builtin
-         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:331:13:
-          330|           else
-          331|             throw baseMsg
-             |             ^
-          332|         else
-
-       error: The option `programs.hypridle' does not exist. Definition values:
-       - In `/nix/store/4yh45j704g12x8l6l7zmfzi8mv02mghb-source/modules/nixos/display/hyprland.nix':
-           {
-             _type = "if";
-             condition = true;
-             content = {
-               enable = true;
-           ...
+building the system configuration...
+warning: Git tree '/home/fractal-tess/nixos' is dirty
