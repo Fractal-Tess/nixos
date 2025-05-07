@@ -1,25 +1,24 @@
 warning: Git tree '/home/fractal-tess/nixos' is dirty
-building the system configuration...
-warning: Git tree '/home/fractal-tess/nixos' is dirty
-these 3 derivations will be built:
-  /nix/store/9bapsngq2pm4y3zczmz6bbi5n2bncz16-system-units.drv
-  /nix/store/gjy10lvs82pnkj1317cndw1s3mjj0aiw-etc.drv
-  /nix/store/1r5l64bwl26zyhj3vm5y7h5kcmkk4ajd-nixos-system-vd-25.05.20250504.979daf3.drv
-building '/nix/store/9bapsngq2pm4y3zczmz6bbi5n2bncz16-system-units.drv'...
-building '/nix/store/gjy10lvs82pnkj1317cndw1s3mjj0aiw-etc.drv'...
-building '/nix/store/1r5l64bwl26zyhj3vm5y7h5kcmkk4ajd-nixos-system-vd-25.05.20250504.979daf3.drv'...
-updating GRUB 2 menu...
-Warning: os-prober will be executed to detect other bootable partitions.
-Its output will be used to detect bootable binaries on them and create new boot entries.
-lsblk: /dev/mapper/no*[0-9]: not a block device
-lsblk: /dev/mapper/raid*[0-9]: not a block device
-lsblk: /dev/mapper/disks*[0-9]: not a block device
-Found Windows Boot Manager on /dev/nvme0n1p1@/EFI/Microsoft/Boot/bootmgfw.efi
-stopping the following units: systemd-modules-load.service
-activating the configuration...
-setting up /etc...
-reloading user units for fractal-tess...
-restarting sysinit-reactivation.target
-starting the following units: systemd-modules-load.service
-the following new units were started: NetworkManager-dispatcher.service, sysinit-reactivation.target, systemd-tmpfiles-resetup.service
-Done. The new configuration is /nix/store/32c6ns9jswfyhz9fkqnwq9j231anvrrl-nixos-system-vd-25.05.20250504.979daf3
+error:
+       … while calling the 'seq' builtin
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:359:18:
+          358|         options = checked options;
+          359|         config = checked (removeAttrs config [ "_module" ]);
+             |                  ^
+          360|         _module = checked (config._module);
+
+       … while calling the 'throw' builtin
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:331:13:
+          330|           else
+          331|             throw baseMsg
+             |             ^
+          332|         else
+
+       error: The option `services.greetd.command' does not exist. Definition values:
+       - In `/nix/store/75rgh4gbnljz1bziaps6r8z6m515xk44-source/modules/nixos/display/regreet.nix':
+           {
+             _type = "if";
+             condition = true;
+             content = {
+               _type = "if";
+           ...
