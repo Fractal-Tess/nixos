@@ -3,14 +3,12 @@
 with lib;
 
 {
-
   config = {
 
     networking = {
       hostName = hostname;
       networkmanager.enable = mkDefault true;
       wireless.enable = mkDefault false;
-
 
       firewall = {
         enable = mkDefault true;

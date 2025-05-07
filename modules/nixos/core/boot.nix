@@ -2,7 +2,7 @@
 with lib; {
 
   boot = {
-    kernelPackages = mkDefault pkgs.linuxPackages;
+    kernelPackages = mkDefault pkgs.linuxPackages_latest;
 
     loader = {
       efi.canTouchEfiVariables = mkDefault true;
