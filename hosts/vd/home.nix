@@ -141,7 +141,6 @@ in {
     # File Management
     pcmanfm # Lightweight file manager
     mate.engrampa # Archive manager
-    nextcloud-client # Nextcloud sync client
 
     # Media Players
     vlc # Versatile media player
