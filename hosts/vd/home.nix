@@ -22,7 +22,6 @@ in {
   # Has to exist so other home manager modules can mkMerge
   home.packages = with pkgs; [
     # === SYSTEM UTILITIES ===
-    neovim # Highly configurable text editor
     usbutils # USB device utilities
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
