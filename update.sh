@@ -19,15 +19,13 @@ if ! sudo nixos-rebuild switch --flake ~/nixos --show-trace --impure 2>&1 | tee 
   echo "nixos-rebuild failed. Showing errors from nixos-switch.log:"
   rg error nixos-switch.log || true
   exit 1
+else
+  gen=$(nixos-rebuild list-generations | head -n 2 | tail -1 | awk '{print $1}')
+  echo "Committing changes (after successful update)..."
+  git commit -m "$gen"
+  # Try pushing to origin but don't fail if git exits with 1
+  echo "Trying to push commit to origin..."
+  git push origin main || echo "Failed to push to origin"
 fi
-
-gen=$(nixos-rebuild list-generations | head -n 2 | tail -1 | awk '{print $1}')
-
-echo "Committing changes (after successful update)..."
-git commit -m "$gen"
-
-# Try pushing to origin but don't fail if git exits with 1
-echo "Trying to push commit to origin..."
-git push origin main || echo "Failed to push to origin"
 
 popd
