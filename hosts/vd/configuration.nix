@@ -21,16 +21,28 @@
     ./../../modules/nixos/drivers/nvidia.nix
 
     # Display
-    ./../../modules/nixos/display/index.nix
+    ./../../modules/nixos/display/default.nix
 
     # Services
-    ./../../modules/nixos/services/index.nix
+    ./../../modules/nixos/services/default.nix
   ];
 
   # Nix settings
-  nix.settings = {
-    experimental-features = [ "nix-command" "flakes" ];
-    auto-optimise-store = true;
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+      substituters = [ "https://hyprland.cachix.org" ];
+      trusted-public-keys = [
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      ];
+    };
+
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
   };
 
   nixpkgs.config = {
@@ -44,7 +56,7 @@
 
   modules = {
     # ----- Drivers -----
-    drivers.nvidia = true;
+    drivers.nvidia.enable = true;
 
     # ----- Security -----
     security.noSudoPassword = true;
