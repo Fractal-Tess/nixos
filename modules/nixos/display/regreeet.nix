@@ -13,7 +13,7 @@ in
     enable = mkEnableOption "ReGreet";
 
     # Option to enable automatic login without password prompt
-    autoLogin = mkEnableOption "Greetd auto login";
+    autoLogin = mkEnableOption "ReGreet auto login";
   };
 
   # Configuration that applies when this module is enabled
@@ -22,7 +22,7 @@ in
     assertions = [{
       assertion = hyprland.enable;
       message =
-        "Greetd is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
+        "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
     }];
 
     # Enable regreet as the greeter
