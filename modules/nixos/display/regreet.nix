@@ -50,34 +50,42 @@ in
       theme = { name = username; };
 
       # Set the session to Hyprland
-      settings = {
-        background = {
-          path = "/home/fractal-tess/nixos/backgrounds/1.jpg";
-          fit = "Cover";
-        };
+      settings = ''
+        [background]
+        path = "/home/fractal-tess/nixos/backgrounds/1.jpg"
+        fit = "Cover"
 
-        commands = {
-          reboot = [ "systemctl" "reboot" ];
-          poweroff = [ "systemctl" "poweroff" ];
-        };
+        [commands]
+        reboot = ["systemctl", "reboot"]
+        poweroff = ["systemctl", "poweroff"]
 
-        appearance = { greeting_msg = "Welcome back, ${username}!"; };
+        [appearance]
+        greeting_msg = "Welcome back, ${username}!"
 
-        widget.clock = {
-          # strftime format argument
-          format = "%a %H:%M";
+        [widget.clock]
+        format = "%a %H:%M"
+        resolution = "500ms"
+        timezone = "${config.time.timeZone}"
+        label_width = 150
 
-          # How often to update the text
-          resolution = "500ms";
+        [GTK]
+        # Whether to use the dark theme
+        application_prefer_dark_theme = true
 
-          # Use the system timezone from config
-          timezone = config.time.timeZone;
+        # Cursor theme name
+        cursor_theme_name = "Adwaita"
 
-          # Ask GTK to make the label at least this wide. This helps keeps the parent element layout and width consistent.
-          # Experiment with different widths, the interpretation of this value is entirely up to GTK.
-          label_width = 150;
-        };
-      };
+        # Font name and size
+        font_name = "Cantarell 16"
+
+        # Icon theme name
+        icon_theme_name = "Adwaita"
+
+        # GTK theme name
+        theme_name = "Adwaita"
+
+      '';
+
     };
   };
 }
