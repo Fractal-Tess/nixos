@@ -25,14 +25,22 @@ in
         "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
     }];
 
+    services.greetd = mkIf cfg.autoLogin {
+      command = "${config.programs.hyprland.package}/bin/Hyprland";
+    };
+
     # Enable regreet as the greeter
     programs.regreet = {
+      # Enable regreet
       enable = true;
+
+      # Set the theme to the user's name
       theme = { name = username; };
-      # Optionally, set the session to Hyprland
+
+      # Set the session to Hyprland
       settings = {
         background = {
-          path = "/home/fractal-tess/Pictures/wallpapers/1.jpg";
+          path = "/home/fractal-tess/nixos/backgrounds/1.jpg";
           fit = "Cover";
         };
 
