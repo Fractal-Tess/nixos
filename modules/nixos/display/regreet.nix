@@ -60,6 +60,12 @@ in
           poweroff = [ "systemctl" "poweroff" ];
         };
         appearance = { greeting_msg = "Welcome back, ${username}!"; };
+        GTK = {
+          application_prefer_dark_theme = true;
+          cursor_theme_name = "Nordzy-cursors";
+          icon_theme_name = "Nordic";
+          theme_name = "Nordic";
+        };
         "widget.clock" = {
           format = "%a %H:%M";
           resolution = "500ms";
