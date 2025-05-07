@@ -18,7 +18,7 @@ with lib;
 
   # Hyprland
   xdg.configFile.hypr = mkIf osConfig.modules.display.hyprland.enable {
-    source = ../../config/hypr;
+    source = ../../config/hyprland;
     recursive = true;
   };
 

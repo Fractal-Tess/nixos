@@ -67,11 +67,8 @@
       hyprland.enable = true;
 
       # ----- ReGreet -----
-      regreet = { enable = false; };
+      regreet.enable = true;
     };
-
-    # Graphics should be enabled by default in 
-    # /modules/nixos/display/graphics.nix
 
     # ----- Bar -----
     display.waybar.enable = true;
@@ -96,10 +93,10 @@
   # User
   users.users.fractal-tess = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "wireshark" ];
+    extraGroups = [ "networkmanager" "wheel" "video" ];
     password = "password";
     description = "default user";
-    # packages = with pkgs; []
+    packages = with pkgs; [ ];
   };
 
   # Make users mutable 
@@ -120,11 +117,6 @@
     powerline-fonts
     powerline-symbols
   ];
-
-  # programs.wireshark.enable = true;
-  # programs.wireshark.dumpcap.enable = true;
-  # programs.wireshark.package = pkgs.wireshark;
-
   # Printing
   services.printing = {
     enable = true;

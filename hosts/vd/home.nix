@@ -187,7 +187,7 @@ in {
 
     # === COMMENTED OUT ===
     blender
-    kicad
+    # kicad
     audacity
     gimp
     inkscape
