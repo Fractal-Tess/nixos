@@ -16,8 +16,6 @@
     display.hyprland = {
       enable = true;
       # Session manager
-      greetd.enable = true;
-      greetd.autoLogin = false;
 
       # Drivers
       videoDrivers = [ "amdgpu" ];
