@@ -61,9 +61,10 @@ in
         };
         appearance = { greeting_msg = "Welcome back, ${username}!"; };
         GTK = {
-          application_prefer_dark_theme = true;
-          icon_theme_name = "Nordic";
-          theme_name = "Nordic";
+          application_prefer_dark_theme = mkForce true;
+          cursor_theme_name = mkForce "Nordzy-cursors";
+          icon_theme_name = mkForce "Nordic";
+          theme_name = mkForce "Nordic";
         };
         "widget.clock" = {
           format = "%a %H:%M";

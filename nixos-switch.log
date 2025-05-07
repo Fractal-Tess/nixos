@@ -860,7 +860,7 @@ error:
 
        … while evaluating attribute 'GTK'
 
-       … while evaluating attribute 'cursor_theme_name'
+       … while evaluating attribute 'icon_theme_name'
 
        … while calling anonymous lambda
          at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/types.nix:832:30:
@@ -967,7 +967,7 @@ error:
              |           ^
           512|             showDefs [
 
-       error: The option `programs.regreet.settings.GTK.cursor_theme_name' has conflicting definition values:
-       - In `/nix/store/iwvphg8j2dm7kc5s53kfwsmsk4cah2qb-source/modules/nixos/display/regreet.nix': "Nordzy-cursors"
+       error: The option `programs.regreet.settings.GTK.icon_theme_name' has conflicting definition values:
+       - In `/nix/store/zgw1dr3m2n0hr4ag54d6wc27jrd7k2jr-source/modules/nixos/display/regreet.nix': "Nordic"
        - In `/nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/nixos/modules/programs/regreet.nix': "Adwaita"
        Use `lib.mkForce value` or `lib.mkDefault value` to change the priority on any of these definitions.
