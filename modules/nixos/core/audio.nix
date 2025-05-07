@@ -1,15 +1,8 @@
 { config, lib, pkgs, ... }:
 
 with lib;
-let cfg = config.modules.audio;
 
-in {
-  options.modules.audio = {
-    # Automatically enable this if this is a desktop install
-    # This can also manually be enabled by using "modules.audio.enable = true;"
-    enable = mkDefault config.modules.gui;
-  };
-
+{
   config = {
     security.rtkit.enable = mkDefault true;
 

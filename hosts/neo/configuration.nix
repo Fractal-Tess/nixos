@@ -6,8 +6,6 @@
   ];
 
   modules = {
-    gui = true;
-
     # Drivers
     drivers.amd = true;
 
@@ -65,34 +63,12 @@
   # Light
   programs.light.enable = true;
 
-
   # Zram
   zramSwap.enable = true;
   swapDevices = [{
     device = "/swapfile";
     size = 16 * 1024; # 16GB
   }];
-
-  # --------------------- Programs --------------------------
-  modules.programs = {
-    enable = true;
-    cli = {
-      core = true;
-      devtools = true;
-      language-servers = true;
-      extra = true;
-    };
-    gui = {
-      core = true;
-      communication = true;
-      browsers = true;
-      office = true;
-      devtools = true;
-      games = true;
-      fonts = true;
-      extra = true;
-    };
-  };
 
   # ------------------- User accounts -----------------------
 
