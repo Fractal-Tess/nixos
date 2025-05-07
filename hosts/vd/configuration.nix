@@ -18,7 +18,7 @@
     ./../../modules/nixos/core/time.nix
 
     # Drivers
-    ./../../modules/nixos/drivers/nvidia.nix
+    ./../../modules/nixos/drivers/default.nix
 
     # Display
     ./../../modules/nixos/display/default.nix
