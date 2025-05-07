@@ -1,56 +1,4 @@
 warning: Git tree '/home/fractal-tess/nixos' is dirty
-warning: updating lock file '"/home/fractal-tess/nixos/flake.lock"':
-• Removed input 'hyprland'
-• Removed input 'hyprland/aquamarine'
-• Removed input 'hyprland/aquamarine/hyprutils'
-• Removed input 'hyprland/aquamarine/hyprwayland-scanner'
-• Removed input 'hyprland/aquamarine/nixpkgs'
-• Removed input 'hyprland/aquamarine/systems'
-• Removed input 'hyprland/hyprcursor'
-• Removed input 'hyprland/hyprcursor/hyprlang'
-• Removed input 'hyprland/hyprcursor/nixpkgs'
-• Removed input 'hyprland/hyprcursor/systems'
-• Removed input 'hyprland/hyprgraphics'
-• Removed input 'hyprland/hyprgraphics/hyprutils'
-• Removed input 'hyprland/hyprgraphics/nixpkgs'
-• Removed input 'hyprland/hyprgraphics/systems'
-• Removed input 'hyprland/hyprland-protocols'
-• Removed input 'hyprland/hyprland-protocols/nixpkgs'
-• Removed input 'hyprland/hyprland-protocols/systems'
-• Removed input 'hyprland/hyprland-qtutils'
-• Removed input 'hyprland/hyprland-qtutils/hyprland-qt-support'
-• Removed input 'hyprland/hyprland-qtutils/hyprland-qt-support/hyprlang'
-• Removed input 'hyprland/hyprland-qtutils/hyprland-qt-support/nixpkgs'
-• Removed input 'hyprland/hyprland-qtutils/hyprland-qt-support/systems'
-• Removed input 'hyprland/hyprland-qtutils/hyprlang'
-• Removed input 'hyprland/hyprland-qtutils/hyprutils'
-• Removed input 'hyprland/hyprland-qtutils/nixpkgs'
-• Removed input 'hyprland/hyprland-qtutils/systems'
-• Removed input 'hyprland/hyprlang'
-• Removed input 'hyprland/hyprlang/hyprutils'
-• Removed input 'hyprland/hyprlang/nixpkgs'
-• Removed input 'hyprland/hyprlang/systems'
-• Removed input 'hyprland/hyprutils'
-• Removed input 'hyprland/hyprutils/nixpkgs'
-• Removed input 'hyprland/hyprutils/systems'
-• Removed input 'hyprland/hyprwayland-scanner'
-• Removed input 'hyprland/hyprwayland-scanner/nixpkgs'
-• Removed input 'hyprland/hyprwayland-scanner/systems'
-• Removed input 'hyprland/nixpkgs'
-• Removed input 'hyprland/pre-commit-hooks'
-• Removed input 'hyprland/pre-commit-hooks/flake-compat'
-• Removed input 'hyprland/pre-commit-hooks/gitignore'
-• Removed input 'hyprland/pre-commit-hooks/gitignore/nixpkgs'
-• Removed input 'hyprland/pre-commit-hooks/nixpkgs'
-• Removed input 'hyprland/systems'
-• Removed input 'hyprland/xdph'
-• Removed input 'hyprland/xdph/hyprland-protocols'
-• Removed input 'hyprland/xdph/hyprlang'
-• Removed input 'hyprland/xdph/hyprutils'
-• Removed input 'hyprland/xdph/hyprwayland-scanner'
-• Removed input 'hyprland/xdph/nixpkgs'
-• Removed input 'hyprland/xdph/systems'
-warning: Git tree '/home/fractal-tess/nixos' is dirty
 error:
        … while calling the 'seq' builtin
          at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:359:18:
@@ -271,6 +219,34 @@ error:
              |                        ^
           454|             inherit modules;
 
+       … while evaluating the attribute 'disabled'
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:453:13:
+          452|           collectResults = modules: {
+          453|             disabled = concatLists (catAttrs "disabled" modules);
+             |             ^
+          454|             inherit modules;
+
+       … while calling the 'concatLists' builtin
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:453:24:
+          452|           collectResults = modules: {
+          453|             disabled = concatLists (catAttrs "disabled" modules);
+             |                        ^
+          454|             inherit modules;
+
+       … while evaluating the attribute 'disabled'
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:453:13:
+          452|           collectResults = modules: {
+          453|             disabled = concatLists (catAttrs "disabled" modules);
+             |             ^
+          454|             inherit modules;
+
+       … while calling the 'concatLists' builtin
+         at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:453:24:
+          452|           collectResults = modules: {
+          453|             disabled = concatLists (catAttrs "disabled" modules);
+             |                        ^
+          454|             inherit modules;
+
        … while evaluating a branch condition
          at /nix/store/708n1gvb7yizlay48z15cx51ciicvv2a-source/lib/modules.nix:471:19:
           470|                 (
@@ -404,9 +380,4 @@ error:
              |                                                     ^
           406|           );
 
-       error: undefined variable 'mkIf'
-       at /nix/store/d2p03f6jy45vkmjc1k6xcx6y88m9kcx4-source/hosts/vd/configuration.nix:118:23:
-          117|
-          118|   services.printing = mkIf modules.gui {
-             |                       ^
-          119|     enable = true;
+       error: path '/nix/store/0qz5drd53ijv493vgckdhv83n9fg7w8d-source/modules/nixos/display/greetd.nix' does not exist
