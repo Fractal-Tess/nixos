@@ -9,7 +9,6 @@
     };
 
     polymc.url = "github:PolyMC/PolyMC";
-    hyprland.url = "git+https://github.com/hyprwm/Hyprland?submodules=1";
   };
 
   outputs = { self, nixpkgs, polymc, ... }@inputs:
@@ -20,11 +19,7 @@
           specialArgs = { inherit inputs hostname username; };
           modules = [
             ./hosts/${hostname}/configuration.nix
-            {
-              nixpkgs.overlays = [
-                polymc.overlay
-              ];
-            }
+            { nixpkgs.overlays = [ polymc.overlay ]; }
           ];
         };
     in
