@@ -380,4 +380,4 @@ error:
              |                                                     ^
           406|           );
 
-       error: path '/nix/store/0qz5drd53ijv493vgckdhv83n9fg7w8d-source/modules/nixos/display/greetd.nix' does not exist
+       error: path '/nix/store/jjch6rj3vpmy5f5j006x0ang9vp6ni6z-source/modules/nixos/display/regreet.nix' does not exist

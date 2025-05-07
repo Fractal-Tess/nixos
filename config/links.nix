@@ -6,11 +6,9 @@ with lib;
   config = {
     home.file = mkMerge [
       # Zsh configurations
-      (mkIf config.zsh.enable { ".zshrc".source = ../../config/zsh/.zshrc; })
+      ".zshrc".source = ../../config/zsh/.zshrc;
 
-      (mkIf config.zsh.p10k {
-        ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
-      })
+      ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
     ];
 
     # Window manager and UI configurations
@@ -20,7 +18,7 @@ with lib;
         (osConfig.modules.display.hyprland.enable && config.configFiles.hypr)
         {
           hypr = {
-            source = ../../config/hypr;
+            source = ./hyprland;
             recursive = true;
           };
         })

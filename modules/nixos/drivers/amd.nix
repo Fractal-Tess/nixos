@@ -4,9 +4,9 @@ with lib;
 
 let cfg = config.modules.drivers.amd;
 in {
-  options.modules.drivers.amd = mkEnableOption "AMD GPU drivers";
+  options.modules.drivers.amd = { enable = mkEnableOption "AMD GPU drivers"; };
 
-  config = mkIf cfg {
+  config = mkIf cfg.enable {
     # Add AMD driver for Xorg and Wayland
     services.xserver.videoDrivers = mkDefault [ "amdgpu" ];
 

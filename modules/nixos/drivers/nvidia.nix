@@ -2,8 +2,14 @@
 
 with lib;
 
-{
-  config = mkIf config.modules.drivers.nvidia {
+let cfg = config.modules.drivers.nvidia;
+
+in {
+  options.modules.drivers.nvidia = {
+    enable = mkEnableOption "NVIDIA GPU drivers";
+  };
+
+  config = mkIf cfg.enable {
     # Add nvidia driver for Xorg and Wayland
     services.xserver.videoDrivers = mkDefault [ "nvidia" ];
 
@@ -28,7 +34,7 @@ with lib;
       # supported GPUs is at: 
       # https://github.com/NVIDIA/open-gpu-kernel-modules#compatible-gpus 
       # Only available from driver 515.43.04+
-      # open = mkDefault false;
+      open = mkDefault true;
 
       # Enable the Nvidia settings menu,
       # accessible via `nvidia-settings`
