@@ -28,8 +28,12 @@ in {
 
     # Add kitty terminal to system packages
     environment.systemPackages = [ pkgs.kitty ];
-
     # Enable dconf for GTK/Flatpak app settings
     programs.dconf.enable = true;
+    # Add nvidia driver for Xorg and Wayland if nvidia is enabled
+    services.xserver.videoDrivers = mkMerge [
+      (mkIf config.modules.drivers.nvidia.enable (mkDefault [ "nvidia" ]))
+      (mkIf config.modules.drivers.amd.enable (mkDefault [ "amdgpu" ]))
+    ];
   };
 }
