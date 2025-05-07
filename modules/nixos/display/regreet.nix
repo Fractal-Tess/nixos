@@ -26,7 +26,18 @@ in
     }];
 
     services.greetd = mkIf cfg.autoLogin {
-      command = "${config.programs.hyprland.package}/bin/Hyprland";
+      enable = true;
+      settings = {
+        default_session = {
+          command = "${config.programs.hyprland.package}/bin/Hyprland";
+          user = username;
+        };
+
+        # initial_session = {
+        #   command = "${config.programs.hyprland.package}/bin/Hyprland";
+        #   user = username;
+        # };
+      };
     };
 
     # Enable regreet as the greeter
