@@ -113,9 +113,8 @@
   # programs.wireshark.dumpcap.enable = true;
   # programs.wireshark.package = pkgs.wireshark;
 
-  # Graphics
-
-  services.printing = mkIf modules.gui {
+  # Printing
+  services.printing = {
     enable = true;
     drivers = with pkgs; [ ]; # Add printer drivers as needed
   };
