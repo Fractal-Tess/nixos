@@ -25,18 +25,17 @@ in
         "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
     }];
 
-    services.greetd = mkIf cfg.autoLogin {
+    services.greetd = {
       enable = true;
-      settings = {
-        default_session = {
+      settings = mkIf cfg.autoLogin {
+        initial_session = {
           command = "${config.programs.hyprland.package}/bin/Hyprland";
           user = username;
         };
-
-        # initial_session = {
-        #   command = "${config.programs.hyprland.package}/bin/Hyprland";
-        #   user = username;
-        # };
+        default_session = {
+          command = "${config.programs.regreet.package}/bin/regreet";
+          user = "greeter";
+        };
       };
     };
 
@@ -44,6 +43,8 @@ in
     programs.regreet = {
       # Enable regreet
       enable = true;
+
+      cageArgs = [ "-m" "last" ];
 
       # Set the theme to the user's name
       theme = { name = username; };
