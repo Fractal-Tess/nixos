@@ -1,0 +1,193 @@
+@define-color white #ffffff;
+@define-color text #a1bdce;
+@define-color muted #4a4a4a;
+@define-color col1 #6f8fdb;
+@define-color col2 #915caf;
+@define-color col3 #e4c9af;
+@define-color col4 #99cccc;
+@define-color col5 #258ECE;
+@define-color bg1 #0f0f17;
+@define-color bg2 #1a1a1a;
+
+@define-color green #e8edf0;
+
+* {
+  font-family: "JetBrains Mono Nerd Font";
+  /* font-family: "JetBrainsMono Nerd Font"; */
+  /* font-family: "CaskaydiaCove Nerd Font Mono"; */
+  /* font-family: "CaskaydiaCove Nerd Font"; */
+  font-weight: bold;
+  font-size: 14px;
+}
+
+#waybar {
+  background: @bg1;
+  border: 0.25rem solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+}
+
+#language {
+  color: @text;
+  margin: 0 0.5rem;
+  font-size: 1rem;
+}
+
+#custom-notification {
+  font-family: "JetBrains Mono Nerd Font";
+  font-size: 1.1rem;
+  font-weight: 900;
+  padding-right: 1rem;
+  color: @text;
+}
+
+#custom-nixos {
+  color: @col5;
+  font-size: 1.5rem;
+  padding: 0.5rem;
+}
+
+#cava {
+  margin: 0 0.5rem;
+  color: @text;
+}
+
+#workspaces {
+  background: rgba(23, 23, 23, 0);
+  color: @col5;
+  box-shadow: none;
+  text-shadow: none;
+  border-radius: 0.7rem;
+  transition: 0.2s ease;
+}
+
+#workspaces button {
+  background: rgba(23, 23, 23, 0);
+  color: @text;
+  box-shadow: none;
+  text-shadow: none;
+  border-radius: 0.7rem;
+  transition: 0.2s ease;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  /*   animation: ws_normal 20s ease-in-out 1; */
+}
+
+#workspaces button.active {
+  /* background-image: url("/home/anik/Documents/bar1.png");*/
+  color: @text;
+  transition: all 0.3s ease;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+  /*  transition: all 0.4s cubic-bezier(.55,0.68,.48,1.682); */
+}
+
+#workspaces button:hover {
+  background: none;
+  color: @col2;
+  animation: ws_hover 20s ease-in-out 1;
+  transition: all 0.5s cubic-bezier(0.55, -0.68, 0.48, 1.682);
+}
+
+#custom-spacer {
+  opacity: 0;
+  margin: 0 0.5rem;
+}
+
+#custom-mouse {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+  background: #161320;
+}
+
+#backlight {
+  color: #2096c0;
+  background: rgba(23, 23, 23, 0);
+  font-weight: normal;
+  font-size: 19px;
+  margin: 1px 0px 0px 0px;
+  padding-left: 0px;
+  padding-right: 2px;
+}
+#bluetooth,
+#clock {
+  color: @text;
+  font-size: 1rem;
+  font-weight: 900;
+  font-family: "JetBrains Mono Nerd Font";
+  background: rgba(23, 23, 23, 0);
+  opacity: 1;
+  margin: 3px 0px 0px 0px;
+  padding-left: 10px;
+  padding-right: 10px;
+  border: none;
+}
+#pulseaudio {
+  font-weight: normal;
+  font-size: 18px;
+  color: #6f8fdb;
+  background: rgba(22, 19, 32, 0);
+  opacity: 1;
+  margin: 0px 0px 0px 0px;
+  padding-left: 3px;
+  padding-right: 3px;
+}
+
+/* CPU/GPU/MEMORY */
+#cpu,
+#custom-gpu,
+#memory {
+  font-weight: bold;
+}
+
+#cpu {
+  color: @col1;
+}
+
+#custom-gpu_nvidia {
+  color: @col4;
+}
+
+#memory {
+  color: @col2;
+}
+
+/* Battery */
+#battery.charging,
+#battery.plugged {
+  color: @green;
+}
+#battery.critical:not(.charging) {
+  color: red;
+}
+
+/* Disk */
+#disk {
+  font-size: 0.8rem;
+  margin: 0.5rem 0.5rem;
+  color: @muted;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  background-color: @bg2;
+}
+
+#mpris {
+  color: @text;
+  animation: repeat;
+  animation-name: blink;
+  animation-duration: 3s;
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-direction: alternate;
+}
+
+@keyframes blink {
+  to {
+    color: @muted;
+  }
+}
+
+#network.ethernet {
+  color: @text;
+  min-width: 250px;
+}
