@@ -18,6 +18,7 @@ in {
     };
 
     programs.hyprlock.enable = true;
+    services.hypridle.enable = true;
 
     # Enable XDG Desktop Portal for sandboxed/Wayland apps
     xdg.portal = {
