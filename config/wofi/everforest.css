@@ -35,6 +35,17 @@ window {
 }
 
 #entry:selected {
-  background-color: #272e33;
-  color: #d3c6aa;
+  background-color: #3a3f4b;
+  border-radius: 0px;
+}
+
+#text:selected {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+#entry:selected {
+  background-color: transparent;
+  border-left: 3px solid #88c0d0;
+  padding-left: 5px;
 }
