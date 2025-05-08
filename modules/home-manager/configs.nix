@@ -23,6 +23,7 @@ with lib;
     recursive = true;
   };
 
+  # Wofi
   xdg.configFile.wofi = {
     source = ../../config/wofi;
     recursive = true;
