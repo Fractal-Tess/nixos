@@ -26,6 +26,7 @@ in {
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
     trash-cli # Command line interface to FreeDesktop.org trash
+    ddcutil # Monitor control utility (DDC/CI)
 
     # === FILE MANAGEMENT ===
     yazi # Terminal file manager

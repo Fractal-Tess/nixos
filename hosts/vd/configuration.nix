@@ -27,6 +27,14 @@
     ./../../modules/nixos/services/default.nix
   ];
 
+  # DDC support
+  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
+  boot.kernelModules = [ "i2c-dev" ];
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+  hardware.i2c.enable = true;
+
   # Nix settings
   nix = {
     settings = {
@@ -93,6 +101,7 @@
   # User
   users.users.fractal-tess = {
     isNormalUser = true;
+    # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
     extraGroups = [ "networkmanager" "wheel" "video" ];
     password = "password";
     description = "default user";
