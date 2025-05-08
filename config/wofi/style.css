@@ -2,6 +2,7 @@ window {
   margin: 0px;
   border: 1px solid #7a8478;
   background-color: #1e2326;
+  font-family: 'CaskaydiaCove NF';
 }
 
 #input {
@@ -35,5 +36,13 @@ window {
 }
 
 #entry:selected {
-  background-color: #272e33;
+  background-color: #3a3f4b;
+  border-radius: 0px;
+  font-weight: bold;
+}
+
+#text:selected {
+  color: #ffffff;
+  font-weight: bold;
+  background-color: transparent;
 }
