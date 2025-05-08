@@ -23,7 +23,7 @@ with lib;
     recursive = true;
   };
 
-  xdg.configFile.wofi."style.css" = {
+  xdg.configFile."wofi/style.css" = {
     source = ../../config/wofi/themes/everforest.css;
   };
 }
