@@ -1,39 +1,40 @@
 window {
-margin: 0px;
-border: 1px solid #7A8478;
-background-color: #1E2326;
+  margin: 0px;
+  border: 1px solid #7a8478;
+  background-color: #1e2326;
 }
 
 #input {
-margin: 5px;
-border: none;
-color: #D3C6AA;
-background-color: #272E33;
+  margin: 5px;
+  border: none;
+  color: #d3c6aa;
+  background-color: #272e33;
 }
 
 #inner-box {
-margin: 5px;
-border: none;
-background-color: #1E2326;
+  margin: 5px;
+  border: none;
+  background-color: #1e2326;
 }
 
 #outer-box {
-margin: 5px;
-border: none;
-background-color: #1E2326;
+  margin: 5px;
+  border: none;
+  background-color: #1e2326;
 }
 
 #scroll {
-margin: 0px;
-border: none;
+  margin: 0px;
+  border: none;
 }
 
 #text {
-margin: 5px;
-border: none;
-color: #D3C6AA;
+  margin: 5px;
+  border: none;
+  color: #d3c6aa;
 }
 
 #entry:selected {
-background-color: #272E33;
+  background-color: #272e33;
+  color: #d3c6aa;
 }
