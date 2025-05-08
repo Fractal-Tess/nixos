@@ -24,6 +24,6 @@ with lib;
   };
 
   xdg.configFile."wofi/style.css" = {
-    source = ../../config/wofi/themes/everforest.css;
+    source = ../../config/wofi/everforest.css;
   };
 }
