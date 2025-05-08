@@ -14,6 +14,9 @@ with lib;
 
     # Zsh - p10k config
     ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
+
+    # Wofi config
+    ".config/wofi/style.css".source = ../../config/wofi/themes/everforest.css;
   };
 
   # Hyprland
@@ -27,4 +30,5 @@ with lib;
     source = ../../config/waybar;
     recursive = true;
   };
+
 }
