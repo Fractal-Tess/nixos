@@ -663,6 +663,6 @@ error:
              |       ^
            29|         path = file.source;
 
-       … while adding path '/nix/store/8qr2s6ajljv7145a59r6l8hb7jbi8b4b-source/config/wofi/themes/everforest.css'
+       … while adding path '/nix/store/fk91rn05dmhqvkka2w0fbx1gs07g2017-source/config/wofi/themes/everforest.css'
 
-       error: path '/nix/store/8qr2s6ajljv7145a59r6l8hb7jbi8b4b-source/config/wofi/themes/everforest.css' does not exist
+       error: path '/nix/store/fk91rn05dmhqvkka2w0fbx1gs07g2017-source/config/wofi/themes/everforest.css' does not exist
