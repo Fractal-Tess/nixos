@@ -33,12 +33,6 @@
     options = [ "fmask=0077" "dmask=0077" ];
   };
 
-  fileSystems."/var/lib/docker/overlay2/bff1d8dd6f3b023cf8e1ba510d5100d6ab70ebc33e779aee12bbf2378236b799/merged" =
-    {
-      device = "overlay";
-      fsType = "overlay";
-    };
-
   swapDevices =
     [{ device = "/dev/disk/by-uuid/02e4b41d-2e74-45b3-8ab8-df7f9409c929"; }];
 
