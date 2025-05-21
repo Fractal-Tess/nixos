@@ -1,4 +1,4 @@
-{ config, lib, pkgs, username, ... }:
+{ config, lib, username, ... }:
 
 with lib;
 
@@ -52,7 +52,7 @@ in
       # Set the session to Hyprland
       settings = {
         background = {
-          path = "/usr/share/backgrounds/greeter.jpg";
+          path = "/home/${username}/nixos/backgrounds/1.jpg";
           fit = "Cover";
         };
         commands = {
