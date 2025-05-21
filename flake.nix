@@ -19,7 +19,10 @@
           specialArgs = { inherit inputs hostname username; };
           modules = [
             ./hosts/${hostname}/configuration.nix
-            { nixpkgs.overlays = [ polymc.overlay ]; }
+            {
+              nixpkgs.overlays =
+                [ polymc.overlay (import ./overlays/ulauncher-webkitgtk.nix) ];
+            }
           ];
         };
     in
