@@ -12,6 +12,7 @@ in {
   config = mkIf cfg.enable {
 
     hardware.nvidia = {
+
       # Modesetting is required.
       modesetting.enable = mkDefault true;
 

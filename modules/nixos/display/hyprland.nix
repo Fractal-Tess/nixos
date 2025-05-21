@@ -1,4 +1,4 @@
-{ inputs, config, lib, pkgs, ... }:
+{ config, lib, pkgs, ... }:
 
 with lib;
 
@@ -33,10 +33,10 @@ in {
     environment.systemPackages = [ pkgs.kitty ];
     # Enable dconf for GTK/Flatpak app settings
     programs.dconf.enable = true;
-    # Add nvidia driver for Xorg and Wayland if nvidia is enabled
+    # Add nvidia driver for 
     services.xserver.videoDrivers = mkMerge [
-      (mkIf config.modules.drivers.nvidia.enable (mkDefault [ "nvidia" ]))
-      (mkIf config.modules.drivers.amd.enable (mkDefault [ "amdgpu" ]))
+      (mkIf config.modules.drivers.nvidia.enable [ "nvidia" ])
+      (mkIf config.modules.drivers.amd.enable [ "amdgpu" ])
     ];
   };
 }
