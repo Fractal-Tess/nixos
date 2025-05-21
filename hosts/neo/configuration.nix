@@ -1,39 +1,68 @@
-{ pkgs, inputs, username, ... }: {
+{ pkgs, inputs, username, ... }:
+
+{
   imports = [
+    # System configuration
     ./hardware-configuration.nix
+
+    # Home manager
     inputs.home-manager.nixosModules.default
-    ../../modules/nixos/main.nix
+
+    # Core system modules
+    ./../../modules/nixos/core/audio.nix
+    ./../../modules/nixos/core/boot.nix
+    ./../../modules/nixos/core/locale.nix
+    ./../../modules/nixos/core/networking.nix
+    ./../../modules/nixos/core/security.nix
+    ./../../modules/nixos/core/shell.nix
+    ./../../modules/nixos/core/time.nix
+
+    # Drivers
+    ./../../modules/nixos/drivers/default.nix
+
+    # Display
+    ./../../modules/nixos/display/default.nix
+
+    # Services
+    ./../../modules/nixos/services/default.nix
   ];
 
-  modules = {
-    # Drivers
-    drivers.amd = true;
+  # hardware.nvidia.open = false;
 
-    # Security
+  # Nix settings
+  nix = {
+    settings = {
+      experimental-features = [ "nix-command" "flakes" ];
+      auto-optimise-store = true;
+    };
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
+  };
+
+  nixpkgs.config = {
+    allowUnfree = true;
+    permittedInsecurePackages = [ "electron-27.3.11" ];
+  };
+
+  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
+
+  environment.systemPackages = [ ];
+
+  modules = {
+    # ----- Drivers -----
+    drivers.amd.enable = true;
+
+    # ----- Security -----
     security.noSudoPassword = true;
 
-    # Hyprland ( window manager )
-    display.hyprland = {
-      enable = true;
-      # Session manager
-
-      # Drivers
-      videoDrivers = [ "amdgpu" ];
-      openGL = {
-        enable = true;
-        extraPackages = with pkgs; [
-          libvdpau-va-gl
-          amdvlk
-          driversi686Linux.amdvlk
-          # rocm-opencl-icd
-          # rocm-opencl-runtime
-        ];
-        # extraPackages32 = with pkgs; [ driversi686Linux.amdvlk ];
-
-      };
+    # ----- Display -----
+    display = {
+      hyprland.enable = true;
+      regreet.enable = true;
     };
-
-    # Bar
     display.waybar.enable = true;
 
     # Docker 
@@ -41,7 +70,6 @@
       enable = true;
       rootless = true;
       devtools = true;
-
       portainer.enable = true;
     };
 
@@ -53,10 +81,9 @@
   };
 
   # Bluetooth
-  hardware.bluetooth.enable = true; # enables support for Bluetooth
-  hardware.bluetooth.powerOnBoot =
-    true; # powers up the default Bluetooth controller on boot
-  services.blueman.enable = true; # enables the Bluetooth manager
+  hardware.bluetooth.enable = true;
+  hardware.bluetooth.powerOnBoot = true;
+  services.blueman.enable = true;
 
   # Light
   programs.light.enable = true;
@@ -68,15 +95,13 @@
     size = 16 * 1024; # 16GB
   }];
 
-  # ------------------- User accounts -----------------------
-
   # User
   users.users.fractal-tess = {
     isNormalUser = true;
     extraGroups = [ "networkmanager" "wheel" "video" "wireshark" ];
     password = "password";
     description = "default user";
-    # packages = with pkgs; []
+    packages = with pkgs; [ ];
   };
 
   # Make users mutable 
@@ -98,37 +123,29 @@
     powerline-symbols
   ];
 
-  # Security
-  security.sudo.extraRules = [{
-    users = [ username ];
-    commands = [{
-      # Removes the need for a password when using sudo
-      command = "ALL";
-      options = [ "NOPASSWD" ];
-    }];
-  }];
-
-  # Timezone & locale
-  time.timeZone = "Europe/Sofia";
-  i18n.defaultLocale = "en_US.UTF-8";
-  i18n.extraLocaleSettings = {
-    LC_ADDRESS = "en_US.UTF-8";
-    LC_IDENTIFICATION = "en_US.UTF-8";
-    LC_MEASUREMENT = "en_US.UTF-8";
-    LC_MONETARY = "en_US.UTF-8";
-    LC_NAME = "en_US.UTF-8";
-    LC_NUMERIC = "en_US.UTF-8";
-    LC_PAPER = "en_US.UTF-8";
-    LC_TELEPHONE = "en_US.UTF-8";
-    LC_TIME = "en_US.UTF-8";
+  # Printing
+  services.printing = {
+    enable = true;
+    drivers = with pkgs; [ ]; # Add printer drivers as needed
   };
 
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It‘s perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
+  services.dbus.enable = true;
+  services.gvfs.enable = true;
+
+  environment.variables = {
+    QT_QPA_PLATFORM = "xcb";
+    GTK_THEME = "Nordic";
+    XCURSOR_THEME = "Nordzy-cursors";
+    XCURSOR_SIZE = "24";
+    DIRENV_LOG_FORMAT = "";
+    NIXOS_OZONE_WL = "1";
+    VISUAL = "nvim";
+    SUDO_EDITOR = "nvim";
+    EDITOR = "nvim";
+    MOZ_USE_WAYLAND = 1;
+    MOZ_USE_XINPUT2 = 1;
+  };
+
+  system.stateVersion = "24.05";
 }
 
