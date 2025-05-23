@@ -28,4 +28,8 @@ with lib;
     source = ../../config/wofi;
     recursive = true;
   };
+
+  home.activation.linkBackgrounds = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
+    ln -sf /usr/share/backgrounds ${toString (./backgrounds)}
+  '';
 }
