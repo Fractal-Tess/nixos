@@ -46,9 +46,6 @@ in
 
       cageArgs = [ "-m" "last" ];
 
-      # Set the theme to the user's name
-      theme = { name = username; };
-
       # Set the session to Hyprland
       settings = {
         background = {
