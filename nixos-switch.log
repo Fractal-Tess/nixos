@@ -1,19 +1,6 @@
 warning: Git tree '/home/fractal-tess/nixos' is dirty
 building the system configuration...
 warning: Git tree '/home/fractal-tess/nixos' is dirty
-these 6 derivations will be built:
-  /nix/store/89c0p0faz8rrswcfbds8mbdbmgl04iib-activation-script.drv
-  /nix/store/79bq6pchcnxf5yqrcsm1y4973q16qsd0-home-manager-generation.drv
-  /nix/store/6bm04x9nfb5ydv0y247yyqicrphx1q6b-unit-home-manager-fractal-x2dtess.service.drv
-  /nix/store/hl9fry2g0rrli1lh0gaqj2i1cpdhyqsq-system-units.drv
-  /nix/store/ymblzm9rsfi8xsk2lgkql2b2129s2yhg-etc.drv
-  /nix/store/ggvjvhnzn890xk4rdx7qm0gddj81ck1a-nixos-system-vd-25.11.20250518.292fa7d.drv
-building '/nix/store/89c0p0faz8rrswcfbds8mbdbmgl04iib-activation-script.drv'...
-building '/nix/store/79bq6pchcnxf5yqrcsm1y4973q16qsd0-home-manager-generation.drv'...
-building '/nix/store/6bm04x9nfb5ydv0y247yyqicrphx1q6b-unit-home-manager-fractal-x2dtess.service.drv'...
-building '/nix/store/hl9fry2g0rrli1lh0gaqj2i1cpdhyqsq-system-units.drv'...
-building '/nix/store/ymblzm9rsfi8xsk2lgkql2b2129s2yhg-etc.drv'...
-building '/nix/store/ggvjvhnzn890xk4rdx7qm0gddj81ck1a-nixos-system-vd-25.11.20250518.292fa7d.drv'...
 updating GRUB 2 menu...
 Warning: os-prober will be executed to detect other bootable partitions.
 Its output will be used to detect bootable binaries on them and create new boot entries.
@@ -29,23 +16,23 @@ the following new units were started: NetworkManager-dispatcher.service
 warning: the following units failed: home-manager-fractal\x2dtess.service
 × home-manager-fractal\x2dtess.service - Home Manager environment for fractal-tess
      Loaded: loaded (/etc/systemd/system/home-manager-fractal\x2dtess.service; enabled; preset: ignored)
-     Active: failed (Result: exit-code) since Fri 2025-05-23 20:50:48 EEST; 271ms ago
- Invocation: 8eee84b2f923403ab5e72cac019ce742
-    Process: 151678 ExecStart=/nix/store/8axxcgpnr78xkhy46yy2dxf5nwjwswv8-hm-setup-env /nix/store/x2qy64an0fz1w1mzxaldr6wq4cgdlrj6-home-manager-generation (code=exited, status=1/FAILURE)
-   Main PID: 151678 (code=exited, status=1/FAILURE)
+     Active: failed (Result: exit-code) since Fri 2025-05-23 20:54:11 EEST; 280ms ago
+ Invocation: 55975be8b69844ad802833abe3727ad0
+    Process: 158555 ExecStart=/nix/store/8axxcgpnr78xkhy46yy2dxf5nwjwswv8-hm-setup-env /nix/store/x2qy64an0fz1w1mzxaldr6wq4cgdlrj6-home-manager-generation (code=exited, status=1/FAILURE)
+   Main PID: 158555 (code=exited, status=1/FAILURE)
          IP: 0B in, 0B out
-         IO: 4.1M read, 0B written
-   Mem peak: 34.1M
-        CPU: 1.440s
+         IO: 3.7M read, 0B written
+   Mem peak: 34.3M
+        CPU: 1.366s
 
-May 23 20:50:48 vd hm-activate-fractal-tess[151922]: Writing syntax set to /home/fractal-tess/.cache/bat/syntaxes.bin ... okay
-May 23 20:50:48 vd hm-activate-fractal-tess[151922]: Writing metadata to folder /home/fractal-tess/.cache/bat ... okay
-May 23 20:50:48 vd hm-activate-fractal-tess[151678]: Activating installPackages
-May 23 20:50:48 vd hm-activate-fractal-tess[151678]: Activating dconfSettings
-May 23 20:50:48 vd hm-activate-fractal-tess[151678]: Activating linkBackgrounds
-May 23 20:50:48 vd hm-activate-fractal-tess[151954]: ln: failed to create symbolic link '/nix/store/j7jzxibzf53cxf2i0bx2lw5vyqa7r0r7-source/modules/home-manager/backgrounds': Read-only file system
-May 23 20:50:48 vd systemd[1]: home-manager-fractal\x2dtess.service: Main process exited, code=exited, status=1/FAILURE
-May 23 20:50:48 vd systemd[1]: home-manager-fractal\x2dtess.service: Failed with result 'exit-code'.
-May 23 20:50:48 vd systemd[1]: Failed to start Home Manager environment for fractal-tess.
-May 23 20:50:48 vd systemd[1]: home-manager-fractal\x2dtess.service: Consumed 1.440s CPU time, 34.1M memory peak, 4.1M read from disk.
+May 23 20:54:11 vd hm-activate-fractal-tess[158762]: Writing syntax set to /home/fractal-tess/.cache/bat/syntaxes.bin ... okay
+May 23 20:54:11 vd hm-activate-fractal-tess[158762]: Writing metadata to folder /home/fractal-tess/.cache/bat ... okay
+May 23 20:54:11 vd hm-activate-fractal-tess[158555]: Activating installPackages
+May 23 20:54:11 vd hm-activate-fractal-tess[158555]: Activating dconfSettings
+May 23 20:54:11 vd hm-activate-fractal-tess[158555]: Activating linkBackgrounds
+May 23 20:54:11 vd hm-activate-fractal-tess[158800]: ln: failed to create symbolic link '/nix/store/j7jzxibzf53cxf2i0bx2lw5vyqa7r0r7-source/modules/home-manager/backgrounds': Read-only file system
+May 23 20:54:11 vd systemd[1]: home-manager-fractal\x2dtess.service: Main process exited, code=exited, status=1/FAILURE
+May 23 20:54:11 vd systemd[1]: home-manager-fractal\x2dtess.service: Failed with result 'exit-code'.
+May 23 20:54:11 vd systemd[1]: Failed to start Home Manager environment for fractal-tess.
+May 23 20:54:11 vd systemd[1]: home-manager-fractal\x2dtess.service: Consumed 1.366s CPU time, 34.3M memory peak, 3.7M read from disk.
 warning: error(s) occurred while switching to the new configuration
