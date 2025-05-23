@@ -56,7 +56,7 @@ in
           --font-size: 16px;
         }
 
-        /* Apply dark theme to Regreet container */
+        /* Apply dark theme to Regree container */
         .regreet-dark-theme {
           background-color: var(--background-color);
           color: var(--text-color);
