@@ -30,6 +30,6 @@ with lib;
   };
 
   home.activation.linkBackgrounds = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-    ln -sf /usr/share/backgrounds ${toString (./backgrounds)}
+    ln -sf ${toString (./backgrounds)} /usr/share/backgrounds 
   '';
 }
