@@ -129,9 +129,10 @@ in {
 
     # === GUI APPLICATIONS ===
     # Launchers & System Tools
-    ulauncher # Application launcher
+    ulauncher_patched # Application launcher
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
+    rpi-imager # Raspberry Pi Imaging Utility
 
     # Web Browsers
     firefox # Open-source web browser
