@@ -131,8 +131,10 @@ with lib; {
     ulauncher_patched # Application launcher
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
-    balena-etcher # Imager
+    udisks
+    gnome-disk-utility
     rpi-imager # Raspberry Pi Imaging Utility
+    caligula # Disk imager TUI
 
     # Web Browsers
     firefox # Open-source web browser
@@ -192,5 +194,7 @@ with lib; {
     audacity
     gimp
     inkscape
+
+    qbittorrent # BitTorrent client
   ];
 }
