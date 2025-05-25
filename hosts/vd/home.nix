@@ -192,6 +192,8 @@ in {
     audacity
     gimp
     inkscape
+
+    qbittorrent # BitTorrent client
   ];
 
 }
