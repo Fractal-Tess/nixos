@@ -131,6 +131,7 @@ with lib; {
     ulauncher_patched # Application launcher
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
+    balena-etcher # Imager
     rpi-imager # Raspberry Pi Imaging Utility
 
     # Web Browsers
