@@ -58,22 +58,14 @@
     zlib
     fuse3
     icu
-    nss
     openssl
     curl
     expat
     wine
     vulkan-loader
-    libX11
-    libXrandr
-    libXcursor
-    libXinerama
-    libXi
-    alsaLib
     pulseaudio
     freetype
     fontconfig
-    openssl
     nss
     libcap
   ];
