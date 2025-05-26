@@ -133,6 +133,7 @@ in {
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
     rpi-imager # Raspberry Pi Imaging Utility
+    f3 # Sd card checker
 
     # Web Browsers
     firefox # Open-source web browser
