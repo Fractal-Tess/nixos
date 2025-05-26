@@ -178,6 +178,7 @@ in {
 
     # === GAMING ===
     steam # Gaming platform
+    steam-run # Steam runtime
     polymc # Minecraft launcher
     wineWowPackages.stable # Windows compatibility layer
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
