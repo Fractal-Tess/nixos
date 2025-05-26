@@ -177,7 +177,11 @@ in {
     filezilla # FTP client
 
     # === GAMING ===
-    steam # Gaming platform
+    # steam # Gaming platform
+    (steam.override {
+      extraPkgs = pkgs: [ openldap ];
+      nativeOnly = true;
+    }).run
     steam-run # Steam runtime
     polymc # Minecraft launcher
     wineWowPackages.stable # Windows compatibility layer
