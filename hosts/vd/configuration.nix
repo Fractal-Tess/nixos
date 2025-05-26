@@ -53,6 +53,30 @@
     };
   };
   programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    stdenv.cc.cc
+    zlib
+    fuse3
+    icu
+    nss
+    openssl
+    curl
+    expat
+    wine
+    vulkan-loader
+    libX11
+    libXrandr
+    libXcursor
+    libXinerama
+    libXi
+    alsaLib
+    pulseaudio
+    freetype
+    fontconfig
+    openssl
+    nss
+    libcap
+  ];
 
   nixpkgs.config = {
     allowUnfree = true;
