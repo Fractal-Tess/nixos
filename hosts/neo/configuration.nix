@@ -146,6 +146,38 @@
     MOZ_USE_XINPUT2 = 1;
   };
 
+  # Samba service for home directory sharing
+  services.samba = {
+    enable = true;
+    openFirewall = true;
+    extraConfig = ''
+      map to guest = never
+      server string = NixOS Samba Server
+      security = user
+      passdb backend = tdbsam
+    '';
+    shares = {
+      home = {
+        path = "/home/fractal-tess";
+        browseable = "yes";
+        "read only" = "no";
+        "guest ok" = "no";
+        "valid users" = "smbuser";
+        "force user" = "fractal-tess";
+        "force group" = "users";
+        "create mask" = "0644";
+        "directory mask" = "0755";
+      };
+    };
+  };
+
+  users.users.smbuser = {
+    isNormalUser = false;
+    description = "Samba User";
+    extraGroups = [ ];
+    password = "smbpassword";
+  };
+
   system.stateVersion = "24.05";
 }
 
