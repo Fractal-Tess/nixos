@@ -150,12 +150,12 @@
   services.samba = {
     enable = true;
     openFirewall = true;
-    extraConfig = ''
-      map to guest = never
-      server string = NixOS Samba Server
-      security = user
-      passdb backend = tdbsam
-    '';
+    settings = {
+      "map to guest" = "never";
+      "server string" = "NixOS Samba Server";
+      security = "user";
+      "passdb backend" = "tdbsam";
+    };
     shares = {
       home = {
         path = "/home/fractal-tess";
@@ -172,11 +172,12 @@
   };
 
   users.users.smbuser = {
-    isNormalUser = false;
+    isSystemUser = true;
     description = "Samba User";
-    extraGroups = [ ];
+    group = "smbuser";
     password = "smbpassword";
   };
+  users.groups.smbuser = { };
 
   system.stateVersion = "24.05";
 }
