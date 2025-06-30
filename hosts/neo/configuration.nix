@@ -151,10 +151,12 @@
     enable = true;
     openFirewall = true;
     settings = {
-      "map to guest" = "never";
-      "server string" = "NixOS Samba Server";
-      security = "user";
-      "passdb backend" = "tdbsam";
+      global = {
+        "map to guest" = "never";
+        "server string" = "NixOS Samba Server";
+        security = "user";
+        "passdb backend" = "tdbsam";
+      };
     };
     shares = {
       home = {
