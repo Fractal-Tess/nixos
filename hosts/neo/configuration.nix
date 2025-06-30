@@ -153,7 +153,7 @@
     settings = {
       global = {
         "map to guest" = "never";
-        "server string" = "NixOS Samba Server";
+        "server string" = "Neo Samba Server";
         security = "user";
         "passdb backend" = "tdbsam";
       };
@@ -164,7 +164,7 @@
         browseable = "yes";
         "read only" = "no";
         "guest ok" = "no";
-        "valid users" = "smbuser";
+        "valid users" = "fractal-tess";
         "force user" = "fractal-tess";
         "force group" = "users";
         "create mask" = "0644";
@@ -172,14 +172,8 @@
       };
     };
   };
-
-  users.users.smbuser = {
-    isSystemUser = true;
-    description = "Samba User";
-    group = "smbuser";
-    password = "smbpassword";
-  };
-  users.groups.smbuser = { };
+  # NOTE: To enable Samba access, set a Samba password for the user:
+  #   sudo smbpasswd -a fractal-tess
 
   system.stateVersion = "24.05";
 }
