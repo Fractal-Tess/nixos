@@ -51,19 +51,22 @@
     "disk#root": {
       "interval": 30,
       "path": "/",
-      "format": "/ {percentage_used}%",
+      "format": "neo: {free} free",
+      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#vault": {
       "interval": 30,
       "path": "/mnt/vault/",
-      "format": "/ {percentage_used}%",
+      "format": "vault: {free} free",
+      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#backup": {
       "interval": 30,
       "path": "/mnt/backup/",
-      "format": "/ {percentage_used}%",
+      "format": "backup: {free} free",
+      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     }
   },
@@ -119,19 +122,22 @@
     "disk#root": {
       "interval": 30,
       "path": "/",
-      "format": "/ {percentage_used}%",
+      "format": "neo: {free} free",
+      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#vault": {
       "interval": 30,
       "path": "/mnt/vault/",
-      "format": "/ {percentage_used}%",
+      "format": "vault: {free} free",
+      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#backup": {
       "interval": 30,
       "path": "/mnt/backup/",
-      "format": "/ {percentage_used}%",
+      "format": "backup: {free} free",
+      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     }
   }
