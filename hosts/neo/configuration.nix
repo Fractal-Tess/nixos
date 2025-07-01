@@ -37,7 +37,7 @@ in {
           password = "smbpass";
         }
         {
-          mountPoint = "/mnt/oracle-home";
+          mountPoint = "/mnt/oracle";
           device = "//oracle.netbird.cloud/home";
           username = "smbuser";
           password = "smbpass";
