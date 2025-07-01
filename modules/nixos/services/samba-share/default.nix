@@ -80,22 +80,24 @@ in {
           "passdb backend" = "tdbsam";
         } // cfg.extraGlobal;
       };
-      shares = listToAttrs (map (share: {
-        name = share.name;
-        value = {
-          path = share.path;
-          browseable = "yes";
-          "read only" = if share.readOnly then "yes" else "no";
-          "guest ok" = if share.guestOk then "yes" else "no";
-          "valid users" = concatStringsSep " " share.validUsers;
-          "force user" =
-            if share.forceUser != null then share.forceUser else null;
-          "force group" =
-            if share.forceGroup != null then share.forceGroup else null;
-          "create mask" = share.createMask;
-          "directory mask" = share.directoryMask;
-        };
-      }) cfg.shares);
+      shares = listToAttrs (map
+        (share: {
+          name = share.name;
+          value = {
+            path = share.path;
+            browseable = "yes";
+            "read only" = if share.readOnly then "yes" else "no";
+            "guest ok" = if share.guestOk then "yes" else "no";
+            "valid users" = concatStringsSep " " share.validUsers;
+            "force user" =
+              if share.forceUser != null then share.forceUser else null;
+            "force group" =
+              if share.forceGroup != null then share.forceGroup else null;
+            "create mask" = share.createMask;
+            "directory mask" = share.directoryMask;
+          };
+        })
+        cfg.shares);
     };
   };
 }

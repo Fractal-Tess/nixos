@@ -2,6 +2,13 @@
 
 with lib;
 
+let
+  waybarConfig =
+    if osConfig.networking.hostName == "neo" then
+      ../../config/waybar/config-neo.jsonc
+    else
+      ../../config/waybar/config-vd.jsonc;
+in
 {
   home.file = {
     # Zsh config
@@ -17,11 +24,14 @@ with lib;
     recursive = true;
   };
 
-  # Waybar
-  xdg.configFile.waybar = mkIf osConfig.modules.display.waybar.enable {
-    source = ../../config/waybar;
-    recursive = true;
-  };
+  # Waybar (host-specific config.jsonc, shared style.css)
+  xdg.configFile."waybar/config.jsonc" =
+    mkIf osConfig.modules.display.waybar.enable { source = waybarConfig; };
+  xdg.configFile."waybar/style.css" =
+    mkIf osConfig.modules.display.waybar.enable {
+      source = ../../config/waybar/style.css;
+    };
+  # Add more shared files/scripts as needed
 
   # Wofi
   xdg.configFile.wofi = {

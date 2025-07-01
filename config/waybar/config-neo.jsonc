@@ -1,0 +1,45 @@
+[
+  {
+    "modules-right": [
+      "disk#root",
+      "custom/spacer",
+      "disk#vault",
+      "custom/spacer",
+      "disk#backup",
+      "custom/spacer",
+      "disk#blockade",
+      "custom/spacer",
+      "disk#oracle"
+    ],
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#vault": {
+      "interval": 30,
+      "path": "/mnt/vault/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#blockade": {
+      "interval": 30,
+      "path": "/mnt/blockade",
+      "format": "blockade {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#oracle": {
+      "interval": 30,
+      "path": "/mnt/oracle",
+      "format": "oracle {percentage_used}%",
+      "unit": "GB"
+    }
+  }
+]
