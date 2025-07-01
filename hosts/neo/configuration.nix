@@ -25,12 +25,6 @@
 
     # Services
     ./../../modules/nixos/services/default.nix
-
-    # SMB mounts
-    ./../../modules/nixos/services/smb/default.nix
-
-    # Samba share service
-    ./../../modules/nixos/services/samba-share/default.nix
   ];
 
   # hardware.nvidia.open = false;
