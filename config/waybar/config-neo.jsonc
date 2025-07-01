@@ -59,21 +59,21 @@
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade",
-      "format": "blockade: {free} free",
+      "format": "blockade: {percentage_used}%",
       "tooltip-format": "Blockade: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#oracle": {
       "interval": 30,
       "path": "/mnt/oracle",
-      "format": "oracle: {free} free",
+      "format": "oracle: {percentage_used}%",
       "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#neo": {
       "interval": 30,
       "path": "/",
-      "format": "neo: {free} free",
+      "format": "neo: {percentage_used}%",
       "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
