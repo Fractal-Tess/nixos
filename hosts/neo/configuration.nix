@@ -73,8 +73,8 @@
       portainer.enable = true;
     };
 
-    # Filesystem
-    services.filesystemExtraServices.enable = true;
+    # Automount 
+    services.automount.enable = true;
 
     # SSHD
     services.sshd.enable = true;
