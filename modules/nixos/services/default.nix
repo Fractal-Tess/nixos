@@ -1,6 +1,4 @@
-{ config, lib, pkgs, ... }:
-
-with lib;
+{ ... }:
 
 {
   imports = [
@@ -10,5 +8,6 @@ with lib;
     ./sshd/default.nix
     ./docker/default.nix
     ./smb/default.nix
+    ./samba-share/default.nix
   ];
 }
