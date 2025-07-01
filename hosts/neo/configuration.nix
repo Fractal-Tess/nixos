@@ -28,6 +28,9 @@
 
     # SMB mounts
     ./../../modules/nixos/services/smb/default.nix
+
+    # Samba share service
+    ./../../modules/nixos/services/samba-share/default.nix
   ];
 
   # hardware.nvidia.open = false;
@@ -82,6 +85,7 @@
     # SSHD
     services.sshd.enable = true;
 
+    # SMB
     filesystems.smb = {
       enable = true;
       shares = [
@@ -98,6 +102,22 @@
           password = "smbpass";
         }
       ];
+    };
+
+    # Samba share service
+    services.samba-share = {
+      enable = true;
+      shares = [{
+        name = "home";
+        path = "/home/fractal-tess";
+        validUsers = [ "fractal-tess" ];
+        readOnly = false;
+        guestOk = false;
+        forceUser = "fractal-tess";
+        forceGroup = "users";
+        createMask = "0644";
+        directoryMask = "0755";
+      }];
     };
   };
 
@@ -166,35 +186,6 @@
     MOZ_USE_WAYLAND = 1;
     MOZ_USE_XINPUT2 = 1;
   };
-
-  # Samba service for home directory sharing
-  services.samba = {
-    enable = true;
-    openFirewall = true;
-    settings = {
-      global = {
-        "map to guest" = "never";
-        "server string" = "Neo Samba Server";
-        security = "user";
-        "passdb backend" = "tdbsam";
-      };
-    };
-    shares = {
-      home = {
-        path = "/home/fractal-tess";
-        browseable = "yes";
-        "read only" = "no";
-        "guest ok" = "no";
-        "valid users" = "fractal-tess";
-        "force user" = "fractal-tess";
-        "force group" = "users";
-        "create mask" = "0644";
-        "directory mask" = "0755";
-      };
-    };
-  };
-  # NOTE: To enable Samba access, set a Samba password for the user:
-  #   sudo smbpasswd -a fractal-tess
 
   system.stateVersion = "24.05";
 }
