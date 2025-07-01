@@ -1,7 +1,6 @@
 { pkgs, inputs, username, ... }:
 
-let smbMounts = import ../../modules/nixos/services/smb-mounts.nix;
-in {
+{
   imports = [
     # System configuration
     ./hardware-configuration.nix
@@ -28,22 +27,7 @@ in {
     ./../../modules/nixos/services/default.nix
 
     # SMB mounts
-    (smbMounts {
-      shares = [
-        {
-          mountPoint = "/mnt/blockade";
-          device = "//rp.netbird.cloud/blockade";
-          username = "smbuser";
-          password = "smbpass";
-        }
-        {
-          mountPoint = "/mnt/oracle";
-          device = "//oracle.netbird.cloud/home";
-          username = "smbuser";
-          password = "smbpass";
-        }
-      ];
-    })
+    ./../../modules/nixos/services/smb/default.nix
   ];
 
   # hardware.nvidia.open = false;
@@ -97,6 +81,24 @@ in {
 
     # SSHD
     services.sshd.enable = true;
+
+    filesystems.smb = {
+      enable = true;
+      shares = [
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//rp.netbird.cloud/blockade";
+          username = "smbuser";
+          password = "smbpass";
+        }
+        {
+          mountPoint = "/mnt/oracle";
+          device = "//oracle.netbird.cloud/home";
+          username = "smbuser";
+          password = "smbpass";
+        }
+      ];
+    };
   };
 
   # Bluetooth
