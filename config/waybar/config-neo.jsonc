@@ -1,13 +1,4 @@
 [
-  // HDMI-A-1 bar (for vd, no samba shares)
-  {
-    "layer": "top",
-    "position": "top",
-    "mod": "dock",
-    "output": ["HDMI-A-1"]
-    // ...rest of HDMI-A-1 bar config from config.jsonc...
-  },
-  // eDP-1 bar (for neo, with samba shares)
   {
     "layer": "top",
     "position": "top",
@@ -35,7 +26,7 @@
       "custom/padd",
       "disk#blockade",
       "disk#oracle",
-      "disk#root",
+      "disk#neo",
       "custom/spacer",
       "pulseaudio",
       "custom/spacer",
@@ -68,13 +59,22 @@
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade",
-      "format": "/ {percentage_used}%",
+      "format": "blockade: {free} free",
+      "tooltip-format": "Blockade: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#oracle": {
       "interval": 30,
       "path": "/mnt/oracle",
-      "format": "/ {percentage_used}%",
+      "format": "oracle: {free} free",
+      "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#neo": {
+      "interval": 30,
+      "path": "/",
+      "format": "neo: {free} free",
+      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "memory": {
