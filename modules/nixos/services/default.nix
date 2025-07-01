@@ -9,5 +9,6 @@ with lib;
     ./filesystemExtraServices/default.nix
     ./sshd/default.nix
     ./docker/default.nix
+    ./smb/default.nix
   ];
 }
