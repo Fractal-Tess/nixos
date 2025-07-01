@@ -1,6 +1,7 @@
 { pkgs, inputs, username, ... }:
 
-{
+let smbMounts = import ../../modules/nixos/services/smb-mounts.nix;
+in {
   imports = [
     # System configuration
     ./hardware-configuration.nix
@@ -25,6 +26,24 @@
 
     # Services
     ./../../modules/nixos/services/default.nix
+
+    # SMB mounts
+    (smbMounts {
+      shares = [
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//rp.netbird.cloud/blockade";
+          username = "smbuser";
+          password = "smbpass";
+        }
+        {
+          mountPoint = "/mnt/oracle-home";
+          device = "//oracle.netbird.cloud/home";
+          username = "smbuser";
+          password = "smbpass";
+        }
+      ];
+    })
   ];
 
   # hardware.nvidia.open = false;
@@ -174,34 +193,6 @@
   };
   # NOTE: To enable Samba access, set a Samba password for the user:
   #   sudo smbpasswd -a fractal-tess
-
-  fileSystems."/mnt/blockade" = {
-    device = "//rp.netbird.cloud/blockade";
-    fsType = "cifs";
-    options = [
-      "username=smbuser"
-      "password=smbpass"
-      "uid=1000" # Adjust if your user id is different
-      "gid=100" # Adjust if your group id is different
-      "iocharset=utf8"
-      "vers=3.0"
-      "rw"
-    ];
-  };
-
-  fileSystems."/mnt/oracle-home" = {
-    device = "//oracle.netbird.cloud/home";
-    fsType = "cifs";
-    options = [
-      "username=smbuser"
-      "password=smbpass"
-      "uid=1000" # Adjust if your user id is different
-      "gid=100" # Adjust if your group id is different
-      "iocharset=utf8"
-      "vers=3.0"
-      "rw"
-    ];
-  };
 
   system.stateVersion = "24.05";
 }
