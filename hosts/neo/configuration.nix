@@ -79,7 +79,7 @@
     # SSHD
     services.sshd.enable = true;
 
-    # SMB
+    # Samba shares
     filesystems.smb = {
       enable = true;
       shares = [
