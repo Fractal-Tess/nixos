@@ -3,9 +3,7 @@
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "output": [
-      "HDMI-A-1"
-    ],
+    "output": ["HDMI-A-1"],
     "margin-left": 8,
     "margin-right": 8,
     "margin-top": 8,
@@ -72,34 +70,14 @@
       "interval": 1,
       "rotate": 270,
       "format": "{icon}",
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ],
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       "max-length": 10
     },
     "custom/gpu#nvidia": {
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ],
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       "exec": "nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits | awk -F', ' '{printf \"{\\\"percentage\\\": %d, \\\"text\\\": \\\"%d%\\\", \\\"tooltip\\\": \\\"GPU Usage: %d%\\\\rTemperature: %d°C\\\\rMemory: %d/%d MB\\\", \\\"class\\\": \\\"%s\\\"}\", $1, $1, $1, $2, $3, $4, ($1<30 ? \"low\" : ($1<70 ? \"medium\" : \"high\"))}'",
       "return-type": "json"
     },
@@ -107,17 +85,7 @@
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ]
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
     },
     "tray": {
       "icon-size": 16,
@@ -175,16 +143,7 @@
       "waves": false,
       "noise_reduction": 0.77,
       "input_delay": 2,
-      "format-icons": [
-        "▁",
-        "▂",
-        "▃",
-        "▄",
-        "▅",
-        "▆",
-        "▇",
-        "█"
-      ],
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
       "actions": {
         "on-click-right": "mode"
       }
@@ -222,12 +181,7 @@
     },
     "network": {
       "tooltip": true,
-      "format-icons": [
-        "󰤟",
-        "󰤢",
-        "󰤥",
-        "󰤨"
-      ],
+      "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
       "rotate": 0,
       "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
       "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
@@ -260,11 +214,7 @@
         "phone": "",
         "portable": "",
         "car": "",
-        "default": [
-          "",
-          "",
-          ""
-        ]
+        "default": ["", "", ""]
       }
     },
     "pulseaudio#microphone": {
@@ -328,10 +278,7 @@
     "layer": "top",
     "position": "top",
     "mod": "dock",
-    "output": [
-      "eDP-1",
-      "DP-1"
-    ],
+    "output": ["eDP-1", "DP-1"],
     "margin-left": 8,
     "margin-right": 8,
     "margin-top": 8,
@@ -352,6 +299,8 @@
     "modules-center": [],
     "modules-right": [
       "custom/padd",
+      "disk#blockade",
+      "disk#oracle",
       "disk#root",
       "custom/spacer",
       "pulseaudio",
@@ -382,38 +331,30 @@
       "format": "/ {percentage_used}%",
       "unit": "GB"
     },
+    "disk#blockade": {
+      "interval": 30,
+      "path": "/mnt/blockade",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#oracle": {
+      "interval": 30,
+      "path": "/mnt/oracle",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
     "memory": {
       "interval": 1,
       "rotate": 270,
       "format": "{icon}",
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ],
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       "max-length": 10
     },
     "cpu": {
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ]
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
     },
     "tray": {
       "icon-size": 16,
@@ -465,16 +406,7 @@
       "waves": false,
       "noise_reduction": 0.77,
       "input_delay": 2,
-      "format-icons": [
-        "▁",
-        "▂",
-        "▃",
-        "▄",
-        "▅",
-        "▆",
-        "▇",
-        "█"
-      ],
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
       "actions": {
         "on-click-right": "mode"
       }
@@ -519,27 +451,12 @@
       "format": "{icon} {capacity}% ",
       "format-charging": "󰂄 {capacity}% ",
       "format-plugged": "󰂄 {capacity}% ",
-      "format-icons": [
-        "󰝦",
-        "󰪞",
-        "󰪟",
-        "󰪠",
-        "󰪡",
-        "󰪢",
-        "󰪣",
-        "󰪤",
-        "󰪥"
-      ],
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
     },
     "network": {
       "tooltip": true,
-      "format-icons": [
-        "󰤟",
-        "󰤢",
-        "󰤥",
-        "󰤨"
-      ],
+      "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
       "rotate": 0,
       "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
       "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
@@ -570,11 +487,7 @@
         "phone": "",
         "portable": "",
         "car": "",
-        "default": [
-          "",
-          "",
-          ""
-        ]
+        "default": ["", "", ""]
       }
     },
     "pulseaudio#microphone": {
