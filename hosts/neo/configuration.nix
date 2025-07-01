@@ -189,6 +189,20 @@
     ];
   };
 
+  fileSystems."/mnt/oracle-home" = {
+    device = "//oracle.netbird.cloud/home";
+    fsType = "cifs";
+    options = [
+      "username=smbuser"
+      "password=smbpass"
+      "uid=1000" # Adjust if your user id is different
+      "gid=100" # Adjust if your group id is different
+      "iocharset=utf8"
+      "vers=3.0"
+      "rw"
+    ];
+  };
+
   system.stateVersion = "24.05";
 }
 
