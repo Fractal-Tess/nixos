@@ -1,12 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, ... }:
 
 with lib;
 
-let cfg = config.modules.services.filesystemExtraServices;
+let cfg = config.modules.services.automount;
 in {
-  options.modules.services.filesystemExtraServices = {
-    enable = mkEnableOption "Filesystem utilities";
-  };
+  options.modules.services.automount = { enable = mkEnableOption "Automount"; };
 
   config = mkIf cfg.enable {
     services.udisks2.enable = true;
