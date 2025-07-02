@@ -67,61 +67,28 @@ return {
             return tostring(path:join(file))
         end
 
-        local selected_or_hovered = ya.sync(function()
-            log_debug("selected_or_hovered called")
-            local tab, paths, names, path_fnames = cx.active, {}, {}, {}
-            for _, u in pairs(tab.selected) do
-                paths[#paths + 1] = tostring(u.parent)
-                names[#names + 1] = tostring(u.name)
-            end
-            if #paths == 0 and tab.current.hovered then
-                paths[1] = tostring(tab.current.hovered.url.parent)
-                names[1] = tostring(tab.current.hovered.name)
-            end
-            for idx, name in ipairs(names) do
-                if not path_fnames[paths[idx]] then
-                    path_fnames[paths[idx]] = {}
+        local function selected_or_hovered()
+            return ya.sync(function()
+                log_debug("selected_or_hovered called")
+                local tab, paths, names, path_fnames = cx.active, {}, {}, {}
+                for _, u in pairs(tab.selected) do
+                    paths[#paths + 1] = tostring(u.parent)
+                    names[#names + 1] = tostring(u.name)
                 end
-                table.insert(path_fnames[paths[idx]], name)
-            end
-            log_debug("selected_or_hovered: paths=" .. table.concat(paths, ",") .. ", names=" .. table.concat(names, ","))
-            return path_fnames, names, tostring(tab.current.cwd)
-        end)
-
-        local archive_commands = {
-            ["%.zip$"] = {
-                {command = "zip", args = {"-r"}},
-                {command = {"7z", "7zz", "7za"}, args = {"a", "-tzip"}},
-                {command = {"tar", "bsdtar"}, args = {"-caf"}},
-            },
-            ["%.7z$"] = {
-                {command = {"7z", "7zz", "7za"}, args = {"a"}},
-            },
-            ["%.rar$"] = {
-                {command = "rar", args = {"a"}},
-            },
-            ["%.tar.gz$"] = {
-                {command = {"tar", "bsdtar"}, args = {"-czf"}},
-            },
-            ["%.tar.xz$"] = {
-                {command = {"tar", "bsdtar"}, args = {"-cJf"}},
-            },
-            ["%.tar.bz2$"] = {
-                {command = {"tar", "bsdtar"}, args = {"-cjf"}},
-            },
-            ["%.tar.zst$"] = {
-                {command = {"tar", "bsdtar"}, args = {"--zstd", "-cf"}},
-            },
-            ["%.tar.lz4$"] = {
-                {command = {"tar", "bsdtar"}, args = {"--lz4", "-cf"}},
-            },
-            ["%.tar.lha$"] = {
-                {command = {"tar", "bsdtar"}, args = {"-caf"}},
-            },
-            ["%.tar$"] = {
-                {command = {"tar", "bsdtar"}, args = {"-cf"}},
-            },
-        }
+                if #paths == 0 and tab.current.hovered then
+                    paths[1] = tostring(tab.current.hovered.url.parent)
+                    names[1] = tostring(tab.current.hovered.name)
+                end
+                for idx, name in ipairs(names) do
+                    if not path_fnames[paths[idx]] then
+                        path_fnames[paths[idx]] = {}
+                    end
+                    table.insert(path_fnames[paths[idx]], name)
+                end
+                log_debug("selected_or_hovered: paths=" .. table.concat(paths, ",") .. ", names=" .. table.concat(names, ","))
+                return path_fnames, names, tostring(tab.current.cwd)
+            end)()
+        end
 
         log_debug("Calling selected_or_hovered...")
         local path_fnames, fnames, output_dir = selected_or_hovered()
