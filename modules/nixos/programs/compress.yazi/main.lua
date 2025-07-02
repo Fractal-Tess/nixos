@@ -165,9 +165,18 @@ return {
         log_debug("Output: " .. temp_output_url)
         for filepath, filenames in pairs(path_fnames) do
             log_debug("CWD: " .. filepath .. ", Files: " .. table.concat(filenames, ", "))
-            local archive_status, archive_err =
-                Command(archive_cmd):arg(archive_args):arg(temp_output_url):arg(filenames):cwd(filepath):spawn():wait()
-            if not archive_status or not archive_status.success then
+            log_debug("About to spawn command at " .. os.date("%Y-%m-%d %H:%M:%S"))
+            local archive_status, archive_err
+            local ok, err = pcall(function()
+                archive_status, archive_err =
+                    Command(archive_cmd):arg(archive_args):arg(temp_output_url):arg(filenames):cwd(filepath):spawn():wait()
+            end)
+            log_debug("Spawn returned at " .. os.date("%Y-%m-%d %H:%M:%S"))
+            if not ok then
+                log_debug("pcall error: " .. tostring(err))
+            end
+            log_debug("archive_status: " .. tostring(archive_status) .. ", archive_err: " .. tostring(archive_err))
+            if not archive_status or (type(archive_status) == "table" and not archive_status.success) then
                 log_debug(string.format("Failed to create archive %s with '%s', error: %s", output_name, archive_cmd, tostring(archive_err)))
                 fs.remove("dir_all", Url(temp_dir))
                 job:done()
