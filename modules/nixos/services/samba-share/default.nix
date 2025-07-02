@@ -72,30 +72,29 @@ in {
     services.samba = {
       enable = true;
       openFirewall = cfg.openFirewall;
-      settings = {
+      settings = ({
         global = {
           "map to guest" = "never";
           "server string" = "NixOS Samba Server";
           security = "user";
           "passdb backend" = "tdbsam";
         } // cfg.extraGlobal;
-      };
-      shares = listToAttrs (map
+      }) // listToAttrs (map
         (share: {
           name = share.name;
-          value = {
+          value = lib.filterAttrs (_: v: v != null) ({
             path = share.path;
             browseable = "yes";
             "read only" = if share.readOnly then "yes" else "no";
             "guest ok" = if share.guestOk then "yes" else "no";
             "valid users" = concatStringsSep " " share.validUsers;
-            "force user" =
-              if share.forceUser != null then share.forceUser else null;
-            "force group" =
-              if share.forceGroup != null then share.forceGroup else null;
             "create mask" = share.createMask;
             "directory mask" = share.directoryMask;
-          };
+          } // optionalAttrs (share.forceUser != null) {
+            "force user" = share.forceUser;
+          } // optionalAttrs (share.forceGroup != null) {
+            "force group" = share.forceGroup;
+          });
         })
         cfg.shares);
     };

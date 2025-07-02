@@ -28,7 +28,6 @@ with lib; {
     ddcutil # Monitor control utility (DDC/CI)
 
     # === FILE MANAGEMENT ===
-    yazi # Terminal file manager
     unzip # Extract .zip archives
     p7zip # File archiver with high compression ratio
     fd # Simple, fast alternative to 'find'
