@@ -25,6 +25,9 @@
 
     # Services
     ./../../modules/nixos/services/default.nix
+
+    # Yazi
+    ./../../modules/nixos/programs/yazi.nix
   ];
 
   # hardware.nvidia.open = false;
