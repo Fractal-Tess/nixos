@@ -12,6 +12,11 @@ return {
         end
         log_debug("Plugin entry called")
 
+        -- Log the job table keys and values
+        for k, v in pairs(job) do
+            log_debug("job[" .. tostring(k) .. "] = " .. tostring(v))
+        end
+
         local output_name, event = ya.input({
             title = "Test prompt",
             value = "test.zip",
