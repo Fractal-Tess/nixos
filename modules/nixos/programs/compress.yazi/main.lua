@@ -153,57 +153,54 @@ return {
             return
         end
         local temp_output_url = combine_url(temp_dir, output_name)
-        -- Notify before running archive command
-        ya.notify({
-            title = "Archive Debug",
-            content = string.format("Running: %s %s\nOutput: %s", archive_cmd, table.concat(archive_args, " "), temp_output_url),
-            level = "info",
-            timeout = 5
-        })
+        -- Helper for file-based debug logging
+        local function log_debug(msg)
+            local f = io.open("/tmp/yazi-compress-debug.log", "a")
+            if f then
+                f:write(os.date("[%Y-%m-%d %H:%M:%S] ") .. msg .. "\n")
+                f:close()
+            end
+        end
+        log_debug("Running: " .. archive_cmd .. " " .. table.concat(archive_args, " "))
+        log_debug("Output: " .. temp_output_url)
         for filepath, filenames in pairs(path_fnames) do
+            log_debug("CWD: " .. filepath .. ", Files: " .. table.concat(filenames, ", "))
             local archive_status, archive_err =
                 Command(archive_cmd):arg(archive_args):arg(temp_output_url):arg(filenames):cwd(filepath):spawn():wait()
             if not archive_status or not archive_status.success then
-                notify_error(string.format("Failed to create archive %s with '%s', error: %s", output_name, archive_cmd, archive_err), "error")
+                log_debug(string.format("Failed to create archive %s with '%s', error: %s", output_name, archive_cmd, tostring(archive_err)))
                 fs.remove("dir_all", Url(temp_dir))
                 job:done()
                 return
             else
-                ya.notify({
-                    title = "Archive Debug",
-                    content = string.format("Archive command succeeded for %s", temp_output_url),
-                    level = "info",
-                    timeout = 5
-                })
+                log_debug("Archive command succeeded for " .. temp_output_url)
             end
         end
         -- Check if temp output file exists
         local f = io.open(temp_output_url, "rb")
         if not f then
-            notify_error("Archive file was not created at temp location!", "error")
+            log_debug("Archive file was not created at temp location!")
             fs.remove("dir_all", Url(temp_dir))
             job:done()
             return
         else
             f:close()
+            log_debug("Archive file exists at temp location.")
         end
         local final_output_url, temp_url_processed = combine_url(output_dir, output_name), combine_url(temp_dir, output_name)
         final_output_url, _ = tostring(fs.unique_name(Url(final_output_url)))
+        log_debug("Moving archive from " .. temp_url_processed .. " to " .. final_output_url)
         local move_status, move_err = os.rename(temp_url_processed, final_output_url)
         if not move_status then
-            notify_error(string.format("Failed to move %s to %s, error: %s", temp_url_processed, final_output_url, move_err), "error")
+            log_debug(string.format("Failed to move %s to %s, error: %s", temp_url_processed, final_output_url, tostring(move_err)))
             fs.remove("dir_all", Url(temp_dir))
             job:done()
             return
         else
-            ya.notify({
-                title = "Archive Debug",
-                content = string.format("Moved archive to %s", final_output_url),
-                level = "info",
-                timeout = 5
-            })
+            log_debug("Moved archive to " .. final_output_url)
         end
         fs.remove("dir_all", Url(temp_dir))
+        log_debug("Cleanup done. Job finished.")
         job:done()
     end
 } 
