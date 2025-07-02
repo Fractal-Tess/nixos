@@ -42,6 +42,8 @@ in {
             "iocharset=utf8"
             "vers=3.0"
             "rw"
+            "x-systemd.automount"
+            "x-systemd.device-timeout=10"
           ];
         };
       })
