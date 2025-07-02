@@ -168,7 +168,11 @@ return {
             log_debug("About to spawn command at " .. os.date("%Y-%m-%d %H:%M:%S"))
             local archive_status, archive_err
             local ok, err = pcall(function()
-                local cmd = Command(archive_cmd):arg(archive_args):arg(temp_output_url)
+                local cmd = Command(archive_cmd)
+                for _, arg in ipairs(archive_args) do
+                    cmd:arg(arg)
+                end
+                cmd:arg(temp_output_url)
                 for _, fname in ipairs(filenames) do
                     cmd:arg(fname)
                 end
