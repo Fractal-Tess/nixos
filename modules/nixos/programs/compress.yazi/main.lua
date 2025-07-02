@@ -171,5 +171,6 @@ return {
             return
         end
         fs.remove("dir_all", Url(temp_dir))
+        job:done()
     end
 } 
