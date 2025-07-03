@@ -113,6 +113,44 @@
 
     # SSHD
     services.sshd.enable = true;
+
+    # Automount 
+    services.automount.enable = true;
+
+    # Samba shares
+    filesystems.smb = {
+      enable = true;
+      shares = [
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//rp.netbird.cloud/blockade";
+          username = "smbuser";
+          password = "smbpass";
+        }
+        {
+          mountPoint = "/mnt/oracle";
+          device = "//oracle.netbird.cloud/home";
+          username = "smbuser";
+          password = "smbpass";
+        }
+      ];
+    };
+
+    # Samba share service
+    services.samba-share = {
+      enable = true;
+      shares = [{
+        name = "home";
+        path = "/home/fractal-tess";
+        validUsers = [ "fractal-tess" ];
+        readOnly = false;
+        guestOk = false;
+        forceUser = "fractal-tess";
+        forceGroup = "users";
+        createMask = "0644";
+        directoryMask = "0755";
+      }];
+    };
   };
 
   # User
