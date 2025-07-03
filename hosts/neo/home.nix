@@ -171,7 +171,7 @@ with lib; {
     # === DEVELOPMENT ENVIRONMENTS ===
     code-cursor # VS Code fork with AI features
     zed-editor # High-performance code editor
-    responsively-app # Web development tool for responsive design
+    # responsively-app # Web development tool for responsive design
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
