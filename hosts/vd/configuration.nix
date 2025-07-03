@@ -108,9 +108,6 @@
       portainer.enable = true;
     };
 
-    # Filesystem
-    services.filesystemExtraServices.enable = true;
-
     # SSHD
     services.sshd.enable = true;
 
