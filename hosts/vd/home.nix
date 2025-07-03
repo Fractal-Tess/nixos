@@ -180,9 +180,9 @@ in {
     # steam # Gaming platform
     (steam.override {
       extraPkgs = pkgs: [ openldap ];
-      nativeOnly = true;
+      # nativeOnly = true;
     }).run
-    steam-run # Steam runtime
+    # steam-run # Steam runtime
     polymc # Minecraft launcher
     wineWowPackages.stable # Windows compatibility layer
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
