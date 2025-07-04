@@ -11,21 +11,21 @@ self: super: {
     };
 
     dontUnpack = true;
-
-    buildInputs = [ super.fuse ];
+    buildInputs = [ super.appimage-run ];
 
     installPhase = ''
-      mkdir -p $out/bin
-      cp $src $out/bin/ResponsivelyApp
-      chmod +x $out/bin/ResponsivelyApp
-      # Optionally, create a symlink for easier invocation
-      ln -s $out/bin/ResponsivelyApp $out/bin/responsively-app
+      # Store the AppImage in $out/opt
+      mkdir -p $out/opt
+      cp $src $out/opt/ResponsivelyApp.AppImage
+      chmod +x $out/opt/ResponsivelyApp.AppImage
 
-      # Wrap the AppImage binary so it can find libfuse.so.2 at runtime
-      wrapProgram $out/bin/ResponsivelyApp \
-        --set LD_LIBRARY_PATH ${super.fuse}/lib
-      wrapProgram $out/bin/responsively-app \
-        --set LD_LIBRARY_PATH ${super.fuse}/lib
+      # Create a wrapper script in $out/bin that launches the AppImage with appimage-run
+      mkdir -p $out/bin
+      cat > $out/bin/responsively-app <<EOF
+      #!${super.stdenv.shell}
+      exec ${super.appimage-run}/bin/appimage-run $out/opt/ResponsivelyApp.AppImage "$@"
+      EOF
+      chmod +x $out/bin/responsively-app
     '';
 
     meta = with super.lib; {
