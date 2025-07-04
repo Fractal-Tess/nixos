@@ -20,10 +20,11 @@ self: super: {
       chmod +x $out/opt/ResponsivelyApp.AppImage
 
       # Create a wrapper script in $out/bin that launches the AppImage with appimage-run
+      # Always passes --ozone-platform=x11 for compatibility
       mkdir -p $out/bin
       cat > $out/bin/responsively-app <<EOF
       #!${super.stdenv.shell}
-      exec ${super.appimage-run}/bin/appimage-run $out/opt/ResponsivelyApp.AppImage "$@"
+      exec ${super.appimage-run}/bin/appimage-run $out/opt/ResponsivelyApp.AppImage --ozone-platform=x11 "$@"
       EOF
       chmod +x $out/bin/responsively-app
     '';
