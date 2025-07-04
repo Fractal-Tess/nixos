@@ -12,12 +12,20 @@ self: super: {
 
     dontUnpack = true;
 
+    buildInputs = [ super.fuse ];
+
     installPhase = ''
       mkdir -p $out/bin
       cp $src $out/bin/ResponsivelyApp
       chmod +x $out/bin/ResponsivelyApp
       # Optionally, create a symlink for easier invocation
       ln -s $out/bin/ResponsivelyApp $out/bin/responsively-app
+
+      # Wrap the AppImage binary so it can find libfuse.so.2 at runtime
+      wrapProgram $out/bin/ResponsivelyApp \
+        --set LD_LIBRARY_PATH ${super.fuse}/lib
+      wrapProgram $out/bin/responsively-app \
+        --set LD_LIBRARY_PATH ${super.fuse}/lib
     '';
 
     meta = with super.lib; {
