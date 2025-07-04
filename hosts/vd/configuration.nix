@@ -130,23 +130,54 @@
           username = "smbuser";
           password = "smbpass";
         }
+        {
+          mountPoint = "/mnt/neo";
+          device = "//neo.netbird.cloud/home";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
       ];
     };
 
     # Samba share service
     services.samba.share = {
       enable = true;
-      shares = [{
-        name = "home";
-        path = "/home/fractal-tess";
-        validUsers = [ "fractal-tess" ];
-        readOnly = false;
-        guestOk = false;
-        forceUser = "fractal-tess";
-        forceGroup = "users";
-        createMask = "0644";
-        directoryMask = "0755";
-      }];
+      shares = [
+        {
+          name = "home";
+          path = "/home/fractal-tess";
+          validUsers = [ "fractal-tess" ];
+          readOnly = false;
+          guestOk = false;
+          forceUser = "fractal-tess";
+          forceGroup = "users";
+          createMask = "0644";
+          directoryMask = "0755";
+          initialPassword = "smbpass";
+        }
+        {
+          name = "vault";
+          path = "/mnt/vault";
+          validUsers = [ "fractal-tess" ];
+          readOnly = false;
+          guestOk = false;
+          forceUser = "fractal-tess";
+          forceGroup = "users";
+          createMask = "0644";
+          directoryMask = "0755";
+          initialPassword = "smbpass";
+        }
+        {
+          name = "backup";
+          path = "/mnt/backup";
+          validUsers = [ "fractal-tess" ];
+          readOnly = false;
+          guestOk = false;
+          forceUser = "fractal-tess";
+          forceGroup = "users";
+          initialPassword = "smbpass";
+        }
+      ];
     };
   };
 
