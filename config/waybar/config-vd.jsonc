@@ -384,7 +384,7 @@
     },
     "disk#neo": {
       "interval": 30,
-      "path": "/",
+      "path": "/mnt/neo",
       "format": "neo: {percentage_used}%",
       "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
