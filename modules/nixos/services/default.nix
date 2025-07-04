@@ -7,7 +7,6 @@
     ./automount/default.nix
     ./sshd/default.nix
     ./docker/default.nix
-    ./smb/default.nix
-    ./samba-share/default.nix
+    ./samba/default.nix
   ];
 }
