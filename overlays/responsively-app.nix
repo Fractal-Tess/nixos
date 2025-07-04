@@ -7,8 +7,7 @@ self: super: {
     src = super.fetchurl {
       url =
         "https://github.com/responsively-org/responsively-app-releases/releases/download/v1.16.0/ResponsivelyApp-1.16.0.AppImage";
-      sha256 =
-        "sha256-r0wznN+7zZXKNFNFUV4hm2e4gd84M6hVcun4OfNEeSw="; # TODO: Replace with real hash
+      sha256 = "sha256-r0wznN+7zZXKNFNFUV4hm2e4gd84M6hVcun4OfNEeSw=";
     };
 
     dontUnpack = true;
