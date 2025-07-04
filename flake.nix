@@ -20,8 +20,12 @@
           modules = [
             ./hosts/${hostname}/configuration.nix
             {
-              nixpkgs.overlays =
-                [ polymc.overlay (import ./overlays/ulauncher-webkitgtk.nix) ];
+              nixpkgs.overlays = [
+                polymc.overlay
+                (import ./overlays/ulauncher-webkitgtk.nix)
+                # Overlay for Responsively App
+                (import ./overlays/responsively-app.nix)
+              ];
             }
           ];
         };
