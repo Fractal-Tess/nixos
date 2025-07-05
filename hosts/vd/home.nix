@@ -129,7 +129,7 @@ in {
 
     # === GUI APPLICATIONS ===
     # Launchers & System Tools
-    ulauncher_patched # Application launcher
+    ulauncher # Application launcherr
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
     rpi-imager # Raspberry Pi Imaging Utility
