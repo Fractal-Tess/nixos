@@ -83,7 +83,7 @@
     services.sshd.enable = true;
 
     # Samba shares
-    filesystems.smb = {
+    services.samba.mount = {
       enable = true;
       shares = [
         {
@@ -102,7 +102,7 @@
     };
 
     # Samba share service
-    services.samba-share = {
+    services.samba.share = {
       enable = true;
       shares = [{
         name = "home";

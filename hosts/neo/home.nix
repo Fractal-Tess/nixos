@@ -52,20 +52,20 @@ with lib; {
 
     # === DEVELOPMENT TOOLS ===
     # AI Assistants
-    aider-chat # AI pair programming in the terminal
-    claude-code # AI code assistant
+    # aider-chat # AI pair programming in the terminal
+    # claude-code # AI code assistant
 
     # Languages & Runtimes
-    nodejs_22 # JavaScript runtime
-    pnpm # Fast, disk space efficient package manager
-    gcc # GNU Compiler Collection
-    clang-tools # C/C++ compiler toolchain
+    # nodejs_22 # JavaScript runtime
+    # pnpm # Fast, disk space efficient package manager
+    # gcc # GNU Compiler Collection
+    # clang-tools # C/C++ compiler toolchain
 
     # Build Tools
-    gnumake # Build automation tool
+    # gnumake # Build automation tool
 
     # Development Utilities
-    flyctl # Command-line tool for fly.io
+    # flyctl # Command-line tool for fly.io
     jq # Command-line JSON processor
     hyperfine # Command-line benchmarking tool
 
@@ -74,33 +74,19 @@ with lib; {
     lazygit # Simple terminal UI for git
 
     # Security Tools
-    burpsuite # Web vulnerability scanner
+    # burpsuite # Web vulnerability scanner
 
-    # === LANGUAGE SERVERS ===
-    # Web Development
-    prettierd # Code formatter daemon for web technologies
-    svelte-language-server # Language server for Svelte
-    emmet-language-server # Language server for Emmet
-    tailwindcss-language-server # Language server for Tailwind CSS
-    typescript-language-server # Language server for TypeScript
-    astro-language-server # Language server for Astro
-    vscode-langservers-extracted # HTML/CSS/JSON language servers
-
-    # DevOps
-    docker-compose-language-service # Language server for Docker Compose
-    dockerfile-language-server-nodejs # Language server for Dockerfiles
-
-    # Programming Languages
-    rust-analyzer # Language server for Rust
-    lua-language-server # Language server for Lua
-    stylua # Lua code formatter
-    nginx-language-server # Language server for Nginx
-    phpactor # Language server for PHP
+    # # Programming Languages
+    # rust-analyzer # Language server for Rust
+    # lua-language-server # Language server for Lua
+    # stylua # Lua code formatter
+    # nginx-language-server # Language server for Nginx
+    # phpactor # Language server for PHP
     nixd # Language server for Nix
     nixpkgs-fmt # Nix code formatter
     nixfmt-classic # Alternative Nix formatter
-    sqls # Language server for SQL
-    gopls # Language server for Go
+    # sqls # Language server for SQL
+    # gopls # Language server for Go
 
     # === MULTIMEDIA TOOLS ===
     ffmpeg-full # Complete multimedia solution
@@ -119,34 +105,36 @@ with lib; {
     hyprpicker # Color picker for Hyprland
 
     # === TERMINAL ENHANCEMENTS ===
-    neofetch # System information tool
-    nitch # Lightweight system information fetch
+    # neofetch # System information tool
+    # nitch # Lightweight system information fetch
+    fastfetch # Fast system information tool
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
 
     # === GUI APPLICATIONS ===
     # Launchers & System Tools
-    ulauncher_patched # Application launcher
+    # ulauncher_patched # Application launcher
+    ulauncher # Application launcher
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
-    udisks
-    gnome-disk-utility
-    rpi-imager # Raspberry Pi Imaging Utility
-    caligula # Disk imager TUI
+    # udisks
+    # gnome-disk-utility
+    # rpi-imager # Raspberry Pi Imaging Utility
+    # caligula # Disk imager TUI
 
     # Web Browsers
     firefox # Open-source web browser
     google-chrome # Google's web browser
-    microsoft-edge # Microsoft's web browser
-    tor-browser # Privacy-focused browser
+    # microsoft-edge # Microsoft's web browser
+    # tor-browser # Privacy-focused browser
 
     # File Management
     pcmanfm # Lightweight file manager
     mate.engrampa # Archive manager
 
     # Media Players
-    vlc # Versatile media player
+    # vlc # Versatile media player
     mpv # Minimalist video player
     kooha # Screen recorder for Wayland
     nomacs # Image viewer
@@ -156,17 +144,17 @@ with lib; {
     warp-terminal # Modern terminal with AI features
 
     # === COMMUNICATION ===
-    discord # Voice, video and text chat
-    telegram-desktop # Messaging app
+    # discord # Voice, video and text chat
+    # telegram-desktop # Messaging app
     bitwarden # Password manager
-    viber # Voice and messaging app
-    slack # Team collaboration platform
-    thunderbird # Email client
+    # viber # Voice and messaging app
+    # slack # Team collaboration platform
+    # thunderbird # Email client
 
     # === OFFICE & PRODUCTIVITY ===
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    kdePackages.kdenlive # Video editor
+    # kdePackages.kdenlive # Video editor
 
     # === DEVELOPMENT ENVIRONMENTS ===
     code-cursor # VS Code fork with AI features
@@ -178,7 +166,7 @@ with lib; {
 
     # === GAMING ===
     steam # Gaming platform
-    polymc # Minecraft launcher
+    # polymc # Minecraft launcher
     wineWowPackages.stable # Windows compatibility layer
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
@@ -188,11 +176,11 @@ with lib; {
     cliphist # Clipboard history tool
 
     # === COMMENTED OUT ===
-    blender
+    # blender
     # kicad
-    audacity
-    gimp
-    inkscape
+    # audacity
+    # gimp
+    # inkscape
 
     qbittorrent # BitTorrent client
   ];
