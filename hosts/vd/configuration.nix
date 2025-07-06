@@ -80,16 +80,6 @@
 
   environment.systemPackages = [ ];
 
-  # SOPS
-  sops.defaultSopsFile = ../../secrets/secrets.yaml;
-  sops.defaultSopsFormat = "yaml";
-  sops.age.keyFile = "/home/fractal-tess/.config/sops/age/keys.txt";
-
-  sops.secrets = {
-    example_key = { };
-    hello = { };
-  };
-
   modules = {
     # ----- Drivers -----
     drivers.nvidia.enable = true;
