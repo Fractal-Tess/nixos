@@ -11,6 +11,11 @@ in {
       default = [ 22 ];
       description = "Ports to listen on.";
     };
+    openFirewall = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Open firewall ports for SSH.";
+    };
     settings = {
       PermitRootLogin = mkOption {
         type = types.str;
@@ -29,6 +34,7 @@ in {
     services.openssh = {
       enable = true;
       ports = cfg.ports;
+      openFirewall = cfg.openFirewall;
       settings = {
         PermitRootLogin = cfg.settings.PermitRootLogin;
         PasswordAuthentication = cfg.settings.PasswordAuthentication;
