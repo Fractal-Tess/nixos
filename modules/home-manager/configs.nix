@@ -3,21 +3,11 @@
 with lib;
 
 let
-  waybarConfig =
-    if osConfig.networking.hostName == "neo" then
-      ../../config/waybar/config-neo.jsonc
-    else
-      ../../config/waybar/config-vd.jsonc;
-in
-{
-  home.file = {
-    # Zsh config
-    ".zshrc".source = ../../config/zsh/.zshrc;
-
-    # Zsh - p10k config
-    ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
-  };
-
+  waybarConfig = if osConfig.networking.hostName == "neo" then
+    ../../config/waybar/config-neo.jsonc
+  else
+    ../../config/waybar/config-vd.jsonc;
+in {
   # Hyprland
   xdg.configFile.hypr = mkIf osConfig.modules.display.hyprland.enable {
     source = ../../config/hyprland;
@@ -38,4 +28,14 @@ in
     source = ../../config/wofi;
     recursive = true;
   };
+
+  # zsh
+  home.file = {
+    # Zsh config
+    ".zshrc".source = ../../config/zsh/.zshrc;
+
+    # Zsh - p10k config
+    ".p10k.zsh".source = ../../config/zsh/.p10k.zsh;
+  };
+
 }
