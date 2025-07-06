@@ -7,6 +7,7 @@
 
     # Home manager
     inputs.home-manager.nixosModules.default
+    inputs.sops-nix.nixosModules.sops
 
     # Core system modules
     ./../../modules/nixos/core/audio.nix
@@ -78,6 +79,16 @@
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
   environment.systemPackages = [ ];
+
+  # SOPS
+  sops.defaultSopsFile = ../../secrets/secrets.yaml;
+  sops.defaultSopsFormat = "yaml";
+  sops.age.keyFile = "/home/fractal-tess/.config/sops/age/keys.txt";
+
+  sops.secrets = {
+    example_key = { };
+    hello = { };
+  };
 
   modules = {
     # ----- Drivers -----
