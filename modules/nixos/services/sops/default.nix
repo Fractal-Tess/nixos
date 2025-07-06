@@ -10,7 +10,13 @@
 
   # Declare secrets to be managed by sops
   sops.secrets = {
-    example_key = { };
-    hello = { };
+    example_key = {
+      owner = "fractal-tess";
+      path = "/var/lib/fractal-tess/secrets.yaml";
+    };
+    hello = {
+      owner = "fractal-tess";
+      path = "/var/lib/fractal-tess/hello.yaml";
+    };
   };
 }
