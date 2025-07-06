@@ -19,5 +19,12 @@
       path = "/home/${username}/.secretv2.zsh";
     };
 
+    # SSH authorized_keys
+    ssh_authorized_keys = {
+      owner = username;
+      sopsFile = ../../../../secrets/ssh_authorized_keys.yaml;
+      format = "yaml";
+      path = "/var/lib/${username}/ssh/authorized_keys";
+    };
   };
 }

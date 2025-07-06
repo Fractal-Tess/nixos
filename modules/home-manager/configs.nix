@@ -21,7 +21,6 @@ in {
     mkIf osConfig.modules.display.waybar.enable {
       source = ../../config/waybar/style.css;
     };
-  # Add more shared files/scripts as needed
 
   # Wofi
   xdg.configFile.wofi = {
