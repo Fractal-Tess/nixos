@@ -24,7 +24,7 @@
       owner = username;
       sopsFile = ../../../../secrets/ssh_authorized_keys.yaml;
       format = "yaml";
-      path = "/var/lib/${username}/ssh/authorized_keys";
+      path = "/home/${username}/.ssh/authorized_keys";
     };
   };
 }
