@@ -3,6 +3,10 @@
 
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -11,7 +15,7 @@
     polymc.url = "github:PolyMC/PolyMC";
   };
 
-  outputs = { self, nixpkgs, polymc, ... }@inputs:
+  outputs = { self, nixpkgs, polymc, sops-nix, ... }@inputs:
     let
       mkHost = { hostname, username }:
         nixpkgs.lib.nixosSystem {
@@ -19,6 +23,7 @@
           specialArgs = { inherit inputs hostname username; };
           modules = [
             ./hosts/${hostname}/configuration.nix
+            sops-nix.nixosModules.sops
             {
               nixpkgs.overlays = [
                 polymc.overlay
@@ -28,8 +33,7 @@
             }
           ];
         };
-    in
-    {
+    in {
       nixosConfigurations = {
         vd = mkHost {
           hostname = "vd";
