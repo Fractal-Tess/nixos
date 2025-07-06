@@ -1,4 +1,4 @@
-{ ... }:
+{ username, ... }:
 
 {
   # SOPS configuration for this host
@@ -11,12 +11,12 @@
   # Declare secrets to be managed by sops
   sops.secrets = {
     example_key = {
-      owner = "fractal-tess";
-      path = "/var/lib/fractal-tess/secrets";
+      owner = username;
+      path = "/var/lib/${username}/secrets";
     };
     hello = {
-      owner = "fractal-tess";
-      path = "/home/fractal-tess/.secretv2.zsh";
+      owner = username;
+      path = "/home/${username}/.secretv2.zsh";
     };
 
   };
