@@ -23,7 +23,6 @@
           specialArgs = { inherit inputs hostname username; };
           modules = [
             ./hosts/${hostname}/configuration.nix
-            sops-nix.nixosModules.sops
             {
               nixpkgs.overlays = [
                 polymc.overlay
