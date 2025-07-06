@@ -8,6 +8,6 @@
     ./ssh/default.nix
     ./docker/default.nix
     ./samba/default.nix
-    # ./sops/default.nix
+    ./sops/default.nix
   ];
 }
