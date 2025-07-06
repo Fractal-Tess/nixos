@@ -186,7 +186,7 @@
   };
 
   # User
-  users.users.fractal-tess = {
+  users.users.${username} = {
     isNormalUser = true;
     # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
     extraGroups = [ "networkmanager" "wheel" "video" ];
