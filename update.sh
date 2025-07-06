@@ -138,58 +138,71 @@ main() {
     git add -A
     print_success "All files staged successfully"
     echo
-    
-    # Step 3: NixOS rebuild
-    print_step "Step 3: Rebuilding NixOS configuration"
-    print_status "Running nixos-rebuild switch..."
-    echo
-    
-    # Run nixos-rebuild with real-time output and color preservation
-    if sudo nixos-rebuild switch --flake . --impure --show-trace; then
-        print_success "NixOS rebuild completed successfully"
+
+    # Check if there are staged changes to commit
+    if git diff --cached --name-only | grep -q .; then
+        # Step 3: NixOS rebuild
+        print_step "Step 3: Rebuilding NixOS configuration"
+        print_status "Running nixos-rebuild switch..."
+        echo
+
+        # Run nixos-rebuild with real-time output and color preservation
+        if sudo nixos-rebuild switch --flake . --impure --show-trace; then
+            print_success "NixOS rebuild completed successfully"
+        else
+            print_error "NixOS rebuild failed"
+            reset_git_staging
+            exit 1
+        fi
+        echo
+
+        # Step 4: Git commit with incrementing message
+        print_step "Step 4: Committing changes"
+        local commit_message
+        commit_message=$(get_next_commit_message)
+        print_status "Committing with message: $commit_message"
+
+        if git commit -m "$commit_message"; then
+            print_success "Changes committed successfully"
+        else
+            print_error "Git commit failed"
+            exit 1
+        fi
+        echo
+
+        # Step 5: Git push to remote
+        print_step "Step 5: Pushing to remote repository"
+        print_status "Pushing changes to remote..."
+
+        if git push; then
+            print_success "Changes pushed to remote successfully"
+        else
+            print_error "Git push failed"
+            exit 1
+        fi
+        echo
+
+        # Step 6: Success message
+        print_step "Update workflow completed successfully!"
+        print_success "NixOS configuration has been updated and deployed"
+        print_success "All changes have been committed and pushed to remote"
+        echo
+        print_status "Summary:"
+        print_status "  - Configuration rebuilt and activated"
+        print_status "  - Changes committed: $commit_message"
+        print_status "  - Changes pushed to remote repository"
+        echo
     else
-        print_error "NixOS rebuild failed"
-        reset_git_staging
-        exit 1
+        print_warning "No changes to commit. Skipping commit and push steps."
+        print_step "Update workflow completed successfully!"
+        print_success "NixOS configuration has been rebuilt and activated. No changes to commit or push."
+        echo
+        print_status "Summary:"
+        print_status "  - Configuration rebuilt and activated"
+        print_status "  - No changes to commit or push"
+        echo
+        exit 0
     fi
-    echo
-    
-    # Step 4: Git commit with incrementing message
-    print_step "Step 4: Committing changes"
-    local commit_message
-    commit_message=$(get_next_commit_message)
-    print_status "Committing with message: $commit_message"
-    
-    if git commit -m "$commit_message"; then
-        print_success "Changes committed successfully"
-    else
-        print_error "Git commit failed"
-        exit 1
-    fi
-    echo
-    
-    # Step 5: Git push to remote
-    print_step "Step 5: Pushing to remote repository"
-    print_status "Pushing changes to remote..."
-    
-    if git push; then
-        print_success "Changes pushed to remote successfully"
-    else
-        print_error "Git push failed"
-        exit 1
-    fi
-    echo
-    
-    # Step 6: Success message
-    print_step "Update workflow completed successfully!"
-    print_success "NixOS configuration has been updated and deployed"
-    print_success "All changes have been committed and pushed to remote"
-    echo
-    print_status "Summary:"
-    print_status "  - Configuration rebuilt and activated"
-    print_status "  - Changes committed: $commit_message"
-    print_status "  - Changes pushed to remote repository"
-    echo
 }
 
 # Change to the NixOS configuration directory
