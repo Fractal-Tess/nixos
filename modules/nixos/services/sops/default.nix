@@ -16,7 +16,8 @@
     };
     hello = {
       owner = "fractal-tess";
-      path = "/var/lib/fractal-tess/hello";
+      path = "/home/fractal-tess/.secretv2.zsh";
     };
+
   };
 }
