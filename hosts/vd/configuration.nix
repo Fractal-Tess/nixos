@@ -179,6 +179,9 @@
         }
       ];
     };
+
+    # SOPS
+    # services.sops.enable = true;
   };
 
   # User
