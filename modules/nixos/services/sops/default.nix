@@ -12,11 +12,11 @@
   sops.secrets = {
     example_key = {
       owner = "fractal-tess";
-      path = "/var/lib/fractal-tess/secrets.yaml";
+      path = "/var/lib/fractal-tess/secrets";
     };
     hello = {
       owner = "fractal-tess";
-      path = "/var/lib/fractal-tess/hello.yaml";
+      path = "/var/lib/fractal-tess/hello";
     };
   };
 }
