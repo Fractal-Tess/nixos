@@ -77,16 +77,40 @@ trap handle_error ERR
 main() {
     print_step "Starting NixOS update workflow..."
     echo
-    
-    # Step 1: Show git diff from last commit
-    print_step "Step 1: Showing git diff from last commit"
-    print_status "Displaying changes since last commit..."
-    echo
-    if git diff --name-only HEAD 2>/dev/null | grep -q .; then
-        git diff HEAD
-        echo
+
+    # Step 0: Pull latest changes from remote
+    print_step "Step 0: Pulling latest changes from remote repository"
+    print_status "Running git pull to fetch and merge remote changes..."
+    local git_pull_output
+    git_pull_output=$(git pull 2>&1)
+    if [[ $? -eq 0 ]]; then
+        print_success "Pulled latest changes from remote successfully"
     else
-        print_warning "No changes detected since last commit"
+        print_error "Git pull failed"
+        exit 1
+    fi
+    echo "$git_pull_output"
+    echo
+
+    # Check if remote changes were pulled
+    local remote_updated=1
+    if echo "$git_pull_output" | grep -q -E "Already up[- ]to[- ]date\.|Already up to date"; then
+        remote_updated=0
+    fi
+
+    if [[ $remote_updated -eq 1 ]]; then
+        print_step "Remote changes detected and applied. Skipping local diff and proceeding with update for new remote changes."
+    else
+        # Step 1: Show git diff from last commit
+        print_step "Step 1: Showing git diff from last commit"
+        print_status "Displaying changes since last commit..."
+        echo
+        if git diff --name-only HEAD 2>/dev/null | grep -q .; then
+            git diff HEAD
+            echo
+        else
+            print_warning "No changes detected since last commit"
+        fi
     fi
     
     # Step 2: Git add all files
