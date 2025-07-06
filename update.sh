@@ -99,7 +99,26 @@ main() {
     fi
 
     if [[ $remote_updated -eq 1 ]]; then
-        print_step "Remote changes detected and applied. Skipping local diff and proceeding with update for new remote changes."
+        print_step "Remote changes detected and applied. Proceeding to rebuild NixOS configuration. Skipping local staging, commit, and push steps."
+        echo
+        # Rebuild NixOS configuration for new remote changes
+        print_step "Rebuilding NixOS configuration for remote changes"
+        print_status "Running nixos-rebuild switch..."
+        echo
+        if sudo nixos-rebuild switch --flake . --impure --show-trace; then
+            print_success "NixOS rebuild completed successfully"
+        else
+            print_error "NixOS rebuild failed"
+            exit 1
+        fi
+        echo
+        print_success "NixOS configuration has been updated from remote changes."
+        print_status "Summary:"
+        print_status "  - Pulled and applied latest remote changes."
+        print_status "  - Configuration rebuilt and activated."
+        print_status "  - No local changes to stage, commit, or push."
+        echo
+        exit 0
     else
         # Step 1: Show git diff from last commit
         print_step "Step 1: Showing git diff from last commit"
