@@ -1,0 +1,541 @@
+[
+  {
+    "layer": "top",
+    "position": "top",
+    "mod": "dock",
+    "output": ["HDMI-A-1"],
+    "margin-left": 8,
+    "margin-right": 8,
+    "margin-top": 8,
+    "margin-bottom": 0,
+    "height": 32,
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "modules-left": [
+      "custom/padd",
+      "custom/nixos",
+      "custom/spacer",
+      "hyprland/workspaces",
+      "custom/padd"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "custom/padd",
+      "pulseaudio",
+      "custom/spacer",
+      "cava",
+      "custom/spacer",
+      "disk#root",
+      "custom/spacer",
+      "disk#vault",
+      "custom/spacer",
+      "disk#backup",
+      "custom/spacer",
+      "network",
+      "custom/spacer",
+      "cpu",
+      "custom/gpu#nvidia",
+      "memory",
+      "custom/spacer",
+      "hyprland/language",
+      "custom/spacer",
+      "clock",
+      "custom/spacer",
+      "custom/notification",
+      "custom/spacer",
+      "tray",
+      "custom/padd"
+    ],
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#vault": {
+      "interval": 30,
+      "path": "/mnt/vault/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "memory": {
+      "interval": 1,
+      "rotate": 270,
+      "format": "{icon}",
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "max-length": 10
+    },
+    "custom/gpu#nvidia": {
+      "interval": 1,
+      "format": "{icon}",
+      "rotate": 270,
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "exec": "nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits | awk -F', ' '{printf \"{\\\"percentage\\\": %d, \\\"text\\\": \\\"%d%\\\", \\\"tooltip\\\": \\\"GPU Usage: %d%\\\\rTemperature: %d°C\\\\rMemory: %d/%d MB\\\", \\\"class\\\": \\\"%s\\\"}\", $1, $1, $1, $2, $3, $4, ($1<30 ? \"low\" : ($1<70 ? \"medium\" : \"high\"))}'",
+      "return-type": "json"
+    },
+    "cpu": {
+      "interval": 1,
+      "format": "{icon}",
+      "rotate": 270,
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
+    },
+    "tray": {
+      "icon-size": 16,
+      "rotate": 0,
+      "spacing": 3
+    },
+    "custom/notification": {
+      "tooltip": false,
+      "format": "{icon}",
+      "format-icons": {
+        "notification": "󰅸",
+        "none": "󰂜",
+        "dnd-notification": "󰅸",
+        "dnd-none": "󱏨",
+        "inhibited-notification": "󰅸",
+        "inhibited-none": "󰂜",
+        "dnd-inhibited-notification": "󰅸",
+        "dnd-inhibited-none": "󱏨"
+      },
+      "return-type": "json",
+      "exec-if": "which swaync-client",
+      "exec": "swaync-client -swb",
+      "on-click-right": "swaync-client -d -sw",
+      "on-click": "swaync-client -t -sw",
+      "escape": true
+    },
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "default": "",
+        "active": ""
+        //"1": "ﭮ",
+        //"2": "",
+        //"3": "",
+        //"4": "",
+        //"5": "",
+        //"6": "ﱘ"
+      },
+      "persistent-workspaces": {
+        "*": 6 // 6 workspaces by default on every monitor
+      }
+    },
+    "cava": {
+      "framerate": 60,
+      "autosens": 1,
+      "bars": 14,
+      "lower_cutoff_freq": 50,
+      "higher_cutoff_freq": 10000,
+      "method": "pulse",
+      "source": "auto",
+      "stereo": true,
+      "reverse": false,
+      "bar_delimiter": 0,
+      "monstercat": false,
+      "waves": false,
+      "noise_reduction": 0.77,
+      "input_delay": 2,
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+      "actions": {
+        "on-click-right": "mode"
+      }
+    },
+    "custom/nixos": {
+      "format": "",
+      "exec": "echo ; echo Show wofi drun menu",
+      "on-click": "wofi --show drun",
+      "interval": 86400,
+      "tooltip": true
+    },
+    "clock": {
+      "format": "{:%I:%M %p}",
+      "rotate": 0,
+      "on-click": "/usr/local/bin/ags -t ActivityCenter",
+      "tooltip-format": "<tt>{calendar}</tt>",
+      "calendar": {
+        "mode": "month",
+        "mode-mon-col": 3,
+        "on-scroll": 1,
+        "on-click-right": "mode",
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      },
+      "actions": {
+        "on-click-right": "mode",
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+      }
+    },
+    "network": {
+      "tooltip": true,
+      "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+      "rotate": 0,
+      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
+      "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
+      "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
+      "format-linked": "󰈀 {ifname} (No IP)",
+      "format-disconnected": " ",
+      "tooltip-format-disconnected": "Disconnected",
+      "interval": 1
+    },
+    "hyprland/language": {
+      // "format": "<sub> {}</sub>",
+      "format": "{}",
+      "format-en": "en",
+      "format-bg": "bg",
+      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard-1"
+    },
+    "pulseaudio": {
+      "format": "{volume} {icon}",
+      "rotate": 0,
+      "format-muted": "婢",
+      "on-click-right": "pactl set-default-sink $(pactl list short sinks | awk -v current=\"$(pactl get-default-sink)\" '$2 != current {print $2; exit}')",
+      "on-click": "pactl set-sink-mute 0 toggle",
+      "tooltip-format": "{icon} {desc} // {volume}%",
+      "scroll-step": 5,
+      "format-icons": {
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "hdmi": "",
+        "phone": "",
+        "portable": "",
+        "car": "",
+        "default": ["", "", ""]
+      }
+    },
+    "pulseaudio#microphone": {
+      "format": "{format_source}",
+      "rotate": 0,
+      "format-source": "",
+      "format-source-muted": "",
+      "on-click": "pavucontrol -t 4",
+      "on-click-middle": "volumecontrol.sh -i m",
+      "on-scroll-up": "volumecontrol.sh -i i",
+      "on-scroll-down": "volumecontrol.sh -i d",
+      "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
+      "scroll-step": 5
+    },
+    "custom/notifications": {
+      "format": "{icon} {}",
+      "rotate": 0,
+      "format-icons": {
+        "email-notification": "<span foreground='white'><sup></sup></span>",
+        "chat-notification": "󱋊<span foreground='white'><sup></sup></span>",
+        "warning-notification": "󱨪<span foreground='yellow'><sup></sup></span>",
+        "error-notification": "󱨪<span foreground='red'><sup></sup></span>",
+        "network-notification": "󱂇<span foreground='white'><sup></sup></span>",
+        "battery-notification": "󰁺<span foreground='white'><sup></sup></span>",
+        "update-notification": "󰚰<span foreground='white'><sup></sup></span>",
+        "music-notification": "󰝚<span foreground='white'><sup></sup></span>",
+        "volume-notification": "󰕿<span foreground='white'><sup></sup></span>",
+        "notification": "<span foreground='white'><sup></sup></span>",
+        "none": ""
+      },
+      "return-type": "json",
+      "exec-if": "which dunstctl",
+      "exec": "notifications.py",
+      "on-click": "sleep 0.1 && dunstctl history-pop",
+      "on-click-middle": "dunstctl history-clear",
+      "on-click-right": "dunstctl close-all",
+      "interval": 1,
+      "tooltip": true,
+      "escape": true
+    },
+    "custom/keybindhint": {
+      "format": " ",
+      "rotate": 0,
+      "on-click": "keybinds_hint.sh"
+    },
+    "custom/expand": {
+      "on-click": "~/.config/hypr/scripts/expand_toolbar",
+      "format": "{}",
+      "exec": "~/.config/hypr/scripts/tools/expand arrow-icon"
+    },
+    "custom/padd": {
+      "format": "  ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/smallspacer": {
+      "format": " "
+    }
+  },
+  {
+    "layer": "top",
+    "position": "top",
+    "mod": "dock",
+    "output": ["eDP-1", "DP-1"],
+    "margin-left": 8,
+    "margin-right": 8,
+    "margin-top": 8,
+    "margin-bottom": 0,
+    "height": 32,
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "modules-left": [
+      "custom/padd",
+      "custom/spacer",
+      "custom/nixos",
+      "custom/spacer",
+      "hyprland/workspaces",
+      "custom/spacer"
+    ],
+    "modules-center": [],
+    "modules-right": [
+      "custom/padd",
+      "disk#blockade",
+      "disk#oracle",
+      "disk#root",
+      "custom/spacer",
+      "pulseaudio",
+      "custom/spacer",
+      "pulseaudio#microphone",
+      "custom/spacer",
+      "cava",
+      "custom/spacer",
+      "network",
+      "custom/spacer",
+      "battery",
+      "custom/spacer",
+      "cpu",
+      "memory",
+      "custom/spacer",
+      "hyprland/language",
+      "custom/spacer",
+      "clock",
+      "custom/spacer",
+      "custom/notification",
+      "custom/spacer",
+      "tray",
+      "custom/padd"
+    ],
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#blockade": {
+      "interval": 30,
+      "path": "/mnt/blockade",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "disk#oracle": {
+      "interval": 30,
+      "path": "/mnt/oracle",
+      "format": "/ {percentage_used}%",
+      "unit": "GB"
+    },
+    "memory": {
+      "interval": 1,
+      "rotate": 270,
+      "format": "{icon}",
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "max-length": 10
+    },
+    "cpu": {
+      "interval": 1,
+      "format": "{icon}",
+      "rotate": 270,
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
+    },
+    "tray": {
+      "icon-size": 16,
+      "rotate": 0,
+      "spacing": 3
+    },
+    "custom/notification": {
+      "tooltip": false,
+      "format": "{icon}",
+      "format-icons": {
+        "notification": "󰅸",
+        "none": "󰂜",
+        "dnd-notification": "󰅸",
+        "dnd-none": "󱏨",
+        "inhibited-notification": "󰅸",
+        "inhibited-none": "󰂜",
+        "dnd-inhibited-notification": "󰅸",
+        "dnd-inhibited-none": "󱏨"
+      },
+      "return-type": "json",
+      "exec-if": "which swaync-client",
+      "exec": "swaync-client -swb",
+      "on-click-right": "swaync-client -d -sw",
+      "on-click": "swaync-client -t -sw",
+      "escape": true
+    },
+    "hyprland/workspaces": {
+      "format": "{icon}",
+      "format-icons": {
+        "default": "",
+        "active": ""
+      },
+      "persistent-workspaces": {
+        "*": 6 // 6 workspaces by default on every monitor
+      }
+    },
+    "cava": {
+      "framerate": 60,
+      "autosens": 1,
+      "bars": 14,
+      "lower_cutoff_freq": 50,
+      "higher_cutoff_freq": 10000,
+      "method": "pulse",
+      "source": "auto",
+      "stereo": true,
+      "reverse": false,
+      "bar_delimiter": 0,
+      "monstercat": false,
+      "waves": false,
+      "noise_reduction": 0.77,
+      "input_delay": 2,
+      "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
+      "actions": {
+        "on-click-right": "mode"
+      }
+    },
+    "custom/nixos": {
+      "format": "",
+      "exec": "echo ; echo Show wofi drun menu",
+      "on-click": "wofi --show drun",
+      "interval": 86400,
+      "tooltip": true
+    },
+    "clock": {
+      "format": "{:%I:%M %p}",
+      "rotate": 0,
+      "on-click": "/usr/local/bin/ags -t ActivityCenter",
+      "tooltip-format": "<tt>{calendar}</tt>",
+      "calendar": {
+        "mode": "month",
+        "mode-mon-col": 3,
+        "on-scroll": 1,
+        "on-click-right": "mode",
+        "format": {
+          "months": "<span color='#ffead3'><b>{}</b></span>",
+          "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
+          "today": "<span color='#ff6699'><b>{}</b></span>"
+        }
+      },
+      "actions": {
+        "on-click-right": "mode",
+        "on-click-forward": "tz_up",
+        "on-click-backward": "tz_down",
+        "on-scroll-up": "shift_up",
+        "on-scroll-down": "shift_down"
+      }
+    },
+    "battery": {
+      "states": {
+        "good": 95,
+        "warning": 30,
+        "critical": 20
+      },
+      "format": "{icon} {capacity}% ",
+      "format-charging": "󰂄 {capacity}% ",
+      "format-plugged": "󰂄 {capacity}% ",
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "on-click-right": "pkill waybar & hyprctl dispatch exec waybar"
+    },
+    "network": {
+      "tooltip": true,
+      "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+      "rotate": 0,
+      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
+      "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
+      "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
+      "format-linked": "󰈀 {ifname} (No IP)",
+      "format-disconnected": " ",
+      "tooltip-format-disconnected": "Disconnected",
+      "interval": 1
+    },
+    "hyprland/language": {
+      "format": "{}",
+      "format-en": "en",
+      "format-bg": "bg"
+    },
+    "pulseaudio": {
+      "format": "{volume} {icon}",
+      "rotate": 0,
+      "format-muted": "婢",
+      "on-click-right": "pactl set-default-sink $(pactl list short sinks | awk -v current=\"$(pactl get-default-sink)\" '$2 != current {print $2; exit}')",
+      "on-click": "pactl set-sink-mute 0 toggle",
+      "tooltip-format": "{icon} {desc} // {volume}%",
+      "scroll-step": 5,
+      "format-icons": {
+        "headphone": "",
+        "hands-free": "",
+        "headset": "",
+        "hdmi": "",
+        "phone": "",
+        "portable": "",
+        "car": "",
+        "default": ["", "", ""]
+      }
+    },
+    "pulseaudio#microphone": {
+      "format": "{format_source}",
+      "rotate": 0,
+      "format-source": "",
+      "format-source-muted": "",
+      "on-click": "pavucontrol -t 4",
+      "on-click-middle": "volumecontrol.sh -i m",
+      "on-scroll-up": "volumecontrol.sh -i i",
+      "on-scroll-down": "volumecontrol.sh -i d",
+      "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
+      "scroll-step": 5
+    },
+    "custom/l_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/r_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/sl_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/sr_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/rl_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/rr_end": {
+      "format": " ",
+      "interval": "once",
+      "tooltip": false
+    },
+    "custom/padd": {
+      "format": "  ",
+      "interval": "once",
+      "tooltip": false
+    }
+  }
+]
