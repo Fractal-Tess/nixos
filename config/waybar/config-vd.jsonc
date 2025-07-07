@@ -304,7 +304,6 @@
     "modules-center": [],
     "modules-right": [
       "custom/padd",
-      "custom/spacer",
       "disk#blockade",
       "custom/spacer",
       "disk#oracle",
@@ -317,11 +316,11 @@
       "custom/spacer",
       "disk#root",
       "custom/spacer",
+
       "pulseaudio",
       "custom/spacer",
       "cava",
       "pulseaudio#microphone",
-      "battery",
       "network",
       "cpu",
       "gpu#nvidia",
