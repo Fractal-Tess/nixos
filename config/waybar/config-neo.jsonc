@@ -50,12 +50,6 @@
       "tray",
       "custom/padd"
     ],
-    "disk#root": {
-      "interval": 30,
-      "path": "/",
-      "format": "/ {percentage_used}%",
-      "unit": "GB"
-    },
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade",
@@ -70,11 +64,10 @@
       "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
-    "disk#neo": {
+    "disk#root": {
       "interval": 30,
       "path": "/",
-      "format": "neo: {percentage_used}%",
-      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
+      "format": "/ {percentage_used}%",
       "unit": "GB"
     },
     "memory": {
