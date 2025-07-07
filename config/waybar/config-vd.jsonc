@@ -23,22 +23,21 @@
     "modules-center": [],
     "modules-right": [
       "custom/padd",
-      "pulseaudio",
-      "custom/spacer",
-      "cava",
-      "custom/spacer",
       "disk#blockade",
       "custom/spacer",
       "disk#oracle",
       "custom/spacer",
       "disk#neo",
       "custom/spacer",
-      "disk#root",
-      "custom/spacer",
       "disk#vault",
       "custom/spacer",
       "disk#backup",
       "custom/spacer",
+      "disk#root",
+      "custom/spacer",
+      "pulseaudio",
+      "custom/spacer",
+      "cava",
       "network",
       "custom/spacer",
       "cpu",
@@ -54,24 +53,50 @@
       "tray",
       "custom/padd"
     ],
-    "disk#root": {
+    "disk#blockade": {
       "interval": 30,
-      "path": "/",
-      "format": "/ {percentage_used}%",
+      "path": "/mnt/blockade/",
+      "format": "blockade: {percentage_used}%",
+      "tooltip-format": "Blockade: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#oracle": {
+      "interval": 30,
+      "path": "/mnt/oracle/",
+      "format": "oracle: {percentage_used}%",
+      "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#neo": {
+      "interval": 30,
+      "path": "/mnt/neo/",
+      "format": "neo: {percentage_used}%",
+      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup/",
+      "format": "backup: {percentage_used}%",
+      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#vault": {
       "interval": 30,
       "path": "/mnt/vault/",
-      "format": "/ {percentage_used}%",
+      "format": "vault: {percentage_used}%",
+      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
-    "disk#backup": {
+    "disk#root": {
       "interval": 30,
-      "path": "/mnt/backup/",
+      "path": "/",
       "format": "/ {percentage_used}%",
+      "tooltip-format": "/ {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
+
     "memory": {
       "interval": 1,
       "rotate": 270,
@@ -351,49 +376,6 @@
       "actions": {
         "on-click-right": "mode"
       }
-    },
-    "disk#blockade": {
-      "interval": 30,
-      "path": "/mnt/blockade/",
-      "format": "blockade: {percentage_used}%",
-      "tooltip-format": "Blockade: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#oracle": {
-      "interval": 30,
-      "path": "/mnt/oracle/",
-      "format": "oracle: {percentage_used}%",
-      "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#neo": {
-      "interval": 30,
-      "path": "/mnt/neo/",
-      "format": "neo: {percentage_used}%",
-      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-
-    "disk#backup": {
-      "interval": 30,
-      "path": "/mnt/backup/",
-      "format": "backup: {percentage_used}%",
-      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#vault": {
-      "interval": 30,
-      "path": "/mnt/vault/",
-      "format": "vault: {percentage_used}%",
-      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#root": {
-      "interval": 30,
-      "path": "/",
-      "format": "/ {percentage_used}%",
-      "tooltip-format": "/ {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
     },
     "pulseaudio#microphone": {
       "format": "{format_source}",
