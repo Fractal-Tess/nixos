@@ -28,7 +28,6 @@ in {
     trash-cli # Command line interface to FreeDesktop.org trash
     ddcutil # Monitor control utility (DDC/CI)
     sops # Secret management tool
-    pavucontrol # PulseAudio control panel
 
     # === FILE MANAGEMENT ===
     yazi # Terminal file manager

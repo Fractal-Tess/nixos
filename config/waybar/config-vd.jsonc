@@ -233,8 +233,8 @@
       "format": "{volume} {icon}",
       "rotate": 0,
       "format-muted": "婢",
-      "on-click-right": "pactl set-default-sink $(pactl list short sinks | awk -v current=\"$(pactl get-default-sink)\" '$2 != current {print $2; exit}')",
-      "on-click": "pactl set-sink-mute 0 toggle",
+      "on-click-right": "pw-cli set-default sink $(pw-cli list-objects | grep -A1 'Sink' | grep -v 'Sink' | grep -v '^--$' | awk -F'\"' 'NR==1{current=$2} NR>1 && $2!=current{print $2; exit}')",
+      "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
       "tooltip-format": "{icon} {desc} // {volume}%",
       "scroll-step": 5,
       "format-icons": {
