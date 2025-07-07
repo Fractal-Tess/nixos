@@ -120,6 +120,7 @@ in {
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
+    (flameshot.override { enableWlrSupport = true; })
 
     # === TERMINAL ENHANCEMENTS ===
     neofetch # System information tool
