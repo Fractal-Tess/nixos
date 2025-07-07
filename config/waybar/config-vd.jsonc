@@ -230,9 +230,9 @@
       "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard-1"
     },
     "pulseaudio": {
-      "format": "{volume} {icon}",
+      "format": "{volume:>3} {icon}",
       "rotate": 0,
-      "format-muted": "婢",
+      "format-muted": "{volume:>3} 婢",
       "on-click-right": "current=$(wpctl status | awk '/\\*.*Audio Controller Analog Stereo|\\*.*Headset Analog Stereo/ {print $2}'); sinks=($(wpctl status | awk '/Audio Controller Analog Stereo|Headset Analog Stereo/ {print $2}')); for i in \"${!sinks[@]}\"; do if [[ \"${sinks[$i]}\" == \"$current\" ]]; then next=$(( (i+1) % ${#sinks[@]} )); wpctl set-default ${sinks[$next]}; break; fi; done",
       "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
       "tooltip-format": "{icon} {desc} // {volume}%",
