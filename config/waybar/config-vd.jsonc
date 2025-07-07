@@ -347,27 +347,6 @@
         "on-click-right": "mode"
       }
     },
-    "disk#root": {
-      "interval": 30,
-      "path": "/",
-      "format": "neo: {percentage_used}%",
-      "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#vault": {
-      "interval": 30,
-      "path": "/mnt/vault/",
-      "format": "vault: {percentage_used}%",
-      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
-    "disk#backup": {
-      "interval": 30,
-      "path": "/mnt/backup/",
-      "format": "backup: {percentage_used}%",
-      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
-    },
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade",
@@ -390,6 +369,27 @@
       "unit": "GB"
     },
 
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup/",
+      "format": "backup: {percentage_used}%",
+      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#vault": {
+      "interval": 30,
+      "path": "/mnt/vault/",
+      "format": "vault: {percentage_used}%",
+      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#root": {
+      "interval": 30,
+      "path": "/",
+      "format": "/ {percentage_used}%",
+      "tooltip-format": "/ {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
     "pulseaudio#microphone": {
       "format": "{format_source}",
       "rotate": 0,
