@@ -114,16 +114,15 @@ in {
     tokei # Count code statistics by language
 
     # === WAYLAND UTILITIES ===
-    swww # Efficient animated wallpaper daemon for Wayland
+    # swww # Efficient animated wallpaper daemon for Wayland
     waypaper # Wallpaper manager for Wayland
     wl-clipboard # Command-line clipboard utilities for Wayland
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
-    (flameshot.override { enableWlrSupport = true; })
+    # (flameshot.override { enableWlrSupport = true; })
 
     # === TERMINAL ENHANCEMENTS ===
-    neofetch # System information tool
     nitch # Lightweight system information fetch
     lolcat # Rainbow text output
     nh # Nix helper CLI
