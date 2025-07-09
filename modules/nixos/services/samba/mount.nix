@@ -79,38 +79,39 @@ in {
 
   config = mkIf cfg.enable {
     # For each share, create a fileSystems entry for mounting via systemd automount
-    fileSystems = listToAttrs (map
-      (share: {
-        name = share.mountPoint;
-        value = {
-          device = share.device;
-          fsType = "cifs";
-          options =
-            # If credentialsFile is set, use it; otherwise, use username/password
-            let
-              baseOptions = [
-                # Set file ownership
-                "uid=${toString share.uid}"
-                "gid=${toString share.gid}"
-                # Use UTF-8 encoding for file names
-                "iocharset=utf8"
-                # Use SMB protocol version 3.0
-                "vers=3.0"
-                # Mount read-write
-                "rw"
-                # Use systemd automount for on-demand mounting
-                "x-systemd.automount"
-                # Set device timeout
-                "x-systemd.device-timeout=10"
-              ];
-            in
-            if share.credentialsFile != null then
-              [ "credentials=${share.credentialsFile}" ] ++ baseOptions
-            else
-              [ "username=${share.username}" "password=${share.password}" ]
-              ++ baseOptions;
-        };
-      })
-      cfg.shares);
+    fileSystems = listToAttrs (map (share: {
+      name = share.mountPoint;
+      value = {
+        device = share.device;
+        fsType = "cifs";
+        options =
+          # If credentialsFile is set, use it; otherwise, use username/password
+          let
+            baseOptions = [
+              # Set file ownership
+              "uid=${toString share.uid}"
+              "gid=${toString share.gid}"
+              # Use UTF-8 encoding for file names
+              "iocharset=utf8"
+              # Use SMB protocol version 3.0
+              "vers=3.0"
+              # Mount read-write
+              "rw"
+              # Use systemd automount for on-demand mounting
+              "x-systemd.automount"
+              # Do not fail if the share is unavailable (prevents boot/activation failure)
+              "nofail"
+              # Set device timeout
+              "x-systemd.device-timeout=10"
+              # Limit mount attempts to 5 seconds to avoid long waits
+              "x-systemd.mount-timeout=5"
+            ];
+          in if share.credentialsFile != null then
+            [ "credentials=${share.credentialsFile}" ] ++ baseOptions
+          else
+            [ "username=${share.username}" "password=${share.password}" ]
+            ++ baseOptions;
+      };
+    }) cfg.shares);
   };
 }
