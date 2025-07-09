@@ -53,23 +53,23 @@
       options = "--delete-older-than 7d";
     };
   };
-  programs.nix-ld.enable = true;
-  programs.nix-ld.libraries = with pkgs; [
-    stdenv.cc.cc
-    zlib
-    fuse3
-    icu
-    openssl
-    curl
-    expat
-    wine
-    vulkan-loader
-    pulseaudio
-    freetype
-    fontconfig
-    nss
-    libcap
-  ];
+  # programs.nix-ld.enable = true;
+  # programs.nix-ld.libraries = with pkgs; [
+  #   stdenv.cc.cc
+  #   zlib
+  #   fuse3
+  #   icu
+  #   openssl
+  #   curl
+  #   expat
+  #   wine
+  #   vulkan-loader
+  #   pulseaudio
+  #   freetype
+  #   fontconfig
+  #   nss
+  #   libcap
+  # ];
 
   nixpkgs.config = {
     allowUnfree = true;
@@ -81,8 +81,36 @@
   environment.systemPackages = [ ];
   programs.steam = {
     enable = true;
+    # Required for managing Wine prefixes
+    protontricks.enable = true;
+    # Recommended for better gaming performance
     gamescopeSession.enable = true;
+
+    # Install Proton-GE for better compatibility
+    extraCompatPackages = with pkgs; [ protonup ];
+
+    # Additional libraries needed for Wine/Proton
+    extraPackages = with pkgs; [
+      # Basic dependencies
+      keyutils
+      libkrb5
+      libpng
+      libpulseaudio
+      # Media support
+      gst_all_1.gst-plugins-base
+      gst_all_1.gst-plugins-good
+      # 32-bit libraries
+      pkgsi686Linux.keyutils
+      pkgsi686Linux.libkrb5
+    ];
   };
+
+  security.pam.loginLimits = [{
+    domain = "*";
+    type = "-";
+    item = "nice";
+    value = "19";
+  }];
 
   modules = {
     # ----- Drivers -----
