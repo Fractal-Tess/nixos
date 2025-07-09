@@ -116,13 +116,15 @@ in {
       [ "d /var/lib/regreet-backgrounds 0755 root root -" ];
 
     system.activationScripts.regreetBackgrounds = mkIf cfg.symlinkBackgrounds ''
-      # Ensure the target directory exists before symlinking
-      mkdir -p /var/lib/regreet-backgrounds
-      rm -rf /var/lib/regreet-backgrounds/*
+      # Ensure the target directory exists before hard linking
+      sudo mkdir -p /var/lib/regreet-backgrounds
+      sudo chown -R fractal-tess:users /var/lib/regreet-backgrounds
+      sudo rm -rf /var/lib/regreet-backgrounds/*
+      # Use hard links instead of symlinks for all background images
       for img in /home/${username}/nixos/backgrounds/*; do
-        ln -sf "$img" /var/lib/regreet-backgrounds/
+        sudo ln -f "$img" /var/lib/regreet-backgrounds/
       done
-      chmod -R a+r /var/lib/regreet-backgrounds
+      sudo chmod -R a+r /var/lib/regreet-backgrounds
     '';
   };
 }
