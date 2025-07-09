@@ -179,13 +179,17 @@ in {
 
     # === GAMING ===
     # steam # Gaming platform
-    (steam.override {
-      extraPkgs = pkgs: [ openldap ];
-      # nativeOnly = true;
-    }).run
-    # steam-run # Steam runtime
+    # (steam.override {
+    #   extraPkgs = pkgs: [ openldap ];
+    #   # nativeOnly = true;
+    # }).run
+    # # steam-run # Steam runtime
     polymc # Minecraft launcher
-    wineWowPackages.stable # Windows compatibility layer
+    bottles # Wine wrapper
+    heroic # Game launcher
+    mangohud # FPS counter
+    protonup-qt # Proton wrapper
+    # wineWowPackages.stable # Windows compatibility layer
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
     # === THEMING & CUSTOMIZATION ===
