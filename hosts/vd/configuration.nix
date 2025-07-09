@@ -144,13 +144,13 @@
           username = "smbuser";
           password = "smbpass";
         }
-        {
-          mountPoint = "/mnt/neo";
-          device = "//neo.netbird.cloud/home";
-          username = "fractal-tess";
-          password = "smbpass";
-        }
-      ];
+      #   {
+      #     mountPoint = "/mnt/neo";
+      #     device = "//neo.netbird.cloud/home";
+      #     username = "fractal-tess";
+      #     password = "smbpass";
+      #   }
+      # ];
     };
 
     # Samba share service
