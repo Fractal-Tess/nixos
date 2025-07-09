@@ -126,6 +126,12 @@
           password = "smbpass";
         }
         {
+          mountPoint = "/mnt/greystone";
+          device = "//rp.netbird.cloud/greystone";
+          username = "smbuser";
+          password = "smbpass";
+        }
+        {
           mountPoint = "/mnt/oracle";
           device = "//oracle.netbird.cloud/home";
           username = "smbuser";
