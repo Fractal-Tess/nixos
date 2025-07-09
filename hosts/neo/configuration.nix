@@ -126,6 +126,9 @@
         directoryMask = "0755";
       }];
     };
+
+    # SOPS
+    services.sops.enable = true;
   };
 
   # Bluetooth
