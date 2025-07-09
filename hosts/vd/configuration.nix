@@ -223,7 +223,7 @@
     };
 
     # SOPS
-    # services.sops.enable = true;
+    services.sops.enable = true;
   };
 
   # User
