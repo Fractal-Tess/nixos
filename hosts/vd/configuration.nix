@@ -79,6 +79,10 @@
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
   environment.systemPackages = [ ];
+  programs.steam = {
+    enable = true;
+    gamescopeSession.enable = true;
+  };
 
   modules = {
     # ----- Drivers -----
