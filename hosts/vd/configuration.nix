@@ -93,7 +93,10 @@
       hyprland.enable = true;
 
       # ----- ReGreet -----
-      regreet.enable = true;
+      regreet = {
+        enable = true;
+        symlinkBackgrounds = true;
+      };
     };
 
     # ----- Bar -----
