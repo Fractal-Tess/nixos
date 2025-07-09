@@ -6,14 +6,17 @@ let
   cfg = config.modules.display.regreet;
   hyprland = config.modules.display.hyprland;
 
-in
-{
+in {
   options.modules.display.regreet = {
     # Option to enable/disable the ReGreet display manager
     enable = mkEnableOption "ReGreet";
 
     # Option to enable automatic login without password prompt
     autoLogin = mkEnableOption "ReGreet auto login";
+
+    # Option to enable symlinking backgrounds to /var/lib/regreet-backgrounds
+    symlinkBackgrounds = mkEnableOption
+      "Symlink backgrounds to /var/lib/regreet-backgrounds for regreet access";
   };
 
   # Configuration that applies when this module is enabled
@@ -91,7 +94,7 @@ in
       # Set the session to Hyprland
       settings = {
         background = {
-          path = "/home/${username}/nixos/backgrounds/1.jpg";
+          path = "/var/lib/regreet-backgrounds/1.jpg";
           fit = "Cover";
         };
         commands = {
@@ -107,5 +110,19 @@ in
         };
       };
     };
+
+    # Only set up symlinks if symlinkBackgrounds is enabled
+    systemd.tmpfiles.rules = mkIf cfg.symlinkBackgrounds
+      [ "d /var/lib/regreet-backgrounds 0755 root root -" ];
+
+    system.activationScripts.regreetBackgrounds = mkIf cfg.symlinkBackgrounds ''
+      # Ensure the target directory exists before symlinking
+      mkdir -p /var/lib/regreet-backgrounds
+      rm -rf /var/lib/regreet-backgrounds/*
+      for img in /home/${username}/nixos/backgrounds/*; do
+        ln -sf "$img" /var/lib/regreet-backgrounds/
+      done
+      chmod -R a+r /var/lib/regreet-backgrounds
+    '';
   };
 }

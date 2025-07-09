@@ -63,11 +63,17 @@
 
     # ----- Display -----
     display = {
+      # ----- Hyprland -----
       hyprland.enable = true;
+
+      # ----- ReGreet -----
       regreet.enable = true;
     };
+
+    # ----- Bar -----
     display.waybar.enable = true;
 
+    # ----- Docker -----
     # Docker 
     services.docker = {
       enable = true;

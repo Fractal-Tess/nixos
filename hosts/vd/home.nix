@@ -114,7 +114,7 @@ in {
     tokei # Count code statistics by language
 
     # === WAYLAND UTILITIES ===
-    # swww # Efficient animated wallpaper daemon for Wayland
+    swww # Efficient animated wallpaper daemon for Wayland
     waypaper # Wallpaper manager for Wayland
     wl-clipboard # Command-line clipboard utilities for Wayland
     grim # Screenshot utility for Wayland
