@@ -117,14 +117,14 @@ in {
 
     system.activationScripts.regreetBackgrounds = mkIf cfg.symlinkBackgrounds ''
       # Ensure the target directory exists before hard linking
-      sudo mkdir -p /var/lib/regreet-backgrounds
-      sudo chown -R fractal-tess:users /var/lib/regreet-backgrounds
-      sudo rm -rf /var/lib/regreet-backgrounds/*
+      mkdir -p /var/lib/regreet-backgrounds
+      chown -R fractal-tess:users /var/lib/regreet-backgrounds
+      rm -rf /var/lib/regreet-backgrounds/*
       # Use hard links instead of symlinks for all background images
       for img in /home/${username}/nixos/backgrounds/*; do
-        sudo ln -f "$img" /var/lib/regreet-backgrounds/
+        ln -f "$img" /var/lib/regreet-backgrounds/
       done
-      sudo chmod -R a+r /var/lib/regreet-backgrounds
+      chmod -R a+r /var/lib/regreet-backgrounds
     '';
   };
 }
