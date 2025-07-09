@@ -23,6 +23,8 @@
     "modules-center": [],
     "modules-right": [
       "custom/padd",
+      "disk#greystone",
+      "custom/spacer",
       "disk#blockade",
       "custom/spacer",
       "disk#oracle",
@@ -52,6 +54,13 @@
       "tray",
       "custom/padd"
     ],
+    "disk#greystone": {
+      "interval": 30,
+      "path": "/mnt/greystone/",
+      "format": "greystone: {percentage_used}%",
+      "tooltip-format": "Greystone: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade/",
