@@ -19,19 +19,20 @@ with lib; {
 
   # Has to exist so other home manager modules can mkMerge
   home.packages = with pkgs; [
-
     # === SYSTEM UTILITIES ===
     usbutils # USB device utilities
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
     trash-cli # Command line interface to FreeDesktop.org trash
     ddcutil # Monitor control utility (DDC/CI)
+    sops # Encrypt and decrypt files with age
 
     # === FILE MANAGEMENT ===
     unzip # Extract .zip archives
     p7zip # File archiver with high compression ratio
     fd # Simple, fast alternative to 'find'
     dust # More intuitive version of du (disk usage)
+    dysk # Disk usage analyzer
 
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder

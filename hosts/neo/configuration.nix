@@ -7,6 +7,7 @@
 
     # Home manager
     inputs.home-manager.nixosModules.default
+    inputs.sops-nix.nixosModules.sops
 
     # Core system modules
     ./../../modules/nixos/core/audio.nix
