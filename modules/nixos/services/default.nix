@@ -6,7 +6,7 @@
     ./auto_cpu/default.nix
     ./automount/default.nix
     ./ssh/default.nix
-    ./docker/default.nix
+    ./virtualization/default.nix
     ./samba/default.nix
     ./sops/default.nix
   ];
