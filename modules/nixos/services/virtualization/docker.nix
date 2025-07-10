@@ -2,11 +2,9 @@
 
 with lib;
 
-let cfg = config.modules.services.docker;
+let cfg = config.modules.services.virtualization.docker;
 in {
-  imports = [ ./portainer.nix ./kubernetes.nix ];
-
-  options.modules.services.docker = {
+  options.modules.services.virtualization.docker = {
     enable = mkEnableOption "Docker";
     rootless = mkEnableOption "Rootless Docker";
     nvidia = mkEnableOption "Nvidia support";

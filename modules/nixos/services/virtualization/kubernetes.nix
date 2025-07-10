@@ -3,9 +3,9 @@
 with lib;
 
 # https://nixos.wiki/wiki/Kubernetes
-let cfg = config.modules.services.kubernetes;
+let cfg = config.modules.services.virtualization.kubernetes;
 in {
-  options.modules.services.kubernetes = {
+  options.modules.services.virtualization.kubernetes = {
     enable = mkEnableOption "Kubernetes support";
   };
 
