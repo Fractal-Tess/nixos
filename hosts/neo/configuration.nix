@@ -129,6 +129,8 @@
 
     # SOPS
     services.sops.enable = true;
+    services.disk-utils.enable = true;
+    services.networking.enable = true;
   };
 
   # Bluetooth

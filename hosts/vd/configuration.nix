@@ -9,23 +9,8 @@
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
 
-    # Core system modules
-    ./../../modules/nixos/core/audio.nix
-    ./../../modules/nixos/core/boot.nix
-    ./../../modules/nixos/core/locale.nix
-    ./../../modules/nixos/core/networking.nix
-    ./../../modules/nixos/core/security.nix
-    ./../../modules/nixos/core/shell.nix
-    ./../../modules/nixos/core/time.nix
-
-    # Drivers
-    ./../../modules/nixos/drivers/default.nix
-
-    # Display
-    ./../../modules/nixos/display/default.nix
-
-    # Services
-    ./../../modules/nixos/services/default.nix
+    # NixOS modules
+    ../../modules/nixos/default.nix
   ];
 
   # DDC support
@@ -78,7 +63,7 @@
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  environment.systemPackages = [ ];
+  environment.systemPackages = with pkgs; [ firectl ];
   programs.steam = {
     enable = true;
     # Required for managing Wine prefixes
@@ -224,6 +209,7 @@
 
     # SOPS
     services.sops.enable = true;
+    services.disk-utils.enable = true;
   };
 
   # User
