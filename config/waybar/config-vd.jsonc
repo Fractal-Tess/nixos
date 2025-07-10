@@ -235,7 +235,7 @@
       "format": "{}",
       "format-en": "en",
       "format-bg": "bg",
-      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard-1"
+      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard"
     },
     "pulseaudio": {
       "format": "{volume:>3} {icon}",

@@ -3,63 +3,39 @@
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     rust-overlay.url = "github:oxalica/rust-overlay";
     systems.url = "github:nix-systems/default";
-    treefmt-nix = {
-      url = "github:numtide/treefmt-nix";
-      inputs.nixpkgs.url = "nixpkgs";
-    };
   };
-
-  outputs =
-    { self
-    , systems
-    , nixpkgs
-    , treefmt-nix
-    , ...
-    } @ inputs:
+  outputs = { self, systems, nixpkgs, ... }@inputs:
     let
       eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems) (
-          system:
+        nixpkgs.lib.genAttrs (import systems) (system:
           f (import nixpkgs {
             inherit system;
             overlays = [ inputs.rust-overlay.overlays.default ];
-          })
-        );
-
-      rustToolchain = eachSystem (pkgs: pkgs.rust-bin.stable.latest);
-
-      treefmtEval = eachSystem (pkgs: treefmt-nix.lib.evalModule pkgs ./treefmt.nix);
-    in
-    {
+          }));
+    in {
       devShells = eachSystem (pkgs: {
-        # Based on a discussion at https://github.com/oxalica/rust-overlay/issues/129
-        default = pkgs.mkShell (with pkgs; {
-          shellHook = ''
-            zsh;
-            exit 0;
-          '';
-          nativeBuildInputs = [
-            clang
-            # Use mold when we are runnning in Linux
-            (lib.optionals stdenv.isLinux mold)
-          ];
-          buildInputs = [
-            rustToolchain.${pkgs.system}.default
-            rust-analyzer-unwrapped
-            cargo
-            # pkg-config
-            # openssl
-          ];
-          RUST_SRC_PATH = "${
-          rustToolchain.${pkgs.system}.rust-src
-        }/lib/rustlib/src/rust/library";
-        });
-      });
-
-      formatter = eachSystem (pkgs: treefmtEval.${pkgs.system}.config.build.wrapper);
-
-      checks = eachSystem (pkgs: {
-        formatting = treefmtEval.${pkgs.system}.config.build.check self;
+        default = pkgs.mkShell {
+          nativeBuildInputs = with pkgs;
+            [
+              # (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
+              # clang
+              # Use mold when we are running in Linux
+              # (pkgs.lib.optionals pkgs.stdenv.isLinux pkgs.mold)
+            ];
+          buildInputs = with pkgs;
+            [
+              # Complete Rust toolchain with cargo, rustc, etc.
+              (rust-bin.stable.latest.default.override {
+                extensions =
+                  [ "rust-analyzer" "clippy" "rustfmt" "rust-src" "rust-docs" ];
+                targets = [ "x86_64-unknown-linux-musl" ];
+              })
+              # Or alternatively, you can use the complete toolchain:
+              # (rust-bin.stable.latest.complete)
+            ];
+          RUST_SRC_PATH =
+            "${pkgs.rust-bin.stable.latest.rust-src}/lib/rustlib/src/rust/library";
+        };
       });
     };
 }
