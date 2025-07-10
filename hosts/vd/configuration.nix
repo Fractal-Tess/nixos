@@ -63,7 +63,7 @@
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  environment.systemPackages = with pkgs; [ firectl ];
+  environment.systemPackages = with pkgs; [ ];
   programs.steam = {
     enable = true;
     # Required for managing Wine prefixes
@@ -119,23 +119,26 @@
     # ----- Bar -----
     display.waybar.enable = true;
 
-    # Docker 
-    services.docker = {
-      enable = true;
-      rootless = true;
-      devtools = true;
-      nvidia = false;
-
+    # ----- Virtualization -----
+    services.virtualization = {
+      docker = {
+        enable = true;
+        rootless = true;
+        devtools = true;
+        # nvidia = true;
+      };
+      firecracker.enable = true;
+      # kubernetes.enable = true;
       portainer.enable = true;
     };
 
-    # SSHD
+    # ----- SSHD -----
     services.sshd.enable = true;
 
-    # Automount 
+    # ----- Automount -----
     services.automount.enable = true;
 
-    # Samba shares
+    # ----- Samba shares -----
     services.samba.mount = {
       enable = true;
       shares = [
