@@ -8,13 +8,14 @@ self: super: {
 
     installPhase = ''
       mkdir -p $out/bin
-      # Copy the original binary
-      cp ${super.viber}/bin/viber $out/bin/viber
-      # Wrap it with the correct LD_LIBRARY_PATH
-      wrapProgram $out/bin/viber \
-        --set LD_LIBRARY_PATH "${
-          super.lib.makeLibraryPath [ super.libxml2 ]
-        }:$LD_LIBRARY_PATH"
+      cat > $out/bin/viber <<EOF
+      #!${super.stdenv.shell}
+      export LD_LIBRARY_PATH="${
+        super.lib.makeLibraryPath [ super.libxml2 ]
+      }:$''${LD_LIBRARY_PATH:-}"
+      exec -a "$0" "${super.viber}/bin/viber" "$@"
+      EOF
+      chmod +x $out/bin/viber
     '';
 
     meta = super.viber.meta // {
