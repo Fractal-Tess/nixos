@@ -148,7 +148,7 @@ with lib; {
     # discord # Voice, video and text chat
     # telegram-desktop # Messaging app
     bitwarden # Password manager
-    # viber # Voice and messaging app
+    viber_patched # Voice and messaging app
     # slack # Team collaboration platform
     # thunderbird # Email client
 

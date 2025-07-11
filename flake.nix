@@ -28,6 +28,7 @@
                 polymc.overlay
                 # Overlay for Responsively App
                 (import ./overlays/responsively-app.nix)
+                (import ./overlays/viber.nix)
               ];
             }
           ];
