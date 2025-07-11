@@ -1,28 +1,33 @@
 self: super: {
-  viber_patched = super.stdenv.mkDerivation {
-    pname = "viber-patched";
-    version = super.viber.version;
+  # Overlay for Viber official AppImage
+  viber-appimage = super.stdenv.mkDerivation {
+    pname = "viber-appimage";
+    version = "latest"; # Update if you want to pin a version
 
-    buildInputs = [ super.makeWrapper ];
+    # Download the official AppImage
+    src = super.fetchurl {
+      url = "https://download.cdn.viber.com/desktop/Linux/viber.AppImage";
+      sha256 =
+        "sha256-S+PpVbMq30p6PECUfdp2FESbqFk9lTbaadNFUDs7TkE="; # TODO: Replace with real hash after first build
+    };
+
     dontUnpack = true;
 
     installPhase = ''
+      # Create the output bin directory
       mkdir -p $out/bin
-      # Remove the symlink if it exists
-      rm -f $out/bin/viber
-      # Create a wrapper script instead
-      cat > $out/bin/viber <<EOF
-      #!${super.stdenv.shell}
-      export LD_LIBRARY_PATH="${
-        super.lib.makeLibraryPath [ super.libxml2 ]
-      }:$''${LD_LIBRARY_PATH:-}"
-      exec -a "$0" "${super.viber}/opt/viber/Viber" "$@"
-      EOF
+      # Copy the AppImage to the output bin directory
+      cp $src $out/bin/viber
+      # Make the AppImage executable
       chmod +x $out/bin/viber
     '';
 
-    meta = super.viber.meta // {
-      description = "Viber with libxml2 runtime fix";
+    meta = {
+      description = "Viber official AppImage";
+      homepage = "https://www.viber.com/";
+      license = super.lib.licenses.unfree;
+      maintainers = with super.lib.maintainers; [ ];
+      platforms = [ "x86_64-linux" ];
     };
   };
 }
