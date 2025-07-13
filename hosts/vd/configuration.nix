@@ -129,6 +129,7 @@
       };
       firecracker.enable = true;
       # kubernetes.enable = true;
+
       # --- Docker Services --- 
       portainer.enable = true;
     };
