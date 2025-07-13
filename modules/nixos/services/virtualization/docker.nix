@@ -30,6 +30,9 @@ in {
       # --restart=always flag to work. 
       enableOnBoot = true;
 
+      # Enable Nvidia support if enabled
+      enableNvidia = cfg.nvidia;
+
       # Configure the Docker to run in rootless mode 
       rootless = mkIf cfg.rootless {
         enable = true;
