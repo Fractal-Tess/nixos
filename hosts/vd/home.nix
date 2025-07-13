@@ -29,6 +29,7 @@ in {
     ddcutil # Monitor control utility (DDC/CI)
     sops # Secret management tool
     nvtopPackages.nvidia
+    xfce.thunar
 
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder
