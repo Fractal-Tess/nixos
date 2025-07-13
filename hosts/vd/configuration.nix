@@ -125,7 +125,7 @@
         enable = true;
         rootless = true;
         devtools = true;
-        # nvidia = true;
+        nvidia = true;
       };
       firecracker.enable = true;
       # kubernetes.enable = true;
