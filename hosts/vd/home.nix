@@ -28,6 +28,8 @@ in {
     trash-cli # Command line interface to FreeDesktop.org trash
     ddcutil # Monitor control utility (DDC/CI)
     sops # Secret management tool
+    nvtopPackages.v3d # GPU monitoring tool
+
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder
     ripgrep # Fast search tool (grep alternative)
