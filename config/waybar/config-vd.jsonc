@@ -41,6 +41,7 @@
       "custom/spacer",
       "cava",
       "network",
+      "custom/sensors",
       "cpu",
       "custom/gpu#nvidia",
       "memory",
@@ -312,6 +313,14 @@
     },
     "custom/smallspacer": {
       "format": " "
+    },
+    // Combined CPU & GPU temperature module
+    "custom/sensors": {
+      "interval": 2,
+      "format": "{text}",
+      "tooltip": true,
+      "return-type": "json",
+      "exec": "~/nixos/scripts/sensors-status.sh"
     }
   }
 ]
