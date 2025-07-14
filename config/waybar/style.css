@@ -12,7 +12,7 @@
 @define-color green #e8edf0;
 
 * {
-  font-family: "JetBrains Mono Nerd Font";
+  font-family: 'JetBrains Mono Nerd Font';
   /* font-family: "JetBrainsMono Nerd Font"; */
   /* font-family: "CaskaydiaCove Nerd Font Mono"; */
   /* font-family: "CaskaydiaCove Nerd Font"; */
@@ -26,14 +26,14 @@
   border-radius: 0.5rem;
 }
 
-#language {
+/* #language {
   color: @text;
   margin: 0 0.5rem;
   font-size: 1rem;
-}
+} */
 
 #custom-notification {
-  font-family: "JetBrains Mono Nerd Font";
+  font-family: 'JetBrains Mono Nerd Font';
   font-size: 1.1rem;
   font-weight: 900;
   padding-right: 1rem;
@@ -113,7 +113,7 @@
   color: @text;
   font-size: 1rem;
   font-weight: 900;
-  font-family: "JetBrains Mono Nerd Font";
+  font-family: 'JetBrains Mono Nerd Font';
   background: rgba(23, 23, 23, 0);
   opacity: 1;
   margin: 3px 0px 0px 0px;
