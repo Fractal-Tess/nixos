@@ -44,8 +44,8 @@
       "cpu",
       "custom/gpu#nvidia",
       "memory",
-      // "custom/spacer",
-      // "hyprland/language",
+      "custom/spacer",
+      "hyprland/language",
       "custom/spacer",
       "clock",
       "custom/spacer",
@@ -233,10 +233,10 @@
     },
     "hyprland/language": {
       // "format": "<sub> {}</sub>",
-      // "format": "{}"
-      // "format-en": "en",
-      // "format-bg": "bg",
-      // "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard"
+      "format": "{}",
+      "format-en": "en",
+      "format-bg": "bg",
+      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard"
     },
     "pulseaudio": {
       "format": "{volume:>3} {icon}",
