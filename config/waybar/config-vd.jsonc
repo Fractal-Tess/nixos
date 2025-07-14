@@ -117,7 +117,8 @@
       "format": "{icon}",
       "rotate": 270,
       "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-      "exec": "nvidia-smi --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total --format=csv,noheader,nounits | awk -F', ' '{printf \"{\\\"percentage\\\": %d, \\\"text\\\": \\\"%d%\\\", \\\"tooltip\\\": \\\"GPU Usage: %d%\\\\rTemperature: %d°C\\\\rMemory: %d/%d MB\\\", \\\"class\\\": \\\"%s\\\"}\", $1, $1, $1, $2, $3, $4, ($1<30 ? \"low\" : ($1<70 ? \"medium\" : \"high\"))}'",
+      // Now calls external script for GPU status
+      "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
       "return-type": "json"
     },
     "cpu": {
