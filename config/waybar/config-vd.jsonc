@@ -233,7 +233,7 @@
     },
     "hyprland/language": {
       // "format": "<sub> {}</sub>",
-      "format": "{}"
+      // "format": "{}"
       // "format-en": "en",
       // "format-bg": "bg",
       // "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard"
