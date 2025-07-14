@@ -42,11 +42,12 @@
       "cava",
       "network",
       "custom/sensors",
+      "custom/spacer",
       "cpu",
       "custom/gpu#nvidia",
       "memory",
       "custom/spacer",
-      "hyprland/language",
+      // "hyprland/language",
       "custom/spacer",
       "clock",
       "custom/spacer",
@@ -314,7 +315,6 @@
     "custom/smallspacer": {
       "format": " "
     },
-    // Combined CPU & GPU temperature module
     "custom/sensors": {
       "interval": 2,
       "format": "{text}",
