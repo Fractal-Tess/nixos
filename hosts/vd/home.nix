@@ -167,6 +167,7 @@ in {
 
     # === DEVELOPMENT ENVIRONMENTS ===
     code-cursor # VS Code fork with AI features
+    kiro
     zed-editor # High-performance code editor
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
