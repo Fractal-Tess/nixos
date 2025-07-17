@@ -29,7 +29,6 @@
                 # Overlay for Responsively App
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/viber.nix)
-                (import ./overlays/kiro.nix)
               ];
             }
           ];
