@@ -8,7 +8,7 @@ self: super: {
     src = super.fetchurl {
       url = "https://download.cdn.viber.com/desktop/Linux/viber.AppImage";
       sha256 =
-        "sha256-S+PpVbMq30p6PECUfdp2FESbqFk9lTbaadNFUDs7TkE="; # Verified hash
+        "sha256-jwsePK1l/WI+stDNpAD1t2Obr1BwpNDP0nzkIDfGGoA="; # Verified hash
     };
 
     # Add appimage-run and makeWrapper to buildInputs
