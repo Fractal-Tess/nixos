@@ -28,6 +28,20 @@ After enabling, Jellyfin will be available at:
 
 ## Configuration Options
 
+### Image Configuration
+
+Customize the Docker image and tag:
+
+```nix
+{
+  modules.services.virtualization.jellyfin = {
+    enable = true;
+    image = "jellyfin/jellyfin";  # Default
+    imageTag = "latest";          # Default
+  };
+}
+```
+
 ### Media Directories
 
 Configure which directories contain your media files:
@@ -111,7 +125,11 @@ Customize the user and group Jellyfin runs as:
   modules.services.virtualization.jellyfin = {
     enable = true;
 
-        # Media directories
+    # Image configuration
+    image = "jellyfin/jellyfin";
+    imageTag = "10.8.13";  # Specific version
+
+    # Media directories
     mediaDirectories = [
       "/storage/movies"
       "/storage/tv"

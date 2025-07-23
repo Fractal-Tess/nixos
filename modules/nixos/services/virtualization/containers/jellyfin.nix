@@ -7,6 +7,21 @@ in {
   options.modules.services.virtualization.containers.jellyfin = {
     enable = mkEnableOption "Enable Jellyfin Media Server";
 
+    # Image configuration
+    image = mkOption {
+      type = types.str;
+      default = "jellyfin/jellyfin";
+      description = "Docker image name for Jellyfin";
+      example = "jellyfin/jellyfin";
+    };
+
+    imageTag = mkOption {
+      type = types.str;
+      default = "latest";
+      description = "Docker image tag for Jellyfin";
+      example = "latest";
+    };
+
     # Media directories configuration
     mediaDirectories = mkOption {
       type = types.listOf types.str;
@@ -84,7 +99,7 @@ in {
     # Define the Jellyfin container service
     virtualisation.oci-containers.containers.jellyfin = {
       autoStart = true;
-      image = "jellyfin/jellyfin:2025072105";
+      image = "${cfg.image}:${cfg.imageTag}";
 
       # Configure ports
       ports = [
