@@ -220,12 +220,12 @@
   # User
   users.users.${username} = {
     isNormalUser = true;
-    # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
     extraGroups = [ "networkmanager" "wheel" "video" "fractal-tess" ];
     password = "password";
     description = "default user";
     packages = with pkgs; [ ];
   };
+  users.groups.${username} = { members = [ username ]; };
 
   # Make users mutable 
   users.mutableUsers = true;
