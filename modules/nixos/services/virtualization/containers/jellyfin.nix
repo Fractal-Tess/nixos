@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
 
 with lib;
 
@@ -62,6 +62,58 @@ in {
       default = "jellyfin";
       description = "Group to run Jellyfin as";
     };
+
+    # Backup configuration
+    backup = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable automatic daily backup of Jellyfin data";
+      };
+
+      schedule = mkOption {
+        type = types.str;
+        default = "0 0 * * *"; # Daily at midnight
+        description = "Cron schedule for backup (default: daily at midnight)";
+        example = "0 2 * * *"; # Daily at 2 AM
+      };
+
+      paths = mkOption {
+        type = types.listOf types.str;
+        default = [ "/var/backups/jellyfin" ];
+        description = "List of backup destination directories";
+        example = [
+          "/var/backups/jellyfin"
+          "/mnt/backup/jellyfin"
+          "/mnt/cloud/jellyfin"
+        ];
+      };
+
+      format = mkOption {
+        type = types.enum [ "tar.gz" "tar.xz" "tar.bz2" "zip" ];
+        default = "tar.gz";
+        description = "Backup archive format";
+      };
+
+      retention = mkOption {
+        type = types.int;
+        default = 7;
+        description = "Number of backup files to keep (0 = keep all)";
+        example = 30;
+      };
+
+      includeLogs = mkOption {
+        type = types.bool;
+        default = true;
+        description = "Include log files in backup";
+      };
+
+      includeCache = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Include cache files in backup (can be large)";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
@@ -79,11 +131,11 @@ in {
       isSystemUser = true;
       group = cfg.group;
       description = "Jellyfin service user";
-      uid = 1000; # Standard media server UID
+      uid = 1002; # Different from main user UID
     };
 
     users.groups.${cfg.group} = {
-      gid = 1000; # Standard media server GID
+      gid = 1002; # Different from main user GID
     };
 
     # Create persistent directories for Jellyfin data
@@ -94,7 +146,11 @@ in {
       "d /var/lib/jellyfin/cache 0755 ${cfg.user} ${cfg.group} -"
       # Log directory
       "d /var/lib/jellyfin/log 0755 ${cfg.user} ${cfg.group} -"
-    ];
+    ] ++ mkBackupDirectories {
+      backupConfig = cfg.backup;
+      user = cfg.user;
+      group = cfg.group;
+    };
 
     # Define the Jellyfin container service
     virtualisation.oci-containers.containers.jellyfin = {
@@ -121,8 +177,8 @@ in {
 
       # Environment variables for user/group permissions and GPU support
       environment = {
-        PUID = "1000";
-        PGID = "1000";
+        PUID = "1002";
+        PGID = "1002";
         TZ = config.time.timeZone or "UTC";
       } // (optionalAttrs (cfg.enableHardwareAcceleration
         && (config.modules.drivers.nvidia.enable or false)) {
@@ -157,5 +213,23 @@ in {
       allowedTCPPorts = [ cfg.httpPort cfg.httpsPort ];
       allowedUDPPorts = [ 7359 1900 ];
     };
+
+    # Backup service configuration using utility
+    systemd.services.jellyfin-backup = mkIf cfg.backup.enable (mkBackupService {
+      name = "jellyfin";
+      serviceName = "docker-jellyfin.service";
+      dataPaths = [ "/var/lib/jellyfin/config" ]
+        ++ (optional cfg.backup.includeLogs "/var/lib/jellyfin/log")
+        ++ (optional cfg.backup.includeCache "/var/lib/jellyfin/cache");
+      user = cfg.user;
+      group = cfg.group;
+      backupConfig = cfg.backup;
+    });
+
+    # Setup timer for backup service using utility
+    systemd.timers.jellyfin-backup = mkIf cfg.backup.enable (mkBackupTimer {
+      name = "jellyfin";
+      backupConfig = cfg.backup;
+    });
   };
 }

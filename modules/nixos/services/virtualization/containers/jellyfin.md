@@ -118,6 +118,46 @@ Customize the user and group Jellyfin runs as:
 }
 ```
 
+### Backup Configuration
+
+Enable automatic daily backups of Jellyfin data:
+
+```nix
+{
+  modules.services.virtualization.jellyfin = {
+    enable = true;
+    backup = {
+      enable = true;
+      schedule = "0 2 * * *";  # Daily at 2 AM
+      paths = [ "/var/backups/jellyfin" "/mnt/backup/jellyfin" "/mnt/cloud/jellyfin" ];
+      format = "tar.gz";
+      retention = 7;  # Keep 7 backups
+      includeLogs = true;
+      includeCache = false;
+    };
+  };
+}
+```
+
+**Backup Options:**
+
+- **`enable`**: Enable/disable automatic backups
+- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
+- **`paths`**: List of backup destination directories (default: `[ "/var/backups/jellyfin" ]`)
+- **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
+- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+- **`includeLogs`**: Include log files in backup (default: true)
+- **`includeCache`**: Include cache files in backup (default: false, can be large)
+
+**Backup Process:**
+
+1. Stops Jellyfin systemd service to prevent corruption
+2. Creates compressed archive of config, logs, and optionally cache
+3. Copies backup to all configured destination paths
+4. Restarts Jellyfin systemd service
+5. Cleans up old backups based on retention policy for each destination
+6. Runs automatically according to schedule
+
 ## Complete Example
 
 ```nix
@@ -146,9 +186,19 @@ Customize the user and group Jellyfin runs as:
     # Custom user/group
     user = "media";
     group = "media";
+
+    # Backup configuration
+    backup = {
+      enable = true;
+      schedule = "0 2 * * *";  # Daily at 2 AM
+      path = "/mnt/backup/jellyfin";
+      format = "tar.gz";
+      retention = 30;  # Keep 30 backups
+      includeLogs = true;
+      includeCache = false;  # Exclude cache to save space
+    };
   };
 }
-```
 
 ## Data Persistence
 
@@ -204,3 +254,13 @@ The module automatically opens the required firewall ports:
 
 - Verify media directories have read permissions for the Jellyfin user
 - Check systemd logs: `journalctl -u docker-jellyfin.service`
+
+### Backup Issues
+
+- Check backup service status: `systemctl status jellyfin-backup.service`
+- View backup logs: `journalctl -u jellyfin-backup.service`
+- Check backup timer: `systemctl status jellyfin-backup.timer`
+- Verify backup directory permissions: `ls -la /var/backups/jellyfin`
+- Test backup manually: `sudo systemctl start jellyfin-backup.service`
+- Check backup files: `ls -la /var/backups/jellyfin/`
+```

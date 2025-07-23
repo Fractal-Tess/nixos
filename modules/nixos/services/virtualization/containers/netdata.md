@@ -48,6 +48,48 @@ Netdata data is stored in:
 
 These directories are automatically created with proper permissions (0755, owned by `netdata:netdata`).
 
+## Backup Configuration
+
+Enable automatic backups of Netdata data:
+
+```nix
+{
+  modules.services.virtualization.containers.netdata = {
+    enable = true;
+    backup = {
+      enable = true;
+      paths = [ "/var/backups/netdata" "/mnt/backup/netdata" ];
+      schedule = "0 2 * * *";  # Daily at 2 AM
+      format = "tar.gz";
+      retention = 7;  # Keep 7 backups
+    };
+  };
+}
+```
+
+**Backup Options:**
+
+- **`enable`**: Enable/disable automatic backups
+- **`paths`**: List of backup destination directories (default: `[ "/var/backups/netdata" ]`)
+- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
+- **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
+- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+
+**Backup Process:**
+
+1. Stops Netdata systemd service to prevent corruption
+2. Creates compressed archive of config, data, and cache directories
+3. Copies backup to all configured destination paths
+4. Restarts Netdata systemd service
+5. Cleans up old backups based on retention policy for each destination
+6. Runs automatically according to schedule
+
+**Backup Contents:**
+
+- **Configuration**: Custom charts, alerts, and settings
+- **Historical Data**: Metrics database and historical trends
+- **Cache**: Temporary data (can be large, consider excluding if space is limited)
+
 ## System Access
 
 Netdata requires access to various system resources for comprehensive monitoring:
@@ -110,6 +152,32 @@ Specify a custom configuration directory:
 }
 ```
 
+### GPU Monitoring
+
+Enable GPU monitoring for NVIDIA or AMD graphics cards:
+
+```nix
+{
+  modules.services.virtualization.containers.netdata = {
+    enable = true;
+    enableGpuMonitoring = true;
+  };
+}
+```
+
+**GPU monitoring support:**
+
+- **NVIDIA GPUs** (GTX 1060, RTX series, etc.):
+
+  - Requires `modules.drivers.nvidia.enable = true`
+  - Uses CDI (Container Device Interface) with `--device=nvidia.com/gpu=all`
+  - Provides GPU usage, memory, temperature, and power metrics
+
+- **Intel/AMD GPUs**:
+  - Requires appropriate GPU drivers installed
+  - Uses `/dev/dri` device access
+  - Provides basic GPU metrics and hardware information
+
 ## Complete Example
 
 ```nix
@@ -127,6 +195,9 @@ Specify a custom configuration directory:
     # Custom configuration directory
     configDirectory = "/storage/netdata/config";
 
+    # Enable GPU monitoring
+    enableGpuMonitoring = true;
+
   };
 }
 ```
@@ -142,7 +213,7 @@ Specify a custom configuration directory:
    - **System Overview**: CPU, memory, disk, and network usage
    - **Applications**: Running processes and services
    - **Containers**: Docker container metrics (if Docker is running)
-   - **Hardware**: GPU, sensors, and hardware information
+   - **Hardware**: GPU, sensors, and hardware information (GPU metrics when `enableGpuMonitoring = true`)
 
 3. **Configure Alerts** (Optional):
 
@@ -282,6 +353,23 @@ The module automatically opens the required firewall port:
 - Verify container is running: `docker ps | grep netdata`
 - Check container logs: `docker logs netdata`
 - Monitor service status: `systemctl status docker-netdata.service`
+
+### GPU Monitoring Issues
+
+**For NVIDIA GPUs:**
+
+- Verify `nvidia-smi` works on the host system
+- Check that `modules.drivers.nvidia.enable = true` in your configuration
+- Ensure Docker NVIDIA support is enabled: `services.virtualization.docker.nvidia = true`
+- Verify CDI devices are available: `nvidia-ctk cdi list` (should show `nvidia.com/gpu=all`)
+- Check if GPU metrics appear in Netdata dashboard under "Hardware" section
+
+**For Intel/AMD GPUs:**
+
+- Check that GPU drivers are properly installed
+- Verify `/dev/dri` devices exist and are accessible: `ls -la /dev/dri`
+- Ensure the container has access to GPU devices
+- Check if GPU metrics appear in Netdata dashboard under "Hardware" section
 
 ## Advanced Configuration
 

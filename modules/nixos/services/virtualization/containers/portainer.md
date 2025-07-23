@@ -75,6 +75,42 @@ Portainer data is stored in:
 
 This directory is automatically created with proper permissions (0750, owned by `portainer:docker`).
 
+## Backup Configuration
+
+Enable automatic backups of Portainer data:
+
+```nix
+{
+  modules.services.virtualization.containers.portainer = {
+    enable = true;
+    backup = {
+      enable = true;
+      paths = [ "/var/backups/portainer" "/mnt/backup/portainer" ];
+      schedule = "0 2 * * *";  # Daily at 2 AM
+      format = "tar.gz";
+      retention = 7;  # Keep 7 backups
+    };
+  };
+}
+```
+
+**Backup Options:**
+
+- **`enable`**: Enable/disable automatic backups
+- **`paths`**: List of backup destination directories (default: `[ "/var/backups/portainer" ]`)
+- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
+- **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
+- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+
+**Backup Process:**
+
+1. Stops Portainer systemd service to prevent corruption
+2. Creates compressed archive of Portainer data directory
+3. Copies backup to all configured destination paths
+4. Restarts Portainer systemd service
+5. Cleans up old backups based on retention policy for each destination
+6. Runs automatically according to schedule
+
 ## Security Considerations
 
 ### Access Control

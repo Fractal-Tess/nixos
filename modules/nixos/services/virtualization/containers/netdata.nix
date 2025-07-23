@@ -1,4 +1,4 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
 
 with lib;
 
@@ -49,9 +49,60 @@ in {
       description = "Host directory for Netdata configuration";
     };
 
+    # GPU monitoring configuration
+    enableGpuMonitoring = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Enable GPU monitoring (requires appropriate GPU drivers)";
+    };
+
+    # Backup configuration
+    backup = {
+      enable = mkOption {
+        type = types.bool;
+        default = false;
+        description = "Enable automatic backup of Netdata data";
+      };
+
+      paths = mkOption {
+        type = types.listOf types.str;
+        default = [ "/var/backups/netdata" ];
+        description = "List of backup destination directories";
+        example = [ "/var/backups/netdata" "/mnt/backup/netdata" ];
+      };
+
+      schedule = mkOption {
+        type = types.str;
+        default = "0 0 * * *"; # Daily at midnight
+        description = "Cron schedule for backup";
+        example = "0 2 * * *"; # Daily at 2 AM
+      };
+
+      format = mkOption {
+        type = types.enum [ "tar.gz" "tar.xz" "tar.bz2" "zip" ];
+        default = "tar.gz";
+        description = "Backup archive format";
+      };
+
+      retention = mkOption {
+        type = types.int;
+        default = 7;
+        description = "Number of backup files to keep (0 = keep all)";
+        example = 30;
+      };
+    };
   };
 
   config = mkIf cfg.enable {
+    # Detect if GPU support is available
+    assertions = [{
+      assertion = !cfg.enableGpuMonitoring
+        || (config.modules.drivers.nvidia.enable or false)
+        || (config.modules.drivers.amd.enable or false);
+      message =
+        "GPU monitoring requires either NVIDIA or AMD drivers to be enabled";
+    }];
+
     # Create system user and group for Netdata
     users.users.${cfg.user} = {
       isSystemUser = true;
@@ -64,7 +115,7 @@ in {
       gid = 1001; # Different from other services
     };
 
-    # Create persistent directories for Netdata data
+    # Create persistent directories for Netdata data and backup directories
     systemd.tmpfiles.rules = [
       # Config directory
       "d ${cfg.configDirectory} 0755 ${cfg.user} ${cfg.group} -"
@@ -72,7 +123,11 @@ in {
       "d /var/lib/netdata/lib 0755 ${cfg.user} ${cfg.group} -"
       # Cache directory
       "d /var/lib/netdata/cache 0755 ${cfg.user} ${cfg.group} -"
-    ];
+    ] ++ mkBackupDirectories {
+      backupConfig = cfg.backup;
+      user = cfg.user;
+      group = cfg.group;
+    };
 
     # Define the Netdata container service
     virtualisation.oci-containers.containers.netdata = {
@@ -104,7 +159,12 @@ in {
         DOCKER_HOST = "unix:///var/run/docker.sock";
         PUID = "1001";
         PGID = "1001";
-      };
+      } // (optionalAttrs (cfg.enableGpuMonitoring
+        && (config.modules.drivers.nvidia.enable or false)) {
+          # NVIDIA-specific environment variables
+          NVIDIA_VISIBLE_DEVICES = "all";
+          NVIDIA_DRIVER_CAPABILITIES = "compute,utility";
+        });
 
       # Extra options for system access and security
       extraOptions = [
@@ -114,7 +174,21 @@ in {
         "--security-opt=apparmor=unconfined"
         # Network mode for better host monitoring
         "--network=host"
-      ];
+        # Security option for GPU access
+        "--security-opt=no-new-privileges:false"
+      ] ++
+        # Add GPU monitoring if enabled
+        (optionals cfg.enableGpuMonitoring
+          (if (config.modules.drivers.nvidia.enable or false) then
+            [
+              # NVIDIA GPU monitoring using CDI (Container Device Interface)
+              "--device=nvidia.com/gpu=all"
+            ]
+          else
+            [
+              # Intel/AMD GPU monitoring
+              "--device=/dev/dri:/dev/dri"
+            ]));
     };
 
     # Note: Health checks are not supported in NixOS OCI containers module
@@ -132,5 +206,22 @@ in {
       iotop
       nethogs
     ];
+
+    # Backup service configuration using utility
+    systemd.services.netdata-backup = mkIf cfg.backup.enable (mkBackupService {
+      name = "netdata";
+      serviceName = "docker-netdata.service";
+      dataPaths =
+        [ cfg.configDirectory "/var/lib/netdata/lib" "/var/lib/netdata/cache" ];
+      user = cfg.user;
+      group = cfg.group;
+      backupConfig = cfg.backup;
+    });
+
+    # Setup timer for backup service using utility
+    systemd.timers.netdata-backup = mkIf cfg.backup.enable (mkBackupTimer {
+      name = "netdata";
+      backupConfig = cfg.backup;
+    });
   };
 }
