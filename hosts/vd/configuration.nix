@@ -143,7 +143,6 @@
 
         netdata = {
           enable = true;
-          image = "netdata/netdata";
           imageTag = "v2.6";
         };
       };
