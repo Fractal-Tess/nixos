@@ -5,6 +5,21 @@ let cfg = config.modules.services.virtualization.containers.portainer;
 in {
   options.modules.services.virtualization.containers.portainer = {
     enable = mkEnableOption "Enable Portainer";
+
+    # Image configuration
+    image = mkOption {
+      type = types.str;
+      default = "portainer/portainer-ce";
+      description = "Docker image name for Portainer";
+      example = "portainer/portainer-ce";
+    };
+
+    imageTag = mkOption {
+      type = types.str;
+      default = "latest";
+      description = "Docker image tag for Portainer";
+      example = "latest";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -21,7 +36,7 @@ in {
     # Define the Portainer service
     virtualisation.oci-containers.containers.portainer = {
       autoStart = true;
-      image = "portainer/portainer-ce:latest";
+      image = "${cfg.image}:${cfg.imageTag}";
       ports = [
         "8000:8000" # Agents
         "9000:9000" # HTTP Web UI
