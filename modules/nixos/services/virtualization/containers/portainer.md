@@ -22,6 +22,34 @@ Enable Portainer in your NixOS configuration:
 }
 ```
 
+## Configuration Options
+
+### Image Configuration
+
+Customize the Docker image and tag:
+
+```nix
+{
+  modules.services.virtualization.containers.portainer = {
+    enable = true;
+    image = "portainer/portainer-ce";  # Default
+    imageTag = "latest";               # Default
+  };
+}
+```
+
+### Complete Example
+
+```nix
+{
+  modules.services.virtualization.containers.portainer = {
+    enable = true;
+    image = "portainer/portainer-ce";
+    imageTag = "2.19.4";  # Specific version
+  };
+}
+```
+
 After enabling and rebuilding your system, Portainer will be available at:
 
 - **HTTP**: `http://localhost:9000`
@@ -83,7 +111,11 @@ The module mounts the Docker socket at `/run/user/1000/docker.sock:/var/run/dock
       devtools = true;  # Optional: additional Docker tools
     };
 
-    containers.portainer.enable = true;
+    containers.portainer = {
+      enable = true;
+      image = "portainer/portainer-ce";
+      imageTag = "2.19.4";  # Specific version
+    };
   };
 }
 ```

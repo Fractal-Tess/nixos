@@ -70,6 +70,20 @@ Netdata requires access to various system resources for comprehensive monitoring
 
 ## Configuration Options
 
+### Image Configuration
+
+Customize the Docker image and tag:
+
+```nix
+{
+  modules.services.virtualization.containers.netdata = {
+    enable = true;
+    image = "netdata/netdata";  # Default
+    imageTag = "latest";       # Default
+  };
+}
+```
+
 ### Custom Port
 
 Change the default port if needed:
@@ -103,12 +117,15 @@ Specify a custom configuration directory:
   modules.services.virtualization.containers.netdata = {
     enable = true;
 
+    # Image configuration
+    image = "netdata/netdata";
+    imageTag = "v1.48.0";  # Specific version
+
     # Custom port
     port = 8080;
 
     # Custom configuration directory
     configDirectory = "/storage/netdata/config";
-
 
   };
 }
@@ -201,8 +218,16 @@ Specify a custom configuration directory:
     };
 
     containers = {
-      netdata.enable = true;
-      portainer.enable = true;
+      netdata = {
+        enable = true;
+        image = "netdata/netdata";
+        imageTag = "v1.47.4";
+      };
+      portainer = {
+        enable = true;
+        image = "portainer/portainer-ce";
+        imageTag = "latest";
+      };
       jellyfin = {
         enable = true;
         mediaDirectories = [ "/media" ];

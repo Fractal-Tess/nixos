@@ -7,6 +7,21 @@ in {
   options.modules.services.virtualization.containers.netdata = {
     enable = mkEnableOption "Enable Netdata Monitoring";
 
+    # Image configuration
+    image = mkOption {
+      type = types.str;
+      default = "netdata/netdata";
+      description = "Docker image name for Netdata";
+      example = "netdata/netdata";
+    };
+
+    imageTag = mkOption {
+      type = types.str;
+      default = "latest";
+      description = "Docker image tag for Netdata";
+      example = "latest";
+    };
+
     # Port configuration
     port = mkOption {
       type = types.port;
@@ -62,7 +77,7 @@ in {
     # Define the Netdata container service
     virtualisation.oci-containers.containers.netdata = {
       autoStart = true;
-      image = "netdata/netdata:v1.47.4";
+      image = "${cfg.image}:${cfg.imageTag}";
 
       # Configure ports
       ports = [

@@ -138,9 +138,14 @@
           enable = true;
           enableHardwareAcceleration = true;
           mediaDirectories = [ "/mnt/vault/media" ];
+          imageTag = "2025072105";
         };
 
-        netdata.enable = true;
+        netdata = {
+          enable = true;
+          image = "netdata/netdata";
+          imageTag = "v2.6";
+        };
       };
     };
 
