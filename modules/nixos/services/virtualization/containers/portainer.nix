@@ -1,9 +1,9 @@
 { config, lib, ... }:
 
 with lib;
-let cfg = config.modules.services.virtualization.portainer;
+let cfg = config.modules.services.virtualization.containers.portainer;
 in {
-  options.modules.services.virtualization.portainer = {
+  options.modules.services.virtualization.containers.portainer = {
     enable = mkEnableOption "Enable Portainer";
   };
 

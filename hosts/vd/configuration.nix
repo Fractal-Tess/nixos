@@ -130,8 +130,16 @@
       firecracker.enable = true;
       # kubernetes.enable = true;
 
-      # --- Docker Services --- 
-      portainer.enable = true;
+      # --- Containers   --- 
+      containers = {
+        portainer.enable = true;
+
+        jellyfin = {
+          enable = true;
+          enableHardwareAcceleration = true;
+          mediaDirectories = [ "/mnt/vault/media" ];
+        };
+      };
     };
 
     # ----- SSHD -----
