@@ -167,13 +167,14 @@ The module automatically opens the required firewall ports:
 
 ### Hardware Acceleration Issues
 
-**For NVIDIA GPUs (GTX 1060, etc.):**
+**For NVIDIA GPUs:**
 
 - Verify `nvidia-smi` works on the host system
 - Check that `modules.drivers.nvidia.enable = true` in your configuration
 - Ensure Docker NVIDIA support is enabled: `services.virtualization.docker.nvidia = true`
-- Verify NVIDIA devices exist: `ls -la /dev/nvidia*`
+- Verify CDI devices are available: `nvidia-ctk cdi list` (should show `nvidia.com/gpu=all`)
 - Check container logs: `journalctl -u docker-jellyfin.service`
+- If CDI issues persist, try: `sudo nvidia-ctk cdi generate --output=/etc/cdi/nvidia.yaml`
 
 **For Intel/AMD GPUs:**
 

@@ -139,6 +139,8 @@
           enableHardwareAcceleration = true;
           mediaDirectories = [ "/mnt/vault/media" ];
         };
+
+        netdata.enable = true;
       };
     };
 
