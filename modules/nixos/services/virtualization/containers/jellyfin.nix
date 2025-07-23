@@ -142,12 +142,5 @@ in {
       allowedTCPPorts = [ cfg.httpPort cfg.httpsPort ];
       allowedUDPPorts = [ 7359 1900 ];
     };
-
-    # Ensure required system packages are available
-    environment.systemPackages = with pkgs;
-      [
-        # FFmpeg for media transcoding (Jellyfin will use the container's version, but good to have)
-        ffmpeg
-      ];
   };
 }

@@ -7,5 +7,6 @@
 
     ./containers/portainer.nix
     ./containers/jellyfin.nix
+    ./containers/netdata.nix
   ];
 }
