@@ -3,7 +3,9 @@
     ./docker.nix
     ./firecracker.nix
     ./kubernetes.nix
-    ./portainer.nix
     ./podman.nix
+
+    ./containers/portainer.nix
+    ./containers/jellyfin.nix
   ];
 }
