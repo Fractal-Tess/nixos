@@ -136,6 +136,7 @@
           enable = true;
           uid = 1001;
           gid = 1001;
+          openFirewallPorts = true;
           enableHardwareAcceleration = true;
           imageTag = "2025072105";
           bindMounts = [
@@ -176,6 +177,7 @@
           enable = true;
           uid = 1002;
           gid = 1002;
+          openFirewallPorts = true;
           imageTag = "v2.6";
           bindMounts = [
             {
@@ -209,6 +211,7 @@
           enable = true;
           uid = 1003;
           gid = 1003;
+          openFirewallPorts = true;
           bindMounts = [
             {
               hostPath = "/var/lib/portainer";
