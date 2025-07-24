@@ -97,7 +97,8 @@ backup = {
   paths = [ "/var/backups/myapp" "/mnt/backup/myapp" ];
   schedule = "0 2 * * *"; # Daily at 2 AM
   format = "tar.gz";
-  retention = 7; # Keep 7 backups
+  maxRetentionDays = 30; # Delete backups older than 30 days
+retentionSnapshots = 7; # Keep 7 snapshots
 };
 ```
 
@@ -107,7 +108,8 @@ backup = {
 - `paths`: List of backup destination directories
 - `schedule`: Cron schedule for backups
 - `format`: Archive format (tar.gz, tar.xz, tar.bz2, zip)
-- `retention`: Number of backups to keep (0 = keep all)
+- `maxRetentionDays`: Maximum age of backup files in days (0 = no age limit)
+- `retentionSnapshots`: Number of backup snapshots to keep (0 = keep all)
 
 ## Complete Example
 
@@ -143,10 +145,16 @@ in {
         default = "tar.gz";
         description = "Backup archive format";
       };
-      retention = mkOption {
+      maxRetentionDays = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Maximum age of backup files in days (0 = no age limit)";
+      };
+
+      retentionSnapshots = mkOption {
         type = types.int;
         default = 7;
-        description = "Number of backup files to keep";
+        description = "Number of backup snapshots to keep (0 = keep all)";
       };
     };
   };
@@ -205,7 +213,8 @@ in {
       ];
       schedule = "0 2 * * *"; # Daily at 2 AM
       format = "tar.xz";
-      retention = 30; # Keep 30 backups
+      maxRetentionDays = 30; # Delete backups older than 30 days
+retentionSnapshots = 10; # Keep 10 snapshots
     };
   };
 }
