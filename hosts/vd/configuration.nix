@@ -134,10 +134,10 @@
       containers = {
         portainer = {
           enable = true;
-          backup = {
-            enable = true;
-            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
-          };
+          # backup = {
+          #   enable = true;
+          #   paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+          # };
         };
 
         jellyfin = {
