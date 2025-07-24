@@ -1,4 +1,5 @@
-{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBootBackupService
+, mkBackupDirectories, ... }:
 
 with lib;
 
@@ -103,11 +104,25 @@ in {
         description = "Backup archive format";
       };
 
-      retention = mkOption {
+      maxRetentionDays = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Maximum age of backup files in days (0 = no age limit)";
+        example = 30;
+      };
+
+      retentionSnapshots = mkOption {
         type = types.int;
         default = 7;
-        description = "Number of backup files to keep (0 = keep all)";
-        example = 30;
+        description = "Number of backup snapshots to keep (0 = keep all)";
+        example = 10;
+      };
+
+      bootBackup = mkOption {
+        type = types.bool;
+        default = true;
+        description =
+          "Create backup on boot if previous scheduled backup was missed";
       };
     };
   };
@@ -240,5 +255,16 @@ in {
       name = "netdata";
       backupConfig = cfg.backup;
     });
+
+    # Boot-time backup service using utility
+    systemd.services.netdata-boot-backup =
+      mkIf (cfg.backup.enable && cfg.backup.bootBackup) (mkBootBackupService {
+        name = "netdata";
+        serviceName = "docker-netdata.service";
+        dataPaths = [ cfg.configDirectory "/var/lib/netdata/lib" ];
+        user = cfg.user;
+        group = cfg.group;
+        backupConfig = cfg.backup;
+      });
   };
 }
