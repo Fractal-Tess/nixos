@@ -20,9 +20,15 @@ Enable Netdata in your NixOS configuration:
 
 ```nix
 {
-  modules.services.virtualization.containers.netdata.enable = true;
+  modules.services.virtualization.containers.netdata = {
+    enable = true;
+    uid = 1002;  # Required - User ID for Netdata service
+    gid = 1002;  # Required - Group ID for Netdata service
+  };
 }
 ```
+
+**Note:** `uid` and `gid` are required and must be specified.
 
 After enabling and rebuilding your system, Netdata will be available at:
 
@@ -56,12 +62,15 @@ Enable automatic backups of Netdata data:
 {
   modules.services.virtualization.containers.netdata = {
     enable = true;
+    uid = 1002;
+    gid = 1002;
     backup = {
       enable = true;
+      schedule = "0 21 * * *";  # Required - Daily at 9 PM
       paths = [ "/var/backups/netdata" "/mnt/backup/netdata" ];
-      schedule = "0 2 * * *";  # Daily at 2 AM
       format = "tar.gz";
-      retention = 7;  # Keep 7 backups
+      maxRetentionDays = 14;   # Delete backups older than 14 days
+      retentionSnapshots = 7;  # Keep 7 snapshots
     };
   };
 }
@@ -70,10 +79,11 @@ Enable automatic backups of Netdata data:
 **Backup Options:**
 
 - **`enable`**: Enable/disable automatic backups
+- **`schedule`**: **Required** - Cron schedule for backups (e.g., `"0 21 * * *"` = daily at 9 PM)
 - **`paths`**: List of backup destination directories (default: `[ "/var/backups/netdata" ]`)
-- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
 - **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
-- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+- **`maxRetentionDays`**: Maximum age of backup files in days (0 = no age limit, default: 0)
+- **`retentionSnapshots`**: Number of backup snapshots to keep (0 = keep all, default: 7)
 
 **Backup Process:**
 

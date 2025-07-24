@@ -8,8 +8,10 @@ Enable Jellyfin in your NixOS configuration:
 
 ```nix
 {
-  modules.services.virtualization.jellyfin = {
+  modules.services.virtualization.containers.jellyfin = {
     enable = true;
+    uid = 1001;  # Required - User ID for Jellyfin service
+    gid = 1001;  # Required - Group ID for Jellyfin service
     mediaDirectories = [
       "/media/movies"
       "/media/tv"
@@ -19,7 +21,7 @@ Enable Jellyfin in your NixOS configuration:
 }
 ```
 
-**Note:** `mediaDirectories` is required and must be specified.
+**Note:** `uid`, `gid`, and `mediaDirectories` are required and must be specified.
 
 After enabling, Jellyfin will be available at:
 
@@ -120,18 +122,21 @@ Customize the user and group Jellyfin runs as:
 
 ### Backup Configuration
 
-Enable automatic daily backups of Jellyfin data:
+Enable automatic backups of Jellyfin data:
 
 ```nix
 {
-  modules.services.virtualization.jellyfin = {
+  modules.services.virtualization.containers.jellyfin = {
     enable = true;
+    uid = 1001;
+    gid = 1001;
     backup = {
       enable = true;
-      schedule = "0 2 * * *";  # Daily at 2 AM
+      schedule = "0 21 * * *";  # Required - Daily at 9 PM
       paths = [ "/var/backups/jellyfin" "/mnt/backup/jellyfin" "/mnt/cloud/jellyfin" ];
       format = "tar.gz";
-      retention = 7;  # Keep 7 backups
+      maxRetentionDays = 30;   # Delete backups older than 30 days
+      retentionSnapshots = 10; # Keep 10 snapshots
       includeLogs = true;
       includeCache = false;
     };
@@ -142,10 +147,11 @@ Enable automatic daily backups of Jellyfin data:
 **Backup Options:**
 
 - **`enable`**: Enable/disable automatic backups
-- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
+- **`schedule`**: **Required** - Cron schedule for backups (e.g., `"0 21 * * *"` = daily at 9 PM)
 - **`paths`**: List of backup destination directories (default: `[ "/var/backups/jellyfin" ]`)
 - **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
-- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+- **`maxRetentionDays`**: Maximum age of backup files in days (0 = no age limit, default: 0)
+- **`retentionSnapshots`**: Number of backup snapshots to keep (0 = keep all, default: 7)
 - **`includeLogs`**: Include log files in backup (default: true)
 - **`includeCache`**: Include cache files in backup (default: false, can be large)
 
@@ -160,10 +166,12 @@ Enable automatic daily backups of Jellyfin data:
 
 ## Complete Example
 
-```nix
+````nix
 {
-  modules.services.virtualization.jellyfin = {
+  modules.services.virtualization.containers.jellyfin = {
     enable = true;
+    uid = 1001;  # Required - User ID for Jellyfin service
+    gid = 1001;  # Required - Group ID for Jellyfin service
 
     # Image configuration
     image = "jellyfin/jellyfin";
@@ -183,17 +191,17 @@ Enable automatic daily backups of Jellyfin data:
     # Enable hardware acceleration
     enableHardwareAcceleration = true;
 
-    # Custom user/group
-    user = "media";
-    group = "media";
+    # Firewall configuration
+    openFirewallPorts = true;  # Open firewall ports automatically
 
     # Backup configuration
     backup = {
       enable = true;
-      schedule = "0 2 * * *";  # Daily at 2 AM
-      path = "/mnt/backup/jellyfin";
+      schedule = "0 21 * * *";  # Required - Daily at 9 PM
+      paths = [ "/mnt/backup/jellyfin" "/mnt/cloud/jellyfin" ];
       format = "tar.gz";
-      retention = 30;  # Keep 30 backups
+      maxRetentionDays = 30;   # Delete backups older than 30 days
+      retentionSnapshots = 10; # Keep 10 snapshots
       includeLogs = true;
       includeCache = false;  # Exclude cache to save space
     };
@@ -212,10 +220,23 @@ These directories are automatically created with proper permissions.
 
 ## Network Access
 
-The module automatically opens the required firewall ports:
+The module can automatically open the required firewall ports:
 
 - **TCP**: HTTP and HTTPS ports (default: 8096, 8920)
 - **UDP**: 7359 (local discovery), 1900 (DLNA/UPnP)
+
+Control firewall port opening with the `openFirewallPorts` option:
+
+```nix
+{
+  modules.services.virtualization.containers.jellyfin = {
+    enable = true;
+    uid = 1001;
+    gid = 1001;
+    openFirewallPorts = true;  # Default: false
+  };
+}
+```
 
 ## First Time Setup
 
@@ -263,4 +284,8 @@ The module automatically opens the required firewall ports:
 - Verify backup directory permissions: `ls -la /var/backups/jellyfin`
 - Test backup manually: `sudo systemctl start jellyfin-backup.service`
 - Check backup files: `ls -la /var/backups/jellyfin/`
+
 ```
+
+```
+````

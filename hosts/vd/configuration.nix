@@ -141,6 +141,7 @@
           imageTag = "2025072105";
           backup = {
             enable = true;
+            schedule = "0 21 * * *"; # Daily at 9 PM
             paths =
               [ "/mnt/backup/backup/jellyfin" "/mnt/vault/backup/jellyfin" ];
           };
@@ -153,6 +154,7 @@
           imageTag = "v2.6";
           backup = {
             enable = true;
+            schedule = "0 21 * * *"; # Daily at 9 PM
             paths =
               [ "/mnt/backup/backup/netdata" "/mnt/vault/backup/netdata" ];
           };
@@ -164,6 +166,7 @@
           gid = 1003;
           backup = {
             enable = true;
+            schedule = "0 21 * * *"; # Daily at 9 PM
             paths =
               [ "/mnt/backup/backup/portainer" "/mnt/vault/backup/portainer" ];
           };
