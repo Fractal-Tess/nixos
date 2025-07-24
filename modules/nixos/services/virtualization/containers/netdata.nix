@@ -1,4 +1,5 @@
-{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories
+, mkRestoreScript, ... }:
 
 with lib;
 
@@ -59,6 +60,69 @@ in {
       type = types.bool;
       default = false;
       description = "Open firewall ports for Netdata";
+    };
+
+    # Bind mounts configuration
+    bindMounts = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostPath = mkOption {
+            type = types.str;
+            description = "Path on the host system";
+            example = "/var/lib/netdata/config";
+          };
+          containerPath = mkOption {
+            type = types.str;
+            description = "Path inside the container";
+            example = "/etc/netdata";
+          };
+          readOnly = mkOption {
+            type = types.bool;
+            default = false;
+            description = "Mount as read-only";
+          };
+          backup = mkOption {
+            type = types.bool;
+            default = true;
+            description = "Include this bind mount in backup process";
+          };
+        };
+      });
+      default = [
+        {
+          hostPath = "/var/lib/netdata/config";
+          containerPath = "/etc/netdata";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/var/lib/netdata/lib";
+          containerPath = "/var/lib/netdata";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/var/lib/netdata/cache";
+          containerPath = "/var/cache/netdata";
+          readOnly = false;
+          backup = true;
+        }
+      ];
+      description = "Bind mounts for Netdata container";
+      example = [
+        {
+          hostPath = "/var/lib/netdata/config";
+          containerPath = "/etc/netdata";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/custom/netdata/plugins";
+          containerPath = "/usr/libexec/netdata/plugins.d";
+          readOnly = true;
+          backup = false;
+        }
+      ];
     };
 
     # Configuration directory
@@ -139,18 +203,14 @@ in {
     users.groups.${cfg.group} = { gid = cfg.gid; };
 
     # Create persistent directories for Netdata data and backup directories
-    systemd.tmpfiles.rules = [
-      # Config directory
-      "d ${cfg.configDirectory} 0755 ${cfg.user} ${cfg.group} -"
-      # Data directory
-      "d /var/lib/netdata/lib 0755 ${cfg.user} ${cfg.group} -"
-      # Cache directory
-      "d /var/lib/netdata/cache 0755 ${cfg.user} ${cfg.group} -"
-    ] ++ mkBackupDirectories {
-      backupConfig = cfg.backup;
-      user = cfg.user;
-      group = cfg.group;
-    };
+    systemd.tmpfiles.rules =
+      # Create directories for all bind mounts
+      (map (mount: "d ${mount.hostPath} 0755 ${cfg.user} ${cfg.group} -")
+        cfg.bindMounts) ++ mkBackupDirectories {
+          backupConfig = cfg.backup;
+          user = cfg.user;
+          group = cfg.group;
+        };
 
     # Define the Netdata container service
     virtualisation.oci-containers.containers.netdata = {
@@ -163,19 +223,21 @@ in {
       ];
 
       # Configure volumes
-      volumes = [
-        # Configuration directory
-        "${cfg.configDirectory}:/etc/netdata"
-        # Data directories
-        "/var/lib/netdata/lib:/var/lib/netdata"
-        "/var/lib/netdata/cache:/var/cache/netdata"
+      volumes =
+        # Convert bindMounts to volume strings
+        (map (mount:
+          if mount.readOnly then
+            "${mount.hostPath}:${mount.containerPath}:ro"
+          else
+            "${mount.hostPath}:${mount.containerPath}") cfg.bindMounts) ++
         # Host system information (read-only)
-        "/proc:/host/proc:ro"
-        "/sys:/host/sys:ro"
-        "/etc/os-release:/host/etc/os-release:ro"
-        # Docker socket for container monitoring
-        "/var/run/docker.sock:/var/run/docker.sock"
-      ];
+        [
+          "/proc:/host/proc:ro"
+          "/sys:/host/sys:ro"
+          "/etc/os-release:/host/etc/os-release:ro"
+          # Docker socket for container monitoring
+          "/var/run/docker.sock:/var/run/docker.sock"
+        ];
 
       # Environment variables
       environment = {
@@ -235,7 +297,8 @@ in {
     systemd.services.netdata-backup = mkIf cfg.backup.enable (mkBackupService {
       name = "netdata";
       serviceName = "docker-netdata.service";
-      dataPaths = [ cfg.configDirectory "/var/lib/netdata/lib" ];
+      dataPaths = map (mount: mount.hostPath)
+        (filter (mount: mount.backup) cfg.bindMounts);
       user = cfg.user;
       group = cfg.group;
       backupConfig = cfg.backup;
@@ -244,6 +307,16 @@ in {
     # Setup timer for backup service using utility
     systemd.timers.netdata-backup = mkIf cfg.backup.enable (mkBackupTimer {
       name = "netdata";
+      backupConfig = cfg.backup;
+    });
+
+    # Create restore script
+    systemd.services.netdata-restore = mkIf cfg.backup.enable (mkRestoreScript {
+      name = "netdata";
+      dataPaths = map (mount: mount.hostPath)
+        (filter (mount: mount.backup) cfg.bindMounts);
+      user = cfg.user;
+      group = cfg.group;
       backupConfig = cfg.backup;
     });
 
