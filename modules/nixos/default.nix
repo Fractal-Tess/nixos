@@ -20,5 +20,8 @@
 
     # Services
     ./services/default.nix
+
+    # Utils 
+    ./utils/backup.nix
   ];
 }

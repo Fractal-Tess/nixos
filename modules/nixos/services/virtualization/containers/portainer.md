@@ -18,9 +18,15 @@ Enable Portainer in your NixOS configuration:
 
 ```nix
 {
-  modules.services.virtualization.containers.portainer.enable = true;
+  modules.services.virtualization.containers.portainer = {
+    enable = true;
+    uid = 1003;  # Required - User ID for Portainer service
+    gid = 1003;  # Required - Group ID for Portainer service
+  };
 }
 ```
+
+**Note:** `uid` and `gid` are required and must be specified.
 
 ## Configuration Options
 
@@ -44,8 +50,19 @@ Customize the Docker image and tag:
 {
   modules.services.virtualization.containers.portainer = {
     enable = true;
+    uid = 1003;  # Required - User ID for Portainer service
+    gid = 1003;  # Required - Group ID for Portainer service
     image = "portainer/portainer-ce";
     imageTag = "2.19.4";  # Specific version
+    openFirewallPorts = true;  # Open firewall ports automatically
+    backup = {
+      enable = true;
+      schedule = "0 21 * * *";  # Required - Daily at 9 PM
+      paths = [ "/var/backups/portainer" "/mnt/backup/portainer" ];
+      format = "tar.gz";
+      maxRetentionDays = 7;    # Delete backups older than 7 days
+      retentionSnapshots = 7;  # Keep 7 snapshots
+    };
   };
 }
 ```
@@ -65,7 +82,18 @@ Portainer uses the following ports:
 | 9000 | TCP      | HTTP Web Interface (Primary) |
 | 9443 | TCP      | HTTPS Web Interface (Secure) |
 
-All ports are automatically opened in the firewall when the module is enabled.
+Control firewall port opening with the `openFirewallPorts` option:
+
+```nix
+{
+  modules.services.virtualization.containers.portainer = {
+    enable = true;
+    uid = 1003;
+    gid = 1003;
+    openFirewallPorts = true;  # Default: false
+  };
+}
+```
 
 ## Data Persistence
 
@@ -73,7 +101,7 @@ Portainer data is stored in:
 
 - **Data Directory**: `/var/lib/portainer` - User accounts, settings, templates, and configurations
 
-This directory is automatically created with proper permissions (0750, owned by `portainer:docker`).
+This directory is automatically created with proper permissions (0750, owned by `portainer:portainer`).
 
 ## Backup Configuration
 
@@ -83,12 +111,15 @@ Enable automatic backups of Portainer data:
 {
   modules.services.virtualization.containers.portainer = {
     enable = true;
+    uid = 1003;
+    gid = 1003;
     backup = {
       enable = true;
+      schedule = "0 21 * * *";  # Required - Daily at 9 PM
       paths = [ "/var/backups/portainer" "/mnt/backup/portainer" ];
-      schedule = "0 2 * * *";  # Daily at 2 AM
       format = "tar.gz";
-      retention = 7;  # Keep 7 backups
+      maxRetentionDays = 7;    # Delete backups older than 7 days
+      retentionSnapshots = 7;  # Keep 7 snapshots
     };
   };
 }
@@ -97,10 +128,11 @@ Enable automatic backups of Portainer data:
 **Backup Options:**
 
 - **`enable`**: Enable/disable automatic backups
+- **`schedule`**: **Required** - Cron schedule for backups (e.g., `"0 21 * * *"` = daily at 9 PM)
 - **`paths`**: List of backup destination directories (default: `[ "/var/backups/portainer" ]`)
-- **`schedule`**: Cron schedule (default: `"0 0 * * *"` = daily at midnight)
 - **`format`**: Archive format: `tar.gz`, `tar.xz`, `tar.bz2`, or `zip` (default: `tar.gz`)
-- **`retention`**: Number of backups to keep (0 = keep all, default: 7)
+- **`maxRetentionDays`**: Maximum age of backup files in days (0 = no age limit, default: 0)
+- **`retentionSnapshots`**: Number of backup snapshots to keep (0 = keep all, default: 7)
 
 **Backup Process:**
 

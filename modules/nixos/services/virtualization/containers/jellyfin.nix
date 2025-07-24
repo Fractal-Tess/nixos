@@ -1,5 +1,4 @@
-{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBootBackupService
-, mkBackupDirectories, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
 
 with lib;
 
@@ -93,8 +92,7 @@ in {
 
       schedule = mkOption {
         type = types.str;
-        default = "0 0 * * *"; # Daily at midnight
-        description = "Cron schedule for backup (default: daily at midnight)";
+        description = "Cron schedule for backup";
         example = "0 2 * * *"; # Daily at 2 AM
       };
 
@@ -139,13 +137,6 @@ in {
         type = types.bool;
         default = false;
         description = "Include cache files in backup (can be large)";
-      };
-
-      bootBackup = mkOption {
-        type = types.bool;
-        default = true;
-        description =
-          "Create backup on boot if previous scheduled backup was missed";
       };
     };
   };
@@ -264,17 +255,5 @@ in {
       backupConfig = cfg.backup;
     });
 
-    # Boot-time backup service using utility
-    systemd.services.jellyfin-boot-backup =
-      mkIf (cfg.backup.enable && cfg.backup.bootBackup) (mkBootBackupService {
-        name = "jellyfin";
-        serviceName = "docker-jellyfin.service";
-        dataPaths = [ "/var/lib/jellyfin/config" ]
-          ++ (optional cfg.backup.includeLogs "/var/lib/jellyfin/log")
-          ++ (optional cfg.backup.includeCache "/var/lib/jellyfin/cache");
-        user = cfg.user;
-        group = cfg.group;
-        backupConfig = cfg.backup;
-      });
   };
 }
