@@ -87,6 +87,20 @@
         enable = true;
         uid = 1003; # Distinct UID for container management
         gid = 1003; # Distinct GID for container management
+        bindMounts = [
+          {
+            hostPath = "/var/lib/portainer";
+            containerPath = "/data";
+            readOnly = false;
+            backup = true;
+          }
+          {
+            hostPath = "/run/user/1000/docker.sock";
+            containerPath = "/var/run/docker.sock";
+            readOnly = false;
+            backup = false;
+          }
+        ];
       };
     };
 
