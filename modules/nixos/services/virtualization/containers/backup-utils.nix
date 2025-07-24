@@ -16,7 +16,8 @@ let
         Group = "root";
         Restart = "no";
       };
-      path = [ pkgs.coreutils pkgs.gzip pkgs.xz pkgs.bzip2 pkgs.zip ];
+      path =
+        [ pkgs.coreutils pkgs.gzip pkgs.xz pkgs.bzip2 pkgs.zip pkgs.gnutar ];
       script = ''
         #!/bin/bash
         set -euo pipefail
@@ -157,7 +158,7 @@ let
       description = "${name} backup timer";
       wantedBy = [ "timers.target" ];
       timerConfig = {
-        OnCalendar = cfg.schedule;
+        OnCalendar = "daily"; # Run daily at midnight
         Persistent = true;
         RandomizedDelaySec = 300; # Random delay up to 5 minutes
       };
