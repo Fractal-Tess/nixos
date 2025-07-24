@@ -1,4 +1,5 @@
-{ config, lib, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
+{ config, lib, mkBackupService, mkBackupTimer, mkBootBackupService
+, mkBackupDirectories, ... }:
 
 with lib;
 let cfg = config.modules.services.virtualization.containers.portainer;
@@ -69,11 +70,25 @@ in {
         description = "Backup archive format";
       };
 
-      retention = mkOption {
+      maxRetentionDays = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Maximum age of backup files in days (0 = no age limit)";
+        example = 30;
+      };
+
+      retentionSnapshots = mkOption {
         type = types.int;
         default = 7;
-        description = "Number of backup files to keep (0 = keep all)";
-        example = 30;
+        description = "Number of backup snapshots to keep (0 = keep all)";
+        example = 10;
+      };
+
+      bootBackup = mkOption {
+        type = types.bool;
+        default = true;
+        description =
+          "Create backup on boot if previous scheduled backup was missed";
       };
     };
   };
@@ -134,6 +149,17 @@ in {
       name = "portainer";
       backupConfig = cfg.backup;
     });
+
+    # Boot-time backup service using utility
+    systemd.services.portainer-boot-backup =
+      mkIf (cfg.backup.enable && cfg.backup.bootBackup) (mkBootBackupService {
+        name = "portainer";
+        serviceName = "docker-portainer.service";
+        dataPaths = [ "/var/lib/portainer" ];
+        user = "portainer";
+        group = "portainer";
+        backupConfig = cfg.backup;
+      });
 
     # Open firewall ports for Portainer
     networking.firewall =
