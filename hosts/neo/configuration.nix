@@ -83,7 +83,11 @@
       enable = true;
       rootless = true;
       devtools = true;
-      portainer.enable = true;
+      portainer = {
+        enable = true;
+        uid = 1003; # Distinct UID for container management
+        gid = 1003; # Distinct GID for container management
+      };
     };
 
     # Automount 

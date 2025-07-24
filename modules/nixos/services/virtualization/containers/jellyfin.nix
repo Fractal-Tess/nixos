@@ -63,6 +63,25 @@ in {
       description = "Group to run Jellyfin as";
     };
 
+    uid = mkOption {
+      type = types.int;
+      description = "User ID for Jellyfin service";
+      example = 1001;
+    };
+
+    gid = mkOption {
+      type = types.int;
+      description = "Group ID for Jellyfin service";
+      example = 1001;
+    };
+
+    # Firewall configuration
+    openFirewallPorts = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Open firewall ports for Jellyfin";
+    };
+
     # Backup configuration
     backup = {
       enable = mkOption {
@@ -131,12 +150,10 @@ in {
       isSystemUser = true;
       group = cfg.group;
       description = "Jellyfin service user";
-      uid = 1002; # Different from main user UID
+      uid = cfg.uid;
     };
 
-    users.groups.${cfg.group} = {
-      gid = 1002; # Different from main user GID
-    };
+    users.groups.${cfg.group} = { gid = cfg.gid; };
 
     # Create persistent directories for Jellyfin data
     systemd.tmpfiles.rules = [
@@ -177,8 +194,8 @@ in {
 
       # Environment variables for user/group permissions and GPU support
       environment = {
-        PUID = "1002";
-        PGID = "1002";
+        PUID = toString cfg.uid;
+        PGID = toString cfg.gid;
         TZ = config.time.timeZone or "UTC";
       } // (optionalAttrs (cfg.enableHardwareAcceleration
         && (config.modules.drivers.nvidia.enable or false)) {
@@ -209,7 +226,7 @@ in {
     };
 
     # Open firewall ports for Jellyfin
-    networking.firewall = {
+    networking.firewall = mkIf cfg.openFirewallPorts {
       allowedTCPPorts = [ cfg.httpPort cfg.httpsPort ];
       allowedUDPPorts = [ 7359 1900 ];
     };
