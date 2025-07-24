@@ -147,7 +147,7 @@
           imageTag = "2025072105";
           backup = {
             enable = true;
-            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+            paths = [ "/mnt/backup/backup" "/mnt/vault/backup" ];
           };
         };
 
@@ -156,7 +156,7 @@
           imageTag = "v2.6";
           backup = {
             enable = true;
-            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+            paths = [ "/mnt/backup/backup" "/mnt/vault/backup" ];
           };
         };
       };
