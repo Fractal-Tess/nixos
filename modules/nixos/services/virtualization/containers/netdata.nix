@@ -42,6 +42,25 @@ in {
       description = "Group to run Netdata as";
     };
 
+    uid = mkOption {
+      type = types.int;
+      description = "User ID for Netdata service";
+      example = 1002;
+    };
+
+    gid = mkOption {
+      type = types.int;
+      description = "Group ID for Netdata service";
+      example = 1002;
+    };
+
+    # Firewall configuration
+    openFirewallPorts = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Open firewall ports for Netdata";
+    };
+
     # Configuration directory
     configDirectory = mkOption {
       type = types.str;
@@ -108,12 +127,10 @@ in {
       isSystemUser = true;
       group = cfg.group;
       description = "Netdata monitoring service user";
-      uid = 1001; # Different from other services
+      uid = cfg.uid;
     };
 
-    users.groups.${cfg.group} = {
-      gid = 1001; # Different from other services
-    };
+    users.groups.${cfg.group} = { gid = cfg.gid; };
 
     # Create persistent directories for Netdata data and backup directories
     systemd.tmpfiles.rules = [
@@ -157,8 +174,8 @@ in {
       # Environment variables
       environment = {
         DOCKER_HOST = "unix:///var/run/docker.sock";
-        PUID = "1001";
-        PGID = "1001";
+        PUID = toString cfg.uid;
+        PGID = toString cfg.gid;
       } // (optionalAttrs (cfg.enableGpuMonitoring
         && (config.modules.drivers.nvidia.enable or false)) {
           # NVIDIA-specific environment variables
@@ -195,24 +212,24 @@ in {
     # Health checking can be implemented via external monitoring or systemd
 
     # Open firewall port for Netdata
-    networking.firewall = { allowedTCPPorts = [ cfg.port ]; };
+    networking.firewall =
+      mkIf cfg.openFirewallPorts { allowedTCPPorts = [ cfg.port ]; };
 
     # Ensure required system packages are available
-    environment.systemPackages = with pkgs; [
-      # curl for health checks
-      curl
-      # Additional monitoring tools
-      htop
-      iotop
-      nethogs
-    ];
+    # environment.systemPackages = with pkgs; [
+    #   # curl for health checks
+    #   curl
+    #   # Additional monitoring tools
+    #   htop
+    #   iotop
+    #   nethogs
+    # ];
 
     # Backup service configuration using utility
     systemd.services.netdata-backup = mkIf cfg.backup.enable (mkBackupService {
       name = "netdata";
       serviceName = "docker-netdata.service";
-      dataPaths =
-        [ cfg.configDirectory "/var/lib/netdata/lib" "/var/lib/netdata/cache" ];
+      dataPaths = [ cfg.configDirectory "/var/lib/netdata/lib" ];
       user = cfg.user;
       group = cfg.group;
       backupConfig = cfg.backup;
