@@ -221,11 +221,222 @@ let
     else
       [ ];
 
+  # Helper function to create restore script for any container
+  mkRestoreScript = { name, dataPaths, user, group, backupConfig }:
+    let cfg = backupConfig;
+    in {
+      enable = true;
+      description = "${name} restore script";
+      path = [
+        pkgs.coreutils
+        pkgs.gzip
+        pkgs.xz
+        pkgs.bzip2
+        pkgs.zip
+        pkgs.gnutar
+        pkgs.bash
+      ];
+      script = ''
+        #!/bin/bash
+        set -euo pipefail
+
+        # Configuration
+        BACKUP_PATHS=(${toString cfg.paths})
+        DATA_PATHS=(${toString dataPaths})
+        USER="${user}"
+        GROUP="${group}"
+        SERVICE_NAME="docker-${name}.service"
+
+        # Determine archive format and extension
+        case "${cfg.format}" in
+          "tar.gz")
+            ARCHIVE_EXT="tar.gz"
+            EXTRACT_CMD="tar -xzf"
+            ;;
+          "tar.xz")
+            ARCHIVE_EXT="tar.xz"
+            EXTRACT_CMD="tar -xJf"
+            ;;
+          "tar.bz2")
+            ARCHIVE_EXT="tar.bz2"
+            EXTRACT_CMD="tar -xjf"
+            ;;
+          "zip")
+            ARCHIVE_EXT="zip"
+            EXTRACT_CMD="unzip -o"
+            ;;
+        esac
+
+        echo "=== ${name} Restore Script ==="
+        echo "This script will help you restore ${name} from a backup."
+        echo ""
+
+        # Function to list available backups
+        list_backups() {
+          echo "Available backups:"
+          echo "=================="
+          
+          local backup_count=0
+          local backup_list=()
+          
+          for backup_path in "''${BACKUP_PATHS[@]}"; do
+            if [ -d "$backup_path" ]; then
+              echo ""
+              echo "Backup location: $backup_path"
+              echo "----------------------------------------"
+              
+              # Find all backup files for this service
+              while IFS= read -r -d $'\0' file; do
+                if [[ "$file" == *"${name}_backup_"*".$ARCHIVE_EXT" ]]; then
+                  backup_count=$((backup_count + 1))
+                  backup_list+=("$file")
+                  
+                  # Extract date from filename
+                  local filename=$(basename "$file")
+                  local date_part=$(echo "$filename" | sed -n "s/${name}_backup_\\(.*\\)\\.$ARCHIVE_EXT/\\1/p")
+                  
+                  echo "$backup_count) $filename (Date: $date_part)"
+                fi
+              done < <(find "$backup_path" -name "${name}_backup_*.$ARCHIVE_EXT" -print0 2>/dev/null | sort -z)
+            fi
+          done
+          
+          echo ""
+          if [ $backup_count -eq 0 ]; then
+            echo "No backups found!"
+            return 1
+          fi
+          
+          return 0
+        }
+
+        # Function to restore from backup
+        restore_backup() {
+          local backup_file="$1"
+          local temp_dir="/tmp/${name}_restore_$$"
+          
+          echo ""
+          echo "Restoring from: $backup_file"
+          echo "=========================="
+          
+          # Create temporary directory
+          mkdir -p "$temp_dir"
+          
+          # Stop service if running
+          echo "Stopping ${name} service..."
+          if systemctl is-active --quiet "$SERVICE_NAME"; then
+            systemctl stop "$SERVICE_NAME"
+            echo "Service stopped."
+          else
+            echo "Service was not running."
+          fi
+          
+          # Wait a moment
+          sleep 3
+          
+          # Extract backup to temporary directory
+          echo "Extracting backup..."
+          cd "$temp_dir"
+          
+          if [ "${cfg.format}" = "zip" ]; then
+            $EXTRACT_CMD "$backup_file" > /dev/null 2>&1
+          else
+            $EXTRACT_CMD "$backup_file" > /dev/null 2>&1
+          fi
+          
+          if [ $? -ne 0 ]; then
+            echo "Error: Failed to extract backup file"
+            rm -rf "$temp_dir"
+            exit 1
+          fi
+          
+          # Restore files to their original locations
+          echo "Restoring files..."
+          for data_path in "''${DATA_PATHS[@]}"; do
+            local dir_name=$(basename "$data_path")
+            local restore_path="$temp_dir/$dir_name"
+            
+            if [ -d "$restore_path" ]; then
+              echo "Restoring $data_path..."
+              
+                             # Create backup of existing directory if it exists
+               if [ -d "$data_path" ]; then
+                 local backup_name="''${data_path}_backup_\$(date +%Y%m%d_%H%M%S)"
+                 echo "Creating backup of existing directory: \$backup_name"
+                 cp -r "$data_path" "$backup_name"
+               fi
+              
+              # Remove existing directory and restore
+              rm -rf "$data_path"
+              cp -r "$restore_path" "$data_path"
+              
+              # Set proper ownership
+              chown -R $USER:$GROUP "$data_path"
+              
+              echo "Restored: $data_path"
+            fi
+          done
+          
+          # Clean up temporary directory
+          rm -rf "$temp_dir"
+          
+          # Start service
+          echo "Starting ${name} service..."
+          systemctl start "$SERVICE_NAME"
+          
+          if systemctl is-active --quiet "$SERVICE_NAME"; then
+            echo "Service started successfully."
+          else
+            echo "Warning: Service may not have started properly."
+          fi
+          
+          echo ""
+          echo "Restore completed successfully!"
+        }
+
+        # Main script logic
+        if ! list_backups; then
+          exit 1
+        fi
+
+        echo "Enter the number of the backup to restore (or 'q' to quit):"
+        read -r choice
+
+        if [[ "$choice" == "q" || "$choice" == "Q" ]]; then
+          echo "Restore cancelled."
+          exit 0
+        fi
+
+        if [[ ! "$choice" =~ ^[0-9]+$ ]] || [ "$choice" -lt 1 ] || [ "$choice" -gt $backup_count ]; then
+          echo "Invalid choice. Please enter a number between 1 and $backup_count."
+          exit 1
+        fi
+
+        # Get the selected backup file
+        selected_backup="''${backup_list[$((choice - 1))]}"
+
+        # Confirm restore
+        echo ""
+        echo "You selected: $(basename "$selected_backup")"
+        echo "This will overwrite existing ${name} data."
+        echo "Are you sure you want to continue? (y/N):"
+        read -r confirm
+
+        if [[ "$confirm" == "y" || "$confirm" == "Y" ]]; then
+          restore_backup "$selected_backup"
+        else
+          echo "Restore cancelled."
+          exit 0
+        fi
+      '';
+    };
+
 in {
   # Export the helper functions
   _module.args = {
     mkBackupService = mkBackupService;
     mkBackupTimer = mkBackupTimer;
     mkBackupDirectories = mkBackupDirectories;
+    mkRestoreScript = mkRestoreScript;
   };
 }

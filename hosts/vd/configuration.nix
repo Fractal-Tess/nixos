@@ -137,8 +137,33 @@
           uid = 1001;
           gid = 1001;
           enableHardwareAcceleration = true;
-          mediaDirectories = [ "/mnt/vault/media" ];
           imageTag = "2025072105";
+          bindMounts = [
+            {
+              hostPath = "/var/lib/jellyfin/config";
+              containerPath = "/config";
+              readOnly = false;
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/jellyfin/cache";
+              containerPath = "/cache";
+              readOnly = false;
+              backup = false;
+            }
+            {
+              hostPath = "/var/lib/jellyfin/log";
+              containerPath = "/log";
+              readOnly = false;
+              backup = true;
+            }
+            {
+              hostPath = "/mnt/vault/media";
+              containerPath = "/mnt/vault/media";
+              readOnly = false;
+              backup = false;
+            }
+          ];
           backup = {
             enable = true;
             schedule = "0 21 * * *"; # Daily at 9 PM
@@ -152,6 +177,26 @@
           uid = 1002;
           gid = 1002;
           imageTag = "v2.6";
+          bindMounts = [
+            {
+              hostPath = "/var/lib/netdata/config";
+              containerPath = "/etc/netdata";
+              readOnly = false;
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/netdata/lib";
+              containerPath = "/var/lib/netdata";
+              readOnly = false;
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/netdata/cache";
+              containerPath = "/var/cache/netdata";
+              readOnly = false;
+              backup = true;
+            }
+          ];
           backup = {
             enable = true;
             schedule = "0 21 * * *"; # Daily at 9 PM
@@ -164,6 +209,20 @@
           enable = true;
           uid = 1003;
           gid = 1003;
+          bindMounts = [
+            {
+              hostPath = "/var/lib/portainer";
+              containerPath = "/data";
+              readOnly = false;
+              backup = true;
+            }
+            {
+              hostPath = "/run/user/1000/docker.sock";
+              containerPath = "/var/run/docker.sock";
+              readOnly = false;
+              backup = false;
+            }
+          ];
           backup = {
             enable = true;
             schedule = "0 21 * * *"; # Daily at 9 PM

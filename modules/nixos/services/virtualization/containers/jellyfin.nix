@@ -1,4 +1,5 @@
-{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
+{ config, lib, pkgs, mkBackupService, mkBackupTimer, mkBackupDirectories
+, mkRestoreScript, ... }:
 
 with lib;
 
@@ -20,13 +21,6 @@ in {
       default = "latest";
       description = "Docker image tag for Jellyfin";
       example = "latest";
-    };
-
-    # Media directories configuration
-    mediaDirectories = mkOption {
-      type = types.listOf types.str;
-      description = "List of media directories to mount in the container";
-      example = [ "/media/movies" "/media/tv" "/media/music" ];
     };
 
     # Port configuration
@@ -80,6 +74,69 @@ in {
       type = types.bool;
       default = false;
       description = "Open firewall ports for Jellyfin";
+    };
+
+    # Bind mounts configuration
+    bindMounts = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostPath = mkOption {
+            type = types.str;
+            description = "Path on the host system";
+            example = "/var/lib/jellyfin/config";
+          };
+          containerPath = mkOption {
+            type = types.str;
+            description = "Path inside the container";
+            example = "/config";
+          };
+          readOnly = mkOption {
+            type = types.bool;
+            default = false;
+            description = "Mount as read-only";
+          };
+          backup = mkOption {
+            type = types.bool;
+            default = true;
+            description = "Include this bind mount in backup process";
+          };
+        };
+      });
+      default = [
+        {
+          hostPath = "/var/lib/jellyfin/config";
+          containerPath = "/config";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/var/lib/jellyfin/cache";
+          containerPath = "/cache";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/var/lib/jellyfin/log";
+          containerPath = "/log";
+          readOnly = false;
+          backup = true;
+        }
+      ];
+      description = "Bind mounts for Jellyfin container";
+      example = [
+        {
+          hostPath = "/var/lib/jellyfin/config";
+          containerPath = "/config";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/media/movies";
+          containerPath = "/media/movies";
+          readOnly = true;
+          backup = false;
+        }
+      ];
     };
 
     # Backup configuration
@@ -162,18 +219,14 @@ in {
     users.groups.${cfg.group} = { gid = cfg.gid; };
 
     # Create persistent directories for Jellyfin data
-    systemd.tmpfiles.rules = [
-      # Config directory
-      "d /var/lib/jellyfin/config 0755 ${cfg.user} ${cfg.group} -"
-      # Cache directory
-      "d /var/lib/jellyfin/cache 0755 ${cfg.user} ${cfg.group} -"
-      # Log directory
-      "d /var/lib/jellyfin/log 0755 ${cfg.user} ${cfg.group} -"
-    ] ++ mkBackupDirectories {
-      backupConfig = cfg.backup;
-      user = cfg.user;
-      group = cfg.group;
-    };
+    systemd.tmpfiles.rules =
+      # Create directories for all bind mounts
+      (map (mount: "d ${mount.hostPath} 0755 ${cfg.user} ${cfg.group} -")
+        cfg.bindMounts) ++ mkBackupDirectories {
+          backupConfig = cfg.backup;
+          user = cfg.user;
+          group = cfg.group;
+        };
 
     # Define the Jellyfin container service
     virtualisation.oci-containers.containers.jellyfin = {
@@ -189,14 +242,13 @@ in {
       ];
 
       # Configure volumes
-      volumes = [
-        # Jellyfin data directories
-        "/var/lib/jellyfin/config:/config"
-        "/var/lib/jellyfin/cache:/cache"
-        "/var/lib/jellyfin/log:/log"
-      ] ++
-        # Add media directories
-        (map (dir: "${dir}:${dir}") cfg.mediaDirectories);
+      volumes =
+        # Convert bindMounts to volume strings
+        (map (mount:
+          if mount.readOnly then
+            "${mount.hostPath}:${mount.containerPath}:ro"
+          else
+            "${mount.hostPath}:${mount.containerPath}") cfg.bindMounts);
 
       # Environment variables for user/group permissions and GPU support
       environment = {
@@ -241,9 +293,10 @@ in {
     systemd.services.jellyfin-backup = mkIf cfg.backup.enable (mkBackupService {
       name = "jellyfin";
       serviceName = "docker-jellyfin.service";
-      dataPaths = [ "/var/lib/jellyfin/config" ]
-        ++ (optional cfg.backup.includeLogs "/var/lib/jellyfin/log")
-        ++ (optional cfg.backup.includeCache "/var/lib/jellyfin/cache");
+      dataPaths =
+        # Get host paths from bind mounts that are marked for backup
+        (map (mount: mount.hostPath)
+          (filter (mount: mount.backup) cfg.bindMounts));
       user = cfg.user;
       group = cfg.group;
       backupConfig = cfg.backup;
@@ -254,6 +307,19 @@ in {
       name = "jellyfin";
       backupConfig = cfg.backup;
     });
+
+    # Create restore script
+    systemd.services.jellyfin-restore = mkIf cfg.backup.enable
+      (mkRestoreScript {
+        name = "jellyfin";
+        dataPaths =
+          # Get host paths from bind mounts that are marked for backup
+          (map (mount: mount.hostPath)
+            (filter (mount: mount.backup) cfg.bindMounts));
+        user = cfg.user;
+        group = cfg.group;
+        backupConfig = cfg.backup;
+      });
 
   };
 }

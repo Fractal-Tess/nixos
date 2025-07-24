@@ -1,4 +1,5 @@
-{ config, lib, mkBackupService, mkBackupTimer, mkBackupDirectories, ... }:
+{ config, lib, mkBackupService, mkBackupTimer, mkBackupDirectories
+, mkRestoreScript, ... }:
 
 with lib;
 let cfg = config.modules.services.virtualization.containers.portainer;
@@ -39,6 +40,63 @@ in {
       type = types.bool;
       default = false;
       description = "Open firewall ports for Portainer";
+    };
+
+    # Bind mounts configuration
+    bindMounts = mkOption {
+      type = types.listOf (types.submodule {
+        options = {
+          hostPath = mkOption {
+            type = types.str;
+            description = "Path on the host system";
+            example = "/var/lib/portainer";
+          };
+          containerPath = mkOption {
+            type = types.str;
+            description = "Path inside the container";
+            example = "/data";
+          };
+          readOnly = mkOption {
+            type = types.bool;
+            default = false;
+            description = "Mount as read-only";
+          };
+          backup = mkOption {
+            type = types.bool;
+            default = true;
+            description = "Include this bind mount in backup process";
+          };
+        };
+      });
+      default = [
+        {
+          hostPath = "/var/lib/portainer";
+          containerPath = "/data";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/run/user/1000/docker.sock";
+          containerPath = "/var/run/docker.sock";
+          readOnly = false;
+          backup = false;
+        }
+      ];
+      description = "Bind mounts for Portainer container";
+      example = [
+        {
+          hostPath = "/var/lib/portainer";
+          containerPath = "/data";
+          readOnly = false;
+          backup = true;
+        }
+        {
+          hostPath = "/custom/portainer/templates";
+          containerPath = "/templates";
+          readOnly = true;
+          backup = false;
+        }
+      ];
     };
 
     # Backup configuration
@@ -97,12 +155,13 @@ in {
 
     # Create persistent volume directory and backup directories
     systemd.tmpfiles.rules =
-      [ "d /var/lib/portainer 0750 portainer portainer -" ]
-      ++ mkBackupDirectories {
-        backupConfig = cfg.backup;
-        user = "portainer";
-        group = "portainer";
-      };
+      # Create directories for all bind mounts
+      (map (mount: "d ${mount.hostPath} 0750 portainer portainer -")
+        cfg.bindMounts) ++ mkBackupDirectories {
+          backupConfig = cfg.backup;
+          user = "portainer";
+          group = "portainer";
+        };
 
     # Define the Portainer service
     virtualisation.oci-containers.containers.portainer = {
@@ -113,10 +172,11 @@ in {
         "9000:9000" # HTTP Web UI
         "9443:9443" # HTTPS Web UI
       ];
-      volumes = [
-        "/run/user/1000/docker.sock:/var/run/docker.sock"
-        "/var/lib/portainer:/data"
-      ];
+      volumes = map (mount:
+        if mount.readOnly then
+          "${mount.hostPath}:${mount.containerPath}:ro"
+        else
+          "${mount.hostPath}:${mount.containerPath}") cfg.bindMounts;
       environment = {
         PUID = toString cfg.uid;
         PGID = toString cfg.gid;
@@ -129,7 +189,8 @@ in {
       (mkBackupService {
         name = "portainer";
         serviceName = "docker-portainer.service";
-        dataPaths = [ "/var/lib/portainer" ];
+        dataPaths = map (mount: mount.hostPath)
+          (filter (mount: mount.backup) cfg.bindMounts);
         user = "portainer";
         group = "portainer";
         backupConfig = cfg.backup;
@@ -140,6 +201,17 @@ in {
       name = "portainer";
       backupConfig = cfg.backup;
     });
+
+    # Create restore script
+    systemd.services.portainer-restore = mkIf cfg.backup.enable
+      (mkRestoreScript {
+        name = "portainer";
+        dataPaths = map (mount: mount.hostPath)
+          (filter (mount: mount.backup) cfg.bindMounts);
+        user = "portainer";
+        group = "portainer";
+        backupConfig = cfg.backup;
+      });
 
     # Open firewall ports for Portainer
     networking.firewall =
