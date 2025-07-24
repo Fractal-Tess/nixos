@@ -132,18 +132,32 @@
 
       # --- Containers   --- 
       containers = {
-        portainer.enable = true;
+        portainer = {
+          enable = true;
+          backup = {
+            enable = true;
+            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+          };
+        };
 
         jellyfin = {
           enable = true;
           enableHardwareAcceleration = true;
           mediaDirectories = [ "/mnt/vault/media" ];
           imageTag = "2025072105";
+          backup = {
+            enable = true;
+            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+          };
         };
 
         netdata = {
           enable = true;
           imageTag = "v2.6";
+          backup = {
+            enable = true;
+            paths = [ "/mnt/backup" "/mnt/vault/backup" ];
+          };
         };
       };
     };
