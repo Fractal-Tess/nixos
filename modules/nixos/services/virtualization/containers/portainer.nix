@@ -21,6 +21,26 @@ in {
       example = "latest";
     };
 
+    # User/Group configuration
+    uid = mkOption {
+      type = types.int;
+      description = "User ID for Portainer service";
+      example = 1003;
+    };
+
+    gid = mkOption {
+      type = types.int;
+      description = "Group ID for Portainer service";
+      example = 1003;
+    };
+
+    # Firewall configuration
+    openFirewallPorts = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Open firewall ports for Portainer";
+    };
+
     # Backup configuration
     backup = {
       enable = mkOption {
@@ -59,19 +79,23 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Create system user for Portainer
+    # Create system user and group for Portainer
     users.users.portainer = {
       isSystemUser = true;
-      group = "docker";
+      group = "portainer";
       description = "Portainer service user";
+      uid = cfg.uid;
     };
 
+    users.groups.portainer = { gid = cfg.gid; };
+
     # Create persistent volume directory and backup directories
-    systemd.tmpfiles.rules = [ "d /var/lib/portainer 0750 portainer docker -" ]
+    systemd.tmpfiles.rules =
+      [ "d /var/lib/portainer 0750 portainer portainer -" ]
       ++ mkBackupDirectories {
         backupConfig = cfg.backup;
         user = "portainer";
-        group = "docker";
+        group = "portainer";
       };
 
     # Define the Portainer service
@@ -88,8 +112,8 @@ in {
         "/var/lib/portainer:/data"
       ];
       environment = {
-        PUID = "1000";
-        PGID = "1000";
+        PUID = toString cfg.uid;
+        PGID = toString cfg.gid;
       };
       extraOptions = [ ];
     };
@@ -101,7 +125,7 @@ in {
         serviceName = "docker-portainer.service";
         dataPaths = [ "/var/lib/portainer" ];
         user = "portainer";
-        group = "docker";
+        group = "portainer";
         backupConfig = cfg.backup;
       });
 
@@ -110,5 +134,9 @@ in {
       name = "portainer";
       backupConfig = cfg.backup;
     });
+
+    # Open firewall ports for Portainer
+    networking.firewall =
+      mkIf cfg.openFirewallPorts { allowedTCPPorts = [ 8000 9000 9443 ]; };
   };
 }

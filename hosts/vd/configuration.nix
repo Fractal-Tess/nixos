@@ -132,17 +132,10 @@
 
       # --- Containers   --- 
       containers = {
-        portainer = {
-          enable = true;
-          backup = {
-            enable = true;
-            paths =
-              [ "/mnt/backup/backup/portainer" "/mnt/vault/backup/portainer" ];
-          };
-        };
-
         jellyfin = {
           enable = true;
+          uid = 1001;
+          gid = 1001;
           enableHardwareAcceleration = true;
           mediaDirectories = [ "/mnt/vault/media" ];
           imageTag = "2025072105";
@@ -155,11 +148,24 @@
 
         netdata = {
           enable = true;
+          uid = 1002;
+          gid = 1002;
           imageTag = "v2.6";
           backup = {
             enable = true;
             paths =
               [ "/mnt/backup/backup/netdata" "/mnt/vault/backup/netdata" ];
+          };
+        };
+
+        portainer = {
+          enable = true;
+          uid = 1003;
+          gid = 1003;
+          backup = {
+            enable = true;
+            paths =
+              [ "/mnt/backup/backup/portainer" "/mnt/vault/backup/portainer" ];
           };
         };
       };
