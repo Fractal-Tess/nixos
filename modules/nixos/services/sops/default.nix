@@ -40,7 +40,7 @@ in {
         owner = username;
         sopsFile = ../../../../secrets/ssh_config.yaml;
         format = "yaml";
-        path = "/home/${username}/.ssh/config.test";
+        path = "/home/${username}/.ssh/config";
       };
     };
   };
