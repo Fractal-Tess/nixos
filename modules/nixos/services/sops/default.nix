@@ -35,6 +35,13 @@ in {
         format = "yaml";
         path = "/home/${username}/.ssh/authorized_keys";
       };
+
+      ssh_config = {
+        owner = username;
+        sopsFile = ../../../../secrets/ssh_config.yaml;
+        format = "yaml";
+        path = "/home/${username}/.ssh/config.test";
+      };
     };
   };
 }
