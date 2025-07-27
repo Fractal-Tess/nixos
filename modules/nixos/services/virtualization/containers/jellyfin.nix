@@ -102,26 +102,6 @@ in {
           };
         };
       });
-      default = [
-        {
-          hostPath = "/var/lib/jellyfin/config";
-          containerPath = "/config";
-          readOnly = false;
-          backup = true;
-        }
-        {
-          hostPath = "/var/lib/jellyfin/cache";
-          containerPath = "/cache";
-          readOnly = false;
-          backup = true;
-        }
-        {
-          hostPath = "/var/lib/jellyfin/log";
-          containerPath = "/log";
-          readOnly = false;
-          backup = true;
-        }
-      ];
       description = "Bind mounts for Jellyfin container";
       example = [
         {
