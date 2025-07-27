@@ -143,26 +143,19 @@
             {
               hostPath = "/var/lib/jellyfin/config";
               containerPath = "/config";
-              readOnly = false;
               backup = true;
-            }
-            {
-              hostPath = "/var/lib/jellyfin/cache";
-              containerPath = "/cache";
-              readOnly = false;
-              backup = false;
             }
             {
               hostPath = "/var/lib/jellyfin/log";
               containerPath = "/log";
-              readOnly = false;
-              backup = true;
+            }
+            {
+              hostPath = "/var/lib/jellyfin/cache";
+              containerPath = "/cache";
             }
             {
               hostPath = "/mnt/vault/media";
-              containerPath = "/mnt/vault/media";
-              readOnly = false;
-              backup = false;
+              containerPath = "/media";
             }
           ];
           backup = {
