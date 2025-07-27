@@ -1,0 +1,93 @@
+---
+alwaysApply: true
+---
+
+# NixOS Module Structure and Coding Standards
+
+## Module Organization
+
+### Service Modules
+
+- Write configuration files that are not .nix extension in the `config/` folder
+- Write overlays in the `overlays/` folder
+- Write host specific configurations in `/host/[host]/configuration.nix` or `/host/[host]/home.nix`
+
+### Module Structure Pattern
+
+Follow this pattern for all NixOS modules:
+
+```nix
+{ config, lib, pkgs, username, ... }:
+
+with lib;
+
+let cfg = config.modules.services.[service_name];
+in {
+  imports = [ ./submodule1.nix ./submodule2.nix ];
+
+  options.modules.services.[service_name] = {
+    enable = mkEnableOption "[Service Description]";
+    # Additional options...
+  };
+
+  config = mkIf cfg.enable {
+    # Configuration implementation
+  };
+}
+```
+
+### Code Style Guidelines
+
+- Add comments to document the logic of the code
+- Use descriptive option names and descriptions
+- Follow DRY principle (Don't Repeat Yourself)
+- Use `mkIf`, `mkDefault`, `mkMerge` for conditional configuration
+- Use `optionalAttrs` for conditional attribute sets
+- Use `listToAttrs` for dynamic attribute generation
+
+### SOPS Integration Pattern
+
+For services requiring secrets, use the modular SOPS approach:
+
+```nix
+# In the service module
+options.modules.services.[service_name].secrets = {
+  enable = mkEnableOption "Secret management via SOPS";
+  # Secret-specific options
+};
+
+# In host configuration
+modules.services.sops.[secret_type] = {
+  enable = true;
+  # Secret configuration
+};
+```
+
+### File Organization
+
+- `modules/nixos/services/[service]/default.nix` - Main service module
+- `modules/nixos/services/[service]/[submodule].nix` - Submodules for specific features
+- `modules/nixos/services/[service]/README.md` - Documentation
+- `secrets/secrets.yaml` - Main secrets file
+- `secrets/[service]_secrets.yaml` - Service-specific secrets
+
+### Activation Scripts Pattern
+
+For services requiring system activation:
+
+```nix
+system.activationScripts.[scriptName] = lib.concatStringsSep "\n" ([
+  "# Description of what this script does"
+] ++ (map
+  (item: ''
+    # Action for each item
+    command ${item.parameter}
+  '')
+  cfg.items));
+```
+
+description:
+globs:
+alwaysApply: false
+
+---
