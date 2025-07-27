@@ -1,0 +1,177 @@
+---
+alwaysApply: true
+---
+
+# NixOS Project Structure Guide
+
+## Root Directory Structure
+
+### Configuration Files
+
+- [flake.nix](mdc:flake.nix) - Main flake configuration
+- [flake.lock](mdc:flake.lock) - Flake lock file
+- [update.sh](mdc:update.sh) - Update script
+
+### Host Configurations
+
+- [hosts/](mdc:hosts/) - Host-specific configurations
+  - [hosts/neo/](mdc:hosts/neo/) - Neo host configuration
+  - [hosts/vd/](mdc:hosts/vd/) - VD host configuration
+    - [hosts/vd/configuration.nix](mdc:hosts/vd/configuration.nix) - Main system configuration
+    - [hosts/vd/hardware-configuration.nix](mdc:hosts/vd/hardware-configuration.nix) - Hardware-specific config
+    - [hosts/vd/home.nix](mdc:hosts/vd/home.nix) - Home-manager configuration
+
+### Modules
+
+- [modules/](mdc:modules/) - Reusable NixOS modules
+  - [modules/nixos/](mdc:modules/nixos/) - NixOS system modules
+  - [modules/home-manager/](mdc:modules/home-manager/) - Home-manager modules
+
+### NixOS Modules Structure
+
+- [modules/nixos/core/](mdc:modules/nixos/core/) - Core system modules (audio, boot, networking, etc.)
+- [modules/nixos/display/](mdc:modules/nixos/display/) - Display and desktop environment modules
+- [modules/nixos/drivers/](mdc:modules/nixos/drivers/) - Hardware driver modules
+- [modules/nixos/programs/](mdc:modules/nixos/programs/) - Program and utility modules
+- [modules/nixos/services/](mdc:modules/nixos/services/) - Service modules (Docker, Samba, SSH, etc.)
+- [modules/nixos/utils/](mdc:modules/nixos/utils/) - Utility and helper modules
+
+### Service Modules Pattern
+
+Each service module follows this structure:
+
+```
+modules/nixos/services/[service]/
+├── default.nix          # Main module with imports
+├── [submodule].nix      # Specific functionality
+├── [submodule].md       # Documentation
+└── README.md            # Service documentation
+```
+
+### Configuration Files
+
+- [config/](mdc:config/) - Application configuration files (non-Nix)
+  - [config/hyprland/](mdc:config/hyprland/) - Hyprland configuration
+  - [config/waybar/](mdc:config/waybar/) - Waybar configuration
+  - [config/wofi/](mdc:config/wofi/) - Wofi configuration
+  - [config/zsh/](mdc:config/zsh/) - Zsh configuration
+
+### Overlays
+
+- [overlays/](mdc:overlays/) - Nixpkgs overlays for custom packages
+
+### Secrets Management
+
+- [secrets/](mdc:secrets/) - SOPS-encrypted secrets
+  - [secrets/secrets.yaml](mdc:secrets/secrets.yaml) - Main secrets file
+  - [secrets/ssh_authorized_keys.yaml](mdc:secrets/ssh_authorized_keys.yaml) - SSH keys
+  - [secrets/ssh_config.yaml](mdc:secrets/ssh_config.yaml) - SSH configuration
+
+### Development Shells
+
+- [shells/](mdc:shells/) - Development environment shells
+  - [shells/python3/](mdc:shells/python3/) - Python development
+  - [shells/rust/](mdc:shells/rust/) - Rust development
+  - [shells/go/](mdc:shells/go/) - Go development
+  - etc.
+
+### Scripts
+
+- [scripts/](mdc:scripts/) - System utility scripts
+  - [scripts/brightness.sh](mdc:scripts/brightness.sh) - Brightness control
+  - [scripts/powermenu.sh](mdc:scripts/powermenu.sh) - Power menu
+  - [scripts/screenshot.sh](mdc:scripts/screenshot.sh) - Screenshot utility
+  - etc.
+
+### Assets
+
+- [backgrounds/](mdc:backgrounds/) - Wallpaper and background images
+
+## Module Development Guidelines
+
+### Creating New Modules
+
+1. Create directory: `modules/nixos/services/[service]/`
+2. Create `default.nix` with imports
+3. Create submodules for specific features
+4. Add documentation in `README.md`
+5. Update [modules/nixos/services/default.nix](mdc:modules/nixos/services/default.nix)
+
+### Module Import Pattern
+
+```nix
+# In modules/nixos/services/[service]/default.nix
+{ config, lib, pkgs, username, ... }:
+
+with lib;
+
+{
+  imports = [
+    ./submodule1.nix
+    ./submodule2.nix
+  ];
+}
+```
+
+### Host Configuration Pattern
+
+```nix
+# In hosts/[host]/configuration.nix
+{ pkgs, inputs, username, ... }:
+
+{
+  imports = [
+    ./hardware-configuration.nix
+    inputs.home-manager.nixosModules.default
+    ../../modules/nixos/default.nix
+  ];
+
+  modules = {
+    services.[service].enable = true;
+    # Service-specific configuration
+  };
+}
+```
+
+## File Naming Conventions
+
+### Nix Files
+
+- Use descriptive names: `docker.nix`, `samba.nix`
+- Use `default.nix` for main modules
+- Use lowercase with hyphens for multi-word names
+
+### Documentation Files
+
+- Use `README.md` for module documentation
+- Use `[feature].md` for specific feature documentation
+
+### Configuration Files
+
+- Use appropriate extensions: `.conf`, `.jsonc`, `.css`
+- Place in [config/](mdc:config/) directory
+
+## Import Hierarchy
+
+### System Level
+
+1. Hardware configuration
+2. Home-manager module
+3. Main NixOS modules
+
+### Module Level
+
+1. Main module (`default.nix`)
+2. Submodules for specific features
+3. Documentation and examples
+
+### Service Level
+
+1. Core service configuration
+2. SOPS integration (if needed)
+3. Activation scripts (if needed)
+   description:
+   globs:
+   alwaysApply: false
+
+---

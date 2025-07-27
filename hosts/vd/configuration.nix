@@ -279,43 +279,34 @@
       shares = [
         {
           name = "home";
-          path = "/home/fractal-tess";
-          validUsers = [ "fractal-tess" ];
-          readOnly = false;
-          guestOk = false;
-          forceUser = "fractal-tess";
+          path = "/home/${username}";
+          forceUser = username;
           forceGroup = "users";
-          createMask = "0644";
-          directoryMask = "0755";
-          initialPassword = "smbpass";
         }
         {
           name = "vault";
           path = "/mnt/vault";
-          validUsers = [ "fractal-tess" ];
-          readOnly = false;
-          guestOk = false;
-          forceUser = "fractal-tess";
+          forceUser = username;
           forceGroup = "users";
-          createMask = "0644";
-          directoryMask = "0755";
-          initialPassword = "smbpass";
         }
         {
           name = "backup";
           path = "/mnt/backup";
-          validUsers = [ "fractal-tess" ];
-          readOnly = false;
-          guestOk = false;
-          forceUser = "fractal-tess";
+          forceUser = username;
           forceGroup = "users";
-          initialPassword = "smbpass";
         }
       ];
     };
 
     # SOPS
-    services.sops.enable = true;
+    services.sops = {
+      enable = true;
+      ssh = {
+        enable = true;
+        authorizedKeys.enable = true;
+        config.enable = true;
+      };
+    };
     services.disk-utils.enable = true;
   };
 
