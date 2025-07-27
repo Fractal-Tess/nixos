@@ -1,6 +1,8 @@
-{ pkgs, username, lib, ... }:
+{ pkgs, username, lib, osConfig, ... }:
 
-with lib; {
+with lib;
+let cfg = osConfig;
+in {
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs.nix
@@ -25,14 +27,8 @@ with lib; {
     btop # Resource monitor with CPU, memory, disk, network
     trash-cli # Command line interface to FreeDesktop.org trash
     ddcutil # Monitor control utility (DDC/CI)
-    sops # Encrypt and decrypt files with age
-
-    # === FILE MANAGEMENT ===
-    unzip # Extract .zip archives
-    p7zip # File archiver with high compression ratio
-    fd # Simple, fast alternative to 'find'
-    dust # More intuitive version of du (disk usage)
-    dysk # Disk usage analyzer
+    sops # Secret management tool
+    xfce.thunar
 
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder
@@ -53,20 +49,20 @@ with lib; {
 
     # === DEVELOPMENT TOOLS ===
     # AI Assistants
-    # aider-chat # AI pair programming in the terminal
-    # claude-code # AI code assistant
+    aider-chat # AI pair programming in the terminal
+    claude-code # AI code assistant
 
     # Languages & Runtimes
-    # nodejs_22 # JavaScript runtime
-    # pnpm # Fast, disk space efficient package manager
-    # gcc # GNU Compiler Collection
-    # clang-tools # C/C++ compiler toolchain
+    nodejs_22 # JavaScript runtime
+    pnpm # Fast, disk space efficient package manager
+    gcc # GNU Compiler Collection
+    clang-tools # C/C++ compiler toolchain
 
     # Build Tools
-    # gnumake # Build automation tool
+    gnumake # Build automation tool
 
     # Development Utilities
-    # flyctl # Command-line tool for fly.io
+    flyctl # Command-line tool for fly.io
     jq # Command-line JSON processor
     hyperfine # Command-line benchmarking tool
 
@@ -75,19 +71,33 @@ with lib; {
     lazygit # Simple terminal UI for git
 
     # Security Tools
-    # burpsuite # Web vulnerability scanner
+    burpsuite # Web vulnerability scanner
 
-    # # Programming Languages
-    # rust-analyzer # Language server for Rust
-    # lua-language-server # Language server for Lua
-    # stylua # Lua code formatter
-    # nginx-language-server # Language server for Nginx
-    # phpactor # Language server for PHP
+    # === LANGUAGE SERVERS ===
+    # Web Development
+    prettierd # Code formatter daemon for web technologies
+    svelte-language-server # Language server for Svelte
+    emmet-language-server # Language server for Emmet
+    tailwindcss-language-server # Language server for Tailwind CSS
+    typescript-language-server # Language server for TypeScript
+    astro-language-server # Language server for Astro
+    vscode-langservers-extracted # HTML/CSS/JSON language servers
+
+    # DevOps
+    docker-compose-language-service # Language server for Docker Compose
+    dockerfile-language-server-nodejs # Language server for Dockerfiles
+
+    # Programming Languages
+    rust-analyzer # Language server for Rust
+    lua-language-server # Language server for Lua
+    stylua # Lua code formatter
+    nginx-language-server # Language server for Nginx
+    phpactor # Language server for PHP
     nixd # Language server for Nix
     nixpkgs-fmt # Nix code formatter
     nixfmt-classic # Alternative Nix formatter
-    # sqls # Language server for SQL
-    # gopls # Language server for Go
+    sqls # Language server for SQL
+    gopls # Language server for Go
 
     # === MULTIMEDIA TOOLS ===
     ffmpeg-full # Complete multimedia solution
@@ -104,38 +114,35 @@ with lib; {
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
+    # (flameshot.override { enableWlrSupport = true; })
 
     # === TERMINAL ENHANCEMENTS ===
-    # neofetch # System information tool
-    # nitch # Lightweight system information fetch
-    fastfetch # Fast system information tool
+    nitch # Lightweight system information fetch
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
 
     # === GUI APPLICATIONS ===
     # Launchers & System Tools
-    # ulauncher_patched # Application launcher
-    ulauncher # Application launcher
+    ulauncher # Application launcherr
     wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
-    # udisks
-    # gnome-disk-utility
-    # rpi-imager # Raspberry Pi Imaging Utility
-    # caligula # Disk imager TUI
+    rpi-imager # Raspberry Pi Imaging Utility
+    f3 # Sd card checker
 
     # Web Browsers
     firefox # Open-source web browser
     google-chrome # Google's web browser
-    # microsoft-edge # Microsoft's web browser
-    # tor-browser # Privacy-focused browser
+    # chromium # Chromium web browser
+    microsoft-edge # Microsoft's web browser
+    tor-browser # Privacy-focused browser
 
     # File Management
     pcmanfm # Lightweight file manager
     mate.engrampa # Archive manager
 
     # Media Players
-    # vlc # Versatile media player
+    vlc # Versatile media player
     mpv # Minimalist video player
     kooha # Screen recorder for Wayland
     nomacs # Image viewer
@@ -145,30 +152,39 @@ with lib; {
     warp-terminal # Modern terminal with AI features
 
     # === COMMUNICATION ===
-    # discord # Voice, video and text chat
-    # telegram-desktop # Messaging app
+    discord # Voice, video and text chat
+    telegram-desktop # Messaging app
     bitwarden # Password manager
-    viber_patched # Voice and messaging app
-    # slack # Team collaboration platform
-    # thunderbird # Email client
+    viber-appimage # Voice and messaging app
+    slack # Team collaboration platform
+    thunderbird # Email client
 
     # === OFFICE & PRODUCTIVITY ===
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    # kdePackages.kdenlive # Video editor
+    kdePackages.kdenlive # Video editor
 
     # === DEVELOPMENT ENVIRONMENTS ===
     code-cursor # VS Code fork with AI features
     zed-editor # High-performance code editor
-    # responsively-app # Web development tool for responsive design
+    responsively-app # Web development tool for responsive design
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
 
     # === GAMING ===
-    steam # Gaming platform
-    # polymc # Minecraft launcher
-    wineWowPackages.stable # Windows compatibility layer
+    # steam # Gaming platform
+    # (steam.override {
+    #   extraPkgs = pkgs: [ openldap ];
+    #   # nativeOnly = true;
+    # }).run
+    # # steam-run # Steam runtime
+    polymc # Minecraft launcher
+    bottles # Wine wrapper
+    heroic # Game launcher
+    mangohud # FPS counter
+    protonup-qt # Proton wrapper
+    # wineWowPackages.stable # Windows compatibility layer
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
     # === THEMING & CUSTOMIZATION ===
@@ -177,12 +193,13 @@ with lib; {
     cliphist # Clipboard history tool
 
     # === COMMENTED OUT ===
-    # blender
+    blender
     # kicad
-    # audacity
-    # gimp
-    # inkscape
+    audacity
+    gimp
+    inkscape
 
     qbittorrent # BitTorrent client
   ];
+
 }

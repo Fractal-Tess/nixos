@@ -9,36 +9,29 @@
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
 
-    # Core system modules
-    ./../../modules/nixos/core/audio.nix
-    ./../../modules/nixos/core/boot.nix
-    ./../../modules/nixos/core/locale.nix
-    ./../../modules/nixos/core/networking.nix
-    ./../../modules/nixos/core/security.nix
-    ./../../modules/nixos/core/shell.nix
-    ./../../modules/nixos/core/time.nix
-
-    # Drivers
-    ./../../modules/nixos/drivers/default.nix
-
-    # Display
-    ./../../modules/nixos/display/default.nix
-
-    # Services
-    ./../../modules/nixos/services/default.nix
-
-    # Yazi
-    ./../../modules/nixos/programs/yazi.nix
+    # NixOS modules
+    ../../modules/nixos/default.nix
   ];
 
-  # hardware.nvidia.open = false;
+  # DDC support
+  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
+  boot.kernelModules = [ "i2c-dev" ];
+  services.udev.extraRules = ''
+    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
+  '';
+  hardware.i2c.enable = true;
 
   # Nix settings
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
+      substituters = [ "https://hyprland.cachix.org" ];
+      trusted-public-keys = [
+        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
+      ];
     };
+
     gc = {
       automatic = true;
       dates = "weekly";
@@ -46,14 +39,39 @@
     };
   };
 
+
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "electron-27.3.11" ];
   };
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  environment.systemPackages = [ ];
+  environment.systemPackages = with pkgs; [ ];
+  programs.steam = {
+    enable = true;
+    # Required for managing Wine prefixes
+    protontricks.enable = true;
+    # Recommended for better gaming performance
+    gamescopeSession.enable = true;
+
+    # Install Proton-GE for better compatibility
+    extraCompatPackages = with pkgs; [ protonup ];
+
+    # Additional libraries needed for Wine/Proton
+    extraPackages = with pkgs; [
+      # Basic dependencies
+      keyutils
+      libkrb5
+      libpng
+      libpulseaudio
+      # Media support
+      gst_all_1.gst-plugins-base
+      gst_all_1.gst-plugins-good
+      # 32-bit libraries
+      pkgsi686Linux.keyutils
+      pkgsi686Linux.libkrb5
+    ];
+  };
 
   modules = {
     # ----- Drivers -----
@@ -77,40 +95,29 @@
     # ----- Bar -----
     display.waybar.enable = true;
 
-    # ----- Docker -----
-    # Docker 
-    services.docker = {
-      enable = true;
-      rootless = true;
-      devtools = true;
-      portainer = {
+    # ----- Virtualization -----
+    services.virtualization = {
+      docker = {
         enable = true;
-        uid = 1003; # Distinct UID for container management
-        gid = 1003; # Distinct GID for container management
-        bindMounts = [
-          {
-            hostPath = "/var/lib/portainer";
-            containerPath = "/data";
-            readOnly = false;
-            backup = true;
-          }
-          {
-            hostPath = "/run/user/1000/docker.sock";
-            containerPath = "/var/run/docker.sock";
-            readOnly = false;
-            backup = false;
-          }
-        ];
+        rootless = true;
+        devtools = true;
       };
+      firecracker.enable = false;
+      kubernetes.enable = false;
+
+      # --- Containers   --- 
+      # containers = {
+      #   # Add container configurations here if needed
+      # };
     };
 
-    # Automount 
-    services.automount.enable = true;
-
-    # SSHD
+    # ----- SSHD -----
     services.sshd.enable = true;
 
-    # Samba shares
+    # ----- Automount -----
+    services.automount.enable = true;
+
+    # ----- Samba shares -----
     services.samba.mount = {
       enable = true;
       shares = [
@@ -121,9 +128,27 @@
           password = "smbpass";
         }
         {
+          mountPoint = "/mnt/greystone";
+          device = "//rp.netbird.cloud/greystone";
+          username = "smbuser";
+          password = "smbpass";
+        }
+        {
           mountPoint = "/mnt/oracle";
           device = "//oracle.netbird.cloud/home";
           username = "smbuser";
+          password = "smbpass";
+        },
+        {
+          mountPoint = "/mnt/vault";
+          device = "//vd.netbird.cloud/vault";
+          username = username;
+          password = "smbpass";
+        },
+        {
+          mountPoint = "/mnt/backup";
+          device = "//vd.netbird.cloud/backup";
+          username = username;
           password = "smbpass";
         }
       ];
@@ -134,21 +159,24 @@
       enable = true;
       shares = [{
         name = "home";
-        path = "/home/fractal-tess";
-        validUsers = [ "fractal-tess" ];
-        readOnly = false;
-        guestOk = false;
-        forceUser = "fractal-tess";
+        path = "/home/${username}";
+        forceUser = username;
         forceGroup = "users";
-        createMask = "0644";
-        directoryMask = "0755";
       }];
     };
 
     # SOPS
-    services.sops.enable = true;
-    services.disk-utils.enable = true;
-    services.networking.enable = true;
+    services.sops = {
+      enable = true;
+      ssh = {
+        enable = true;
+        authorizedKeys.enable = true;
+        config.enable = true;
+      };
+    };
+
+    # ----- Automount ----- 
+    services.automount.enable = true;
   };
 
   # Bluetooth
@@ -167,13 +195,15 @@
   }];
 
   # User
-  users.users.fractal-tess = {
+  users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "wireshark" ];
+    extraGroups =
+      [ "networkmanager" "wheel" "video" "fractal-tess" "wireshark" ];
     password = "password";
     description = "default user";
     packages = with pkgs; [ ];
   };
+  users.groups.${username} = { members = [ username ]; };
 
   # Make users mutable 
   users.mutableUsers = true;
@@ -193,7 +223,6 @@
     powerline-fonts
     powerline-symbols
   ];
-
   # Printing
   services.printing = {
     enable = true;
@@ -204,19 +233,44 @@
   services.gvfs.enable = true;
 
   environment.variables = {
+    # Force Qt applications to use X11 backend instead of Wayland
     QT_QPA_PLATFORM = "xcb";
-    GTK_THEME = "Nordic";
-    XCURSOR_THEME = "Nordzy-cursors";
-    XCURSOR_SIZE = "24";
+
+    # Set AMD GPU video acceleration drivers
+    # LIBVA_DRIVER_NAME = "radeonsi";  # VA-API driver for AMD GPUs
+    # VDPAU_DRIVER = "radeonsi";       # VDPAU driver for AMD GPUs
+
+    # Set GTK theme and cursor settings
+    GTK_THEME = "Nordic"; # Dark bluish GTK theme
+    XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
+    XCURSOR_SIZE = "24"; # Default cursor size
+
+    # Silence direnv logging output
     DIRENV_LOG_FORMAT = "";
+
+    # Uncomment to force software cursor if hardware cursor doesn't work
+    # WLR_NO_HARDWARE_CURSORS = "1";
+
+    # Enable Wayland support in Electron/Ozone apps
     NIXOS_OZONE_WL = "1";
-    VISUAL = "nvim";
-    SUDO_EDITOR = "nvim";
-    EDITOR = "nvim";
-    MOZ_USE_WAYLAND = 1;
-    MOZ_USE_XINPUT2 = 1;
+
+    # Set default editors
+    VISUAL = "nvim"; # Visual editor for GUI contexts
+    SUDO_EDITOR = "nvim"; # Editor used by sudo -e
+    EDITOR = "nvim"; # Default terminal editor
+
+    # Firefox Wayland settings
+    MOZ_USE_WAYLAND = 1; # Enable Wayland support in Firefox
+    MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
   };
 
-  system.stateVersion = "24.05";
+  # This value determines the NixOS release from which the default
+  # settings for stateful data, like file locations and database versions
+  # on your system were taken. It's perfectly fine and recommended to leave
+  # this value at the release version of the first install of this system.
+  # Before changing this value read the documentation for this option
+  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
+  system.stateVersion = "24.05"; # Did you read the comment?
+
 }
 
