@@ -239,12 +239,12 @@
     services.samba.mount = {
       enable = true;
       shares = [
-        # {
-        #   mountPoint = "/mnt/blockade";
-        #   device = "//rp.netbird.cloud/blockade";
-        #   username = "smbuser";
-        #   password = "smbpass";
-        # }
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//rp.netbird.cloud/blockade";
+          username = "smbuser";
+          password = "smbpass";
+        }
         # {
         #   mountPoint = "/mnt/greystone";
         #   device = "//rp.netbird.cloud/greystone";
