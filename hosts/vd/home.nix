@@ -32,6 +32,7 @@ in {
     xfce.thunar
     gparted
     bleachbit
+    parted
 
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder
