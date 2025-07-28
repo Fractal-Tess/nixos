@@ -99,12 +99,16 @@ in {
               "rw"
               # Use systemd automount for on-demand mounting
               "x-systemd.automount"
+              # Do not mount automatically
+              "noauto"
               # Do not fail if the share is unavailable (prevents boot/activation failure)
               "nofail"
+              # Idle timeout
+              "x-systemd.idle-timeout=60s"
               # Set device timeout
-              "x-systemd.device-timeout=10"
+              "x-systemd.device-timeout=5s"
               # Limit mount attempts to 5 seconds to avoid long waits
-              "x-systemd.mount-timeout=5"
+              "x-systemd.mount-timeout=5s"
             ];
           in if share.credentialsFile != null then
             [ "credentials=${share.credentialsFile}" ] ++ baseOptions

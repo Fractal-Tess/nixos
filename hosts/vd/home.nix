@@ -30,6 +30,8 @@ in {
     sops # Secret management tool
     nvtopPackages.nvidia
     xfce.thunar
+    gparted
+    bleachbit
 
     # === SEARCH TOOLS ===
     fzf # Command-line fuzzy finder
