@@ -97,7 +97,7 @@ in {
           };
           backup = mkOption {
             type = types.bool;
-            default = true;
+            default = false;
             description = "Include this bind mount in backup process";
           };
         };
@@ -129,8 +129,9 @@ in {
 
       schedule = mkOption {
         type = types.str;
+        default = "0 21 * * *"; # Daily at 9PM
         description = "Cron schedule for backup";
-        example = "0 2 * * *"; # Daily at 2 AM
+        example = "0 21 * * *"; # Daily at 9PM
       };
 
       paths = mkOption {
@@ -162,18 +163,6 @@ in {
         default = 7;
         description = "Number of backup snapshots to keep (0 = keep all)";
         example = 10;
-      };
-
-      includeLogs = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Include log files in backup";
-      };
-
-      includeCache = mkOption {
-        type = types.bool;
-        default = false;
-        description = "Include cache files in backup (can be large)";
       };
     };
   };
