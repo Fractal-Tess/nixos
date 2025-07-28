@@ -294,12 +294,10 @@
     # SOPS
     services.sops = {
       enable = true;
-      ssh = {
-        enable = true;
-        authorizedKeys.enable = true;
-        config.enable = true;
-      };
+      ssh.enable = true;
     };
+
+    # ----- Disk Utils ----- TODO:
     services.disk-utils.enable = true;
   };
 
