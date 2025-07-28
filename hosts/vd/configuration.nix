@@ -176,20 +176,15 @@
             {
               hostPath = "/var/lib/netdata/config";
               containerPath = "/etc/netdata";
-              readOnly = false;
               backup = true;
             }
             {
               hostPath = "/var/lib/netdata/lib";
               containerPath = "/var/lib/netdata";
-              readOnly = false;
-              backup = true;
             }
             {
               hostPath = "/var/lib/netdata/cache";
               containerPath = "/var/cache/netdata";
-              readOnly = false;
-              backup = true;
             }
           ];
           backup = {
@@ -209,14 +204,11 @@
             {
               hostPath = "/var/lib/portainer";
               containerPath = "/data";
-              readOnly = false;
               backup = true;
             }
             {
               hostPath = "/run/user/1000/docker.sock";
               containerPath = "/var/run/docker.sock";
-              readOnly = false;
-              backup = false;
             }
           ];
           backup = {
