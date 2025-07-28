@@ -1,6 +1,8 @@
 { pkgs, inputs, username, ... }:
 
-{
+let backupDirs = [ "/mnt/backup/backup" "/mnt/vault/backup" ];
+
+in {
   imports = [
     # System configuration
     ./hardware-configuration.nix
@@ -160,9 +162,7 @@
           ];
           backup = {
             enable = true;
-            schedule = "0 21 * * *"; # Daily at 9 PM
-            paths =
-              [ "/mnt/backup/backup/jellyfin" "/mnt/vault/backup/jellyfin" ];
+            paths = (map (dir: "${dir}/jellyfin") backupDirs);
           };
         };
 
@@ -189,9 +189,7 @@
           ];
           backup = {
             enable = true;
-            schedule = "0 21 * * *"; # Daily at 9 PM
-            paths =
-              [ "/mnt/backup/backup/netdata" "/mnt/vault/backup/netdata" ];
+            paths = (map (dir: "${dir}/netdata") backupDirs);
           };
         };
 
@@ -213,9 +211,7 @@
           ];
           backup = {
             enable = true;
-            schedule = "0 21 * * *"; # Daily at 9 PM
-            paths =
-              [ "/mnt/backup/backup/portainer" "/mnt/vault/backup/portainer" ];
+            paths = (map (dir: "${dir}/portainer") backupDirs);
           };
         };
       };

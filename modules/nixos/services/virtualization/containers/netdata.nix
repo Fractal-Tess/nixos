@@ -156,8 +156,9 @@ in {
 
       schedule = mkOption {
         type = types.str;
+        default = "0 21 * * *"; # Daily at 9PM
         description = "Cron schedule for backup";
-        example = "0 2 * * *"; # Daily at 2 AM
+        example = "0 21 * * *"; # Daily at 9PM
       };
 
       format = mkOption {
