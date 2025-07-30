@@ -1,30 +1,51 @@
 {
   description = "A Nix-flake-based PHP development environment";
 
-  inputs.nixpkgs.url = "https://flakehub.com/f/NixOS/nixpkgs/0.1.*.tar.gz";
+  inputs = {
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    systems.url = "github:nix-systems/default";
+  };
 
-  outputs = { self, nixpkgs }:
+  outputs = { nixpkgs, systems, ... }:
     let
-      supportedSystems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
-      forEachSupportedSystem = f: nixpkgs.lib.genAttrs supportedSystems (system: f {
-        pkgs = import nixpkgs { inherit system; };
-      });
-    in
-    {
-      devShells = forEachSupportedSystem ({ pkgs }: {
+      eachSystem = f:
+        nixpkgs.lib.genAttrs (import systems)
+        (system: f (import nixpkgs { inherit system; }));
+    in {
+      devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
-            zsh;
-            exit 0;
+            echo "
+             _____  _    _ _____  
+            |  __ \| |  | |  __ \ 
+            | |__) | |__| | |__) |
+            |  ___/|  __  |  ___/ 
+            | |    | |  | | |     
+            |_|    |_|  |_|_|     
+            PHP - $(${pkgs.php}/bin/php --version | head -n1)
+            " | ${pkgs.lolcat}/bin/lolcat
           '';
           packages = with pkgs; [
+            # PHP
             php
             phpPackages.composer
-            phpPackages.php-cs-fixer
-            phpPackages.phan
-            phpactor
-          ];
 
+            # PHP Tools
+            # phpPackages.phan
+            # phpactor
+
+            # Laravel
+            # laravel
+
+            # Nodejs runtime
+            bun
+
+            nodePackages.npm
+            nodejs
+            yarn
+            pnpm
+
+          ];
         };
       });
     };
