@@ -10,11 +10,11 @@
     let
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-          (system: f nixpkgs.legacyPackages.${system});
+        (system: f nixpkgs.legacyPackages.${system});
 
       libraries = pkgs:
         with pkgs; [
-          webkitgtk
+          webkitgtk_4_1
           gtk3
           cairo
           gdk-pixbuf
@@ -34,8 +34,7 @@
           openssl_3
           glib
           gtk3
-          libsoup
-          webkitgtk
+          webkitgtk_4_1
           librsvg
           clang
           mold
@@ -51,8 +50,7 @@
           npkill
           lolcat
         ];
-    in
-    {
+    in {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           buildInputs = packages pkgs;
