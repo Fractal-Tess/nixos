@@ -119,6 +119,7 @@ in {
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
     # (flameshot.override { enableWlrSupport = true; })
+    gource
 
     # === TERMINAL ENHANCEMENTS ===
     nitch # Lightweight system information fetch
