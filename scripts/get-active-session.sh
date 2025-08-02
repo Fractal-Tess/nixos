@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Script to get the active graphical session ID
 # Returns the session ID of the active graphical session (with seat0)
 

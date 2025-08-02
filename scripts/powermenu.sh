@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Pkill wofi 
 pkill wofi
 
