@@ -1,4 +1,3 @@
-#!/usr/bin/env bash
 # Script to output GPU and CPU temperature in JSON for Waybar
 
 # Get GPU temperature (NVIDIA)

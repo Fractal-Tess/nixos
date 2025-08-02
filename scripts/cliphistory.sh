@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # If wofi is already running, kill it
 pkill wofi
 
