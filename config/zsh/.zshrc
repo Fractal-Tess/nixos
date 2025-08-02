@@ -47,3 +47,12 @@ if [[ -n $CURSOR_TRACE_ID ]]; then
   precmd() { print -Pn "\e]133;D;%?\a" }
   preexec() { print -Pn "\e]133;C;\a" }
 fi
+
+#Aliases
+alias p10k-down='prompt_powerlevel9k_teardown'
+alias p10k-up='prompt_powerlevel9k_setup'
+
+#End
+if [[ -n $CURSOR_TRACE_ID ]]; then
+  p10k-down
+fi
