@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Comprehensive screen and session management script
 # Combines screen control, session locking, and brightness management
 

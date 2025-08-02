@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Script to show detailed session information
 # Useful for debugging session management
 

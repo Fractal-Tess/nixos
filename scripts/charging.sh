@@ -1,4 +1,3 @@
-
 # Check if the battery exists
 if [ ! -d "/sys/class/power_supply/BAT0" ]; then
     echo "No battery found"

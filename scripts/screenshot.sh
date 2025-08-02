@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Create the screenshots directory if it doesn't exist
 mkdir -p ~/Pictures/screenshots
 
