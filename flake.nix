@@ -29,6 +29,8 @@
                 # Overlay for Responsively App
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/viber.nix)
+                # Overlay for Cursor
+                (import ./overlays/cursor.nix)
                 # (import ./overlays/ulauncher-webkitgtk.nix)
               ];
             }
