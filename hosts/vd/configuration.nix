@@ -60,7 +60,8 @@ in {
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "electron-27.3.11" ];
+    permittedInsecurePackages = [ "electron-27.3.11" "libsoup-2.74.3" ];
+
   };
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
