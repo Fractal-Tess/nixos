@@ -138,6 +138,7 @@ in {
     # Web Browsers
     firefox # Open-source web browser
     google-chrome # Google's web browser
+    vivaldi # Web browser
     # chromium # Chromium web browser
     microsoft-edge # Microsoft's web browser
     tor-browser # Privacy-focused browser
