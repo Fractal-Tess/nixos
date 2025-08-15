@@ -257,7 +257,7 @@ in {
               backup = true;
             }
             {
-              hostPath = "/var/lib/qbittorrent/downloads";
+              hostPath = "/mnt/vault/media/";
               containerPath = "/downloads";
               backup = false;
             }
