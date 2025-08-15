@@ -296,6 +296,25 @@ in {
             paths = (map (dir: "${dir}/sonarr") backupDirs);
           };
         };
+
+        jellyseerr = {
+          enable = true;
+          user = {
+            name = "jellyseerr";
+            uid = 1004;
+            gid = 1004;
+          };
+          openFirewallPorts = true;
+          bindMounts = [{
+            hostPath = "/var/lib/jellyseerr/config";
+            containerPath = "/app/config";
+            backup = true;
+          }];
+          backup = {
+            enable = true;
+            paths = (map (dir: "${dir}/jellyseerr") backupDirs);
+          };
+        };
       };
     };
 
