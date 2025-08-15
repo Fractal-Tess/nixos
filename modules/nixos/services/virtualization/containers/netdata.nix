@@ -3,7 +3,13 @@
 
 with lib;
 
-let cfg = config.modules.services.virtualization.containers.netdata;
+let
+  cfg = config.modules.services.virtualization.containers.netdata;
+  # Determine user/group for container and directories
+  user = if cfg.user != null then cfg.user.name else "1000";
+  group = if cfg.user != null then cfg.user.name else "1000";
+  uid = if cfg.user != null then cfg.user.uid else 1000;
+  gid = if cfg.user != null then cfg.user.gid else 1000;
 in {
   options.modules.services.virtualization.containers.netdata = {
     enable = mkEnableOption "Enable Netdata Monitoring";
@@ -32,27 +38,33 @@ in {
 
     # User/Group configuration
     user = mkOption {
-      type = types.str;
-      default = "netdata";
-      description = "User to run Netdata as";
-    };
-
-    group = mkOption {
-      type = types.str;
-      default = "netdata";
-      description = "Group to run Netdata as";
-    };
-
-    uid = mkOption {
-      type = types.int;
-      description = "User ID for Netdata service";
-      example = 1002;
-    };
-
-    gid = mkOption {
-      type = types.int;
-      description = "Group ID for Netdata service";
-      example = 1002;
+      type = types.nullOr (types.submodule {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Name of the user to create and run Netdata as";
+            example = "netdata";
+          };
+          uid = mkOption {
+            type = types.int;
+            description = "User ID for Netdata service";
+            example = 1002;
+          };
+          gid = mkOption {
+            type = types.int;
+            description = "Group ID for Netdata service";
+            example = 1002;
+          };
+        };
+      });
+      default = null;
+      description =
+        "Custom user configuration. If null, uses default user 1000 without creating new users";
+      example = {
+        name = "netdata";
+        uid = 1002;
+        gid = 1002;
+      };
     };
 
     # Firewall configuration
@@ -193,24 +205,27 @@ in {
         "GPU monitoring requires either NVIDIA or AMD drivers to be enabled";
     }];
 
-    # Create system user and group for Netdata
-    users.users.${cfg.user} = {
-      isSystemUser = true;
-      group = cfg.group;
-      description = "Netdata monitoring service user";
-      uid = cfg.uid;
+    # Create system user and group for Netdata if custom user is specified
+    users.users = mkIf (cfg.user != null) {
+      ${cfg.user.name} = {
+        isSystemUser = true;
+        group = cfg.user.name;
+        description = "Netdata monitoring service user";
+        uid = cfg.user.uid;
+      };
     };
 
-    users.groups.${cfg.group} = { gid = cfg.gid; };
+    users.groups =
+      mkIf (cfg.user != null) { ${cfg.user.name} = { gid = cfg.user.gid; }; };
 
     # Create persistent directories for Netdata data and backup directories
     systemd.tmpfiles.rules =
       # Create directories for all bind mounts
-      (map (mount: "d ${mount.hostPath} 0755 ${cfg.user} ${cfg.group} -")
+      (map (mount: "d ${mount.hostPath} 0755 ${user} ${group} -")
         cfg.bindMounts) ++ mkBackupDirectories {
           backupConfig = cfg.backup;
-          user = cfg.user;
-          group = cfg.group;
+          user = user;
+          group = group;
         };
 
     # Define the Netdata container service
@@ -243,8 +258,8 @@ in {
       # Environment variables
       environment = {
         DOCKER_HOST = "unix:///var/run/docker.sock";
-        PUID = toString cfg.uid;
-        PGID = toString cfg.gid;
+        PUID = toString uid;
+        PGID = toString gid;
       } // (optionalAttrs (cfg.enableGpuMonitoring
         && (config.modules.drivers.nvidia.enable or false)) {
           # NVIDIA-specific environment variables
@@ -300,8 +315,8 @@ in {
       serviceName = "docker-netdata.service";
       dataPaths = map (mount: mount.hostPath)
         (filter (mount: mount.backup) cfg.bindMounts);
-      user = cfg.user;
-      group = cfg.group;
+      user = user;
+      group = group;
       backupConfig = cfg.backup;
     });
 
@@ -316,8 +331,8 @@ in {
       name = "netdata";
       dataPaths = map (mount: mount.hostPath)
         (filter (mount: mount.backup) cfg.bindMounts);
-      user = cfg.user;
-      group = cfg.group;
+      user = user;
+      group = group;
       backupConfig = cfg.backup;
     });
 
