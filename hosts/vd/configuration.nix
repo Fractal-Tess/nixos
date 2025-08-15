@@ -137,8 +137,11 @@ in {
       containers = {
         jellyfin = {
           enable = true;
-          uid = 1001;
-          gid = 1001;
+          user = {
+            name = "jellyfin";
+            uid = 1001;
+            gid = 1001;
+          };
           openFirewallPorts = true;
           enableHardwareAcceleration = true;
           imageTag = "2025072105";
@@ -169,8 +172,11 @@ in {
 
         netdata = {
           enable = true;
-          uid = 1002;
-          gid = 1002;
+          user = {
+            name = "netdata";
+            uid = 1002;
+            gid = 1002;
+          };
           openFirewallPorts = true;
           imageTag = "v2.6";
           bindMounts = [
@@ -196,8 +202,11 @@ in {
 
         portainer = {
           enable = true;
-          uid = 1003;
-          gid = 1003;
+          user = {
+            name = "portainer";
+            uid = 1003;
+            gid = 1003;
+          };
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -218,8 +227,7 @@ in {
 
         jackett = {
           enable = true;
-          uid = 1000;
-          gid = 1000;
+          user = null; # Uses default user 1000, no user creation
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -245,8 +253,7 @@ in {
 
         qbittorrent = {
           enable = true;
-          uid = 1000;
-          gid = 1000;
+          user = null; # Uses default user 1000, no user creation
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -267,8 +274,7 @@ in {
 
         sonarr = {
           enable = true;
-          uid = 1000;
-          gid = 1000;
+          user = null; # Uses default user 1000, no user creation
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -303,12 +309,12 @@ in {
     services.samba.mount = {
       enable = true;
       shares = [
-        {
-          mountPoint = "/mnt/blockade";
-          device = "//rp.netbird.cloud/blockade";
-          username = "smbuser";
-          password = "smbpass";
-        }
+        # {
+        #   mountPoint = "/mnt/blockade";
+        #   device = "//rp.netbird.cloud/blockade";
+        #   username = "smbuser";
+        #   password = "smbpass";
+        # }
         # {
         #   mountPoint = "/mnt/greystone";
         #   device = "//rp.netbird.cloud/greystone";

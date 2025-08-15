@@ -3,7 +3,13 @@
 
 with lib;
 
-let cfg = config.modules.services.virtualization.containers.jellyfin;
+let
+  cfg = config.modules.services.virtualization.containers.jellyfin;
+  # Determine user/group for container and directories
+  user = if cfg.user != null then cfg.user.name else "1000";
+  group = if cfg.user != null then cfg.user.name else "1000";
+  uid = if cfg.user != null then cfg.user.uid else 1000;
+  gid = if cfg.user != null then cfg.user.gid else 1000;
 in {
   options.modules.services.virtualization.containers.jellyfin = {
     enable = mkEnableOption "Enable Jellyfin Media Server";
@@ -46,27 +52,33 @@ in {
 
     # User/Group configuration
     user = mkOption {
-      type = types.str;
-      default = "jellyfin";
-      description = "User to run Jellyfin as";
-    };
-
-    group = mkOption {
-      type = types.str;
-      default = "jellyfin";
-      description = "Group to run Jellyfin as";
-    };
-
-    uid = mkOption {
-      type = types.int;
-      description = "User ID for Jellyfin service";
-      example = 1001;
-    };
-
-    gid = mkOption {
-      type = types.int;
-      description = "Group ID for Jellyfin service";
-      example = 1001;
+      type = types.nullOr (types.submodule {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Name of the user to create and run Jellyfin as";
+            example = "jellyfin";
+          };
+          uid = mkOption {
+            type = types.int;
+            description = "User ID for Jellyfin service";
+            example = 1001;
+          };
+          gid = mkOption {
+            type = types.int;
+            description = "Group ID for Jellyfin service";
+            example = 1001;
+          };
+        };
+      });
+      default = null;
+      description =
+        "Custom user configuration. If null, uses default user 1000 without creating new users";
+      example = {
+        name = "jellyfin";
+        uid = 1001;
+        gid = 1001;
+      };
     };
 
     # Firewall configuration
@@ -177,24 +189,27 @@ in {
         "Hardware acceleration requires either NVIDIA or AMD drivers to be enabled";
     }];
 
-    # Create system user and group for Jellyfin
-    users.users.${cfg.user} = {
-      isSystemUser = true;
-      group = cfg.group;
-      description = "Jellyfin service user";
-      uid = cfg.uid;
+    # Create system user and group for Jellyfin if custom user is specified
+    users.users = mkIf (cfg.user != null) {
+      ${cfg.user.name} = {
+        isSystemUser = true;
+        group = cfg.user.name;
+        description = "Jellyfin service user";
+        uid = cfg.user.uid;
+      };
     };
 
-    users.groups.${cfg.group} = { gid = cfg.gid; };
+    users.groups =
+      mkIf (cfg.user != null) { ${cfg.user.name} = { gid = cfg.user.gid; }; };
 
     # Create persistent directories for Jellyfin data
     systemd.tmpfiles.rules =
       # Create directories for all bind mounts
-      (map (mount: "d ${mount.hostPath} 0755 ${cfg.user} ${cfg.group} -")
+      (map (mount: "d ${mount.hostPath} 0755 ${user} ${group} -")
         cfg.bindMounts) ++ mkBackupDirectories {
           backupConfig = cfg.backup;
-          user = cfg.user;
-          group = cfg.group;
+          user = user;
+          group = group;
         };
 
     # Define the Jellyfin container service
@@ -221,8 +236,8 @@ in {
 
       # Environment variables for user/group permissions and GPU support
       environment = {
-        PUID = toString cfg.uid;
-        PGID = toString cfg.gid;
+        PUID = toString uid;
+        PGID = toString gid;
         TZ = config.time.timeZone or "UTC";
       } // (optionalAttrs (cfg.enableHardwareAcceleration
         && (config.modules.drivers.nvidia.enable or false)) {
@@ -266,8 +281,8 @@ in {
         # Get host paths from bind mounts that are marked for backup
         (map (mount: mount.hostPath)
           (filter (mount: mount.backup) cfg.bindMounts));
-      user = cfg.user;
-      group = cfg.group;
+      user = user;
+      group = group;
       backupConfig = cfg.backup;
     });
 
@@ -285,8 +300,8 @@ in {
           # Get host paths from bind mounts that are marked for backup
           (map (mount: mount.hostPath)
             (filter (mount: mount.backup) cfg.bindMounts));
-        user = cfg.user;
-        group = cfg.group;
+        user = user;
+        group = group;
         backupConfig = cfg.backup;
       });
 

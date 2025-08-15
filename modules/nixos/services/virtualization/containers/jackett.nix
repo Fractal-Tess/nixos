@@ -3,7 +3,13 @@
 
 with lib;
 
-let cfg = config.modules.services.virtualization.containers.jackett;
+let
+  cfg = config.modules.services.virtualization.containers.jackett;
+  # Determine user/group for container and directories
+  user = if cfg.user != null then cfg.user.name else "1000";
+  group = if cfg.user != null then cfg.user.name else "1000";
+  uid = if cfg.user != null then cfg.user.uid else 1000;
+  gid = if cfg.user != null then cfg.user.gid else 1000;
 in {
   options.modules.services.virtualization.containers.jackett = {
     enable = mkEnableOption "Enable Jackett Torrent Proxy Server";
@@ -32,27 +38,33 @@ in {
 
     # User/Group configuration
     user = mkOption {
-      type = types.str;
-      default = "jackett";
-      description = "User to run Jackett as";
-    };
-
-    group = mkOption {
-      type = types.str;
-      default = "jackett";
-      description = "Group to run Jackett as";
-    };
-
-    uid = mkOption {
-      type = types.int;
-      description = "User ID for Jackett service";
-      example = 1004;
-    };
-
-    gid = mkOption {
-      type = types.int;
-      description = "Group ID for Jackett service";
-      example = 1004;
+      type = types.nullOr (types.submodule {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Name of the user to create and run Jackett as";
+            example = "jackett";
+          };
+          uid = mkOption {
+            type = types.int;
+            description = "User ID for Jackett service";
+            example = 1004;
+          };
+          gid = mkOption {
+            type = types.int;
+            description = "Group ID for Jackett service";
+            example = 1004;
+          };
+        };
+      });
+      default = null;
+      description =
+        "Custom user configuration. If null, uses default user 1000 without creating new users";
+      example = {
+        name = "jackett";
+        uid = 1004;
+        gid = 1004;
+      };
     };
 
     # Firewall configuration
@@ -165,24 +177,27 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Create system user and group for Jackett only if UID > 1000
-    users.users.${cfg.user} = mkIf (cfg.uid > 1000) {
-      isSystemUser = true;
-      group = cfg.group;
-      description = "Jackett service user";
-      uid = cfg.uid;
+    # Create system user and group for Jackett if custom user is specified
+    users.users = mkIf (cfg.user != null) {
+      ${cfg.user.name} = {
+        isSystemUser = true;
+        group = cfg.user.name;
+        description = "Jackett service user";
+        uid = cfg.user.uid;
+      };
     };
 
-    users.groups.${cfg.group} = mkIf (cfg.gid > 1000) { gid = cfg.gid; };
+    users.groups =
+      mkIf (cfg.user != null) { ${cfg.user.name} = { gid = cfg.user.gid; }; };
 
     # Create persistent directories for Jackett data
     systemd.tmpfiles.rules =
       # Create directories for all bind mounts
-      (map (mount: "d ${mount.hostPath} 0755 ${cfg.user} ${cfg.group} -")
+      (map (mount: "d ${mount.hostPath} 0755 ${user} ${group} -")
         cfg.bindMounts) ++ mkBackupDirectories {
           backupConfig = cfg.backup;
-          user = cfg.user;
-          group = cfg.group;
+          user = user;
+          group = group;
         };
 
     # Define the Jackett container service
@@ -206,8 +221,8 @@ in {
 
       # Environment variables for user/group permissions and timezone
       environment = {
-        PUID = toString cfg.uid;
-        PGID = toString cfg.gid;
+        PUID = toString uid;
+        PGID = toString gid;
         TZ = config.time.timeZone or "UTC";
       };
 
@@ -232,8 +247,8 @@ in {
         # Get host paths from bind mounts that are marked for backup
         (map (mount: mount.hostPath)
           (filter (mount: mount.backup) cfg.bindMounts));
-      user = cfg.user;
-      group = cfg.group;
+      user = user;
+      group = group;
       backupConfig = cfg.backup;
     });
 
@@ -250,8 +265,8 @@ in {
         # Get host paths from bind mounts that are marked for backup
         (map (mount: mount.hostPath)
           (filter (mount: mount.backup) cfg.bindMounts));
-      user = cfg.user;
-      group = cfg.group;
+      user = user;
+      group = group;
       backupConfig = cfg.backup;
     });
 

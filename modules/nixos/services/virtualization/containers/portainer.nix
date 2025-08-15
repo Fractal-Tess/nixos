@@ -2,7 +2,13 @@
 , mkRestoreScript, ... }:
 
 with lib;
-let cfg = config.modules.services.virtualization.containers.portainer;
+let
+  cfg = config.modules.services.virtualization.containers.portainer;
+  # Determine user/group for container and directories
+  user = if cfg.user != null then cfg.user.name else "1000";
+  group = if cfg.user != null then cfg.user.name else "1000";
+  uid = if cfg.user != null then cfg.user.uid else 1000;
+  gid = if cfg.user != null then cfg.user.gid else 1000;
 in {
   options.modules.services.virtualization.containers.portainer = {
     enable = mkEnableOption "Enable Portainer";
@@ -23,16 +29,34 @@ in {
     };
 
     # User/Group configuration
-    uid = mkOption {
-      type = types.int;
-      description = "User ID for Portainer service";
-      example = 1003;
-    };
-
-    gid = mkOption {
-      type = types.int;
-      description = "Group ID for Portainer service";
-      example = 1003;
+    user = mkOption {
+      type = types.nullOr (types.submodule {
+        options = {
+          name = mkOption {
+            type = types.str;
+            description = "Name of the user to create and run Portainer as";
+            example = "portainer";
+          };
+          uid = mkOption {
+            type = types.int;
+            description = "User ID for Portainer service";
+            example = 1003;
+          };
+          gid = mkOption {
+            type = types.int;
+            description = "Group ID for Portainer service";
+            example = 1003;
+          };
+        };
+      });
+      default = null;
+      description =
+        "Custom user configuration. If null, uses default user 1000 without creating new users";
+      example = {
+        name = "portainer";
+        uid = 1003;
+        gid = 1003;
+      };
     };
 
     # Firewall configuration
@@ -144,24 +168,27 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Create system user and group for Portainer
-    users.users.portainer = {
-      isSystemUser = true;
-      group = "portainer";
-      description = "Portainer service user";
-      uid = cfg.uid;
+    # Create system user and group for Portainer if custom user is specified
+    users.users = mkIf (cfg.user != null) {
+      ${cfg.user.name} = {
+        isSystemUser = true;
+        group = cfg.user.name;
+        description = "Portainer service user";
+        uid = cfg.user.uid;
+      };
     };
 
-    users.groups.portainer = { gid = cfg.gid; };
+    users.groups =
+      mkIf (cfg.user != null) { ${cfg.user.name} = { gid = cfg.user.gid; }; };
 
     # Create persistent volume directory and backup directories
     systemd.tmpfiles.rules =
       # Create directories for all bind mounts
-      (map (mount: "d ${mount.hostPath} 0750 portainer portainer -")
+      (map (mount: "d ${mount.hostPath} 0750 ${user} ${group} -")
         cfg.bindMounts) ++ mkBackupDirectories {
           backupConfig = cfg.backup;
-          user = "portainer";
-          group = "portainer";
+          user = user;
+          group = group;
         };
 
     # Define the Portainer service
@@ -179,8 +206,8 @@ in {
         else
           "${mount.hostPath}:${mount.containerPath}") cfg.bindMounts;
       environment = {
-        PUID = toString cfg.uid;
-        PGID = toString cfg.gid;
+        PUID = toString uid;
+        PGID = toString gid;
       };
       extraOptions = [ ];
     };
@@ -192,8 +219,8 @@ in {
         serviceName = "docker-portainer.service";
         dataPaths = map (mount: mount.hostPath)
           (filter (mount: mount.backup) cfg.bindMounts);
-        user = "portainer";
-        group = "portainer";
+        user = user;
+        group = group;
         backupConfig = cfg.backup;
       });
 
@@ -209,8 +236,8 @@ in {
         name = "portainer";
         dataPaths = map (mount: mount.hostPath)
           (filter (mount: mount.backup) cfg.bindMounts);
-        user = "portainer";
-        group = "portainer";
+        user = user;
+        group = group;
         backupConfig = cfg.backup;
       });
 
