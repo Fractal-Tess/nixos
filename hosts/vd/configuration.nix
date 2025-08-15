@@ -244,6 +244,40 @@ in {
             paths = (map (dir: "${dir}/jackett") backupDirs);
           };
         };
+
+        qbittorrent = {
+          enable = true;
+          uid = 1005;
+          gid = 1005;
+          openFirewallPorts = true;
+          bindMounts = [
+            {
+              hostPath = "/var/lib/qbittorrent/config";
+              containerPath = "/config";
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/qbittorrent/downloads";
+              containerPath = "/downloads";
+              backup = false;
+            }
+            {
+              hostPath = "/var/lib/qbittorrent/torrents";
+              containerPath = "/torrents";
+              backup = false;
+            }
+            {
+              hostPath = "/mnt/vault/torrents";
+              containerPath = "/media/torrents";
+              readOnly = true;
+              backup = false;
+            }
+          ];
+          backup = {
+            enable = true;
+            paths = (map (dir: "${dir}/qbittorrent") backupDirs);
+          };
+        };
       };
     };
 
