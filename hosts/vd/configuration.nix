@@ -230,13 +230,11 @@ in {
             {
               hostPath = "/var/lib/jackett/downloads";
               containerPath = "/downloads";
-              backup = false;
             }
             {
               hostPath = "/mnt/vault/torrents";
               containerPath = "/media/torrents";
               readOnly = true;
-              backup = false;
             }
           ];
           backup = {
@@ -257,20 +255,8 @@ in {
               backup = true;
             }
             {
-              hostPath = "/mnt/vault/media/";
+              hostPath = "/mnt/vault/media";
               containerPath = "/downloads";
-              backup = false;
-            }
-            {
-              hostPath = "/var/lib/qbittorrent/torrents";
-              containerPath = "/torrents";
-              backup = false;
-            }
-            {
-              hostPath = "/mnt/vault/torrents";
-              containerPath = "/media/torrents";
-              readOnly = true;
-              backup = false;
             }
           ];
           backup = {
@@ -291,20 +277,12 @@ in {
               backup = true;
             }
             {
-              hostPath = "/var/lib/sonarr/downloads";
+              hostPath = "/mnt/vault/media";
               containerPath = "/downloads";
-              backup = false;
             }
             {
-              hostPath = "/var/lib/sonarr/tv";
+              hostPath = "/mnt/vault/media/tvshows";
               containerPath = "/tv";
-              backup = false;
-            }
-            {
-              hostPath = "/mnt/vault/tv";
-              containerPath = "/media/tv";
-              readOnly = true;
-              backup = false;
             }
           ];
           backup = {
