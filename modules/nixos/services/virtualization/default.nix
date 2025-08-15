@@ -9,5 +9,6 @@
     ./containers/netdata.nix
     ./containers/jackett.nix
     ./containers/qbittorrent.nix
+    ./containers/sonarr.nix
   ];
 }
