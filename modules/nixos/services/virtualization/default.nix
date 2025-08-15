@@ -10,5 +10,6 @@
     ./containers/jackett.nix
     ./containers/qbittorrent.nix
     ./containers/sonarr.nix
+    ./containers/jellyseerr.nix
   ];
 }
