@@ -218,8 +218,8 @@ in {
 
         jackett = {
           enable = true;
-          uid = 1004;
-          gid = 1004;
+          uid = 1000;
+          gid = 1000;
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -245,8 +245,8 @@ in {
 
         qbittorrent = {
           enable = true;
-          uid = 1005;
-          gid = 1005;
+          uid = 1000;
+          gid = 1000;
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -267,8 +267,8 @@ in {
 
         sonarr = {
           enable = true;
-          uid = 1006;
-          gid = 1006;
+          uid = 1000;
+          gid = 1000;
           openFirewallPorts = true;
           bindMounts = [
             {

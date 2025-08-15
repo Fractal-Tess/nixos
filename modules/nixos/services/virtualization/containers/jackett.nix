@@ -165,15 +165,15 @@ in {
   };
 
   config = mkIf cfg.enable {
-    # Create system user and group for Jackett
-    users.users.${cfg.user} = {
+    # Create system user and group for Jackett only if UID > 1000
+    users.users.${cfg.user} = mkIf (cfg.uid > 1000) {
       isSystemUser = true;
       group = cfg.group;
       description = "Jackett service user";
       uid = cfg.uid;
     };
 
-    users.groups.${cfg.group} = { gid = cfg.gid; };
+    users.groups.${cfg.group} = mkIf (cfg.gid > 1000) { gid = cfg.gid; };
 
     # Create persistent directories for Jackett data
     systemd.tmpfiles.rules =
