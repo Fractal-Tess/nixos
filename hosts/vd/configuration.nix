@@ -299,11 +299,6 @@ in {
 
         jellyseerr = {
           enable = true;
-          user = {
-            name = "jellyseerr";
-            uid = 1004;
-            gid = 1004;
-          };
           openFirewallPorts = true;
           bindMounts = [{
             hostPath = "/var/lib/jellyseerr/config";
