@@ -215,6 +215,35 @@ in {
             paths = (map (dir: "${dir}/portainer") backupDirs);
           };
         };
+
+        jackett = {
+          enable = true;
+          uid = 1004;
+          gid = 1004;
+          openFirewallPorts = true;
+          bindMounts = [
+            {
+              hostPath = "/var/lib/jackett/config";
+              containerPath = "/config";
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/jackett/downloads";
+              containerPath = "/downloads";
+              backup = false;
+            }
+            {
+              hostPath = "/mnt/vault/torrents";
+              containerPath = "/media/torrents";
+              readOnly = true;
+              backup = false;
+            }
+          ];
+          backup = {
+            enable = true;
+            paths = (map (dir: "${dir}/jackett") backupDirs);
+          };
+        };
       };
     };
 
