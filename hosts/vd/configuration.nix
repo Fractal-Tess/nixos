@@ -278,6 +278,40 @@ in {
             paths = (map (dir: "${dir}/qbittorrent") backupDirs);
           };
         };
+
+        sonarr = {
+          enable = true;
+          uid = 1006;
+          gid = 1006;
+          openFirewallPorts = true;
+          bindMounts = [
+            {
+              hostPath = "/var/lib/sonarr/config";
+              containerPath = "/config";
+              backup = true;
+            }
+            {
+              hostPath = "/var/lib/sonarr/downloads";
+              containerPath = "/downloads";
+              backup = false;
+            }
+            {
+              hostPath = "/var/lib/sonarr/tv";
+              containerPath = "/tv";
+              backup = false;
+            }
+            {
+              hostPath = "/mnt/vault/tv";
+              containerPath = "/media/tv";
+              readOnly = true;
+              backup = false;
+            }
+          ];
+          backup = {
+            enable = true;
+            paths = (map (dir: "${dir}/sonarr") backupDirs);
+          };
+        };
       };
     };
 
