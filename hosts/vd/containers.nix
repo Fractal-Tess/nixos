@@ -313,7 +313,7 @@ let
     autoStart = true;
 
     # Extra options
-    extraOptions = [ ];
+    extraOptions = [ "--network=host" ];
   };
 
   # Jellyseerr container configuration
@@ -340,7 +340,7 @@ let
     autoStart = true;
 
     # Extra options
-    extraOptions = [ ];
+    extraOptions = [ "--network=host" ];
   };
 
 in {
