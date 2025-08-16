@@ -27,7 +27,7 @@ let
         container = "/movies";
       }
       {
-        host = "/mnt/vault/media/downloads";
+        host = "/mnt/vault/media";
         container = "/downloads";
       }
     ];
@@ -298,7 +298,7 @@ let
         container = "/tv";
       }
       {
-        host = "/mnt/vault/media/downloads";
+        host = "/mnt/vault/media";
         container = "/downloads";
       }
     ];
