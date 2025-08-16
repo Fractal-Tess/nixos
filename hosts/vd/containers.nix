@@ -11,16 +11,12 @@ let
     name = "radarr";
     image = "lscr.io/linuxserver/radarr";
     tag = "latest";
-
-    # Port configuration - Radarr web UI runs on port 7878
     ports = [{
       host = 7878;
       container = 7878;
       protocol = "tcp";
       openfw = true;
     }];
-
-    # Volume mounts for Radarr
     volumes = [
       {
         host = "/var/lib/radarr/config";
@@ -31,23 +27,22 @@ let
         container = "/movies";
       }
       {
-        host = "/mnt/vault/media/active-torrents";
+        host = "/mnt/vault/media/downloads";
         container = "/downloads";
       }
     ];
-
-    # Environment variables for user permissions and timezone
     environment = {
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
     };
-
-    # Container behavior
+    user = {
+      uid = 1000;
+      gid = 1000;
+    };
     autoStart = true;
-
-    # Extra options for better container operation
-    extraOptions = [ "--security-opt=no-new-privileges:false" "--network=host" ];
+    # Extra options
+    extraOptions = [ "--network=host" ];
   };
 
   # Jellyfin container configuration
@@ -232,86 +227,91 @@ let
     extraOptions = [ "--network=host" ];
   };
 
-  # qBittorrent container configuration
+  # qBittorrent container
   qbittorrentContainer = ociLib.createOciContainer {
     name = "qbittorrent";
     image = "lscr.io/linuxserver/qbittorrent";
     tag = "latest";
-
-    # Port configuration - qBittorrent web UI runs on port 8080
-    ports = [{
-      host = 8080;
-      container = 8080;
-      protocol = "tcp";
-      openfw = true;
-    }];
-
-    # Volume mounts for qBittorrent
+    ports = [
+      {
+        host = 8080;
+        container = 8080;
+        protocol = "tcp";
+        openfw = true;
+      }
+      {
+        host = 6881;
+        container = 6881;
+        protocol = "tcp";
+        openfw = true;
+      }
+      {
+        host = 6881;
+        container = 6881;
+        protocol = "udp";
+        openfw = true;
+      }
+    ];
     volumes = [
       {
         host = "/var/lib/qbittorrent/config";
         container = "/config";
       }
       {
-        host = "/mnt/vault/media";
+        host = "/mnt/vault/media/downloads";
         container = "/downloads";
       }
     ];
-
-    # Environment variables for user permissions and timezone
     environment = {
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
+      WEBUI_PORT = "8080";
     };
-
-    # Container behavior
+    user = {
+      uid = 1000;
+      gid = 1000;
+    };
     autoStart = true;
-
     # Extra options
     extraOptions = [ "--network=host" ];
   };
 
-  # Sonarr container configuration
+  # Sonarr container
   sonarrContainer = ociLib.createOciContainer {
     name = "sonarr";
     image = "lscr.io/linuxserver/sonarr";
     tag = "latest";
-
-    # Port configuration - Sonarr web UI runs on port 8989
     ports = [{
       host = 8989;
       container = 8989;
       protocol = "tcp";
       openfw = true;
     }];
-
-    # Volume mounts for Sonarr
     volumes = [
       {
         host = "/var/lib/sonarr/config";
         container = "/config";
       }
       {
-        host = "/mnt/vault/media/active-torrents";
-        container = "/downloads";
-      }
-      {
-        host = "/mnt/vault/media/tvshows";
+        host = "/mnt/vault/media/tv";
         container = "/tv";
       }
+      {
+        host = "/mnt/vault/media/downloads";
+        container = "/downloads";
+      }
     ];
-
-    # Environment variables for user permissions and timezone
     environment = {
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
     };
-
-    # Container behavior
+    user = {
+      uid = 1000;
+      gid = 1000;
+    };
     autoStart = true;
-
     # Extra options
     extraOptions = [ "--network=host" ];
   };
@@ -343,8 +343,7 @@ let
     extraOptions = [ "--network=host" ];
   };
 
-in
-{
+in {
   # Combine all OCI container configurations
   virtualisation.oci-containers.containers =
     radarrContainer.virtualisation.oci-containers.containers
