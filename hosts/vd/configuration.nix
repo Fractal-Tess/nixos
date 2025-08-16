@@ -13,6 +13,9 @@ in {
 
     # NixOS modules
     ../../modules/nixos/default.nix
+
+    # Containers
+    ./containers.nix
   ];
 
   # DDC support
