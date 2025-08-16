@@ -133,166 +133,167 @@ in {
         devtools = true;
         nvidia = true;
       };
-      firecracker.enable = true;
+      # firecracker.enable = true;
       # kubernetes.enable = true;
-
-      # --- Containers   --- 
-      containers = {
-        jellyfin = {
-          enable = true;
-          openFirewallPorts = true;
-          enableHardwareAcceleration = true;
-          imageTag = "2025072105";
-          bindMounts = [
-            {
-              hostPath = "/var/lib/jellyfin/config";
-              containerPath = "/config";
-              backup = true;
-            }
-            {
-              hostPath = "/var/lib/jellyfin/cache";
-              containerPath = "/cache";
-            }
-            {
-              hostPath = "/mnt/vault/media";
-              containerPath = "/media";
-            }
-          ];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/jellyfin") backupDirs);
-          };
-        };
-
-        netdata = {
-          enable = true;
-          user = {
-            name = "netdata";
-            uid = 1002;
-            gid = 1002;
-          };
-          openFirewallPorts = true;
-          imageTag = "v2.6";
-          bindMounts = [
-            {
-              hostPath = "/var/lib/netdata/config";
-              containerPath = "/etc/netdata";
-              backup = true;
-            }
-            {
-              hostPath = "/var/lib/netdata/lib";
-              containerPath = "/var/lib/netdata";
-            }
-            {
-              hostPath = "/var/lib/netdata/cache";
-              containerPath = "/var/cache/netdata";
-            }
-          ];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/netdata") backupDirs);
-          };
-        };
-
-        portainer = {
-          enable = true;
-          user = {
-            name = "portainer";
-            uid = 1003;
-            gid = 1003;
-          };
-          openFirewallPorts = true;
-          bindMounts = [
-            {
-              hostPath = "/var/lib/portainer";
-              containerPath = "/data";
-              backup = true;
-            }
-            {
-              hostPath = "/run/user/1000/docker.sock";
-              containerPath = "/var/run/docker.sock";
-            }
-          ];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/portainer") backupDirs);
-          };
-        };
-
-        jackett = {
-          enable = true;
-          openFirewallPorts = true;
-          bindMounts = [{
-            hostPath = "/var/lib/jackett/config";
-            containerPath = "/config";
-            backup = true;
-          }];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/jackett") backupDirs);
-          };
-        };
-
-        qbittorrent = {
-          enable = true;
-          openFirewallPorts = true;
-          bindMounts = [
-            {
-              hostPath = "/var/lib/qbittorrent/config";
-              containerPath = "/config";
-              backup = true;
-            }
-            {
-              hostPath = "/mnt/vault/media";
-              containerPath = "/downloads";
-            }
-          ];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/qbittorrent") backupDirs);
-          };
-        };
-
-        sonarr = {
-          enable = true;
-          user = null; # Uses default user 1000, no user creation
-          openFirewallPorts = true;
-          bindMounts = [
-            {
-              hostPath = "/var/lib/sonarr/config";
-              containerPath = "/config";
-              backup = true;
-            }
-            {
-              hostPath = "/mnt/vault/media/active-torrents";
-              containerPath = "/downloads";
-            }
-            {
-              hostPath = "/mnt/vault/media/tvshows";
-              containerPath = "/tv";
-            }
-          ];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/sonarr") backupDirs);
-          };
-        };
-
-        jellyseerr = {
-          enable = true;
-          openFirewallPorts = true;
-          bindMounts = [{
-            hostPath = "/var/lib/jellyseerr/config";
-            containerPath = "/app/config";
-            backup = true;
-          }];
-          backup = {
-            enable = true;
-            paths = (map (dir: "${dir}/jellyseerr") backupDirs);
-          };
-        };
-      };
     };
+
+    # --- Containers   --- 
+    #   containers = {
+    #     jellyfin = {
+    #       enable = true;
+    #       openFirewallPorts = true;
+    #       enableHardwareAcceleration = true;
+    #       imageTag = "2025072105";
+    #       bindMounts = [
+    #         {
+    #           hostPath = "/var/lib/jellyfin/config";
+    #           containerPath = "/config";
+    #           backup = true;
+    #         }
+    #         {
+    #           hostPath = "/var/lib/jellyfin/cache";
+    #           containerPath = "/cache";
+    #         }
+    #         {
+    #           hostPath = "/mnt/vault/media";
+    #           containerPath = "/media";
+    #         }
+    #       ];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/jellyfin") backupDirs);
+    #       };
+    #     };
+
+    #     netdata = {
+    #       enable = true;
+    #       user = {
+    #         name = "netdata";
+    #         uid = 1002;
+    #         gid = 1002;
+    #       };
+    #       openFirewallPorts = true;
+    #       imageTag = "v2.6";
+    #       bindMounts = [
+    #         {
+    #           hostPath = "/var/lib/netdata/config";
+    #           containerPath = "/etc/netdata";
+    #           backup = true;
+    #         }
+    #         {
+    #           hostPath = "/var/lib/netdata/lib";
+    #           containerPath = "/var/lib/netdata";
+    #         }
+    #         {
+    #           hostPath = "/var/lib/netdata/cache";
+    #           containerPath = "/var/cache/netdata";
+    #         }
+    #       ];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/netdata") backupDirs);
+    #       };
+    #     };
+
+    #     portainer = {
+    #       enable = true;
+    #       user = {
+    #         name = "portainer";
+    #         uid = 1003;
+    #         gid = 1003;
+    #       };
+    #       openFirewallPorts = true;
+    #       bindMounts = [
+    #         {
+    #           hostPath = "/var/lib/portainer";
+    #           containerPath = "/data";
+    #           backup = true;
+    #         }
+    #         {
+    #           hostPath = "/run/user/1000/docker.sock";
+    #           containerPath = "/var/run/docker.sock";
+    #         }
+    #       ];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/portainer") backupDirs);
+    #       };
+    #     };
+
+    #     jackett = {
+    #       enable = true;
+    #       openFirewallPorts = true;
+    #       bindMounts = [{
+    #         hostPath = "/var/lib/jackett/config";
+    #         containerPath = "/config";
+    #         backup = true;
+    #       }];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/jackett") backupDirs);
+    #       };
+    #     };
+
+    #     qbittorrent = {
+    #       enable = true;
+    #       openFirewallPorts = true;
+    #       bindMounts = [
+    #         {
+    #           hostPath = "/var/lib/qbittorrent/config";
+    #           containerPath = "/config";
+    #           backup = true;
+    #         }
+    #         {
+    #           hostPath = "/mnt/vault/media";
+    #           containerPath = "/downloads";
+    #         }
+    #       ];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/qbittorrent") backupDirs);
+    #       };
+    #     };
+
+    #     sonarr = {
+    #       enable = true;
+    #       user = null; # Uses default user 1000, no user creation
+    #       openFirewallPorts = true;
+    #       bindMounts = [
+    #         {
+    #           hostPath = "/var/lib/sonarr/config";
+    #           containerPath = "/config";
+    #           backup = true;
+    #         }
+    #         {
+    #           hostPath = "/mnt/vault/media/active-torrents";
+    #           containerPath = "/downloads";
+    #         }
+    #         {
+    #           hostPath = "/mnt/vault/media/tvshows";
+    #           containerPath = "/tv";
+    #         }
+    #       ];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/sonarr") backupDirs);
+    #       };
+    #     };
+
+    #     jellyseerr = {
+    #       enable = true;
+    #       openFirewallPorts = true;
+    #       bindMounts = [{
+    #         hostPath = "/var/lib/jellyseerr/config";
+    #         containerPath = "/app/config";
+    #         backup = true;
+    #       }];
+    #       backup = {
+    #         enable = true;
+    #         paths = (map (dir: "${dir}/jellyseerr") backupDirs);
+    #       };
+    #     };
+    #   };
+    # };
 
     # ----- SSHD -----
     services.sshd.enable = true;
