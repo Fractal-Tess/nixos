@@ -9,7 +9,7 @@ in ociLib.createOciContainer {
   name = "nginx";
   image = "nginx";
 
-  ports = ociLib.mkPortBinds [ "8080:80" ];
+  ports = ociLib.mkPortBinds [ "8089:80" ];
 
   volumes = ociLib.mkBindMounts [ ];
 }
