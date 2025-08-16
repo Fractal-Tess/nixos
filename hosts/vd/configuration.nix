@@ -218,24 +218,12 @@ in {
 
         jackett = {
           enable = true;
-          user = null; # Uses default user 1000, no user creation
           openFirewallPorts = true;
-          bindMounts = [
-            {
-              hostPath = "/var/lib/jackett/config";
-              containerPath = "/config";
-              backup = true;
-            }
-            {
-              hostPath = "/var/lib/jackett/downloads";
-              containerPath = "/downloads";
-            }
-            {
-              hostPath = "/mnt/vault/torrents";
-              containerPath = "/media/torrents";
-              readOnly = true;
-            }
-          ];
+          bindMounts = [{
+            hostPath = "/var/lib/jackett/config";
+            containerPath = "/config";
+            backup = true;
+          }];
           backup = {
             enable = true;
             paths = (map (dir: "${dir}/jackett") backupDirs);
@@ -244,7 +232,6 @@ in {
 
         qbittorrent = {
           enable = true;
-          user = null; # Uses default user 1000, no user creation
           openFirewallPorts = true;
           bindMounts = [
             {
@@ -274,7 +261,7 @@ in {
               backup = true;
             }
             {
-              hostPath = "/mnt/vault/media";
+              hostPath = "/mnt/vault/media/active-torrents";
               containerPath = "/downloads";
             }
             {
