@@ -343,7 +343,90 @@ let
     extraOptions = [ ];
   };
 
-  # Merge all container configurations
-in radarrContainer // jellyfinContainer // netdataContainer
-// portainerContainer // jackettContainer // qbittorrentContainer
-// sonarrContainer // jellyseerrContainer
+in {
+  # Combine all OCI container configurations
+  virtualisation.oci-containers.containers =
+    radarrContainer.virtualisation.oci-containers.containers
+    // jellyfinContainer.virtualisation.oci-containers.containers
+    // netdataContainer.virtualisation.oci-containers.containers
+    // portainerContainer.virtualisation.oci-containers.containers
+    // jackettContainer.virtualisation.oci-containers.containers
+    // qbittorrentContainer.virtualisation.oci-containers.containers
+    // sonarrContainer.virtualisation.oci-containers.containers
+    // jellyseerrContainer.virtualisation.oci-containers.containers;
+
+  # Combine all firewall rules
+  networking.firewall = {
+    allowedTCPPorts =
+      (if radarrContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (radarrContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if jellyfinContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (jellyfinContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if netdataContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (netdataContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if portainerContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (portainerContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if jackettContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (jackettContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if qbittorrentContainer.networking.firewall.allowedTCPPorts
+      ? _type then
+        [ ]
+      else
+        (qbittorrentContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if sonarrContainer.networking.firewall.allowedTCPPorts ? _type then
+        [ ]
+      else
+        (sonarrContainer.networking.firewall.allowedTCPPorts or [ ]))
+      ++ (if jellyseerrContainer.networking.firewall.allowedTCPPorts
+      ? _type then
+        [ ]
+      else
+        (jellyseerrContainer.networking.firewall.allowedTCPPorts or [ ]));
+
+    allowedUDPPorts =
+      (if radarrContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (radarrContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if jellyfinContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (jellyfinContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if netdataContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (netdataContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if portainerContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (portainerContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if jackettContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (jackettContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if qbittorrentContainer.networking.firewall.allowedUDPPorts
+      ? _type then
+        [ ]
+      else
+        (qbittorrentContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if sonarrContainer.networking.firewall.allowedUDPPorts ? _type then
+        [ ]
+      else
+        (sonarrContainer.networking.firewall.allowedUDPPorts or [ ]))
+      ++ (if jellyseerrContainer.networking.firewall.allowedUDPPorts
+      ? _type then
+        [ ]
+      else
+        (jellyseerrContainer.networking.firewall.allowedUDPPorts or [ ]));
+  };
+}
