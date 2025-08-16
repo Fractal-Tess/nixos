@@ -355,78 +355,28 @@ in {
     // sonarrContainer.virtualisation.oci-containers.containers
     // jellyseerrContainer.virtualisation.oci-containers.containers;
 
-  # Combine all firewall rules
+  # Firewall configuration - directly specify the ports that should be opened
+  # Based on the container configurations with openfw = true
   networking.firewall = {
-    allowedTCPPorts =
-      (if radarrContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (radarrContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if jellyfinContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (jellyfinContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if netdataContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (netdataContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if portainerContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (portainerContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if jackettContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (jackettContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if qbittorrentContainer.networking.firewall.allowedTCPPorts
-      ? _type then
-        [ ]
-      else
-        (qbittorrentContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if sonarrContainer.networking.firewall.allowedTCPPorts ? _type then
-        [ ]
-      else
-        (sonarrContainer.networking.firewall.allowedTCPPorts or [ ]))
-      ++ (if jellyseerrContainer.networking.firewall.allowedTCPPorts
-      ? _type then
-        [ ]
-      else
-        (jellyseerrContainer.networking.firewall.allowedTCPPorts or [ ]));
+    # TCP ports for web UIs and services
+    allowedTCPPorts = [
+      7878 # Radarr
+      8096 # Jellyfin web UI
+      8920 # Jellyfin streaming
+      19999 # Netdata
+      9000 # Portainer
+      9117 # Jackett
+      8080 # qBittorrent web UI
+      6881 # qBittorrent BitTorrent
+      8989 # Sonarr
+      5055 # Jellyseerr
+    ];
 
-    allowedUDPPorts =
-      (if radarrContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (radarrContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if jellyfinContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (jellyfinContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if netdataContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (netdataContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if portainerContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (portainerContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if jackettContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (jackettContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if qbittorrentContainer.networking.firewall.allowedUDPPorts
-      ? _type then
-        [ ]
-      else
-        (qbittorrentContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if sonarrContainer.networking.firewall.allowedUDPPorts ? _type then
-        [ ]
-      else
-        (sonarrContainer.networking.firewall.allowedUDPPorts or [ ]))
-      ++ (if jellyseerrContainer.networking.firewall.allowedUDPPorts
-      ? _type then
-        [ ]
-      else
-        (jellyseerrContainer.networking.firewall.allowedUDPPorts or [ ]));
+    # UDP ports for discovery and streaming
+    allowedUDPPorts = [
+      7359 # Jellyfin discovery
+      1900 # Jellyfin SSDP
+      6881 # qBittorrent BitTorrent
+    ];
   };
 }
