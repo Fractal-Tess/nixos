@@ -4,12 +4,5 @@
     ./firecracker.nix
     ./kubernetes.nix
     ./podman.nix
-    ./containers/portainer.nix
-    ./containers/jellyfin.nix
-    ./containers/netdata.nix
-    ./containers/jackett.nix
-    ./containers/qbittorrent.nix
-    ./containers/sonarr.nix
-    ./containers/jellyseerr.nix
   ];
 }
