@@ -294,7 +294,7 @@ let
         container = "/config";
       }
       {
-        host = "/mnt/vault/media/tv";
+        host = "/mnt/vault/media/tvshows";
         container = "/tv";
       }
       {
