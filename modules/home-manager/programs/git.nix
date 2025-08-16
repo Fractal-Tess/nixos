@@ -1,7 +1,7 @@
 { config, ... }: {
   # git signing
   home.file.".ssh/allowed_signers".text =
-    "* ${builtins.readFile /home/${config.home.username}/.ssh/id_ed25519.pub}";
+    "* ${builtins.readFile ~/.ssh/id_ed25519.pub}";
 
   programs.git = {
     enable = true;
