@@ -137,11 +137,6 @@ in {
       containers = {
         jellyfin = {
           enable = true;
-          user = {
-            name = "jellyfin";
-            uid = 1001;
-            gid = 1001;
-          };
           openFirewallPorts = true;
           enableHardwareAcceleration = true;
           imageTag = "2025072105";
@@ -150,10 +145,6 @@ in {
               hostPath = "/var/lib/jellyfin/config";
               containerPath = "/config";
               backup = true;
-            }
-            {
-              hostPath = "/var/lib/jellyfin/log";
-              containerPath = "/log";
             }
             {
               hostPath = "/var/lib/jellyfin/cache";
