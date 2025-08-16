@@ -94,9 +94,6 @@ in {
   #   environment: Attribute set (optional, default: {}) - Environment variables to pass to the container
   #   cmd: List (optional, default: []) - Command to run when the container starts
   #   extraOptions: List (optional, default: []) - Additional container options (e.g., --network, --device, --security-opt)
-  #   user: Attribute set (optional, default: { uid = 1000; gid = 1000; }) - User configuration for the container
-  #     uid: Integer (optional, default: 1000) - User ID to run the container as
-  #     gid: Integer (optional, default: 1000) - Group ID to run the container as
   #   autoStart: Boolean (optional, default: true) - Whether to automatically start the container
   #   ...: Additional attributes are passed through to the container configuration
   #
@@ -127,13 +124,9 @@ in {
   #       "--security-opt=no-new-privileges:false"
   #       "--device=/dev/dri:/dev/dri"
   #     ];
-  #     user = { uid = 1001; gid = 1001; };
   #   }
   createOciContainer = { name, image, tag ? "latest", ports ? [ ], volumes ? [ ]
-    , environment ? { }, cmd ? [ ], extraOptions ? [ ], user ? {
-      uid = 1000;
-      gid = 1000;
-    }, autoStart ? true, ... }:
+    , environment ? { }, cmd ? [ ], extraOptions ? [ ], autoStart ? true, ... }:
     let
       portConfig = mkPortBinds ports;
       hasFirewallPorts = portConfig.firewallPorts != [ ];
@@ -155,7 +148,6 @@ in {
         volumes = mkBindMounts volumes;
         environment = environment;
         extraOptions = extraOptions;
-        user = "${toString user.uid}:${toString user.gid}";
         autoStart = autoStart;
       };
 
