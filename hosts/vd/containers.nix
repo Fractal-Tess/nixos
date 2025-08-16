@@ -47,7 +47,7 @@ let
     autoStart = true;
 
     # Extra options for better container operation
-    extraOptions = [ "--security-opt=no-new-privileges:false" ];
+    extraOptions = [ "--security-opt=no-new-privileges:false" "--network=host" ];
   };
 
   # Jellyfin container configuration
@@ -343,7 +343,8 @@ let
     extraOptions = [ "--network=host" ];
   };
 
-in {
+in
+{
   # Combine all OCI container configurations
   virtualisation.oci-containers.containers =
     radarrContainer.virtualisation.oci-containers.containers
