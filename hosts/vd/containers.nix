@@ -43,12 +43,6 @@ let
       TZ = "UTC";
     };
 
-    # User configuration - run as non-root user
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-
     # Container behavior
     autoStart = true;
 
@@ -82,12 +76,6 @@ let
         options = "ro";
       }
     ];
-
-    # User configuration - run as non-root user
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
 
     # Container behavior
     autoStart = true;
