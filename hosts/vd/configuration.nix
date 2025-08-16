@@ -66,7 +66,7 @@ in {
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [ crush ];
   programs.steam = {
     enable = true;
     # Required for managing Wine prefixes
