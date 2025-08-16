@@ -229,7 +229,7 @@ let
     autoStart = true;
 
     # Extra options
-    extraOptions = [ ];
+    extraOptions = [ "--network=host" ];
   };
 
   # qBittorrent container configuration
@@ -269,7 +269,7 @@ let
     autoStart = true;
 
     # Extra options
-    extraOptions = [ ];
+    extraOptions = [ "--network=host" ];
   };
 
   # Sonarr container configuration
