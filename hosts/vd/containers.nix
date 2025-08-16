@@ -85,4 +85,4 @@ let
   };
 
   # Merge both container configurations
-in radarrContainer // nginxContainer
+in nginxContainer // radarrContainer
