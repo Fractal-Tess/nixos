@@ -1,7 +1,7 @@
 { config, ... }: {
   # git signing
   home.file.".ssh/allowed_signers".text =
-    "* ${builtins.readFile ~/.ssh/id_ed25519.pub}";
+    "* ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI..."; # Replace with actual key content
 
   programs.git = {
     enable = true;
@@ -23,8 +23,8 @@
       init.defaultBranch = "main";
       commit.gpgsign = true;
       gpg.format = "ssh";
-      user.signingkey = "~/.ssh/id_ed25519.pub";
-      gpg.ssh.allowedSignersFile = "~/.ssh/allowed_signers";
+      user.signingkey = "/home/fractal-tess/.ssh/id_ed25519.pub";
+      gpg.ssh.allowedSignersFile = "/home/fractal-tess/.ssh/allowed_signers";
     };
 
     userEmail = "vgfractal@gmail.com";
