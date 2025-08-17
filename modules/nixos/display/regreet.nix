@@ -1,4 +1,4 @@
-{ config, lib, username, ... }:
+{ config, lib, pkgs, username, ... }:
 
 with lib;
 
@@ -28,6 +28,7 @@ in {
         "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
     }];
 
+    # Enable greetd service
     services.greetd = {
       enable = true;
       settings = mkIf cfg.autoLogin {
@@ -47,6 +48,9 @@ in {
       # Enable regreet
       enable = true;
 
+      # Use the latest regreet package
+      package = pkgs.regreet;
+      
       cageArgs = [ "-m" "last" ];
 
       extraCss = ''
@@ -101,12 +105,22 @@ in {
           reboot = [ "systemctl" "reboot" ];
           poweroff = [ "systemctl" "poweroff" ];
         };
-        appearance = { greeting_msg = "Welcome back, ${username}!"; };
+        appearance = { 
+          greeting_msg = "Welcome back, ${username}!"; 
+        };
         "widget.clock" = {
           format = "%a %H:%M";
           resolution = "500ms";
           timezone = config.time.timeZone;
           label_width = 150;
+        };
+        # Additional modern regreet settings
+        "widget.power" = {
+          show_suspend = true;
+          show_hibernate = true;
+        };
+        "widget.session" = {
+          show_remember = true;
         };
       };
     };
