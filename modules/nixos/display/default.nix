@@ -1,3 +1,1 @@
-{ ... }: {
-  imports = [ ./hyprland.nix ./graphics.nix ./regreet.nix ./waybar.nix ];
-}
+{ ... }: { imports = [ ./hyprland.nix ./regreet.nix ./waybar.nix ]; }
