@@ -315,6 +315,11 @@
     "custom/smallspacer": {
       "format": " "
     },
+    "custom/spacer": {
+      "format": "  ",
+      "interval": "once",
+      "tooltip": false
+    },
     "custom/sensors": {
       "interval": 2,
       "format": "{text}",
