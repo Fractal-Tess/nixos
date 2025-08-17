@@ -37,8 +37,8 @@ in {
           user = username;
         };
         default_session = {
-          command = "${config.programs.regreet.package}/bin/regreet";
-          user = "greeter";
+          command = "${config.programs.hyprland.package}/bin/Hyprland";
+          user = username;
         };
       };
     };
@@ -54,48 +54,214 @@ in {
       cageArgs = [ "-m" "last" ];
 
       extraCss = ''
-        /* Base dark theme variables */
+        /* Dark theme with main color #258ECE */
         :root {
-          --background-color: #121212;
-          --text-color: #eee;
-          --primary-color: #809fff;
-          --font-family: 'Noto Sans', sans-serif;
+          --background-color: #0a0a0a;
+          --surface-color: #1a1a1a;
+          --text-color: #ffffff;
+          --text-secondary: #b0b0b0;
+          --primary-color: #258ECE;
+          --primary-hover: #1a6b9e;
+          --accent-color: #3a9ee0;
+          --error-color: #ff6b6b;
+          --success-color: #51cf66;
+          --border-color: #333333;
+          --font-family: 'Inter', 'Noto Sans', sans-serif;
           --font-size: 16px;
+          --border-radius: 8px;
+          --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
         }
 
-        /* Apply dark theme to Regree container */
-        .regreet-dark-theme {
-          background-color: var(--background-color);
+        /* Global dark theme application */
+        * {
+          color-scheme: dark;
+        }
+
+        /* Main container styling */
+        .regreet-container {
+          background: linear-gradient(135deg, var(--background-color) 0%, var(--surface-color) 100%);
           color: var(--text-color);
           font-family: var(--font-family);
           font-size: var(--font-size);
         }
 
-        /* Style Regreet internal parts */
-        regreet-component::part(header),
-        regreet-component::part(footer),
-        regreet-component::part(content) {
-          background-color: var(--background-color);
+        /* Header styling */
+        regreet-header {
+          background-color: var(--surface-color);
+          border-bottom: 1px solid var(--border-color);
+          box-shadow: var(--shadow);
+        }
+
+        /* Clock widget styling */
+        .clock-widget {
+          background-color: var(--surface-color);
+          color: var(--primary-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius);
+          padding: 12px 16px;
+          box-shadow: var(--shadow);
+        }
+
+        /* User selection styling */
+        .user-selector {
+          background-color: var(--surface-color);
+          border: 2px solid var(--border-color);
+          border-radius: var(--border-radius);
+          transition: all 0.2s ease;
+        }
+
+        .user-selector:hover {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.1);
+        }
+
+        .user-selector:focus {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
+        }
+
+        /* Session selector styling */
+        .session-selector {
+          background-color: var(--surface-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius);
           color: var(--text-color);
         }
 
-        /* Links and buttons */
-        .regreet-dark-theme a {
-          color: var(--primary-color);
-          text-decoration: none;
+        .session-selector:hover {
+          border-color: var(--primary-color);
         }
 
-        .regreet-dark-theme button {
+        /* Password entry styling */
+        .password-entry {
+          background-color: var(--surface-color);
+          border: 2px solid var(--border-color);
+          border-radius: var(--border-radius);
+          color: var(--text-color);
+          padding: 12px 16px;
+          transition: all 0.2s ease;
+        }
+
+        .password-entry:focus {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
+          outline: none;
+        }
+
+        /* Button styling */
+        button {
           background-color: var(--primary-color);
-          color: var(--background-color);
+          color: white;
           border: none;
-          padding: 0.5em 1em;
-          border-radius: 4px;
+          border-radius: var(--border-radius);
+          padding: 12px 24px;
+          font-weight: 600;
           cursor: pointer;
+          transition: all 0.2s ease;
+          box-shadow: var(--shadow);
+        }
+
+        button:hover {
+          background-color: var(--primary-hover);
+          transform: translateY(-1px);
+          box-shadow: 0 6px 12px rgba(37, 142, 206, 0.3);
+        }
+
+        button:active {
+          transform: translateY(0);
+        }
+
+        /* Power button styling */
+        .power-button {
+          background-color: var(--surface-color);
+          color: var(--text-color);
+          border: 1px solid var(--border-color);
+        }
+
+        .power-button:hover {
+          background-color: var(--error-color);
+          color: white;
+          border-color: var(--error-color);
+        }
+
+        /* Greeting message styling */
+        .greeting-message {
+          color: var(--primary-color);
+          font-size: 1.2em;
+          font-weight: 600;
+          text-align: center;
+          margin: 20px 0;
+        }
+
+        /* Error message styling */
+        .error-message {
+          background-color: rgba(255, 107, 107, 0.1);
+          color: var(--error-color);
+          border: 1px solid var(--error-color);
+          border-radius: var(--border-radius);
+          padding: 12px 16px;
+          margin: 16px 0;
+        }
+
+        /* Success message styling */
+        .success-message {
+          background-color: rgba(81, 207, 102, 0.1);
+          color: var(--success-color);
+          border: 1px solid var(--success-color);
+          border-radius: var(--border-radius);
+          padding: 12px 16px;
+          margin: 16px 0;
+        }
+
+        /* Dropdown styling */
+        dropdown {
+          background-color: var(--surface-color);
+          border: 1px solid var(--border-color);
+          border-radius: var(--border-radius);
+          box-shadow: var(--shadow);
+        }
+
+        dropdown item {
+          color: var(--text-color);
+          padding: 8px 16px;
+        }
+
+        dropdown item:hover {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        /* Input field styling */
+        entry {
+          background-color: var(--surface-color);
+          border: 2px solid var(--border-color);
+          border-radius: var(--border-radius);
+          color: var(--text-color);
+          padding: 12px 16px;
+          transition: all 0.2s ease;
+        }
+
+        entry:focus {
+          border-color: var(--primary-color);
+          box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
+        }
+
+        /* Scrollbar styling */
+        scrollbar {
+          background-color: var(--surface-color);
+        }
+
+        scrollbar slider {
+          background-color: var(--primary-color);
+          border-radius: 4px;
+        }
+
+        scrollbar slider:hover {
+          background-color: var(--primary-hover);
         }
       '';
 
-      # Set the session to Hyprland
+      # Set the session to Hyprland and configure dark theme
       settings = {
         background = {
           path = "/var/lib/regreet-backgrounds/1.jpg";
@@ -105,7 +271,13 @@ in {
           reboot = [ "systemctl" "reboot" ];
           poweroff = [ "systemctl" "poweroff" ];
         };
-        appearance = { greeting_msg = "Welcome back, ${username}!"; };
+        appearance = {
+          greeting_msg = "Welcome back, ${username}!";
+          theme = "dark";
+          icon_theme = "Adwaita";
+          cursor_theme = "Adwaita";
+          font = "Inter 16";
+        };
         "widget.clock" = {
           format = "%a %H:%M";
           resolution = "500ms";
@@ -117,7 +289,16 @@ in {
           show_suspend = true;
           show_hibernate = true;
         };
-        "widget.session" = { show_remember = true; };
+        "widget.session" = {
+          show_remember = true;
+          default_session = "hyprland";
+        };
+        # Environment variables for sessions
+        env = {
+          GTK_THEME = "Adwaita:dark";
+          XDG_CURRENT_DESKTOP = "Hyprland";
+          XDG_SESSION_TYPE = "wayland";
+        };
       };
     };
 
@@ -125,6 +306,7 @@ in {
     systemd.tmpfiles.rules = mkIf cfg.symlinkBackgrounds
       [ "d /var/lib/regreet-backgrounds 0755 root root -" ];
 
+    # Symlink backgrounds to /var/lib/regreet-backgrounds so it's accessible to regreet
     system.activationScripts.regreetBackgrounds = mkIf cfg.symlinkBackgrounds ''
       mkdir -p /var/lib/regreet-backgrounds
       chown -R fractal-tess:users /var/lib/regreet-backgrounds
