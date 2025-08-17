@@ -260,12 +260,7 @@
       "tooltip": false
     },
     "custom/padd": {
-      "format": "  ",
-      "interval": "once",
-      "tooltip": false
-    },
-    "custom/spacer": {
-      "format": "  ",
+      "format": " ",
       "interval": "once",
       "tooltip": false
     }
