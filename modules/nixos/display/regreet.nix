@@ -50,7 +50,7 @@ in {
 
       # Use the latest regreet package
       package = pkgs.regreet;
-      
+
       cageArgs = [ "-m" "last" ];
 
       extraCss = ''
@@ -105,9 +105,7 @@ in {
           reboot = [ "systemctl" "reboot" ];
           poweroff = [ "systemctl" "poweroff" ];
         };
-        appearance = { 
-          greeting_msg = "Welcome back, ${username}!"; 
-        };
+        appearance = { greeting_msg = "Welcome back, ${username}!"; };
         "widget.clock" = {
           format = "%a %H:%M";
           resolution = "500ms";
@@ -119,9 +117,7 @@ in {
           show_suspend = true;
           show_hibernate = true;
         };
-        "widget.session" = {
-          show_remember = true;
-        };
+        "widget.session" = { show_remember = true; };
       };
     };
 
