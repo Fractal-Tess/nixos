@@ -1,8 +1,10 @@
-{ config, lib, pkgs, ... }:
+{ config, lib, pkgs, username, inputs, ... }:
 
 with lib;
-
-let cfg = config.modules.display.hyprland;
+let
+  pkgs-unstable =
+    inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+  cfg = config.modules.display.hyprland;
 in {
   # Option to enable or disable Hyprland
   options.modules.display.hyprland.enable = mkEnableOption "Hyprland";
@@ -11,13 +13,30 @@ in {
     # Enable Hyprland compositor
     programs.hyprland = {
       enable = true;
-      # Enable X11 compatibility for legacy apps
+
+      package =
+        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
+      portalPackage =
+        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+
+      # Enable Xwayland
       xwayland.enable = true;
       # Enable UWSM
       withUWSM = true;
     };
+    services.getty.autologinUser = username;
 
+    hardware.graphics = {
+      package = pkgs-unstable.mesa;
+
+      # if you also want 32-bit support (e.g for Steam)
+      enable32Bit = true;
+      package32 = pkgs-unstable.pkgsi686Linux.mesa;
+    };
+
+    # Enable Hyprlock
     programs.hyprlock.enable = true;
+    # Enable Hypridle
     services.hypridle.enable = true;
 
     # Enable XDG Desktop Portal for sandboxed/Wayland apps

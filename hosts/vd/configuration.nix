@@ -98,7 +98,7 @@ in {
 
       # ----- ReGreet -----
       regreet = {
-        enable = true;
+        enable = false;
         symlinkBackgrounds = true;
       };
     };
