@@ -36,10 +36,6 @@ in {
           command = "${config.programs.hyprland.package}/bin/Hyprland";
           user = username;
         };
-        default_session = {
-          command = "${config.programs.hyprland.package}/bin/Hyprland";
-          user = username;
-        };
       };
     };
 
@@ -47,9 +43,6 @@ in {
     programs.regreet = {
       # Enable regreet
       enable = true;
-
-      # Use the latest regreet package
-      package = pkgs.regreet;
 
       cageArgs = [ "-m" "last" ];
 
@@ -77,23 +70,27 @@ in {
           color-scheme: dark;
         }
 
-        /* Main container styling */
-        .regreet-container {
-          background: linear-gradient(135deg, var(--background-color) 0%, var(--surface-color) 100%);
+        /* Main window and application styling */
+        window {
+          background-color: var(--background-color);
           color: var(--text-color);
-          font-family: var(--font-family);
-          font-size: var(--font-size);
+        }
+
+        /* Main container and box styling */
+        box, container {
+          background-color: var(--background-color);
+          color: var(--text-color);
         }
 
         /* Header styling */
-        regreet-header {
+        headerbar, .titlebar {
           background-color: var(--surface-color);
           border-bottom: 1px solid var(--border-color);
           box-shadow: var(--shadow);
         }
 
         /* Clock widget styling */
-        .clock-widget {
+        .clock, clock {
           background-color: var(--surface-color);
           color: var(--primary-color);
           border: 1px solid var(--border-color);
@@ -103,37 +100,37 @@ in {
         }
 
         /* User selection styling */
-        .user-selector {
+        .user-selector, .user-list, list {
           background-color: var(--surface-color);
           border: 2px solid var(--border-color);
           border-radius: var(--border-radius);
           transition: all 0.2s ease;
         }
 
-        .user-selector:hover {
+        .user-selector:hover, .user-list:hover, list row:hover {
           border-color: var(--primary-color);
           box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.1);
         }
 
-        .user-selector:focus {
+        .user-selector:focus, .user-list:focus, list row:focus {
           border-color: var(--primary-color);
           box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
         }
 
         /* Session selector styling */
-        .session-selector {
+        .session-selector, .session-list, combobox {
           background-color: var(--surface-color);
           border: 1px solid var(--border-color);
           border-radius: var(--border-radius);
           color: var(--text-color);
         }
 
-        .session-selector:hover {
+        .session-selector:hover, .session-list:hover, combobox:hover {
           border-color: var(--primary-color);
         }
 
         /* Password entry styling */
-        .password-entry {
+        .password-entry, entry, .password-field {
           background-color: var(--surface-color);
           border: 2px solid var(--border-color);
           border-radius: var(--border-radius);
@@ -142,14 +139,14 @@ in {
           transition: all 0.2s ease;
         }
 
-        .password-entry:focus {
+        .password-entry:focus, entry:focus, .password-field:focus {
           border-color: var(--primary-color);
           box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
           outline: none;
         }
 
         /* Button styling */
-        button {
+        button, .btn {
           background-color: var(--primary-color);
           color: white;
           border: none;
@@ -161,31 +158,31 @@ in {
           box-shadow: var(--shadow);
         }
 
-        button:hover {
+        button:hover, .btn:hover {
           background-color: var(--primary-hover);
           transform: translateY(-1px);
           box-shadow: 0 6px 12px rgba(37, 142, 206, 0.3);
         }
 
-        button:active {
+        button:active, .btn:active {
           transform: translateY(0);
         }
 
         /* Power button styling */
-        .power-button {
+        .power-button, .power-btn {
           background-color: var(--surface-color);
           color: var(--text-color);
           border: 1px solid var(--border-color);
         }
 
-        .power-button:hover {
+        .power-button:hover, .power-btn:hover {
           background-color: var(--error-color);
           color: white;
           border-color: var(--error-color);
         }
 
         /* Greeting message styling */
-        .greeting-message {
+        .greeting-message, .greeting, label {
           color: var(--primary-color);
           font-size: 1.2em;
           font-weight: 600;
@@ -194,7 +191,7 @@ in {
         }
 
         /* Error message styling */
-        .error-message {
+        .error-message, .error {
           background-color: rgba(255, 107, 107, 0.1);
           color: var(--error-color);
           border: 1px solid var(--error-color);
@@ -204,7 +201,7 @@ in {
         }
 
         /* Success message styling */
-        .success-message {
+        .success-message, .success {
           background-color: rgba(81, 207, 102, 0.1);
           color: var(--success-color);
           border: 1px solid var(--success-color);
@@ -214,25 +211,25 @@ in {
         }
 
         /* Dropdown styling */
-        dropdown {
+        dropdown, popover, menu {
           background-color: var(--surface-color);
           border: 1px solid var(--border-color);
           border-radius: var(--border-radius);
           box-shadow: var(--shadow);
         }
 
-        dropdown item {
+        dropdown item, popover item, menu item {
           color: var(--text-color);
           padding: 8px 16px;
         }
 
-        dropdown item:hover {
+        dropdown item:hover, popover item:hover, menu item:hover {
           background-color: var(--primary-color);
           color: white;
         }
 
         /* Input field styling */
-        entry {
+        entry, input, .input-field {
           background-color: var(--surface-color);
           border: 2px solid var(--border-color);
           border-radius: var(--border-radius);
@@ -241,23 +238,89 @@ in {
           transition: all 0.2s ease;
         }
 
-        entry:focus {
+        entry:focus, input:focus, .input-field:focus {
           border-color: var(--primary-color);
           box-shadow: 0 0 0 3px rgba(37, 142, 206, 0.2);
         }
 
         /* Scrollbar styling */
-        scrollbar {
+        scrollbar, .scrollbar {
           background-color: var(--surface-color);
         }
 
-        scrollbar slider {
+        scrollbar slider, .scrollbar slider {
           background-color: var(--primary-color);
           border-radius: 4px;
         }
 
-        scrollbar slider:hover {
+        scrollbar slider:hover, .scrollbar slider:hover {
           background-color: var(--primary-hover);
+        }
+
+        /* List and tree view styling */
+        treeview, listbox {
+          background-color: var(--surface-color);
+          color: var(--text-color);
+        }
+
+        treeview row, listbox row {
+          background-color: var(--surface-color);
+          color: var(--text-color);
+        }
+
+        treeview row:hover, listbox row:hover {
+          background-color: var(--primary-color);
+          color: white;
+        }
+
+        /* Frame and separator styling */
+        frame, separator {
+          background-color: var(--border-color);
+          border-color: var(--border-color);
+        }
+
+        /* Override any light theme defaults */
+        * {
+          background-color: var(--background-color) !important;
+          color: var(--text-color) !important;
+        }
+
+        /* Specific overrides for common elements */
+        label, button, entry, combobox, listbox, treeview {
+          background-color: var(--surface-color) !important;
+          color: var(--text-color) !important;
+        }
+
+        /* Ensure buttons have proper styling */
+        button {
+          background-color: var(--primary-color) !important;
+          color: white !important;
+        }
+
+        /* GTK4 specific styling */
+        .window-frame {
+          background-color: var(--background-color);
+        }
+
+        .window-frame:backdrop {
+          background-color: var(--background-color);
+        }
+
+        /* Ensure all text is visible */
+        * {
+          color: var(--text-color) !important;
+        }
+
+        /* Override any inherited light themes */
+        .light, .light-theme {
+          background-color: var(--background-color) !important;
+          color: var(--text-color) !important;
+        }
+
+        /* Force dark appearance */
+        .dark, .dark-theme {
+          background-color: var(--background-color) !important;
+          color: var(--text-color) !important;
         }
       '';
 
@@ -298,6 +361,19 @@ in {
           GTK_THEME = "Adwaita:dark";
           XDG_CURRENT_DESKTOP = "Hyprland";
           XDG_SESSION_TYPE = "wayland";
+          GTK_USE_PORTAL = "0";
+          GDK_DEBUG = "no-portals";
+        };
+        # Session configuration
+        session = {
+          hyprland = {
+            command = "${config.programs.hyprland.package}/bin/Hyprland";
+            env = {
+              XDG_CURRENT_DESKTOP = "Hyprland";
+              XDG_SESSION_TYPE = "wayland";
+              GTK_THEME = "Adwaita:dark";
+            };
+          };
         };
       };
     };
