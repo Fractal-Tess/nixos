@@ -107,13 +107,21 @@ let
         PUID = "1000";
         PGID = "1000";
         TZ = "UTC";
+        # NVIDIA-specific environment variables for hardware acceleration
+        NVIDIA_VISIBLE_DEVICES = "all";
+        NVIDIA_DRIVER_CAPABILITIES = "compute,video,utility";
       };
       user = "1000:1000";
       autoStart = true;
       extraOptions = [
         "--network=host"
+        # Intel GPU acceleration
         "--device=/dev/dri:/dev/dri"
         "--security-opt=no-new-privileges:false"
+        # NVIDIA GPU acceleration
+        "--device=nvidia.com/gpu=all"
+        # Intel/AMD GPU acceleration
+        "--device=/dev/video0:/dev/video0"
       ];
     }
 
