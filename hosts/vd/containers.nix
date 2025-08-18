@@ -1,13 +1,11 @@
 # configuration.nix
-{ config, pkgs, lib, ... }:
+{ config, pkgs, lib, createOciContainer, ... }:
 
 let
-  ociLib = import ./oci-container.nix { inherit lib pkgs; };
-
   # Radarr container configuration
   # Based on linuxserver/radarr Docker image
   # Web UI accessible at http://your-ip:7878
-  radarrContainer = ociLib.createOciContainer {
+  radarrContainer = createOciContainer {
     name = "radarr";
     image = "lscr.io/linuxserver/radarr";
     tag = "latest";
@@ -46,7 +44,7 @@ let
   };
 
   # Jellyfin container configuration
-  jellyfinContainer = ociLib.createOciContainer {
+  jellyfinContainer = createOciContainer {
     name = "jellyfin";
     image = "lscr.io/linuxserver/jellyfin";
     tag = "latest";
@@ -100,30 +98,27 @@ let
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
-      # NVIDIA-specific environment variables for hardware acceleration
-      NVIDIA_VISIBLE_DEVICES = "all";
-      NVIDIA_DRIVER_CAPABILITIES = "compute,video,utility";
+    };
+
+    # User configuration for file permissions
+    user = {
+      uid = 1000;
+      gid = 1000;
     };
 
     # Container behavior
     autoStart = true;
 
-    # Extra options for hardware acceleration and network discovery
+    # Extra options for GPU support and networking
     extraOptions = [
-      # Network mode for better discovery
       "--network=host"
-      # Security option for GPU access
-      "--security-opt=no-new-privileges:false"
-      # NVIDIA GPU acceleration using CDI (Container Device Interface)
-      "--device=nvidia.com/gpu=all"
-      # Intel/AMD GPU acceleration (fallback)
       "--device=/dev/dri:/dev/dri"
-      "--device=/dev/video0:/dev/video0"
+      "--security-opt=no-new-privileges:false"
     ];
   };
 
   # Netdata container configuration
-  netdataContainer = ociLib.createOciContainer {
+  netdataContainer = createOciContainer {
     name = "netdata";
     image = "netdata/netdata";
     tag = "latest";
@@ -139,16 +134,22 @@ let
     # Volume mounts for Netdata
     volumes = [
       {
-        host = "/var/lib/netdata/config";
-        container = "/etc/netdata";
-      }
-      {
-        host = "/var/lib/netdata/lib";
+        host = "/var/lib/netdata";
         container = "/var/lib/netdata";
       }
       {
-        host = "/var/lib/netdata/cache";
-        container = "/var/cache/netdata";
+        host = "/etc/netdata";
+        container = "/etc/netdata";
+      }
+      {
+        host = "/proc";
+        container = "/host/proc";
+        options = "ro";
+      }
+      {
+        host = "/sys";
+        container = "/host/sys";
+        options = "ro";
       }
     ];
 
@@ -156,12 +157,16 @@ let
     autoStart = true;
 
     # Extra options for system monitoring
-    extraOptions =
-      [ "--cap-add=SYS_PTRACE" "--security-opt=apparmor=unconfined" ];
+    extraOptions = [
+      "--network=host"
+      "--pid=host"
+      "--cap-add=SYS_PTRACE"
+      "--security-opt=apparmor=unconfined"
+    ];
   };
 
   # Portainer container configuration
-  portainerContainer = ociLib.createOciContainer {
+  portainerContainer = createOciContainer {
     name = "portainer";
     image = "portainer/portainer-ce";
     tag = "latest";
@@ -181,7 +186,7 @@ let
         container = "/data";
       }
       {
-        host = "/run/user/1000/docker.sock";
+        host = "/var/run/docker.sock";
         container = "/var/run/docker.sock";
       }
     ];
@@ -190,11 +195,11 @@ let
     autoStart = true;
 
     # Extra options for Docker socket access
-    extraOptions = [ ];
+    extraOptions = [ "--network=host" ];
   };
 
   # Jackett container configuration
-  jackettContainer = ociLib.createOciContainer {
+  jackettContainer = createOciContainer {
     name = "jackett";
     image = "lscr.io/linuxserver/jackett";
     tag = "latest";
@@ -208,16 +213,28 @@ let
     }];
 
     # Volume mounts for Jackett
-    volumes = [{
-      host = "/var/lib/jackett/config";
-      container = "/config";
-    }];
+    volumes = [
+      {
+        host = "/var/lib/jackett/config";
+        container = "/config";
+      }
+      {
+        host = "/mnt/vault/media/downloads";
+        container = "/downloads";
+      }
+    ];
 
-    # Environment variables for user permissions and timezone
+    # Environment variables
     environment = {
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
+    };
+
+    # User configuration
+    user = {
+      uid = 1000;
+      gid = 1000;
     };
 
     # Container behavior
@@ -227,11 +244,13 @@ let
     extraOptions = [ "--network=host" ];
   };
 
-  # qBittorrent container
-  qbittorrentContainer = ociLib.createOciContainer {
+  # qBittorrent container configuration
+  qbittorrentContainer = createOciContainer {
     name = "qbittorrent";
     image = "lscr.io/linuxserver/qbittorrent";
     tag = "latest";
+
+    # Port configuration - qBittorrent web UI and BitTorrent ports
     ports = [
       {
         host = 8080;
@@ -252,6 +271,8 @@ let
         openfw = true;
       }
     ];
+
+    # Volume mounts for qBittorrent
     volumes = [
       {
         host = "/var/lib/qbittorrent/config";
@@ -262,23 +283,29 @@ let
         container = "/downloads";
       }
     ];
+
+    # Environment variables
     environment = {
       PUID = "1000";
       PGID = "1000";
       TZ = "UTC";
-      WEBUI_PORT = "8080";
     };
+
+    # User configuration
     user = {
       uid = 1000;
       gid = 1000;
     };
+
+    # Container behavior
     autoStart = true;
+
     # Extra options
     extraOptions = [ "--network=host" ];
   };
 
-  # Sonarr container
-  sonarrContainer = ociLib.createOciContainer {
+  # Sonarr container configuration
+  sonarrContainer = createOciContainer {
     name = "sonarr";
     image = "lscr.io/linuxserver/sonarr";
     tag = "latest";
@@ -317,7 +344,7 @@ let
   };
 
   # Jellyseerr container configuration
-  jellyseerrContainer = ociLib.createOciContainer {
+  jellyseerrContainer = createOciContainer {
     name = "jellyseerr";
     image = "fallenbagel/jellyseerr";
     tag = "latest";
