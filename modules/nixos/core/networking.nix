@@ -12,8 +12,8 @@ with lib;
 
       firewall = {
         enable = mkDefault true;
-        allowedTCPPorts = mkDefault [ ];
-        allowedUDPPorts = mkDefault [ ];
+        allowedTCPPorts = mkMerge [ ];
+        allowedUDPPorts = mkMerge [ ];
       };
     };
 
