@@ -119,7 +119,7 @@ in {
     # === TERMINAL ENHANCEMENTS ===
     nitch # Lightweight system information fetch
     lolcat # Rainbow text output
-    nh # Nix helper CLI
+    nh # Nix helper CLI (use system package to avoid ownership issues)
     zathura # Document viewer
 
     # === GUI APPLICATIONS ===
