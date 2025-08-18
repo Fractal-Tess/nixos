@@ -74,9 +74,6 @@ let
         optionalString (mount ? options) ":${mount.options}"
       }") mounts;
 
-in {
-  inherit mkPortBinds mkBindMounts;
-
   # Main function: Create OCI container configuration
   #
   # This function generates a complete container configuration that can be
@@ -159,4 +156,10 @@ in {
       networking.firewall.allowedUDPPorts =
         mkIf (firewallUDPPorts != [ ]) firewallUDPPorts;
     };
+
+in {
+  # Export the helper functions so they can be used by other modules
+  _module.args = {
+    inherit mkPortBinds mkBindMounts createOciContainer;
+  };
 }
