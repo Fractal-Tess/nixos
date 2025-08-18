@@ -2,6 +2,25 @@
 { config, pkgs, lib, createOciContainer, ... }:
 
 let
+  # Helper function to extract ports from container configurations
+  extractFirewallPorts = containers:
+    let
+      # Extract all ports with openfw = true from container configurations
+      allPorts = lib.concatMap (container:
+        lib.optionals (container ? ports)
+        (lib.filter (port: port.openfw or false) container.ports))
+        (lib.attrValues containers);
+
+      # Separate TCP and UDP ports
+      tcpPorts = lib.unique (lib.map (port: port.host)
+        (lib.filter (port: port.protocol == "tcp") allPorts));
+      udpPorts = lib.unique (lib.map (port: port.host)
+        (lib.filter (port: port.protocol == "udp") allPorts));
+    in {
+      tcp = tcpPorts;
+      udp = udpPorts;
+    };
+
   # Radarr container configuration
   # Based on linuxserver/radarr Docker image
   # Web UI accessible at http://your-ip:7878
@@ -370,10 +389,8 @@ let
     extraOptions = [ "--network=host" ];
   };
 
-in {
   # Combine all OCI container configurations
-  virtualisation.oci-containers.containers =
-    radarrContainer.virtualisation.oci-containers.containers
+  allContainers = radarrContainer.virtualisation.oci-containers.containers
     // jellyfinContainer.virtualisation.oci-containers.containers
     // netdataContainer.virtualisation.oci-containers.containers
     // portainerContainer.virtualisation.oci-containers.containers
@@ -382,28 +399,20 @@ in {
     // sonarrContainer.virtualisation.oci-containers.containers
     // jellyseerrContainer.virtualisation.oci-containers.containers;
 
-  # Firewall configuration - directly specify the ports that should be opened
-  # Based on the container configurations with openfw = true
-  networking.firewall = {
-    # TCP ports for web UIs and services
-    allowedTCPPorts = [
-      7878 # Radarr
-      8096 # Jellyfin web UI
-      8920 # Jellyfin streaming
-      19999 # Netdata
-      9000 # Portainer
-      9117 # Jackett
-      8080 # qBittorrent web UI
-      6881 # qBittorrent BitTorrent
-      8989 # Sonarr
-      5055 # Jellyseerr
-    ];
+  # Automatically extract firewall ports from container configurations
+  firewallPorts = extractFirewallPorts allContainers;
 
-    # UDP ports for discovery and streaming
-    allowedUDPPorts = [
-      7359 # Jellyfin discovery
-      1900 # Jellyfin SSDP
-      6881 # qBittorrent BitTorrent
-    ];
+in {
+  # Combine all OCI container configurations
+  virtualisation.oci-containers.containers = allContainers;
+
+  # Firewall configuration - automatically generated from container port mappings
+  # Only ports with openfw = true will be opened
+  networking.firewall = {
+    # TCP ports automatically extracted from containers with openfw = true
+    allowedTCPPorts = firewallPorts.tcp;
+
+    # UDP ports automatically extracted from containers with openfw = true
+    allowedUDPPorts = firewallPorts.udp;
   };
 }
