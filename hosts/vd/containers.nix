@@ -53,10 +53,7 @@ let
         PGID = "1000";
         TZ = "UTC";
       };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
+      user = "1000:1000";
       autoStart = true;
       extraOptions = [ "--network=host" ];
     }
@@ -111,10 +108,7 @@ let
         PGID = "1000";
         TZ = "UTC";
       };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
+      user = "1000:1000";
       autoStart = true;
       extraOptions = [
         "--network=host"
@@ -154,15 +148,6 @@ let
           options = "ro";
         }
       ];
-      environment = {
-        PUID = "1000";
-        PGID = "1000";
-        TZ = "UTC";
-      };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
       autoStart = true;
       extraOptions = [
         "--network=host"
@@ -193,15 +178,6 @@ let
           container = "/var/run/docker.sock";
         }
       ];
-      environment = {
-        PUID = "1000";
-        PGID = "1000";
-        TZ = "UTC";
-      };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
       autoStart = true;
       extraOptions = [ "--network=host" ];
     }
@@ -217,24 +193,14 @@ let
         protocol = "tcp";
         openfw = true;
       }];
-      volumes = [
-        {
-          host = "/var/lib/jackett/config";
-          container = "/config";
-        }
-        {
-          host = "/mnt/vault/media/downloads";
-          container = "/downloads";
-        }
-      ];
+      volumes = [{
+        host = "/var/lib/jackett/config";
+        container = "/config";
+      }];
       environment = {
         PUID = "1000";
         PGID = "1000";
         TZ = "UTC";
-      };
-      user = {
-        uid = 1000;
-        gid = 1000;
       };
       autoStart = true;
       extraOptions = [ "--network=host" ];
@@ -280,10 +246,7 @@ let
         PGID = "1000";
         TZ = "UTC";
       };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
+      user = "1000:1000";
       autoStart = true;
       extraOptions = [ "--network=host" ];
     }
@@ -318,10 +281,7 @@ let
         PGID = "1000";
         TZ = "UTC";
       };
-      user = {
-        uid = 1000;
-        gid = 1000;
-      };
+      user = "1000:1000";
       autoStart = true;
       extraOptions = [ "--network=host" ];
     }
@@ -345,10 +305,6 @@ let
         PUID = "1000";
         PGID = "1000";
         TZ = "UTC";
-      };
-      user = {
-        uid = 1000;
-        gid = 1000;
       };
       autoStart = true;
       extraOptions = [ "--network=host" ];
