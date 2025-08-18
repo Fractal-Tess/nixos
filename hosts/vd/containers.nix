@@ -2,14 +2,14 @@
 { config, pkgs, lib, createOciContainer, ... }:
 
 let
-  # Helper function to extract ports from container configurations
-  extractFirewallPorts = containers:
+  # Helper function to extract ports from container definitions
+  extractFirewallPorts = containerDefs:
     let
-      # Extract all ports with openfw = true from container configurations
-      allPorts = lib.concatMap (container:
-        lib.optionals (container ? ports)
-        (lib.filter (port: port.openfw or false) container.ports))
-        (lib.attrValues containers);
+      # Extract all ports with openfw = true from container definitions
+      allPorts = lib.concatMap (containerDef:
+        lib.optionals (containerDef ? ports)
+        (lib.filter (port: port.openfw or false) containerDef.ports))
+        containerDefs;
 
       # Separate TCP and UDP ports
       tcpPorts = lib.unique (lib.map (port: port.host)
@@ -21,373 +21,349 @@ let
       udp = udpPorts;
     };
 
-  # Radarr container configuration
-  # Based on linuxserver/radarr Docker image
-  # Web UI accessible at http://your-ip:7878
-  radarrContainer = createOciContainer {
-    name = "radarr";
-    image = "lscr.io/linuxserver/radarr";
-    tag = "latest";
-    ports = [{
-      host = 7878;
-      container = 7878;
-      protocol = "tcp";
-      openfw = true;
-    }];
-    volumes = [
-      {
-        host = "/var/lib/radarr/config";
-        container = "/config";
-      }
-      {
-        host = "/mnt/vault/media/movies";
-        container = "/movies";
-      }
-      {
-        host = "/mnt/vault/media/downloads";
-        container = "/downloads";
-      }
-    ];
-    environment = {
-      PUID = "1000";
-      PGID = "1000";
-      TZ = "UTC";
-    };
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-    autoStart = true;
-    # Extra options
-    extraOptions = [ "--network=host" ];
-  };
-
-  # Jellyfin container configuration
-  jellyfinContainer = createOciContainer {
-    name = "jellyfin";
-    image = "lscr.io/linuxserver/jellyfin";
-    tag = "latest";
-
-    # Port configuration - Jellyfin web UI and discovery ports
-    ports = [
-      {
-        host = 8096;
-        container = 8096;
+  # Container definitions with ports
+  containerDefinitions = [
+    # Radarr container configuration
+    {
+      name = "radarr";
+      image = "lscr.io/linuxserver/radarr";
+      tag = "latest";
+      ports = [{
+        host = 7878;
+        container = 7878;
         protocol = "tcp";
         openfw = true;
-      }
-      {
-        host = 8920;
-        container = 8920;
+      }];
+      volumes = [
+        {
+          host = "/var/lib/radarr/config";
+          container = "/config";
+        }
+        {
+          host = "/mnt/vault/media/movies";
+          container = "/movies";
+        }
+        {
+          host = "/mnt/vault/media/downloads";
+          container = "/downloads";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
+
+    # Jellyfin container configuration
+    {
+      name = "jellyfin";
+      image = "lscr.io/linuxserver/jellyfin";
+      tag = "latest";
+      ports = [
+        {
+          host = 8096;
+          container = 8096;
+          protocol = "tcp";
+          openfw = true;
+        }
+        {
+          host = 8920;
+          container = 8920;
+          protocol = "tcp";
+          openfw = true;
+        }
+        {
+          host = 7359;
+          container = 7359;
+          protocol = "udp";
+          openfw = true;
+        }
+        {
+          host = 1900;
+          container = 1900;
+          protocol = "udp";
+          openfw = true;
+        }
+      ];
+      volumes = [
+        {
+          host = "/var/lib/jellyfin/config";
+          container = "/config";
+        }
+        {
+          host = "/var/lib/jellyfin/cache";
+          container = "/cache";
+        }
+        {
+          host = "/mnt/vault/media";
+          container = "/media";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [
+        "--network=host"
+        "--device=/dev/dri:/dev/dri"
+        "--security-opt=no-new-privileges:false"
+      ];
+    }
+
+    # Netdata container configuration
+    {
+      name = "netdata";
+      image = "netdata/netdata";
+      tag = "latest";
+      ports = [{
+        host = 19999;
+        container = 19999;
         protocol = "tcp";
         openfw = true;
-      }
-      {
-        host = 7359;
-        container = 7359;
-        protocol = "udp";
-        openfw = true;
-      }
-      {
-        host = 1900;
-        container = 1900;
-        protocol = "udp";
-        openfw = true;
-      }
-    ];
+      }];
+      volumes = [
+        {
+          host = "/var/lib/netdata";
+          container = "/var/lib/netdata";
+        }
+        {
+          host = "/etc/netdata";
+          container = "/etc/netdata";
+        }
+        {
+          host = "/proc";
+          container = "/host/proc";
+          options = "ro";
+        }
+        {
+          host = "/sys";
+          container = "/host/sys";
+          options = "ro";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [
+        "--network=host"
+        "--pid=host"
+        "--cap-add=SYS_PTRACE"
+        "--security-opt=apparmor=unconfined"
+      ];
+    }
 
-    # Volume mounts for Jellyfin
-    volumes = [
-      {
-        host = "/var/lib/jellyfin/config";
-        container = "/config";
-      }
-      {
-        host = "/var/lib/jellyfin/cache";
-        container = "/cache";
-      }
-      {
-        host = "/mnt/vault/media";
-        container = "/media";
-      }
-    ];
-
-    # Environment variables for user permissions, timezone, and GPU support
-    environment = {
-      PUID = "1000";
-      PGID = "1000";
-      TZ = "UTC";
-    };
-
-    # User configuration for file permissions
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options for GPU support and networking
-    extraOptions = [
-      "--network=host"
-      "--device=/dev/dri:/dev/dri"
-      "--security-opt=no-new-privileges:false"
-    ];
-  };
-
-  # Netdata container configuration
-  netdataContainer = createOciContainer {
-    name = "netdata";
-    image = "netdata/netdata";
-    tag = "latest";
-
-    # Port configuration - Netdata web UI runs on port 19999
-    ports = [{
-      host = 19999;
-      container = 19999;
-      protocol = "tcp";
-      openfw = true;
-    }];
-
-    # Volume mounts for Netdata
-    volumes = [
-      {
-        host = "/var/lib/netdata";
-        container = "/var/lib/netdata";
-      }
-      {
-        host = "/etc/netdata";
-        container = "/etc/netdata";
-      }
-      {
-        host = "/proc";
-        container = "/host/proc";
-        options = "ro";
-      }
-      {
-        host = "/sys";
-        container = "/host/sys";
-        options = "ro";
-      }
-    ];
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options for system monitoring
-    extraOptions = [
-      "--network=host"
-      "--pid=host"
-      "--cap-add=SYS_PTRACE"
-      "--security-opt=apparmor=unconfined"
-    ];
-  };
-
-  # Portainer container configuration
-  portainerContainer = createOciContainer {
-    name = "portainer";
-    image = "portainer/portainer-ce";
-    tag = "latest";
-
-    # Port configuration - Portainer web UI runs on port 9000
-    ports = [{
-      host = 9000;
-      container = 9000;
-      protocol = "tcp";
-      openfw = true;
-    }];
-
-    # Volume mounts for Portainer
-    volumes = [
-      {
-        host = "/var/lib/portainer";
-        container = "/data";
-      }
-      {
-        host = "/var/run/docker.sock";
-        container = "/var/run/docker.sock";
-      }
-    ];
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options for Docker socket access
-    extraOptions = [ "--network=host" ];
-  };
-
-  # Jackett container configuration
-  jackettContainer = createOciContainer {
-    name = "jackett";
-    image = "lscr.io/linuxserver/jackett";
-    tag = "latest";
-
-    # Port configuration - Jackett web UI runs on port 9117
-    ports = [{
-      host = 9117;
-      container = 9117;
-      protocol = "tcp";
-      openfw = true;
-    }];
-
-    # Volume mounts for Jackett
-    volumes = [
-      {
-        host = "/var/lib/jackett/config";
-        container = "/config";
-      }
-      {
-        host = "/mnt/vault/media/downloads";
-        container = "/downloads";
-      }
-    ];
-
-    # Environment variables
-    environment = {
-      PUID = "1000";
-      PGID = "1000";
-      TZ = "UTC";
-    };
-
-    # User configuration
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options
-    extraOptions = [ "--network=host" ];
-  };
-
-  # qBittorrent container configuration
-  qbittorrentContainer = createOciContainer {
-    name = "qbittorrent";
-    image = "lscr.io/linuxserver/qbittorrent";
-    tag = "latest";
-
-    # Port configuration - qBittorrent web UI and BitTorrent ports
-    ports = [
-      {
-        host = 8080;
-        container = 8080;
+    # Portainer container configuration
+    {
+      name = "portainer";
+      image = "portainer/portainer-ce";
+      tag = "latest";
+      ports = [{
+        host = 9000;
+        container = 9000;
         protocol = "tcp";
         openfw = true;
-      }
-      {
-        host = 6881;
-        container = 6881;
+      }];
+      volumes = [
+        {
+          host = "/var/lib/portainer";
+          container = "/data";
+        }
+        {
+          host = "/var/run/docker.sock";
+          container = "/var/run/docker.sock";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
+
+    # Jackett container configuration
+    {
+      name = "jackett";
+      image = "lscr.io/linuxserver/jackett";
+      tag = "latest";
+      ports = [{
+        host = 9117;
+        container = 9117;
         protocol = "tcp";
         openfw = true;
-      }
-      {
-        host = 6881;
-        container = 6881;
-        protocol = "udp";
+      }];
+      volumes = [
+        {
+          host = "/var/lib/jackett/config";
+          container = "/config";
+        }
+        {
+          host = "/mnt/vault/media/downloads";
+          container = "/downloads";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
+
+    # qBittorrent container configuration
+    {
+      name = "qbittorrent";
+      image = "lscr.io/linuxserver/qbittorrent";
+      tag = "latest";
+      ports = [
+        {
+          host = 8080;
+          container = 8080;
+          protocol = "tcp";
+          openfw = true;
+        }
+        {
+          host = 6881;
+          container = 6881;
+          protocol = "tcp";
+          openfw = true;
+        }
+        {
+          host = 6881;
+          container = 6881;
+          protocol = "udp";
+          openfw = true;
+        }
+      ];
+      volumes = [
+        {
+          host = "/var/lib/qbittorrent/config";
+          container = "/config";
+        }
+        {
+          host = "/mnt/vault/media/downloads";
+          container = "/downloads";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
+
+    # Sonarr container configuration
+    {
+      name = "sonarr";
+      image = "lscr.io/linuxserver/sonarr";
+      tag = "latest";
+      ports = [{
+        host = 8989;
+        container = 8989;
+        protocol = "tcp";
         openfw = true;
-      }
-    ];
+      }];
+      volumes = [
+        {
+          host = "/var/lib/sonarr/config";
+          container = "/config";
+        }
+        {
+          host = "/mnt/vault/media/tvshows";
+          container = "/tv";
+        }
+        {
+          host = "/mnt/vault/media/downloads";
+          container = "/downloads";
+        }
+      ];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
 
-    # Volume mounts for qBittorrent
-    volumes = [
-      {
-        host = "/var/lib/qbittorrent/config";
-        container = "/config";
-      }
-      {
-        host = "/mnt/vault/media/downloads";
-        container = "/downloads";
-      }
-    ];
+    # Jellyseerr container configuration
+    {
+      name = "jellyseerr";
+      image = "fallenbagel/jellyseerr";
+      tag = "latest";
+      ports = [{
+        host = 5055;
+        container = 5055;
+        protocol = "tcp";
+        openfw = true;
+      }];
+      volumes = [{
+        host = "/var/lib/jellyseerr/config";
+        container = "/app/config";
+      }];
+      environment = {
+        PUID = "1000";
+        PGID = "1000";
+        TZ = "UTC";
+      };
+      user = {
+        uid = 1000;
+        gid = 1000;
+      };
+      autoStart = true;
+      extraOptions = [ "--network=host" ];
+    }
+  ];
 
-    # Environment variables
-    environment = {
-      PUID = "1000";
-      PGID = "1000";
-      TZ = "UTC";
-    };
-
-    # User configuration
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options
-    extraOptions = [ "--network=host" ];
-  };
-
-  # Sonarr container configuration
-  sonarrContainer = createOciContainer {
-    name = "sonarr";
-    image = "lscr.io/linuxserver/sonarr";
-    tag = "latest";
-    ports = [{
-      host = 8989;
-      container = 8989;
-      protocol = "tcp";
-      openfw = true;
-    }];
-    volumes = [
-      {
-        host = "/var/lib/sonarr/config";
-        container = "/config";
-      }
-      {
-        host = "/mnt/vault/media/tvshows";
-        container = "/tv";
-      }
-      {
-        host = "/mnt/vault/media/downloads";
-        container = "/downloads";
-      }
-    ];
-    environment = {
-      PUID = "1000";
-      PGID = "1000";
-      TZ = "UTC";
-    };
-    user = {
-      uid = 1000;
-      gid = 1000;
-    };
-    autoStart = true;
-    # Extra options
-    extraOptions = [ "--network=host" ];
-  };
-
-  # Jellyseerr container configuration
-  jellyseerrContainer = createOciContainer {
-    name = "jellyseerr";
-    image = "fallenbagel/jellyseerr";
-    tag = "latest";
-
-    # Port configuration - Jellyseerr web UI runs on port 5055
-    ports = [{
-      host = 5055;
-      container = 5055;
-      protocol = "tcp";
-      openfw = true;
-    }];
-
-    # Volume mounts for Jellyseerr
-    volumes = [{
-      host = "/var/lib/jellyseerr/config";
-      container = "/app/config";
-    }];
-
-    # Container behavior
-    autoStart = true;
-
-    # Extra options
-    extraOptions = [ "--network=host" ];
-  };
+  # Create containers from definitions
+  radarrContainer = createOciContainer (lib.elemAt containerDefinitions 0);
+  jellyfinContainer = createOciContainer (lib.elemAt containerDefinitions 1);
+  netdataContainer = createOciContainer (lib.elemAt containerDefinitions 2);
+  portainerContainer = createOciContainer (lib.elemAt containerDefinitions 3);
+  jackettContainer = createOciContainer (lib.elemAt containerDefinitions 4);
+  qbittorrentContainer = createOciContainer (lib.elemAt containerDefinitions 5);
+  sonarrContainer = createOciContainer (lib.elemAt containerDefinitions 6);
+  jellyseerrContainer = createOciContainer (lib.elemAt containerDefinitions 7);
 
   # Combine all OCI container configurations
   allContainers = radarrContainer.virtualisation.oci-containers.containers
@@ -399,8 +375,8 @@ let
     // sonarrContainer.virtualisation.oci-containers.containers
     // jellyseerrContainer.virtualisation.oci-containers.containers;
 
-  # Automatically extract firewall ports from container configurations
-  firewallPorts = extractFirewallPorts allContainers;
+  # Automatically extract firewall ports from container definitions
+  firewallPorts = extractFirewallPorts containerDefinitions;
 
 in {
   # Combine all OCI container configurations
