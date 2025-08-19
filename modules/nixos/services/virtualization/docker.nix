@@ -9,6 +9,19 @@ in {
     rootless = mkEnableOption "Rootless Docker";
     nvidia = mkEnableOption "Nvidia support";
     devtools = mkEnableOption "Devtools";
+
+    dns = mkOption {
+      type = types.listOf types.str;
+      default = [ "100.91.242.113" "1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4" ];
+      description =
+        "DNS servers to use for the Docker daemon (Netbird DNS first, then fallbacks)";
+    };
+
+    useNetbirdDNS = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to prioritize Netbird DNS for Docker containers";
+    };
   };
 
   # Configure the Docker service if enabled
@@ -34,6 +47,37 @@ in {
       rootless = mkIf cfg.rootless {
         enable = true;
         setSocketVariable = true;
+      };
+
+      # Additional daemon settings for better Netbird integration
+      daemon.settings = mkIf cfg.useNetbirdDNS {
+        # DNS configuration
+        dns = cfg.dns;
+
+        # # Network settings for better VPN integration
+        # ip-forward = true;
+        # iptables = true;
+
+        # # Ensure Docker can route to VPN networks
+        # userland-proxy = false;
+
+        # # MTU settings for VPN compatibility
+        # mtu = 1400;
+
+        # # DNS options for better resolution
+        # dns-opts = [ "use-vc" "timeout:2" "attempts:3" ];
+
+        # # Allow Docker to use host networking when needed
+        # host = [ "unix:///var/run/docker.sock" "tcp://0.0.0.0:2375" ];
+
+        # Additional network settings for Netbird integration
+        default-address-pools = [{
+          base = "172.17.0.0/16";
+          size = 24;
+        }];
+
+        # DNS search domains for Netbird
+        dns-search = [ "netbird.cloud" ];
       };
     };
 
