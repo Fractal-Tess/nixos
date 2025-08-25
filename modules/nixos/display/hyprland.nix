@@ -1,10 +1,7 @@
-{ config, lib, pkgs, username, inputs, ... }:
+{ config, lib, pkgs, username, ... }:
 
 with lib;
-let
-  pkgs-unstable =
-    inputs.hyprland.inputs.nixpkgs.legacyPackages.${pkgs.stdenv.hostPlatform.system};
-  cfg = config.modules.display.hyprland;
+let cfg = config.modules.display.hyprland;
 in {
   # Option to enable or disable Hyprland
   options.modules.display.hyprland.enable = mkEnableOption "Hyprland";
@@ -14,10 +11,8 @@ in {
     programs.hyprland = {
       enable = true;
 
-      package =
-        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.hyprland;
-      portalPackage =
-        inputs.hyprland.packages.${pkgs.stdenv.hostPlatform.system}.xdg-desktop-portal-hyprland;
+      package = pkgs.hyprland;
+      portalPackage = pkgs.xdg-desktop-portal-hyprland;
 
       # Enable Xwayland
       xwayland.enable = true;
@@ -27,11 +22,11 @@ in {
     services.getty.autologinUser = username;
 
     hardware.graphics = {
-      package = pkgs-unstable.mesa;
+      package = pkgs.mesa;
 
       # if you also want 32-bit support (e.g for Steam)
       enable32Bit = true;
-      package32 = pkgs-unstable.pkgsi686Linux.mesa;
+      package32 = pkgs.pkgsi686Linux.mesa;
     };
 
     # Enable Hyprlock
