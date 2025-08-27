@@ -201,7 +201,7 @@ in {
   };
   users.groups.${username} = { members = [ username ]; };
 
-  # Make users mutable 
+  # Make users mutable
   users.mutableUsers = true;
 
   # Home-Manger
@@ -231,6 +231,7 @@ in {
   environment.variables = {
     # Force Qt applications to use X11 backend instead of Wayland
     QT_QPA_PLATFORM = "xcb";
+    WAYLAND_DISPLAY = "" ;
 
     # Set AMD GPU video acceleration drivers
     # LIBVA_DRIVER_NAME = "radeonsi";  # VA-API driver for AMD GPUs
@@ -269,4 +270,3 @@ in {
   system.stateVersion = "24.05"; # Did you read the comment?
 
 }
-
