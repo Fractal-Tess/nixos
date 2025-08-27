@@ -22,8 +22,6 @@ in {
     services.getty.autologinUser = username;
 
     hardware.graphics = {
-      package = pkgs.mesa;
-
       # if you also want 32-bit support (e.g for Steam)
       enable32Bit = true;
       package32 = pkgs.pkgsi686Linux.mesa;
@@ -47,7 +45,7 @@ in {
     environment.systemPackages = [ pkgs.kitty ];
     # Enable dconf for GTK/Flatpak app settings
     programs.dconf.enable = true;
-    # Add nvidia driver for 
+    # Add nvidia driver for
     services.xserver.videoDrivers = mkMerge [
       (mkIf config.modules.drivers.nvidia.enable [ "nvidia" ])
       (mkIf config.modules.drivers.amd.enable [ "amdgpu" ])
