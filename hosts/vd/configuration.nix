@@ -1,4 +1,4 @@
-{ pkgs, inputs, username, ... }:
+{ pkgs, inputs, lib, username, config, ... }:
 
 let backupDirs = [ "/mnt/backup/backup" "/mnt/vault/backup" ];
 
@@ -20,10 +20,10 @@ in {
 
   # DDC support
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
-  boot.kernelModules = [ "i2c-dev" ];
-  services.udev.extraRules = ''
-    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
-  '';
+  boot = {
+    kernelModules = [ "i2c-dev" ] ++ (if config.modules.drivers.nvidia.enable then [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ] else []);
+    kernelParams = if config.modules.drivers.nvidia.enable then [ "nvidia-drm.modeset=1" ] else [];
+  };
 
   # I2C support for brightness control on external monitors
   hardware.i2c.enable = true;
@@ -194,11 +194,12 @@ in {
   # User
   users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "wheel" "video" "fractal-tess" ];
+    extraGroups = [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
     password = "password";
     description = "default user";
     packages = with pkgs; [ ];
   };
+
   users.groups.${username} = { members = [ username ]; };
 
   # Make users mutable
@@ -219,6 +220,7 @@ in {
     powerline-fonts
     powerline-symbols
   ];
+
   # Printing
   services.printing = {
     enable = true;
@@ -229,37 +231,42 @@ in {
   services.gvfs.enable = true;
 
   environment.variables = {
-    # Force Qt applications to use X11 backend instead of Wayland
-    QT_QPA_PLATFORM = "xcb";
-    WAYLAND_DISPLAY = "" ;
+       # Session and display configuration
+       XDG_SESSION_TYPE = "wayland";
 
-    # Set AMD GPU video acceleration drivers
-    # LIBVA_DRIVER_NAME = "radeonsi";  # VA-API driver for AMD GPUs
-    # VDPAU_DRIVER = "radeonsi";       # VDPAU driver for AMD GPUs
+       # NVIDIA-specific variables (when enabled)
+     } // (lib.mkIf config.modules.drivers.nvidia.enable {
+       LIBVA_DRIVER_NAME = "nvidia";
+       GBM_BACKEND = "nvidia-drm";
+       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+       WLR_NO_HARDWARE_CURSORS = "1";
+     }) // (lib.mkIf config.modules.drivers.amd.enable {
+       # AMD GPU video acceleration drivers
+       LIBVA_DRIVER_NAME = "radeonsi";
+       VDPAU_DRIVER = "radeonsi";
+     }) // {
+       # Application-specific Wayland support
+       NIXOS_OZONE_WL = "1";           # Electron/Chromium apps
+       MOZ_ENABLE_WAYLAND = "1";       # Firefox Wayland support
+       MOZ_USE_XINPUT2 = "1";          # Better Firefox input handling
 
-    # Set GTK theme and cursor settings
-    GTK_THEME = "Nordic"; # Dark bluish GTK theme
-    XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
-    XCURSOR_SIZE = "24"; # Default cursor size
+       # Qt and GTK configuration
+       QT_QPA_PLATFORM = "wayland;xcb"; # Try Wayland first, fallback to X11
+       GTK_THEME = "Nordic";           # Dark bluish GTK theme
 
-    # Silence direnv logging output
-    DIRENV_LOG_FORMAT = "";
+       # Cursor configuration
+       XCURSOR_THEME = "Nordzy-cursors";
+       XCURSOR_SIZE = "24";
 
-    # Uncomment to force software cursor if hardware cursor doesn't work
-    # WLR_NO_HARDWARE_CURSORS = "1";
+       # Editor configuration
+       VISUAL = "nvim";
+       SUDO_EDITOR = "nvim";
+       EDITOR = "nvim";
 
-    # Enable Wayland support in Electron/Ozone apps
-    NIXOS_OZONE_WL = "1";
+       # Silence direnv logging
+       DIRENV_LOG_FORMAT = "";
+     };
 
-    # Set default editors
-    VISUAL = "nvim"; # Visual editor for GUI contexts
-    SUDO_EDITOR = "nvim"; # Editor used by sudo -e
-    EDITOR = "nvim"; # Default terminal editor
-
-    # Firefox Wayland settings
-    MOZ_USE_WAYLAND = 1; # Enable Wayland support in Firefox
-    MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
-  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
@@ -268,5 +275,4 @@ in {
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
-
 }
