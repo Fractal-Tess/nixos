@@ -139,6 +139,7 @@ in {
     firefox # Open-source web browser
     google-chrome # Google's web browser
     vivaldi # Web browser
+    vivaldi-ffmpeg-codecs # Vivaldi video codecs
     # chromium # Chromium web browser
     microsoft-edge # Microsoft's web browser
     tor-browser # Privacy-focused browser
