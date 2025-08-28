@@ -21,8 +21,18 @@ in {
   # DDC support
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot = {
-    kernelModules = [ "i2c-dev" ] ++ (if config.modules.drivers.nvidia.enable then [ "nvidia" "nvidia_modeset" "nvidia_uvm" "nvidia_drm" ] else []);
-    kernelParams = if config.modules.drivers.nvidia.enable then [ "nvidia-drm.modeset=1" ] else [];
+    kernelModules = [ "i2c-dev" ]
+      ++ (if config.modules.drivers.nvidia.enable then [
+        "nvidia"
+        "nvidia_modeset"
+        "nvidia_uvm"
+        "nvidia_drm"
+      ] else
+        [ ]);
+    kernelParams = if config.modules.drivers.nvidia.enable then
+      [ "nvidia-drm.modeset=1" ]
+    else
+      [ ];
   };
 
   # I2C support for brightness control on external monitors
@@ -194,7 +204,8 @@ in {
   # User
   users.users.${username} = {
     isNormalUser = true;
-    extraGroups = [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
+    extraGroups =
+      [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
     password = "password";
     description = "default user";
     packages = with pkgs; [ ];
@@ -231,42 +242,41 @@ in {
   services.gvfs.enable = true;
 
   environment.variables = {
-       # Session and display configuration
-       XDG_SESSION_TYPE = "wayland";
+    # Session and display configuration
+    # XDG_SESSION_TYPE = "wayland";
 
-       # NVIDIA-specific variables (when enabled)
-     } // (lib.mkIf config.modules.drivers.nvidia.enable {
-       LIBVA_DRIVER_NAME = "nvidia";
-       GBM_BACKEND = "nvidia-drm";
-       __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-       WLR_NO_HARDWARE_CURSORS = "1";
-     }) // (lib.mkIf config.modules.drivers.amd.enable {
-       # AMD GPU video acceleration drivers
-       LIBVA_DRIVER_NAME = "radeonsi";
-       VDPAU_DRIVER = "radeonsi";
-     }) // {
-       # Application-specific Wayland support
-       NIXOS_OZONE_WL = "1";           # Electron/Chromium apps
-       MOZ_ENABLE_WAYLAND = "1";       # Firefox Wayland support
-       MOZ_USE_XINPUT2 = "1";          # Better Firefox input handling
+    #   # NVIDIA-specific variables (when enabled)
+    # } // (lib.mkIf config.modules.drivers.nvidia.enable {
+    #   LIBVA_DRIVER_NAME = "nvidia";
+    #   GBM_BACKEND = "nvidia-drm";
+    #   __GLX_VENDOR_LIBRARY_NAME = "nvidia";
+    #   WLR_NO_HARDWARE_CURSORS = "1";
+    # }) // (lib.mkIf config.modules.drivers.amd.enable {
+    #   # AMD GPU video acceleration drivers
+    #   LIBVA_DRIVER_NAME = "radeonsi";
+    #   VDPAU_DRIVER = "radeonsi";
+    # }) // {
+    # Application-specific Wayland support
+    # NIXOS_OZONE_WL = "1"; # Electron/Chromium apps
+    # MOZ_ENABLE_WAYLAND = "1"; # Firefox Wayland support
+    # MOZ_USE_XINPUT2 = "1"; # Better Firefox input handling
 
-       # Qt and GTK configuration
-       QT_QPA_PLATFORM = "wayland;xcb"; # Try Wayland first, fallback to X11
-       GTK_THEME = "Nordic";           # Dark bluish GTK theme
+    # Qt and GTK configuration
+    # QT_QPA_PLATFORM = "wayland;xcb"; # Try Wayland first, fallback to X11
+    # GTK_THEME = "Nordic"; # Dark bluish GTK theme
 
-       # Cursor configuration
-       XCURSOR_THEME = "Nordzy-cursors";
-       XCURSOR_SIZE = "24";
+    # Cursor configuration
+    # XCURSOR_THEME = "Nordzy-cursors";
+    # XCURSOR_SIZE = "24";
 
-       # Editor configuration
-       VISUAL = "nvim";
-       SUDO_EDITOR = "nvim";
-       EDITOR = "nvim";
+    # Editor configuration
+    #  VISUAL = "nvim";
+    #  SUDO_EDITOR = "nvim";
+    #  EDITOR = "nvim";
 
-       # Silence direnv logging
-       DIRENV_LOG_FORMAT = "";
-     };
-
+    # Silence direnv logging
+    DIRENV_LOG_FORMAT = "";
+  };
 
   # This value determines the NixOS release from which the default
   # settings for stateful data, like file locations and database versions
