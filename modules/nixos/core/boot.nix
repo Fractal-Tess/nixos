@@ -11,7 +11,7 @@ with lib; {
         device = mkDefault "nodev";
         efiSupport = mkDefault true;
         useOSProber = mkDefault true;
-        theme = mkDefault "${pkgs.libsForQt5.breeze-grub}/grub/themes/breeze";
+        # theme = mkDefault "${pkgs.libsForQt5.breeze-grub}/grub/themes/breeze";
       };
     };
     supportedFilesystems = mkDefault [ "ntfs" ];
