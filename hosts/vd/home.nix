@@ -98,6 +98,7 @@ in {
     nginx-language-server # Language server for Nginx
     phpactor # Language server for PHP
     nixd # Language server for Nix
+    nil # Language server for Nix
     nixpkgs-fmt # Nix code formatter
     nixfmt-classic # Alternative Nix formatter
     sqls # Language server for SQL
