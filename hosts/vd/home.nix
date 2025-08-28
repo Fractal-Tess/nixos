@@ -95,7 +95,7 @@ in {
     rust-analyzer # Language server for Rust
     lua-language-server # Language server for Lua
     stylua # Lua code formatter
-    nginx-language-server # Language server for Nginx
+    # nginx-language-server # Language server for Nginx - temporarily disabled due to pygls dependency issue
     phpactor # Language server for PHP
     nixd # Language server for Nix
     nil # Language server for Nix
