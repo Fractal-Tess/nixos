@@ -15,9 +15,6 @@
     # Display
     ./display/default.nix
 
-    # Programs
-    ./programs/default.nix
-
     # Services
     ./services/default.nix
   ];
