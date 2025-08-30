@@ -1,8 +1,6 @@
-{ pkgs, inputs, lib, username, config, ... }:
+{ pkgs, inputs, username, ... }:
 
-let backupDirs = [ "/mnt/backup/backup" "/mnt/vault/backup" ];
-
-in {
+{
   imports = [
     # System configuration
     ./hardware-configuration.nix
@@ -33,10 +31,6 @@ in {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
-      substituters = [ "https://hyprland.cachix.org" ];
-      trusted-public-keys = [
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      ];
     };
 
     gc = {
@@ -49,12 +43,11 @@ in {
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages = [ "electron-27.3.11" "libsoup-2.74.3" ];
-
   };
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
-  environment.systemPackages = with pkgs; [ crush ];
+  environment.systemPackages = with pkgs; [ crush dysk ];
   programs.steam = {
     enable = true;
     # Required for managing Wine prefixes
@@ -126,30 +119,24 @@ in {
     services.samba.mount = {
       enable = true;
       shares = [
-        # {
-        #   mountPoint = "/mnt/blockade";
-        #   device = "//rp.netbird.cloud/blockade";
-        #   username = "smbuser";
-        #   password = "smbpass";
-        # }
-        # {
-        #   mountPoint = "/mnt/greystone";
-        #   device = "//rp.netbird.cloud/greystone";
-        #   username = "smbuser";
-        #   password = "smbpass";
-        # }
         {
           mountPoint = "/mnt/oracle";
           device = "//oracle.netbird.cloud/home";
           username = "smbuser";
           password = "smbpass";
         }
-        # {
-        #   mountPoint = "/mnt/neo";
-        #   device = "//neo.netbird.cloud/home";
-        #   username = "fractal-tess";
-        #   password = "smbpass";
-        # }
+        {
+          mountPoint = "/mnt/neo";
+          device = "//neo.netbird.cloud/home";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//neo.netbird.cloud/blockade";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
       ];
     };
 
@@ -192,7 +179,7 @@ in {
       [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
     password = "password";
     description = "default user";
-    packages = with pkgs; [ ];
+    packages = [ ];
   };
 
   users.groups.${username} = { members = [ username ]; };
@@ -219,40 +206,13 @@ in {
   # Printing
   services.printing = {
     enable = true;
-    drivers = with pkgs; [ ]; # Add printer drivers as needed
+    drivers = [ ]; # Add printer drivers as needed
   };
 
   services.dbus.enable = true;
   services.gvfs.enable = true;
 
   environment.variables = {
-    # Session and display configuration
-    # XDG_SESSION_TYPE = "wayland";
-
-    #   # NVIDIA-specific variables (when enabled)
-    # } // (lib.mkIf config.modules.drivers.nvidia.enable {
-    #   LIBVA_DRIVER_NAME = "nvidia";
-    #   GBM_BACKEND = "nvidia-drm";
-    #   __GLX_VENDOR_LIBRARY_NAME = "nvidia";
-    #   WLR_NO_HARDWARE_CURSORS = "1";
-    # }) // (lib.mkIf config.modules.drivers.amd.enable {
-    #   # AMD GPU video acceleration drivers
-    #   LIBVA_DRIVER_NAME = "radeonsi";
-    #   VDPAU_DRIVER = "radeonsi";
-    # }) // {
-    # Application-specific Wayland support
-    # NIXOS_OZONE_WL = "1"; # Electron/Chromium apps
-    # MOZ_ENABLE_WAYLAND = "1"; # Firefox Wayland support
-    # MOZ_USE_XINPUT2 = "1"; # Better Firefox input handling
-
-    # Qt and GTK configuration
-    # QT_QPA_PLATFORM = "wayland;xcb"; # Try Wayland first, fallback to X11
-    # GTK_THEME = "Nordic"; # Dark bluish GTK theme
-
-    # Cursor configuration
-    # XCURSOR_THEME = "Nordzy-cursors";
-    # XCURSOR_SIZE = "24";
-
     # Editor configuration
     VISUAL = "nvim";
     SUDO_EDITOR = "nvim";
