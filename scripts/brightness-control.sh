@@ -31,6 +31,7 @@ get_brightness() {
     local method=$(detect_brightness_method)
     local brightness=50  # fallback value
     
+    
     case "$method" in
         "brightnessctl")
             brightness=$(brightnessctl get)
@@ -42,7 +43,8 @@ get_brightness() {
             ;;
         "ddcutil")
             # Get brightness from the primary external monitor
-            brightness=$(ddcutil getvcp 10 2>/dev/null | grep -oP 'current value = \K\d+' | head -1)
+            local ddcutil_output=$(ddcutil getvcp 10 2>&1)
+            brightness=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
             if [[ -z "$brightness" ]]; then
                 brightness=50
             fi
@@ -60,6 +62,7 @@ set_brightness() {
     local value=$1
     local method=$(detect_brightness_method)
     
+    
     # Ensure value is within bounds
     if (( value < 0 )); then value=0; fi
     if (( value > 100 )); then value=100; fi
@@ -73,12 +76,13 @@ set_brightness() {
             ;;
         "ddcutil")
             # Set brightness on all detected monitors using the same method as brightness.sh
-            for bus in $(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g'); do
+            local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+            for bus in $buses; do
                 ddcutil --bus "$bus" --sleep-multiplier .1 setvcp 10 "$value" 2>/dev/null
             done
             ;;
         *)
-            # No brightness control available
+            # No brightness control method available
             ;;
     esac
 }
