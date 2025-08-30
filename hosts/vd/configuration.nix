@@ -183,9 +183,6 @@ in {
       enable = true;
       ssh.enable = true;
     };
-
-    # ----- Disk Utils ----- TODO:
-    services.disk-utils.enable = true;
   };
 
   # User
