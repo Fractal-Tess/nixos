@@ -20,17 +20,22 @@ in {
 
   # DDC support
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
+  # DDC support
+  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot = {
     kernelModules = [ "i2c-dev" ]
-      ++ (if config.modules.drivers.nvidia.enable then [
-        "nvidia"
-        "nvidia_modeset"
-        "nvidia_uvm"
-        "nvidia_drm"
-      ] else
+      ++ (if config.modules.drivers.nvidia.enable then
+        [
+          # "nvidia"
+          # "nvidia_modeset"
+          # "nvidia_uvm"
+          # "nvidia_drm"
+        ]
+      else
         [ ]);
     kernelParams = if config.modules.drivers.nvidia.enable then
-      [ "nvidia-drm.modeset=1" ]
+    # [ "nvidia-drm.modeset=1" ]
+      [ ]
     else
       [ ];
   };
@@ -270,9 +275,9 @@ in {
     # XCURSOR_SIZE = "24";
 
     # Editor configuration
-    #  VISUAL = "nvim";
-    #  SUDO_EDITOR = "nvim";
-    #  EDITOR = "nvim";
+    VISUAL = "nvim";
+    SUDO_EDITOR = "nvim";
+    EDITOR = "nvim";
 
     # Silence direnv logging
     DIRENV_LOG_FORMAT = "";
