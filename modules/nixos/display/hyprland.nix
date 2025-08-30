@@ -19,12 +19,16 @@ in {
       # Enable UWSM
       withUWSM = true;
     };
+
+    # Enable auto login
     services.getty.autologinUser = username;
 
+    # Hardware acceleration
     hardware.graphics = {
-      # if you also want 32-bit support (e.g for Steam)
+      enable = true;
+      # 32-bit support
       enable32Bit = true;
-      package32 = pkgs.pkgsi686Linux.mesa;
+
     };
 
     # Enable Hyprlock
@@ -45,6 +49,7 @@ in {
     environment.systemPackages = [ pkgs.kitty ];
     # Enable dconf for GTK/Flatpak app settings
     programs.dconf.enable = true;
+
     # Add nvidia driver for
     services.xserver.videoDrivers = mkMerge [
       (mkIf config.modules.drivers.nvidia.enable [ "nvidia" ])
