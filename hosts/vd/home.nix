@@ -1,8 +1,6 @@
-{ pkgs, username, lib, osConfig, ... }:
+{ pkgs, username, ... }:
 
-with lib;
-let cfg = osConfig;
-in {
+{
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs.nix
@@ -163,7 +161,7 @@ in {
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
     bitwarden # Password manager
-    viber-appimage # Voice and messaging app
+    viber # Instant messaging
     slack # Team collaboration platform
     thunderbird # Email client
 
