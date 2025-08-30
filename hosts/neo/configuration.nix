@@ -2,189 +2,81 @@
 
 {
   imports = [
-    # System configuration
     ./hardware-configuration.nix
 
-    # Home manager
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
 
-    # NixOS modules
     ../../modules/nixos/default.nix
   ];
 
-  # DDC support
-  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
-  boot.kernelModules = [ "i2c-dev" ];
-  services.udev.extraRules = ''
-    KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
-  '';
-  hardware.i2c.enable = true;
-
-  # Nix settings
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
-      substituters = [ "https://hyprland.cachix.org" ];
-      trusted-public-keys = [
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      ];
-    };
-
-    gc = {
-      automatic = true;
-      dates = "weekly";
-      options = "--delete-older-than 7d";
     };
   };
 
-
   nixpkgs.config = {
     allowUnfree = true;
+    permittedInsecurePackages = [ "libsoup-2.74.3" ];
   };
 
   nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
 
   environment.systemPackages = with pkgs; [ ];
-  programs.steam = {
-    enable = true;
-    # Required for managing Wine prefixes
-    protontricks.enable = true;
-    # Recommended for better gaming performance
-    gamescopeSession.enable = true;
 
-    # Install Proton-GE for better compatibility
-    extraCompatPackages = with pkgs; [ protonup ];
-
-    # Additional libraries needed for Wine/Proton
-    extraPackages = with pkgs; [
-      # Basic dependencies
-      keyutils
-      libkrb5
-      libpng
-      libpulseaudio
-      # Media support
-      gst_all_1.gst-plugins-base
-      gst_all_1.gst-plugins-good
-      # 32-bit libraries
-      pkgsi686Linux.keyutils
-      pkgsi686Linux.libkrb5
-    ];
-  };
+  services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
+  services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
+  services.logind.settings.Login.HandleLidSwitch = "ignore";
 
   modules = {
-    # ----- Drivers -----
     drivers.amd.enable = true;
-
-    # ----- Security -----
     security.noSudoPassword = true;
-
-    # ----- Display -----
     display = {
-      # ----- Hyprland -----
-      hyprland.enable = true;
-
-      # ----- ReGreet -----
-      regreet = {
+      hyprland = {
         enable = true;
-        symlinkBackgrounds = true;
+        autoLogin = true;
       };
     };
-
-    # ----- Bar -----
     display.waybar.enable = true;
-
-    # ----- Virtualization -----
     services.virtualization = {
       docker = {
         enable = true;
-        rootless = true;
+        rootless = false;
         devtools = true;
       };
-      firecracker.enable = false;
-      kubernetes.enable = false;
-
-      # --- Containers   --- 
-      # containers = {
-      #   # Add container configurations here if needed
-      # };
     };
-
-    # ----- SSHD -----
     services.sshd.enable = true;
-
-    # ----- Automount -----
     services.automount.enable = true;
-
-    # ----- Samba shares -----
-    services.samba.mount = {
-      enable = true;
-      shares = [
-        {
-          mountPoint = "/mnt/blockade";
-          device = "//rp.netbird.cloud/blockade";
-          username = "smbuser";
-          password = "smbpass";
-        }
-        {
-          mountPoint = "/mnt/greystone";
-          device = "//rp.netbird.cloud/greystone";
-          username = "smbuser";
-          password = "smbpass";
-        }
-        {
-          mountPoint = "/mnt/oracle";
-          device = "//oracle.netbird.cloud/home";
-          username = "smbuser";
-          password = "smbpass";
-        },
-        {
-          mountPoint = "/mnt/vault";
-          device = "//vd.netbird.cloud/vault";
-          username = username;
-          password = "smbpass";
-        },
-        {
-          mountPoint = "/mnt/backup";
-          device = "//vd.netbird.cloud/backup";
-          username = username;
-          password = "smbpass";
-        }
-      ];
-    };
-
-    # Samba share service
     services.samba.share = {
       enable = true;
+      openFirewall = true;
       shares = [{
         name = "home";
         path = "/home/${username}";
         forceUser = username;
         forceGroup = "users";
+      }
+      {
+        name = "blockade";
+        path = "/mnt/blockade";
+        forceUser = username;
+        forceGroup = "users";
       }];
     };
 
-    # SOPS
+
     services.sops = {
       enable = true;
-      ssh = {
-        enable = true;
-        authorizedKeys.enable = true;
-        config.enable = true;
-      };
+      ssh.enable = true;
     };
-
-    # ----- Automount ----- 
-    services.automount.enable = true;
   };
 
-  # Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
-
-  # Light
+  services.dbus.enable = true;
   programs.light.enable = true;
 
   # Zram
@@ -205,7 +97,7 @@
   };
   users.groups.${username} = { members = [ username ]; };
 
-  # Make users mutable 
+  # Make users mutable
   users.mutableUsers = true;
 
   # Home-Manger
@@ -217,29 +109,13 @@
     backupFileExtension = "hm-bak";
   };
 
-  # Fonts
   fonts.packages = with pkgs; [
     font-awesome
     powerline-fonts
     powerline-symbols
   ];
-  # Printing
-  services.printing = {
-    enable = true;
-    drivers = with pkgs; [ ]; # Add printer drivers as needed
-  };
-
-  services.dbus.enable = true;
-  services.gvfs.enable = true;
 
   environment.variables = {
-    # Force Qt applications to use X11 backend instead of Wayland
-    QT_QPA_PLATFORM = "xcb";
-
-    # Set AMD GPU video acceleration drivers
-    # LIBVA_DRIVER_NAME = "radeonsi";  # VA-API driver for AMD GPUs
-    # VDPAU_DRIVER = "radeonsi";       # VDPAU driver for AMD GPUs
-
     # Set GTK theme and cursor settings
     GTK_THEME = "Nordic"; # Dark bluish GTK theme
     XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
@@ -247,9 +123,6 @@
 
     # Silence direnv logging output
     DIRENV_LOG_FORMAT = "";
-
-    # Uncomment to force software cursor if hardware cursor doesn't work
-    # WLR_NO_HARDWARE_CURSORS = "1";
 
     # Enable Wayland support in Electron/Ozone apps
     NIXOS_OZONE_WL = "1";
@@ -271,6 +144,4 @@
   # Before changing this value read the documentation for this option
   # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
   system.stateVersion = "24.05"; # Did you read the comment?
-
 }
-
