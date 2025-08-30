@@ -233,9 +233,9 @@ set_brightness() {
     print_status "Setting brightness to $brightness%"
     
     # Method 1: Custom brightness script
-    if [ -f ~/nixos/scripts/brightness.sh ]; then
-        if ~/nixos/scripts/brightness.sh "$brightness"; then
-            print_success "Brightness set via custom script"
+    if [ -f ~/nixos/scripts/brightness-control.sh ]; then
+        if ~/nixos/scripts/brightness-control.sh "$brightness"; then
+            print_success "Brightness set via brightness-control script"
             return 0
         fi
     fi
