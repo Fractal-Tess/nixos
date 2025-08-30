@@ -1,20 +1,40 @@
 { pkgs, inputs, username, ... }:
 
 {
+  #============================================================================
+  # IMPORTS
+  #============================================================================
+  
   imports = [
+    # Hardware configuration
     ./hardware-configuration.nix
-
+    
+    # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
-
+    
+    # Custom NixOS modules
     ../../modules/nixos/default.nix
   ];
 
+  #============================================================================
+  # SYSTEM CONFIGURATION
+  #============================================================================
+  
+  # Release version - DO NOT CHANGE unless you know what you're doing
+  system.stateVersion = "24.05";
+
+  #============================================================================
+  # NIX CONFIGURATION
+  #============================================================================
+  
   nix = {
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
     };
+    
+    nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   };
 
   nixpkgs.config = {
@@ -22,85 +42,141 @@
     permittedInsecurePackages = [ "libsoup-2.74.3" ];
   };
 
-  nix.nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
-
-  environment.systemPackages = with pkgs; [ ];
-
-  services.logind.settings.Login.HandleLidSwitchDocked = "ignore";
-  services.logind.settings.Login.HandleLidSwitchExternalPower = "ignore";
-  services.logind.settings.Login.HandleLidSwitch = "ignore";
-
-  modules = {
-    drivers.amd.enable = true;
-    security.noSudoPassword = true;
-    display = {
-      hyprland = {
-        enable = true;
-        autoLogin = true;
-      };
-    };
-    display.waybar.enable = true;
-    services.virtualization = {
-      docker = {
-        enable = true;
-        rootless = false;
-        devtools = true;
-      };
-    };
-    services.sshd.enable = true;
-    services.automount.enable = true;
-    services.samba.share = {
-      enable = true;
-      openFirewall = true;
-      shares = [{
-        name = "home";
-        path = "/home/${username}";
-        forceUser = username;
-        forceGroup = "users";
-      }
-      {
-        name = "blockade";
-        path = "/mnt/blockade";
-        forceUser = username;
-        forceGroup = "users";
-      }];
-    };
-
-
-    services.sops = {
-      enable = true;
-      ssh.enable = true;
-    };
+  #============================================================================
+  # HARDWARE CONFIGURATION
+  #============================================================================
+  
+  # Bluetooth configuration
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
   };
-
-  hardware.bluetooth.enable = true;
-  hardware.bluetooth.powerOnBoot = true;
-  services.blueman.enable = true;
-  services.dbus.enable = true;
-  programs.light.enable = true;
-
-  # Zram
+  
+  # Memory management
   zramSwap.enable = true;
   swapDevices = [{
     device = "/swapfile";
     size = 16 * 1024; # 16GB
   }];
 
-  # User
-  users.users.${username} = {
-    isNormalUser = true;
-    extraGroups =
-      [ "networkmanager" "wheel" "video" "fractal-tess" "wireshark" ];
-    password = "password";
-    description = "default user";
-    packages = with pkgs; [ ];
+  #============================================================================
+  # POWER MANAGEMENT
+  #============================================================================
+  
+  # Laptop lid settings - ignore lid close when docked/external power
+  services.logind.settings.Login = {
+    HandleLidSwitchDocked = "ignore";
+    HandleLidSwitchExternalPower = "ignore";
+    HandleLidSwitch = "ignore";
   };
-  users.groups.${username} = { members = [ username ]; };
 
-  # Make users mutable
-  users.mutableUsers = true;
+  #============================================================================
+  # CUSTOM MODULES CONFIGURATION
+  #============================================================================
+  
+  modules = {
+    # Hardware drivers
+    drivers.amd.enable = true;
+    
+    # Security
+    security.noSudoPassword = true;
+    
+    # Display system
+    display = {
+      hyprland.enable = true;
+      waybar.enable = true;
+    };
+    
+    # Services
+    services = {
+      sshd.enable = true;
+      automount.enable = true;
+      sops = {
+        enable = true;
+        ssh.enable = true;
+      };
+      
+      # Virtualization
+      virtualization = {
+        docker = {
+          enable = true;
+          rootless = false;
+          devtools = true;
+        };
+      };
+      
+      # Samba configuration
+      samba.share = {
+        enable = true;
+        openFirewall = true;
+        shares = [
+          {
+            name = "home";
+            path = "/home/${username}";
+            forceUser = username;
+            forceGroup = "users";
+          }
+          {
+            name = "blockade";
+            path = "/mnt/blockade";
+            forceUser = username;
+            forceGroup = "users";
+          }
+        ];
+      };
+    };
+  };
 
-  # Home-Manger
+  #============================================================================
+  # SYSTEM PACKAGES & PROGRAMS
+  #============================================================================
+  
+  # Essential system packages (minimal for laptop)
+  environment.systemPackages = with pkgs; [ ];
+  
+  # Brightness control
+  programs.light.enable = true;
+
+  #============================================================================
+  # SYSTEM SERVICES
+  #============================================================================
+  
+  # Core system services
+  services = {
+    dbus.enable = true;
+    blueman.enable = true; # Bluetooth manager
+  };
+
+  #============================================================================
+  # USER CONFIGURATION
+  #============================================================================
+  
+  users = {
+    mutableUsers = true;
+    
+    users.${username} = {
+      isNormalUser = true;
+      description = "default user";
+      password = "password";
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+        "video"
+        "fractal-tess"
+        "wireshark"
+      ];
+      packages = [ ];
+    };
+    
+    groups.${username} = {
+      members = [ username ];
+    };
+  };
+
+  #============================================================================
+  # HOME MANAGER CONFIGURATION
+  #============================================================================
+  
   home-manager = {
     useGlobalPkgs = true;
     useUserPackages = true;
@@ -109,39 +185,37 @@
     backupFileExtension = "hm-bak";
   };
 
+  #============================================================================
+  # FONTS
+  #============================================================================
+  
   fonts.packages = with pkgs; [
     font-awesome
     powerline-fonts
     powerline-symbols
   ];
 
+  #============================================================================
+  # ENVIRONMENT VARIABLES
+  #============================================================================
+  
   environment.variables = {
-    # Set GTK theme and cursor settings
-    GTK_THEME = "Nordic"; # Dark bluish GTK theme
+    # Theme configuration
+    GTK_THEME = "Nordic";           # Dark bluish GTK theme
     XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
-    XCURSOR_SIZE = "24"; # Default cursor size
-
-    # Silence direnv logging output
-    DIRENV_LOG_FORMAT = "";
-
-    # Enable Wayland support in Electron/Ozone apps
-    NIXOS_OZONE_WL = "1";
-
-    # Set default editors
-    VISUAL = "nvim"; # Visual editor for GUI contexts
-    SUDO_EDITOR = "nvim"; # Editor used by sudo -e
-    EDITOR = "nvim"; # Default terminal editor
-
-    # Firefox Wayland settings
-    MOZ_USE_WAYLAND = 1; # Enable Wayland support in Firefox
-    MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
+    XCURSOR_SIZE = "24";            # Default cursor size
+    
+    # Default editor configuration
+    VISUAL = "nvim";                # Visual editor for GUI contexts
+    SUDO_EDITOR = "nvim";           # Editor used by sudo -e
+    EDITOR = "nvim";                # Default terminal editor
+    
+    # Wayland support
+    NIXOS_OZONE_WL = "1";           # Enable Wayland in Electron/Ozone apps
+    MOZ_USE_WAYLAND = "1";          # Enable Wayland support in Firefox
+    MOZ_USE_XINPUT2 = "1";          # Enable XInput2 for better input handling
+    
+    # Development tools
+    DIRENV_LOG_FORMAT = "";         # Silence direnv logging output
   };
-
-  # This value determines the NixOS release from which the default
-  # settings for stateful data, like file locations and database versions
-  # on your system were taken. It's perfectly fine and recommended to leave
-  # this value at the release version of the first install of this system.
-  # Before changing this value read the documentation for this option
-  # (e.g. man configuration.nix or on https://nixos.org/nixos/options.html).
-  system.stateVersion = "24.05"; # Did you read the comment?
 }
