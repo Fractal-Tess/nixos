@@ -206,6 +206,13 @@
     inkscape
 
     qbittorrent # BitTorrent client
+    seahorse # GUI for GNOME Keyring
   ];
+
+  # Enable GNOME Keyring daemon
+  services.gnome-keyring = {
+    enable = true;
+    components = [ "secrets" "ssh" ];
+  };
 
 }

@@ -211,12 +211,16 @@
 
   services.dbus.enable = true;
   services.gvfs.enable = true;
+  
+  # GNOME Keyring for dbus secrets
+  services.gnome.gnome-keyring.enable = true;
+  security.pam.services.greetd.enableGnomeKeyring = true;
 
   environment.variables = {
     # Editor configuration
-    VISUAL = "nvim";
-    SUDO_EDITOR = "nvim";
-    EDITOR = "nvim";
+    VISUAL = "zed";
+    SUDO_EDITOR = "zed --wait";
+    EDITOR = "zed --wait";
 
     # Silence direnv logging
     DIRENV_LOG_FORMAT = "";
