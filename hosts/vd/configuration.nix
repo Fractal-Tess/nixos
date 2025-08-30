@@ -218,9 +218,9 @@
 
   environment.variables = {
     # Editor configuration
-    VISUAL = "zed";
-    SUDO_EDITOR = "zed --wait";
-    EDITOR = "zed --wait";
+    VISUAL = "zeditor";
+    SUDO_EDITOR = "zeditor --wait";
+    EDITOR = "zeditor --wait";
 
     # Silence direnv logging
     DIRENV_LOG_FORMAT = "";
