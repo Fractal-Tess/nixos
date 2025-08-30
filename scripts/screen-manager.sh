@@ -1,5 +1,10 @@
 # Comprehensive screen and session management script
 # Combines screen control, session locking, and brightness management
+# Includes caching system for fast brightness operations
+
+# Configuration
+BRIGHTNESS_CACHE_FILE="/tmp/brightness-cache"
+BRIGHTNESS_STEP=10
 
 # Colors for output
 RED='\033[0;31m'
@@ -24,6 +29,154 @@ print_warning() {
 print_error() {
     echo -e "${RED}[ERROR]${NC} $1"
 }
+
+# ============================================================================
+# BRIGHTNESS MANAGEMENT FUNCTIONS
+# ============================================================================
+
+# Detect available brightness control method
+detect_brightness_method() {
+    # Check for laptop brightness controls first
+    if command -v brightnessctl >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
+        echo "brightnessctl"
+    elif command -v light >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
+        echo "light"  
+    elif command -v ddcutil >/dev/null 2>&1; then
+        # Check if ddcutil can detect any monitors
+        if ddcutil detect >/dev/null 2>&1; then
+            echo "ddcutil"
+        else
+            echo "none"
+        fi
+    else
+        echo "none"
+    fi
+}
+
+# Initialize brightness cache if it doesn't exist
+init_brightness_cache() {
+    if [[ ! -f "$BRIGHTNESS_CACHE_FILE" ]]; then
+        local method=$(detect_brightness_method)
+        local initial_brightness=50  # default fallback
+        
+        case "$method" in
+            "brightnessctl")
+                local current=$(brightnessctl get 2>/dev/null)
+                local max=$(brightnessctl max 2>/dev/null)
+                if [[ -n "$current" && -n "$max" && $max -gt 0 ]]; then
+                    initial_brightness=$((current * 100 / max))
+                fi
+                ;;
+            "light")
+                local current=$(light -G 2>/dev/null | cut -d. -f1)
+                if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
+                    initial_brightness=$current
+                fi
+                ;;
+            "ddcutil")
+                # Only query once on initialization to avoid lag
+                local ddcutil_output=$(ddcutil getvcp 10 2>/dev/null)
+                local current=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
+                if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
+                    initial_brightness=$current
+                fi
+                ;;
+        esac
+        
+        echo "$initial_brightness" > "$BRIGHTNESS_CACHE_FILE"
+    fi
+}
+
+# Get current brightness from cache
+get_brightness() {
+    init_brightness_cache
+    
+    if [[ -f "$BRIGHTNESS_CACHE_FILE" ]]; then
+        local cached_value=$(cat "$BRIGHTNESS_CACHE_FILE" 2>/dev/null)
+        if [[ "$cached_value" =~ ^[0-9]+$ ]] && (( cached_value >= 0 && cached_value <= 100 )); then
+            echo "$cached_value"
+            return
+        fi
+    fi
+    
+    # Fallback if cache is corrupted or missing
+    echo "50"
+}
+
+# Set brightness with cache update (for responsive UI)
+set_brightness_cached() {
+    local value=$1
+    local method=$(detect_brightness_method)
+
+    # Ensure value is within bounds
+    if (( value < 0 )); then value=0; fi
+    if (( value > 100 )); then value=100; fi
+
+    # Update cache first for immediate feedback
+    echo "$value" > "$BRIGHTNESS_CACHE_FILE"
+
+    # Set actual brightness in background to avoid lag
+    case "$method" in
+        "brightnessctl")
+            brightnessctl set "${value}%" >/dev/null 2>&1 &
+            ;;
+        "light")
+            light -S "$value" >/dev/null 2>&1 &
+            ;;
+        "ddcutil")
+            # Set brightness on all detected monitors in background
+            {
+                local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+                for bus in $buses; do
+                    ddcutil --bus "$bus" --sleep-multiplier .1 setvcp 10 "$value" 2>/dev/null
+                done
+            } &
+            ;;
+        *)
+            print_warning "No brightness control method available"
+            return 1
+            ;;
+    esac
+    
+    return 0
+}
+
+# Set brightness directly without cache (for compatibility)
+set_brightness_direct() {
+    local value=$1
+    
+    # Ensure value is within bounds
+    if (( value < 0 )); then value=0; fi
+    if (( value > 100 )); then value=100; fi
+    
+    # Direct brightness setting (original brightness.sh behavior)
+    for bus in $(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g'); do
+        ddcutil --bus "$bus" setvcp 10 "$value" 2>/dev/null
+    done
+}
+
+# Output JSON for waybar
+output_brightness_json() {
+    local brightness=$(get_brightness)
+    local method=$(detect_brightness_method)
+    local method_text=""
+
+    case "$method" in
+        "brightnessctl") method_text=" (brightnessctl)" ;;
+        "light") method_text=" (light)" ;;
+        "ddcutil") method_text=" (ddcutil)" ;;
+        "none") method_text=" (no control)" ;;
+    esac
+
+    local tooltip="Brightness: ${brightness}%${method_text}\\rScroll: adjust brightness\\rClick: turn screens off"
+
+    # Output single-line JSON for waybar
+    printf '{"percentage": %d, "text": "☀ %d%%", "tooltip": "%s", "class": "brightness"}\n' "$brightness" "$brightness" "$tooltip"
+}
+
+# ============================================================================
+# SCREEN MANAGEMENT FUNCTIONS
+# ============================================================================
 
 # Function to get Hyprland instance signature
 get_hyprland_signature() {
@@ -221,7 +374,7 @@ unlock_session() {
     fi
 }
 
-# Function to set brightness
+# Legacy brightness function (now uses cached version)
 set_brightness() {
     local brightness="$1"
     
@@ -232,40 +385,13 @@ set_brightness() {
     
     print_status "Setting brightness to $brightness%"
     
-    # Method 1: Custom brightness script
-    if [ -f ~/nixos/scripts/brightness-control.sh ]; then
-        if ~/nixos/scripts/brightness-control.sh "$brightness"; then
-            print_success "Brightness set via brightness-control script"
-            return 0
-        fi
+    if set_brightness_cached "$brightness"; then
+        print_success "Brightness set successfully"
+        return 0
+    else
+        print_error "Failed to set brightness"
+        return 1
     fi
-    
-    # Method 2: ddcutil
-    if command -v ddcutil >/dev/null 2>&1; then
-        if ddcutil setvcp 10 "$brightness"; then
-            print_success "Brightness set via ddcutil"
-            return 0
-        fi
-    fi
-    
-    # Method 3: brightnessctl
-    if command -v brightnessctl >/dev/null 2>&1; then
-        if brightnessctl set "$brightness%"; then
-            print_success "Brightness set via brightnessctl"
-            return 0
-        fi
-    fi
-    
-    # Method 4: light
-    if command -v light >/dev/null 2>&1; then
-        if light -S "$brightness"; then
-            print_success "Brightness set via light"
-            return 0
-        fi
-    fi
-    
-    print_error "Failed to set brightness"
-    return 1
 }
 
 # Function to show status
@@ -298,37 +424,48 @@ show_status() {
     fi
     
     # Brightness info
-    if command -v brightnessctl >/dev/null 2>&1; then
-        local brightness=$(brightnessctl get)
-        local max_brightness=$(brightnessctl max)
-        local percentage=$((brightness * 100 / max_brightness))
-        echo "Brightness: ${percentage}%"
-    fi
+    local brightness=$(get_brightness)
+    local method=$(detect_brightness_method)
+    echo "Brightness: ${brightness}% (${method})"
 }
 
 # Function to show help
 show_help() {
-    echo "Screen and Session Manager"
+    echo "Unified Screen and Brightness Manager"
     echo ""
-    echo "Usage: $0 [OPTION] [VALUE]"
+    echo "Usage: $0 [COMMAND] [OPTIONS]"
     echo ""
-    echo "Options:"
+    echo "SCREEN COMMANDS:"
     echo "  off, off-screen     Turn screen off"
     echo "  on, on-screen       Turn screen on"
     echo "  toggle              Toggle screen on/off"
+    echo ""
+    echo "SESSION COMMANDS:"
     echo "  lock                Lock current session"
     echo "  unlock              Unlock current session"
     echo "  lock-toggle         Toggle session lock state"
-    echo "  brightness <0-100>  Set brightness to percentage"
+    echo ""
+    echo "BRIGHTNESS COMMANDS:"
+    echo "  brightness <0-100>  Set brightness to percentage (legacy)"
+    echo "  bright-get          Get current brightness percentage (from cache)"
+    echo "  bright-set <0-100>  Set brightness to specific percentage"
+    echo "  bright-up [step]    Increase brightness (default: ${BRIGHTNESS_STEP}%)"
+    echo "  bright-down [step]  Decrease brightness (default: ${BRIGHTNESS_STEP}%)"
+    echo "  bright-json         Output JSON format for waybar"
+    echo "  <0-100>             Set brightness directly (brightness.sh compatibility)"
+    echo ""
+    echo "UTILITY COMMANDS:"
     echo "  status              Show current status"
     echo "  help                Show this help message"
     echo ""
-    echo "Examples:"
+    echo "EXAMPLES:"
     echo "  $0 off              # Turn screen off"
-    echo "  $0 on               # Turn screen on"
-    echo "  $0 lock             # Lock session"
-    echo "  $0 brightness 50    # Set brightness to 50%"
-    echo "  $0 status           # Show status"
+    echo "  $0 bright-set 75    # Set brightness to 75%"
+    echo "  $0 bright-up        # Increase brightness by ${BRIGHTNESS_STEP}%"
+    echo "  $0 bright-up 20     # Increase brightness by 20%"
+    echo "  $0 75               # Set brightness to 75% (direct)"
+    echo "  $0 bright-json      # Output JSON for waybar"
+    echo "  $0 status           # Show system status"
 }
 
 # Main script logic
@@ -337,6 +474,7 @@ main() {
     local value="$2"
     
     case "$action" in
+        # Screen management commands
         "off"|"off-screen")
             print_status "Turning screen off..."
             if ! screen_off_hyprctl; then
@@ -364,6 +502,7 @@ main() {
                 fi
             fi
             ;;
+        # Session management commands
         "lock")
             lock_session
             ;;
@@ -378,9 +517,52 @@ main() {
                 lock_session
             fi
             ;;
+        # Brightness management commands
+        "bright-get")
+            get_brightness
+            ;;
+        "bright-set")
+            if [[ -z "$value" ]]; then
+                print_error "bright-set command requires a percentage argument (0-100)"
+                exit 1
+            fi
+            if ! [[ "$value" =~ ^[0-9]+$ ]] || (( value < 0 || value > 100 )); then
+                print_error "Brightness percentage must be a number between 0-100"
+                exit 1
+            fi
+            set_brightness_cached "$value"
+            print_success "Brightness set to ${value}%"
+            ;;
+        "bright-up")
+            local current=$(get_brightness)
+            local step="${value:-$BRIGHTNESS_STEP}"
+            if ! [[ "$step" =~ ^[0-9]+$ ]] || (( step < 1 || step > 100 )); then
+                print_error "Step must be a number between 1-100"
+                exit 1
+            fi
+            local new_brightness=$((current + step))
+            set_brightness_cached $new_brightness
+            print_success "Brightness increased by ${step}% (${current}% → ${new_brightness}%)"
+            ;;
+        "bright-down")
+            local current=$(get_brightness)
+            local step="${value:-$BRIGHTNESS_STEP}"
+            if ! [[ "$step" =~ ^[0-9]+$ ]] || (( step < 1 || step > 100 )); then
+                print_error "Step must be a number between 1-100"
+                exit 1
+            fi
+            local new_brightness=$((current - step))
+            set_brightness_cached $new_brightness
+            print_success "Brightness decreased by ${step}% (${current}% → ${new_brightness}%)"
+            ;;
+        "bright-json")
+            output_brightness_json
+            ;;
         "brightness")
+            # Legacy brightness command
             set_brightness "$value"
             ;;
+        # Utility commands
         "status")
             show_status
             ;;
@@ -388,9 +570,15 @@ main() {
             show_help
             ;;
         *)
-            print_error "Unknown action: $action"
-            show_help
-            exit 1
+            # Check if first argument is a number (brightness.sh compatibility)
+            if [[ "$action" =~ ^[0-9]+$ ]] && (( action >= 0 && action <= 100 )); then
+                # Legacy brightness.sh mode - set brightness directly without cache
+                set_brightness_direct "$action"
+            else
+                print_error "Unknown command: $action"
+                show_help
+                exit 1
+            fi
             ;;
     esac
 }
