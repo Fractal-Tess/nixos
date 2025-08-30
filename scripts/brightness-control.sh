@@ -6,6 +6,7 @@
 
 # Configuration
 STEP=10  # Brightness adjustment step (percentage)
+CACHE_FILE="/tmp/brightness-cache"  # Cache file to avoid slow i2c calls
 
 # Detect system type and available tools
 detect_brightness_method() {
@@ -13,7 +14,7 @@ detect_brightness_method() {
     if command -v brightnessctl >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
         echo "brightnessctl"
     elif command -v light >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
-        echo "light"  
+        echo "light"
     elif command -v ddcutil >/dev/null 2>&1; then
         # Check if ddcutil can detect any monitors
         if ddcutil detect >/dev/null 2>&1; then
@@ -26,60 +27,84 @@ detect_brightness_method() {
     fi
 }
 
-# Function to get current brightness percentage
-get_brightness() {
-    local method=$(detect_brightness_method)
-    local brightness=50  # fallback value
-    
-    
-    case "$method" in
-        "brightnessctl")
-            brightness=$(brightnessctl get)
-            local max=$(brightnessctl max)
-            brightness=$((brightness * 100 / max))
-            ;;
-        "light")
-            brightness=$(light -G | cut -d. -f1)
-            ;;
-        "ddcutil")
-            # Get brightness from the primary external monitor
-            local ddcutil_output=$(ddcutil getvcp 10 2>&1)
-            brightness=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
-            if [[ -z "$brightness" ]]; then
-                brightness=50
-            fi
-            ;;
-        *)
-            brightness=50  # fallback if no method available
-            ;;
-    esac
-    
-    echo "$brightness"
+# Function to initialize cache file if it doesn't exist
+init_brightness_cache() {
+    if [[ ! -f "$CACHE_FILE" ]]; then
+        local method=$(detect_brightness_method)
+        local initial_brightness=50  # default fallback
+        
+        case "$method" in
+            "brightnessctl")
+                local current=$(brightnessctl get 2>/dev/null)
+                local max=$(brightnessctl max 2>/dev/null)
+                if [[ -n "$current" && -n "$max" && $max -gt 0 ]]; then
+                    initial_brightness=$((current * 100 / max))
+                fi
+                ;;
+            "light")
+                local current=$(light -G 2>/dev/null | cut -d. -f1)
+                if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
+                    initial_brightness=$current
+                fi
+                ;;
+            "ddcutil")
+                # Only query once on initialization to avoid lag
+                local ddcutil_output=$(ddcutil getvcp 10 2>/dev/null)
+                local current=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
+                if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
+                    initial_brightness=$current
+                fi
+                ;;
+        esac
+        
+        echo "$initial_brightness" > "$CACHE_FILE"
+    fi
 }
 
-# Function to set brightness percentage
+# Function to get current brightness percentage from cache
+get_brightness() {
+    init_brightness_cache
+    
+    if [[ -f "$CACHE_FILE" ]]; then
+        local cached_value=$(cat "$CACHE_FILE" 2>/dev/null)
+        if [[ "$cached_value" =~ ^[0-9]+$ ]] && (( cached_value >= 0 && cached_value <= 100 )); then
+            echo "$cached_value"
+            return
+        fi
+    fi
+    
+    # Fallback if cache is corrupted or missing
+    echo "50"
+}
+
+# Function to set brightness percentage and update cache
 set_brightness() {
     local value=$1
     local method=$(detect_brightness_method)
-    
-    
+
     # Ensure value is within bounds
     if (( value < 0 )); then value=0; fi
     if (( value > 100 )); then value=100; fi
-    
+
+    # Update cache first for immediate feedback
+    echo "$value" > "$CACHE_FILE"
+
+    # Set actual brightness in background to avoid lag
     case "$method" in
         "brightnessctl")
-            brightnessctl set "${value}%" >/dev/null 2>&1
+            brightnessctl set "${value}%" >/dev/null 2>&1 &
             ;;
         "light")
-            light -S "$value" >/dev/null 2>&1
+            light -S "$value" >/dev/null 2>&1 &
             ;;
         "ddcutil")
-            # Set brightness on all detected monitors using the same method as brightness.sh
-            local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
-            for bus in $buses; do
-                ddcutil --bus "$bus" --sleep-multiplier .1 setvcp 10 "$value" 2>/dev/null
-            done
+            # Set brightness on all detected monitors in background
+            {
+                local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+                for bus in $buses; do
+                    ddcutil --bus "$bus" --sleep-multiplier .1 setvcp 10 "$value" 2>/dev/null
+                done
+            } &
             ;;
         *)
             # No brightness control method available
@@ -98,16 +123,16 @@ output_waybar_json() {
     local brightness=$(get_brightness)
     local method=$(detect_brightness_method)
     local method_text=""
-    
+
     case "$method" in
         "brightnessctl") method_text=" (brightnessctl)" ;;
         "light") method_text=" (light)" ;;
         "ddcutil") method_text=" (ddcutil)" ;;
         "none") method_text=" (no control)" ;;
     esac
-    
+
     local tooltip="Brightness: ${brightness}%${method_text}\\rScroll: adjust brightness\\rClick: turn screens off"
-    
+
     # Output single-line JSON for waybar (like nvidia script)
     printf '{"percentage": %d, "text": "☀ %d%%", "tooltip": "%s", "class": "brightness"}\n' "$brightness" "$brightness" "$tooltip"
 }
