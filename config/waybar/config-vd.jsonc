@@ -179,7 +179,7 @@
     },
     "custom/brightness": {
       "format": "{}",
-      "exec": "~/nixos/scripts/brightness-control.sh json",
+      "exec": "~/nixos/scripts/brightness-control.sh get",
       "return-type": "json",
       "interval": 2,
       "on-scroll-up": "~/nixos/scripts/brightness-control.sh up",
