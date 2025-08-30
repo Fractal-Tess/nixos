@@ -3,8 +3,16 @@
 with lib;
 let cfg = config.modules.display.hyprland;
 in {
-  # Option to enable or disable Hyprland
-  options.modules.display.hyprland.enable = mkEnableOption "Hyprland";
+  # Options for Hyprland configuration
+  options.modules.display.hyprland = {
+    enable = mkEnableOption "Hyprland";
+    
+    autoLogin = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Enable automatic login for the user";
+    };
+  };
 
   config = mkIf cfg.enable {
     # Enable Hyprland compositor
@@ -20,8 +28,8 @@ in {
       withUWSM = true;
     };
 
-    # Enable auto login
-    services.getty.autologinUser = username;
+    # Enable auto login (conditional)
+    services.getty.autologinUser = mkIf cfg.autoLogin username;
 
     # Hardware acceleration
     hardware.graphics = {
