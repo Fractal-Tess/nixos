@@ -78,7 +78,7 @@ modules/nixos/services/[service]/
 ### Scripts
 
 - [scripts/](mdc:scripts/) - System utility scripts
-  - [scripts/brightness-control.sh](mdc:scripts/brightness-control.sh) - Brightness control
+  - [scripts/screen-manager.sh](mdc:scripts/screen-manager.sh) - Unified screen and brightness manager
   - [scripts/powermenu.sh](mdc:scripts/powermenu.sh) - Power menu
   - [scripts/screenshot.sh](mdc:scripts/screenshot.sh) - Screenshot utility
   - etc.
