@@ -32,7 +32,7 @@ init_brightness_cache() {
     if [[ ! -f "$CACHE_FILE" ]]; then
         local method=$(detect_brightness_method)
         local initial_brightness=50  # default fallback
-        
+
         case "$method" in
             "brightnessctl")
                 local current=$(brightnessctl get 2>/dev/null)
@@ -56,7 +56,7 @@ init_brightness_cache() {
                 fi
                 ;;
         esac
-        
+
         echo "$initial_brightness" > "$CACHE_FILE"
     fi
 }
@@ -64,7 +64,7 @@ init_brightness_cache() {
 # Function to get current brightness percentage from cache
 get_brightness() {
     init_brightness_cache
-    
+
     if [[ -f "$CACHE_FILE" ]]; then
         local cached_value=$(cat "$CACHE_FILE" 2>/dev/null)
         if [[ "$cached_value" =~ ^[0-9]+$ ]] && (( cached_value >= 0 && cached_value <= 100 )); then
@@ -72,7 +72,7 @@ get_brightness() {
             return
         fi
     fi
-    
+
     # Fallback if cache is corrupted or missing
     echo "50"
 }
@@ -112,9 +112,25 @@ set_brightness() {
     esac
 }
 
+# Function to set brightness directly (brightness.sh compatibility - no cache)
+set_brightness_direct() {
+    local value=$1
+    
+    # Ensure value is within bounds
+    if (( value < 0 )); then value=0; fi
+    if (( value > 100 )); then value=100; fi
+    
+    # Direct brightness setting for hypridle compatibility (original brightness.sh behavior)
+    for bus in $(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g'); do
+        ddcutil --bus "$bus" setvcp 10 "$value" 2>/dev/null
+    done
+}
+
 # Function to turn screens off (using the same method as Meta+M in hyprland)
 turn_screens_off() {
     # Use the existing screen-manager script which handles monitor control
+    # Sleep to avoid waking the screen due to mouse movement or click-release events
+    sleep 1
     ~/nixos/scripts/screen-manager.sh off 2>/dev/null
 }
 
@@ -146,12 +162,13 @@ A cross-platform brightness control utility for desktop and laptop systems.
 Supports ddcutil (i2c monitors), brightnessctl, and light backends.
 
 COMMANDS:
-    get                 Get current brightness percentage
+    get                 Get current brightness percentage (from cache)
     set <percentage>    Set brightness to specific percentage (0-100)
     up [step]          Increase brightness (default: ${STEP}%)
     down [step]        Decrease brightness (default: ${STEP}%)
     off                Turn screens off
     json               Output JSON format for waybar
+    <percentage>       Set brightness directly (brightness.sh compatibility)
     help, -h, --help   Show this help message
 
 EXAMPLES:
@@ -234,8 +251,15 @@ case "${1:-}" in
         exit 0
         ;;
     *)
-        echo "Error: Unknown command '$1'" >&2
-        echo "Use '$(basename "$0") help' for usage information." >&2
-        exit 1
+        # Check if first argument is a number (brightness.sh compatibility)
+        if [[ "$1" =~ ^[0-9]+$ ]] && (( $1 >= 0 && $1 <= 100 )); then
+            # Legacy brightness.sh mode - set brightness directly without cache
+            set_brightness_direct "$1"
+            exit 0
+        else
+            echo "Error: Unknown command '$1'" >&2
+            echo "Use '$(basename "$0") help' for usage information." >&2
+            exit 1
+        fi
         ;;
 esac
