@@ -20,25 +20,7 @@ in {
 
   # DDC support
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
-  # DDC support
-  # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
-  boot = {
-    kernelModules = [ "i2c-dev" ]
-      ++ (if config.modules.drivers.nvidia.enable then
-        [
-          # "nvidia"
-          # "nvidia_modeset"
-          # "nvidia_uvm"
-          # "nvidia_drm"
-        ]
-      else
-        [ ]);
-    kernelParams = if config.modules.drivers.nvidia.enable then
-    # [ "nvidia-drm.modeset=1" ]
-      [ ]
-    else
-      [ ];
-  };
+  boot.kernelModules = [ "i2c-dev" ];
 
   # I2C support for brightness control on external monitors
   hardware.i2c.enable = true;
