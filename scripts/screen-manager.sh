@@ -211,6 +211,31 @@ output_brightness_json() {
     printf '{"percentage": %d, "text": "☀ %d%%", "tooltip": "%s", "class": "brightness"}\n' "$brightness" "$brightness" "$tooltip"
 }
 
+# Output subdued JSON for waybar (matches other modules styling)
+output_brightness_json_subdued() {
+    # Only read from cache, never call ddcutil
+    local brightness=$(get_brightness)
+    
+    # Get method from cache to avoid detection calls
+    local method="none"
+    if [[ -f "$BRIGHTNESS_METHOD_CACHE_FILE" ]]; then
+        method=$(cat "$BRIGHTNESS_METHOD_CACHE_FILE" 2>/dev/null)
+    fi
+    
+    local method_text=""
+    case "$method" in
+        "brightnessctl") method_text=" (brightnessctl)" ;;
+        "light") method_text=" (light)" ;;
+        "ddcutil") method_text=" (ddcutil)" ;;
+        "none") method_text=" (no control)" ;;
+    esac
+
+    local tooltip="Brightness: ${brightness}%${method_text}\\rScroll: adjust brightness\\rLeft click: turn screens off\\rRight click: set to 100%"
+
+    # Output subdued JSON for waybar - matches the style of other modules
+    printf '{"percentage": %d, "text": "brightness: %d%%", "tooltip": "%s", "class": "brightness-subdued"}\n' "$brightness" "$brightness" "$tooltip"
+}
+
 # ============================================================================
 # SCREEN MANAGEMENT FUNCTIONS
 # ============================================================================
@@ -598,6 +623,9 @@ main() {
             ;;
         "bright-json")
             output_brightness_json
+            ;;
+        "bright-json-subdued")
+            output_brightness_json_subdued
             ;;
         "brightness")
             # Legacy brightness command
