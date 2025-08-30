@@ -121,8 +121,6 @@
       "format": "{icon}",
       "rotate": 270,
       "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-      "tooltip-format": "CPU: {usage}%\nTemp: {temperatureC}°C",
-      "hwmon-path": "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon1/temp1_input",
     },
     "tray": {
       "icon-size": 16,
@@ -181,21 +179,17 @@
     },
     "custom/brightness": {
       "format": "{}",
-      "exec": "~/nixos/scripts/brightness-control.sh",
+      "exec": "~/nixos/scripts/brightness-control.sh json",
       "return-type": "json",
       "interval": 2,
       "on-scroll-up": "~/nixos/scripts/brightness-control.sh up",
       "on-scroll-down": "~/nixos/scripts/brightness-control.sh down",
       "on-click": "~/nixos/scripts/brightness-control.sh off",
       "tooltip": true,
-      "escape": true
+      "escape": true,
     },
     "custom/nixos": {
       "format": "",
-      "exec": "echo ; echo Show wofi drun menu",
-      "on-click": "wofi --show drun",
-      "interval": 86400,
-      "tooltip": true,
     },
     "clock": {
       "format": "{:%I:%M %p}",
