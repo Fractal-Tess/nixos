@@ -16,6 +16,14 @@ in {
         format = "yaml";
         path = "/home/${username}/.ssh/authorized_keys";
       };
+
+      root_ssh_authorized_keys = {
+        owner = "root";
+        sopsFile = ../../../../secrets/ssh.yaml;
+        format = "yaml";
+        path = "/root/.ssh/authorized_keys";
+      };
+
       ssh_config = {
         owner = username;
         sopsFile = ../../../../secrets/ssh.yaml;
