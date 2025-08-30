@@ -168,7 +168,7 @@ output_brightness_json() {
         "none") method_text=" (no control)" ;;
     esac
 
-    local tooltip="Brightness: ${brightness}%${method_text}\\rScroll: adjust brightness\\rClick: turn screens off"
+    local tooltip="Brightness: ${brightness}%${method_text}\\rScroll: adjust brightness\\rLeft click: turn screens off\\rRight click: set to 100%"
 
     # Output single-line JSON for waybar
     printf '{"percentage": %d, "text": "☀ %d%%", "tooltip": "%s", "class": "brightness"}\n' "$brightness" "$brightness" "$tooltip"
@@ -541,6 +541,8 @@ main() {
                 exit 1
             fi
             local new_brightness=$((current + step))
+            # Clamp the value before setting
+            if (( new_brightness > 100 )); then new_brightness=100; fi
             set_brightness_cached $new_brightness
             print_success "Brightness increased by ${step}% (${current}% → ${new_brightness}%)"
             ;;
@@ -552,6 +554,8 @@ main() {
                 exit 1
             fi
             local new_brightness=$((current - step))
+            # Clamp the value before setting
+            if (( new_brightness < 0 )); then new_brightness=0; fi
             set_brightness_cached $new_brightness
             print_success "Brightness decreased by ${step}% (${current}% → ${new_brightness}%)"
             ;;

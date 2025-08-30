@@ -185,6 +185,7 @@
       "on-scroll-up": "~/nixos/scripts/screen-manager.sh bright-up",
       "on-scroll-down": "~/nixos/scripts/screen-manager.sh bright-down",
       "on-click": "~/nixos/scripts/screen-manager.sh off",
+      "on-click-right": "~/nixos/scripts/screen-manager.sh bright-set 100",
       "tooltip": true,
       "escape": true,
     },
