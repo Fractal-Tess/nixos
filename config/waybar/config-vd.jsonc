@@ -33,6 +33,7 @@
       "custom/pad",
       "disk#root",
       "custom/pad",
+      "custom/brightness",
       "pulseaudio",
       "custom/pad",
       "cava",
@@ -177,6 +178,17 @@
       "actions": {
         "on-click-right": "mode",
       },
+    },
+    "custom/brightness": {
+      "format": "{}",
+      "exec": "~/nixos/scripts/brightness-control.sh",
+      "return-type": "json",
+      "interval": 2,
+      "on-scroll-up": "~/nixos/scripts/brightness-control.sh up",
+      "on-scroll-down": "~/nixos/scripts/brightness-control.sh down",
+      "on-click": "~/nixos/scripts/brightness-control.sh off",
+      "tooltip": true,
+      "escape": true
     },
     "custom/nixos": {
       "format": "",
