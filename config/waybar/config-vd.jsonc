@@ -17,22 +17,19 @@
       "custom/padd",
       "custom/nixos",
       "hyprland/workspaces",
-      "custom/padd"
+      "custom/padd",
     ],
     "modules-center": [],
     "modules-right": [
-      "custom/padd",
-      "disk#greystone",
-      "custom/pad",
-      "disk#blockade",
       "custom/pad",
       "disk#oracle",
       "custom/pad",
+      "disk#blockade",
       "disk#neo",
       "custom/pad",
-      "disk#vault",
-      "custom/pad",
       "disk#backup",
+      "custom/pad",
+      "disk#vault",
       "custom/pad",
       "disk#root",
       "custom/pad",
@@ -40,48 +37,44 @@
       "custom/pad",
       "cava",
       "network",
-      "custom/sensors",
-      "custom/padd",
       "cpu",
       "custom/gpu#nvidia",
       "memory",
-      "custom/pad",
-      "hyprland/language",
-      "custom/pad",
+      // "hyprland/language",
       "clock",
       "custom/pad",
       "custom/notification",
       "custom/pad",
       "tray",
-      "custom/padd"
+      "custom/padd",
     ],
     "disk#greystone": {
       "interval": 30,
       "path": "/mnt/greystone/",
       "format": "greystone: {percentage_used}%",
       "tooltip-format": "Greystone: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
     "disk#blockade": {
       "interval": 30,
       "path": "/mnt/blockade/",
       "format": "blockade: {percentage_used}%",
       "tooltip-format": "Blockade: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
     "disk#oracle": {
       "interval": 30,
       "path": "/mnt/oracle/",
       "format": "oracle: {percentage_used}%",
       "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
     "disk#neo": {
       "interval": 30,
       "path": "/mnt/neo/",
       "format": "neo: {percentage_used}%",
       "tooltip-format": "Neo: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
 
     "disk#backup": {
@@ -89,21 +82,21 @@
       "path": "/mnt/backup/",
       "format": "backup: {percentage_used}%",
       "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
     "disk#vault": {
       "interval": 30,
       "path": "/mnt/vault/",
       "format": "vault: {percentage_used}%",
       "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
     "disk#root": {
       "interval": 30,
       "path": "/",
       "format": "/ {percentage_used}%",
       "tooltip-format": "/ {free} free of {total} ({percentage_used}%)",
-      "unit": "GB"
+      "unit": "GB",
     },
 
     "memory": {
@@ -111,7 +104,7 @@
       "rotate": 270,
       "format": "{icon}",
       "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-      "max-length": 10
+      "max-length": 10,
     },
     "custom/gpu#nvidia": {
       "interval": 1,
@@ -120,18 +113,20 @@
       "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       // Now calls external script for GPU status
       "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
-      "return-type": "json"
+      "return-type": "json",
     },
     "cpu": {
       "interval": 1,
       "format": "{icon}",
       "rotate": 270,
-      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "tooltip-format": "CPU: {usage}%\nTemp: {temperatureC}°C",
+      "hwmon-path": "/sys/devices/pci0000:00/0000:00:18.3/hwmon/hwmon1/temp1_input",
     },
     "tray": {
       "icon-size": 16,
       "rotate": 0,
-      "spacing": 3
+      "spacing": 3,
     },
     "custom/notification": {
       "tooltip": false,
@@ -144,30 +139,24 @@
         "inhibited-notification": "󰅸",
         "inhibited-none": "󰂜",
         "dnd-inhibited-notification": "󰅸",
-        "dnd-inhibited-none": "󱏨"
+        "dnd-inhibited-none": "󱏨",
       },
       "return-type": "json",
       "exec-if": "which swaync-client",
       "exec": "swaync-client -swb",
       "on-click-right": "swaync-client -d -sw",
       "on-click": "swaync-client -t -sw",
-      "escape": true
+      "escape": true,
     },
     "hyprland/workspaces": {
       "format": "{icon}",
       "format-icons": {
         "default": "",
-        "active": ""
-        //"1": "ﭮ",
-        //"2": "",
-        //"3": "",
-        //"4": "",
-        //"5": "",
-        //"6": "ﱘ"
+        "active": "",
       },
       "persistent-workspaces": {
-        "*": 6 // 6 workspaces by default on every monitor
-      }
+        "*": 6, // 6 workspaces by default on every monitor
+      },
     },
     "cava": {
       "framerate": 60,
@@ -186,15 +175,15 @@
       "input_delay": 2,
       "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█"],
       "actions": {
-        "on-click-right": "mode"
-      }
+        "on-click-right": "mode",
+      },
     },
     "custom/nixos": {
       "format": "",
       "exec": "echo ; echo Show wofi drun menu",
       "on-click": "wofi --show drun",
       "interval": 86400,
-      "tooltip": true
+      "tooltip": true,
     },
     "clock": {
       "format": "{:%I:%M %p}",
@@ -209,41 +198,40 @@
         "format": {
           "months": "<span color='#ffead3'><b>{}</b></span>",
           "weekdays": "<span color='#ffcc66'><b>{}</b></span>",
-          "today": "<span color='#ff6699'><b>{}</b></span>"
-        }
+          "today": "<span color='#ff6699'><b>{}</b></span>",
+        },
       },
       "actions": {
         "on-click-right": "mode",
         "on-click-forward": "tz_up",
         "on-click-backward": "tz_down",
         "on-scroll-up": "shift_up",
-        "on-scroll-down": "shift_down"
-      }
+        "on-scroll-down": "shift_down",
+      },
     },
     "network": {
       "tooltip": true,
       "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
       "rotate": 0,
-      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
-      "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}  ",
+      "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}",
+      "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}",
       "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
       "format-linked": "󰈀 {ifname} (No IP)",
       "format-disconnected": " ",
       "tooltip-format-disconnected": "Disconnected",
-      "interval": 1
+      "interval": 1,
     },
     "hyprland/language": {
       // "format": "<sub> {}</sub>",
       "format": "{}",
       "format-en": "en",
       "format-bg": "bg",
-      "keyboard-name": "kingston-hyperx-alloy-fps-pro-mechanical-gaming-keyboard"
     },
     "pulseaudio": {
       "format": "{volume:>3} {icon}",
       "rotate": 0,
       "format-muted": "  0 婢",
-      "on-click-right": "current=$(wpctl status | awk '/\\*.*Audio Controller Analog Stereo|\\*.*Headset Analog Stereo/ {print $2}'); sinks=($(wpctl status | awk '/Audio Controller Analog Stereo|Headset Analog Stereo/ {print $2}')); for i in \"${!sinks[@]}\"; do if [[ \"${sinks[$i]}\" == \"$current\" ]]; then next=$(( (i+1) % ${#sinks[@]} )); wpctl set-default ${sinks[$next]}; break; fi; done",
+      "on-click-right": "~/nixos/scripts/audio-sink-switch.sh",
       "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle",
       "tooltip-format": "{icon} {desc} // {volume}%",
       "scroll-step": 5,
@@ -255,8 +243,8 @@
         "phone": "",
         "portable": "",
         "car": "",
-        "default": ["", "", ""]
-      }
+        "default": ["", "", ""],
+      },
     },
     "pulseaudio#microphone": {
       "format": "{format_source}",
@@ -268,7 +256,7 @@
       "on-scroll-up": "volumecontrol.sh -i i",
       "on-scroll-down": "volumecontrol.sh -i d",
       "tooltip-format": "{format_source} {source_desc} // {source_volume}%",
-      "scroll-step": 5
+      "scroll-step": 5,
     },
     "custom/notifications": {
       "format": "{icon} {}",
@@ -284,7 +272,7 @@
         "music-notification": "󰝚<span foreground='white'><sup></sup></span>",
         "volume-notification": "󰕿<span foreground='white'><sup></sup></span>",
         "notification": "<span foreground='white'><sup></sup></span>",
-        "none": ""
+        "none": "",
       },
       "return-type": "json",
       "exec-if": "which dunstctl",
@@ -294,37 +282,30 @@
       "on-click-right": "dunstctl close-all",
       "interval": 1,
       "tooltip": true,
-      "escape": true
+      "escape": true,
     },
     "custom/keybindhint": {
       "format": " ",
       "rotate": 0,
-      "on-click": "keybinds_hint.sh"
+      "on-click": "keybinds_hint.sh",
     },
     "custom/expand": {
       "on-click": "~/.config/hypr/scripts/expand_toolbar",
       "format": "{}",
-      "exec": "~/.config/hypr/scripts/tools/expand arrow-icon"
+      "exec": "~/.config/hypr/scripts/tools/expand arrow-icon",
     },
     "custom/padd": {
       "format": "  ",
       "interval": "once",
-      "tooltip": false
+      "tooltip": false,
     },
     "custom/smallspacer": {
-      "format": " "
+      "format": " ",
     },
     "custom/spacer": {
       "format": "  ",
       "interval": "once",
-      "tooltip": false
+      "tooltip": false,
     },
-    "custom/sensors": {
-      "interval": 2,
-      "format": "{text}",
-      "tooltip": true,
-      "return-type": "json",
-      "exec": "~/nixos/scripts/sensors-status.sh"
-    }
-  }
+  },
 ]
