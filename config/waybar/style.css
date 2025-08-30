@@ -171,6 +171,17 @@
   background-color: @bg2;
 }
 
+/* Subdued Brightness - matches disk modules */
+#custom-brightness.brightness-subdued {
+  font-size: 0.8rem;
+  margin: 0.5rem 0.5rem;
+  color: @muted;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  border-radius: 0.5rem;
+  padding: 0.25rem;
+  background-color: @bg2;
+}
+
 #mpris {
   color: @text;
   animation: repeat;
