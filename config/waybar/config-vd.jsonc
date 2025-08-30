@@ -179,7 +179,7 @@
     },
     "custom/brightness": {
       "format": "{}",
-      "exec": "~/nixos/scripts/screen-manager.sh bright-json",
+      "exec": "~/nixos/scripts/screen-manager.sh bright-json-subdued",
       "return-type": "json",
       "interval": 2,
       "on-scroll-up": "~/nixos/scripts/screen-manager.sh bright-up",
