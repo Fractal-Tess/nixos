@@ -4,6 +4,7 @@
 
 # Configuration
 BRIGHTNESS_CACHE_FILE="/tmp/brightness-cache"
+BRIGHTNESS_METHOD_CACHE_FILE="/tmp/brightness-method-cache"
 BRIGHTNESS_STEP=10
 
 # Colors for output
@@ -34,23 +35,37 @@ print_error() {
 # BRIGHTNESS MANAGEMENT FUNCTIONS
 # ============================================================================
 
-# Detect available brightness control method
+# Detect available brightness control method (with caching)
 detect_brightness_method() {
+    # Check cache first
+    if [[ -f "$BRIGHTNESS_METHOD_CACHE_FILE" ]]; then
+        local cached_method=$(cat "$BRIGHTNESS_METHOD_CACHE_FILE" 2>/dev/null)
+        if [[ "$cached_method" =~ ^(brightnessctl|light|ddcutil|none)$ ]]; then
+            echo "$cached_method"
+            return
+        fi
+    fi
+    
+    # If not in cache, detect and cache the result
+    local method="none"
+    
     # Check for laptop brightness controls first
     if command -v brightnessctl >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
-        echo "brightnessctl"
+        method="brightnessctl"
     elif command -v light >/dev/null 2>&1 && [[ -d /sys/class/backlight ]]; then
-        echo "light"  
+        method="light"  
     elif command -v ddcutil >/dev/null 2>&1; then
-        # Check if ddcutil can detect any monitors
+        # Check if ddcutil can detect any monitors (only once during detection)
         if ddcutil detect >/dev/null 2>&1; then
-            echo "ddcutil"
+            method="ddcutil"
         else
-            echo "none"
+            method="none"
         fi
-    else
-        echo "none"
     fi
+    
+    # Cache the result
+    echo "$method" > "$BRIGHTNESS_METHOD_CACHE_FILE"
+    echo "$method"
 }
 
 # Initialize brightness cache if it doesn't exist
@@ -75,10 +90,15 @@ init_brightness_cache() {
                 ;;
             "ddcutil")
                 # Only query once on initialization to avoid lag
-                local ddcutil_output=$(ddcutil getvcp 10 2>/dev/null)
-                local current=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
-                if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
-                    initial_brightness=$current
+                # Use cached buses from method detection to avoid another detect call
+                local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+                if [[ -n "$buses" ]]; then
+                    local bus=$(echo "$buses" | head -1)  # Use first bus
+                    local ddcutil_output=$(ddcutil --bus "$bus" getvcp 10 2>/dev/null)
+                    local current=$(echo "$ddcutil_output" | grep -oP 'current value =\s*\K\d+' | head -1)
+                    if [[ -n "$current" && "$current" =~ ^[0-9]+$ ]]; then
+                        initial_brightness=$current
+                    fi
                 fi
                 ;;
         esac
@@ -125,8 +145,19 @@ set_brightness_cached() {
             ;;
         "ddcutil")
             # Set brightness on all detected monitors in background
+            # Use cached buses to avoid detect call
             {
-                local buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+                # Get buses from cache or detect once
+                local buses_cache="/tmp/ddcutil-buses-cache"
+                local buses=""
+                
+                if [[ -f "$buses_cache" ]]; then
+                    buses=$(cat "$buses_cache" 2>/dev/null)
+                else
+                    buses=$(ddcutil detect 2>/dev/null | grep 'I2C bus' | awk '{print $3}' | sed 's/.*-//g')
+                    echo "$buses" > "$buses_cache"
+                fi
+                
                 for bus in $buses; do
                     ddcutil --bus "$bus" --sleep-multiplier .1 setvcp 10 "$value" 2>/dev/null
                 done
@@ -155,12 +186,18 @@ set_brightness_direct() {
     done
 }
 
-# Output JSON for waybar
+# Output JSON for waybar (optimized for frequent calls)
 output_brightness_json() {
+    # Only read from cache, never call ddcutil
     local brightness=$(get_brightness)
-    local method=$(detect_brightness_method)
+    
+    # Get method from cache to avoid detection calls
+    local method="none"
+    if [[ -f "$BRIGHTNESS_METHOD_CACHE_FILE" ]]; then
+        method=$(cat "$BRIGHTNESS_METHOD_CACHE_FILE" 2>/dev/null)
+    fi
+    
     local method_text=""
-
     case "$method" in
         "brightnessctl") method_text=" (brightnessctl)" ;;
         "light") method_text=" (light)" ;;
