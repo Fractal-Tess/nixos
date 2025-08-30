@@ -76,7 +76,10 @@
     
     # Display system
     display = {
-      hyprland.enable = true;
+      hyprland = {
+        enable = true;
+        autoLogin = true;
+      };
       waybar.enable = true;
       regreet = {
         enable = false;
