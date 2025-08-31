@@ -1,36 +1,36 @@
-{ lib, buildNpmPackage, fetchzip, nodejs_20, }:
+final: prev: {
+  claude-flow = prev.buildNpmPackage rec {
+    pname = "claude-flow";
+    version = "2.0.0-alpha.101";
 
-buildNpmPackage rec {
-  pname = "claude-flow";
-  version = "2.0.0-alpha.101";
+    nodejs = prev.nodejs_20; # required for sandboxed Nix builds on Darwin
 
-  nodejs = nodejs_20; # required for sandboxed Nix builds on Darwin
+    src = prev.fetchzip {
+      url = "https://registry.npmjs.org/claude-flow/-/claude-flow-${version}.tgz";
+      hash = "sha256-TsmailSJ7iwbF5BbXHNVXALSuulNaNOX6MqGVasRKb8=";
+    };
 
-  src = fetchzip {
-    url = "https://registry.npmjs.org/claude-flow/-/claude-flow-${version}.tgz";
-    hash = "sha256-TsmailSJ7iwbF5BbXHNVXALSuulNaNOX6MqGVasRKb8=";
-  };
+    npmDepsHash = "sha256-Owip6wXFl1yKKpmwlEbrzC/caIzqoqhhWnKahB2dTwY=";
 
-  npmDepsHash = "sha256-Owip6wXFl1yKKpmwlEbrzC/caIzqoqhhWnKahB2dTwY=";
+    postPatch = ''
+      cp ${./package-lock.json} package-lock.json
+    '';
 
-  postPatch = ''
-    cp ${./package-lock.json} package-lock.json
-  '';
+    dontNpmBuild = true;
 
-  dontNpmBuild = true;
+    # Skip puppeteer download during build
+    PUPPETEER_SKIP_DOWNLOAD = "1";
 
-  # Skip puppeteer download during build
-  PUPPETEER_SKIP_DOWNLOAD = "1";
-
-  meta = {
-    description =
-      "Enterprise-grade AI agent orchestration with ruv-swarm integration (Alpha Release)";
-    homepage = "https://github.com/ruvnet/claude-code-flow";
-    downloadPage =
-      "https://www.npmjs.com/package/claude-flow/v/2.0.0-alpha.101";
-    license = lib.licenses.mit;
-    maintainers = with lib.maintainers; [ fractal-tess ];
-    mainProgram = "claude-flow";
+    meta = with prev.lib; {
+      description =
+        "Enterprise-grade AI agent orchestration with ruv-swarm integration (Alpha Release)";
+      homepage = "https://github.com/ruvnet/claude-code-flow";
+      downloadPage =
+        "https://www.npmjs.com/package/claude-flow/v/2.0.0-alpha.101";
+      license = licenses.mit;
+      maintainers = with maintainers; [ fractal-tess ];
+      mainProgram = "claude-flow";
+    };
   };
 }
 
