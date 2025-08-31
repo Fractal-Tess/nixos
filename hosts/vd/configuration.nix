@@ -15,9 +15,6 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
-
-    # Container configurations
-    ./containers.nix
   ];
 
   #============================================================================
@@ -218,15 +215,6 @@
       enable = true;
       drivers = [ ]; # Add printer drivers as needed
     };
-  };
-
-  # PAM configuration for keyring integration
-  security.pam.services = {
-    greetd.enableGnomeKeyring = true;
-    login.enableGnomeKeyring = true;
-    sudo.enableGnomeKeyring = true;
-    su.enableGnomeKeyring = true;
-    polkit-1.enableGnomeKeyring = true;
   };
 
   #============================================================================
