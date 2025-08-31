@@ -168,7 +168,6 @@
   # Essential system packages
   environment.systemPackages = with pkgs; [
     crush # File compression utility
-    dysk # Disk usage analyzer
   ];
 
   # Gaming configuration
