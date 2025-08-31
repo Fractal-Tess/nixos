@@ -85,7 +85,7 @@
     # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
-    claude-flow # AI agent orchestration platform
+    claude-flow # Enterprise AI agent orchestration platform
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime

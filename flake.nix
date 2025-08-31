@@ -29,9 +29,7 @@
                 (import ./overlays/responsively-app.nix)
                 # (import ./overlays/viber.nix)
                 (import ./overlays/cursor.nix)
-                (final: prev: {
-                  claude-flow = prev.callPackage ./overlays/claude-flow { };
-                })
+                (import ./overlays/claude-flow)
               ];
             }
           ];
