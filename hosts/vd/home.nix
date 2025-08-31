@@ -46,6 +46,9 @@
     parted # Command-line partition tool
     bleachbit # System cleaner
     trash-cli # FreeDesktop.org trash interface
+    dysk # Modern disk usage utility with visual tree representation
+    tree # Directory tree display utility
+    eza # Modern replacement for ls with color and Git integration
 
     # File managers
     xfce.thunar # Lightweight file manager
@@ -53,14 +56,23 @@
 
     # Archive management
     mate.engrampa # Archive manager
+    p7zip # 7-Zip implementation
+    unzip # Extract compressed files in a ZIP archive
+    zip # Create and extract ZIP archives
 
     # Search and text processing
     fzf # Command-line fuzzy finder
     ripgrep # Fast search tool (grep alternative)
     sd # Intuitive find & replace CLI
+    jq # Command-line JSON processor
+    yq # YAML/XML processor (jq for YAML)
+    gron # Make JSON greppable
+    fx # Command-line JSON processing tool
 
-    # Process management
+    # Process management and system info
     procs # Modern replacement for ps
+    bottom # Cross-platform graphical process/system monitor
+    htop # Interactive process viewer
 
     # Security and secrets
     sops # Secret management tool
@@ -70,13 +82,27 @@
     # NETWORKING TOOLS
     #--------------------------------------------------------------------------
 
+    # Network analysis and monitoring
     ngrok # Expose local servers to the internet
     nmap # Network discovery and security auditing
+    wireshark # Network protocol analyzer
+    netcat # Networking utility for reading/writing network connections
+    iperf3 # Network performance measurement
+    bandwhich # Terminal bandwidth utilization tool
+    nload # Console application which monitors network traffic
+    speedtest-cli # Command line interface for testing internet bandwidth
+    
+    # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
     wakeonlan # Wake devices using Wake-on-LAN
+    
+    # Network testing and analysis
     hping # TCP/IP packet assembler/analyzer
     oha # HTTP load generator
+    mtr # Network diagnostic tool combining ping and traceroute
+    dig # DNS lookup tool
+    whois # Whois client for domain/IP information
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT TOOLS
@@ -98,9 +124,11 @@
 
     # Development utilities
     flyctl # Command-line tool for fly.io
-    jq # Command-line JSON processor
     hyperfine # Command-line benchmarking tool
     tokei # Count code statistics by language
+    entr # Run arbitrary commands when files change
+    watchexec # Execute commands in response to file modifications
+    grex # Generate regular expressions from test cases
 
     # Version control
     gh # GitHub CLI
@@ -244,10 +272,21 @@
     # TERMINAL ENHANCEMENTS
     #--------------------------------------------------------------------------
 
+    # System information and utilities
     nitch # Lightweight system information fetch
+    fastfetch # Fast system information tool
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
+    
+    # Modern CLI replacements and enhancements
+    bat # Modern cat replacement with syntax highlighting
+    fd # Modern find replacement
+    zoxide # Smarter cd command with frecency
+    tldr # Simplified man pages
+    duf # Modern df replacement with better output
+    du-dust # Modern du replacement
+    choose # Human-friendly alternative to cut and awk
 
     #--------------------------------------------------------------------------
     # THEMING & CUSTOMIZATION

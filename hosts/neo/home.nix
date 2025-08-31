@@ -40,12 +40,16 @@ with lib;
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
+    nvtopPackages.amd # AMD GPU monitoring
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
 
     # File system tools
     bleachbit # Disk space cleaner
     dust # Simple, quick, user-friendly disk usage analyzer
+    dysk # Modern disk usage utility with visual tree representation
+    tree # Directory tree display utility
+    eza # Modern replacement for ls with color and Git integration
     trash-cli # FreeDesktop.org trash interface
 
     # File managers
@@ -53,15 +57,21 @@ with lib;
 
     # Archive management
     mate.engrampa # Archive manager
+    p7zip # 7-Zip implementation
+    unzip # Extract compressed files in a ZIP archive
+    zip # Create and extract ZIP archives
 
     # Search and text processing
     fzf # Command-line fuzzy finder
     ripgrep # Fast search tool (grep alternative)
     sd # Intuitive find & replace CLI
     jq # Command-line JSON processor
+    yq # YAML/XML processor (jq for YAML)
+    fx # Command-line JSON processing tool
 
-    # Process management
+    # Process management and system info  
     procs # Modern replacement for ps
+    htop # Interactive process viewer
 
     # Security and secrets
     sops # Secret management tool
@@ -70,11 +80,22 @@ with lib;
     # NETWORKING TOOLS
     #--------------------------------------------------------------------------
 
+    # Essential network tools
     ngrok # Expose local servers to the internet
     nmap # Network discovery and security auditing
+    netcat # Networking utility for reading/writing network connections
+    iperf3 # Network performance measurement
+    bandwhich # Terminal bandwidth utilization tool
+    speedtest-cli # Command line interface for testing internet bandwidth
+    
+    # Network management
     wakeonlan # Wake devices using Wake-on-LAN
+    
+    # Network testing and diagnostics
     hping # TCP/IP packet assembler/analyzer
     oha # HTTP load generator
+    mtr # Network diagnostic tool combining ping and traceroute
+    dig # DNS lookup tool
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT TOOLS
@@ -94,8 +115,11 @@ with lib;
     gnumake # Build automation tool
 
     # Development utilities
+    gh # GitHub CLI  
     hyperfine # Command-line benchmarking tool
     tokei # Count code statistics by language
+    entr # Run arbitrary commands when files change
+    watchexec # Execute commands in response to file modifications
 
     # Version control
     lazygit # Simple terminal UI for git
@@ -131,10 +155,20 @@ with lib;
     # TERMINAL ENHANCEMENTS
     #--------------------------------------------------------------------------
 
+    # System information and utilities
     nitch # Lightweight system information fetch
+    fastfetch # Fast system information tool
     lolcat # Rainbow text output
     nh # Nix helper CLI
     stress # Workload generator for system testing
+    
+    # Modern CLI replacements and enhancements
+    bat # Modern cat replacement with syntax highlighting
+    fd # Modern find replacement
+    zoxide # Smarter cd command with frecency
+    tldr # Simplified man pages
+    duf # Modern df replacement with better output
+    choose # Human-friendly alternative to cut and awk
 
     #--------------------------------------------------------------------------
     # LAPTOP-SPECIFIC TOOLS
