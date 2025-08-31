@@ -148,18 +148,6 @@
   services = {
     dbus.enable = true;
     blueman.enable = true; # Bluetooth manager
-
-    # GNOME Keyring for secrets management
-    gnome.gnome-keyring.enable = true;
-  };
-
-  # PAM configuration for keyring integration
-  security.pam.services = {
-    greetd.enableGnomeKeyring = true;
-    login.enableGnomeKeyring = true;
-    sudo.enableGnomeKeyring = true;
-    su.enableGnomeKeyring = true;
-    polkit-1.enableGnomeKeyring = true;
   };
 
   #============================================================================
