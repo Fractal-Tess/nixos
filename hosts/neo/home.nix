@@ -28,16 +28,6 @@ with lib;
   programs.home-manager.enable = true;
 
   #============================================================================
-  # GNOME KEYRING CONFIGURATION
-  #============================================================================
-
-  # GNOME Keyring daemon for secrets management
-  services.gnome-keyring = {
-    enable = true;
-    components = [ "secrets" "ssh" ];
-  };
-
-  #============================================================================
   # USER PACKAGES
   #============================================================================
 
