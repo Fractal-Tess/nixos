@@ -91,12 +91,12 @@
     bandwhich # Terminal bandwidth utilization tool
     nload # Console application which monitors network traffic
     speedtest-cli # Command line interface for testing internet bandwidth
-    
+
     # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
     wakeonlan # Wake devices using Wake-on-LAN
-    
+
     # Network testing and analysis
     hping # TCP/IP packet assembler/analyzer
     oha # HTTP load generator
@@ -141,30 +141,29 @@
     # LANGUAGE SERVERS & FORMATTERS
     #--------------------------------------------------------------------------
 
-    # Web development
-    prettierd # Code formatter daemon
+    # Language servers
     svelte-language-server # Svelte language server
     emmet-language-server # Emmet language server
     tailwindcss-language-server # Tailwind CSS language server
     typescript-language-server # TypeScript language server
     astro-language-server # Astro language server
     vscode-langservers-extracted # HTML/CSS/JSON language servers
-
-    # DevOps
+    package-version-server # NPM package version server
     docker-compose-language-service # Docker Compose language server
     dockerfile-language-server-nodejs # Dockerfile language server
-
-    # Programming languages
     rust-analyzer # Rust language server
     lua-language-server # Lua language server
-    stylua # Lua code formatter
     phpactor # PHP language server
     nixd # Nix language server
     nil # Alternative Nix language server
-    nixpkgs-fmt # Nix code formatter
-    nixfmt-classic # Alternative Nix formatter
     sqls # SQL language server
     gopls # Go language server
+
+    # Formatters
+    stylua # Lua code formatter
+    nixpkgs-fmt # Nix code formatter
+    nixfmt-classic # Alternative Nix formatter
+    prettierd # Code formatter daemon
 
     #--------------------------------------------------------------------------
     # MULTIMEDIA TOOLS
@@ -278,7 +277,7 @@
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
-    
+
     # Modern CLI replacements and enhancements
     bat # Modern cat replacement with syntax highlighting
     fd # Modern find replacement
