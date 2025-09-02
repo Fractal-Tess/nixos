@@ -64,6 +64,7 @@ in {
         # # MTU settings for VPN compatibility
         # mtu = 1400;
 
+
         # # DNS options for better resolution
         # dns-opts = [ "use-vc" "timeout:2" "attempts:3" ];
 
@@ -72,9 +73,13 @@ in {
 
         # Additional network settings for Netbird integration
         default-address-pools = [{
-          base = "172.17.0.0/16";
-          size = 24;
-        }];
+          base = "172.17.0.0/12";
+          size = 16;
+        }
+          {
+            base = "10.0.0.0/8"; # Additional space if needed
+            size = 16;
+          }];
 
         # DNS search domains for Netbird
         dns-search = [ "netbird.cloud" ];
