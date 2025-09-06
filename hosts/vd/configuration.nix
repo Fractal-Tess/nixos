@@ -263,9 +263,9 @@
 
   environment.variables = {
     # Default editor configuration
-    VISUAL = "zeditor";
-    SUDO_EDITOR = "zeditor --wait";
-    EDITOR = "zeditor --wait";
+    VISUAL = "nvim";
+    SUDO_EDITOR = "nvim";
+    EDITOR = "nvim";
 
     # Development tools
     DIRENV_LOG_FORMAT = ""; # Silence direnv logging
