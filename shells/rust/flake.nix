@@ -17,13 +17,6 @@
         default = pkgs.mkShell {
           nativeBuildInputs = with pkgs;
             [
-              # (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
-              # clang
-              # Use mold when we are running in Linux
-              # (pkgs.lib.optionals pkgs.stdenv.isLinux pkgs.mold)
-            ];
-          buildInputs = with pkgs;
-            [
               # Complete Rust toolchain with cargo, rustc, etc.
               (rust-bin.stable.latest.default.override {
                 extensions =
@@ -32,6 +25,10 @@
               })
               # Or alternatively, you can use the complete toolchain:
               # (rust-bin.stable.latest.complete)
+              # (rust-bin.fromRustupToolchainFile ./rust-toolchain.toml)
+              # clang
+              # Use mold when we are running in Linux
+              # (pkgs.lib.optionals pkgs.stdenv.isLinux pkgs.mold)
             ];
           RUST_SRC_PATH =
             "${pkgs.rust-bin.stable.latest.rust-src}/lib/rustlib/src/rust/library";
