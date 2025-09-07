@@ -52,11 +52,7 @@ with lib;
     eza # Modern replacement for ls with color and Git integration
     trash-cli # FreeDesktop.org trash interface
 
-    # File managers
-    xfce.thunar # Lightweight file manager
-
     # Archive management
-    mate.engrampa # Archive manager
     p7zip # 7-Zip implementation
     unzip # Extract compressed files in a ZIP archive
     zip # Create and extract ZIP archives
