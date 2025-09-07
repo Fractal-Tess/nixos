@@ -39,18 +39,12 @@
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "libsoup-2.74.3" ];
+    permittedInsecurePackages = [ ];
   };
 
   #============================================================================
   # HARDWARE CONFIGURATION
   #============================================================================
-
-  # Bluetooth configuration
-  hardware.bluetooth = {
-    enable = true;
-    powerOnBoot = true;
-  };
 
   # Memory management
   zramSwap.enable = true;
@@ -78,16 +72,16 @@
     # Hardware drivers
     drivers.amd.enable = true;
 
-    # Security
+    # Security  
     security.noSudoPassword = true;
 
     # Display system
     display = {
       hyprland = {
-        enable = true;
+        enable = false;
         autoLogin = true;
       };
-      waybar.enable = true;
+      waybar.enable = false;
     };
 
     # Services
@@ -138,7 +132,7 @@
   environment.systemPackages = with pkgs; [ ];
 
   # Brightness control
-  programs.light.enable = true;
+  # programs.light.enable = true;
 
   #============================================================================
   # SYSTEM SERVICES
@@ -146,9 +140,6 @@
 
   # Core system services
   services = {
-    dbus.enable = true;
-    blueman.enable = true; # Bluetooth manager
-
     # TLP - Power management for laptops
     tlp = {
       enable = true;
@@ -203,34 +194,14 @@
   };
 
   #============================================================================
-  # FONTS
-  #============================================================================
-
-  fonts.packages = with pkgs; [
-    font-awesome
-    powerline-fonts
-    powerline-symbols
-  ];
-
-  #============================================================================
   # ENVIRONMENT VARIABLES
   #============================================================================
 
   environment.variables = {
-    # Theme configuration
-    GTK_THEME = "Nordic"; # Dark bluish GTK theme
-    XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
-    XCURSOR_SIZE = "24"; # Default cursor size
-
     # Default editor configuration
     VISUAL = "nvim"; # Visual editor for GUI contexts
     SUDO_EDITOR = "nvim"; # Editor used by sudo -e
     EDITOR = "nvim"; # Default terminal editor
-
-    # Wayland support
-    NIXOS_OZONE_WL = "1"; # Enable Wayland in Electron/Ozone apps
-    MOZ_USE_WAYLAND = "1"; # Enable Wayland support in Firefox
-    MOZ_USE_XINPUT2 = "1"; # Enable XInput2 for better input handling
 
     # Development tools
     DIRENV_LOG_FORMAT = ""; # Silence direnv logging output

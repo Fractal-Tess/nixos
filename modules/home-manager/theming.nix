@@ -3,8 +3,8 @@ with lib;
 
 {
 
-  # Theming
-  gtk = with pkgs; {
+  # Theming - only enable when display/GUI is available
+  gtk = with pkgs; mkIf (osConfig.modules.display.hyprland.enable or false) {
     enable = true;
     theme = {
       name = "Nordic-darker";
@@ -21,7 +21,7 @@ with lib;
     };
   };
 
-  qt = {
+  qt = mkIf (osConfig.modules.display.hyprland.enable or false) {
     enable = true;
     platformTheme.name = "gtk";
   };
