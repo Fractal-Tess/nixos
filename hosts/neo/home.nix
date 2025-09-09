@@ -99,6 +99,7 @@ with lib;
 
     # AI assistants
     claude-code # AI code assistant
+    cursor-cli # Command-line interface for Cursor AI editor
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
