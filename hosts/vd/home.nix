@@ -111,6 +111,7 @@
     # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
+    cursor-cli # Command-line interface for Cursor AI editor
     claude-flow # Enterprise AI agent orchestration platform
 
     # Programming languages and runtimes
