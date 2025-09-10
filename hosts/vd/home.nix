@@ -133,6 +133,7 @@
 
     # Version control
     gh # GitHub CLI
+    forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
 
     # Security tools
