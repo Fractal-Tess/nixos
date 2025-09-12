@@ -236,7 +236,7 @@
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber # Instant messaging
+    viber-appimage # Instant messaging
     slack # Team collaboration platform
     thunderbird # Email client
 
