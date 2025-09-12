@@ -84,6 +84,7 @@
 
     # Network analysis and monitoring
     ngrok # Expose local servers to the internet
+    lsof # Tool to list open files
     nmap # Network discovery and security auditing
     wireshark # Network protocol analyzer
     netcat # Networking utility for reading/writing network connections
