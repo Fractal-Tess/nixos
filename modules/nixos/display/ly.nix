@@ -40,8 +40,8 @@ in
       NIXOS_OZONE_WL = "1";
     };
 
-    # Use regular Hyprland session
-    services.displayManager.defaultSession = "hyprland";
+    # Use Hyprland UWSM session (same as working SDDM config)
+    services.displayManager.defaultSession = "hyprland-uwsm";
   };
 }
 
