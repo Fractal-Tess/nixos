@@ -26,34 +26,22 @@ in
     }];
 
     # Enable ly display manager
-    services.displayManager.ly = {
-      enable = true;
-      settings = {
-        # Basic ly configuration
-        animation = "none";
-        bigclock = false;
-        clear_password = true;
-        hide_borders = false;
-        hide_f1_commands = false;
-        load_config = true;
-        save_file = "/tmp/ly-save";
-        term_reset_cursor = true;
-      };
-    };
+    services.displayManager.ly.enable = true;
 
-    # Configure auto login if enabled
+    # Configure auto login if enabled  
     services.displayManager.autoLogin = mkIf cfg.autoLogin {
       enable = true;
       user = username;
     };
 
-    # Use regular Hyprland instead of UWSM to avoid session conflicts
+    # Ensure proper environment for Hyprland
+    services.displayManager.environment = {
+      WLR_NO_HARDWARE_CURSORS = "1";
+      NIXOS_OZONE_WL = "1";
+    };
+
+    # Use regular Hyprland session
     services.displayManager.defaultSession = "hyprland";
-    
-    # Add session configuration
-    services.displayManager.sessionPackages = [ 
-      config.programs.hyprland.package
-    ];
   };
 }
 
