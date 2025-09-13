@@ -153,6 +153,7 @@
       ssh.enable = true;
     };
 
+
   };
 
   # Bluetooth
@@ -210,6 +211,52 @@
 
   services.dbus.enable = true;
   services.gvfs.enable = true;
+
+  # TLP - Balanced power management for laptop
+  services.tlp = {
+    enable = true;
+    settings = {
+      # CPU scaling governors
+      CPU_SCALING_GOVERNOR_ON_AC = "performance";
+      CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+
+      # Energy performance policy
+      CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+      CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+
+      # CPU performance limits
+      CPU_MIN_PERF_ON_AC = 0;
+      CPU_MAX_PERF_ON_AC = 100;
+      CPU_MIN_PERF_ON_BAT = 0;
+      CPU_MAX_PERF_ON_BAT = 50;
+
+      # Power management
+      RUNTIME_PM_ON_AC = "on";
+      RUNTIME_PM_ON_BAT = "auto";
+
+      # USB autosuspend
+      USB_AUTOSUSPEND = 1;
+
+      # PCI Express power management
+      PCIE_ASPM_ON_AC = "default";
+      PCIE_ASPM_ON_BAT = "powersupersave";
+
+      # WiFi power saving
+      WIFI_PWR_ON_AC = "off";
+      WIFI_PWR_ON_BAT = "on";
+
+      # Sound card power saving
+      SOUND_POWER_SAVE_ON_AC = 1;
+      SOUND_POWER_SAVE_ON_BAT = 1;
+
+      # Battery thresholds to preserve battery health
+      START_CHARGE_THRESH_BAT0 = 75;
+      STOP_CHARGE_THRESH_BAT0 = 80;
+    };
+  };
+
+  # Disable power-profiles-daemon as it conflicts with TLP
+  services.power-profiles-daemon.enable = false;
 
   environment.variables = {
     # Force Qt applications to use X11 backend instead of Wayland
