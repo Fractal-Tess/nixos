@@ -34,6 +34,12 @@
       auto-optimise-store = true;
     };
 
+    gc = {
+      automatic = true;
+      dates = "weekly";
+      options = "--delete-older-than 7d";
+    };
+
     nixPath = [ "nixpkgs=${inputs.nixpkgs}" ];
   };
 
@@ -53,10 +59,6 @@
     size = 16 * 1024; # 16GB
   }];
 
-  #============================================================================
-  # POWER MANAGEMENT
-  #============================================================================
-
   # Laptop lid settings - ignore lid close when docked/external power
   services.logind.settings.Login = {
     HandleLidSwitchDocked = "ignore";
@@ -72,7 +74,7 @@
     # Hardware drivers
     drivers.amd.enable = true;
 
-    # Security  
+    # Security
     security.noSudoPassword = true;
 
     # Display system
@@ -92,7 +94,6 @@
         enable = true;
         ssh.enable = true;
       };
-
 
       # Virtualization
       virtualization = {
@@ -129,11 +130,8 @@
   # SYSTEM PACKAGES & PROGRAMS
   #============================================================================
 
-  # Essential system packages (minimal for laptop)
+  # Essential system packages (minimal for server)
   environment.systemPackages = with pkgs; [ ];
-
-  # Brightness control
-  # programs.light.enable = true;
 
   #============================================================================
   # SYSTEM SERVICES
@@ -230,11 +228,11 @@
 
   environment.variables = {
     # Default editor configuration
-    VISUAL = "nvim"; # Visual editor for GUI contexts
-    SUDO_EDITOR = "nvim"; # Editor used by sudo -e
-    EDITOR = "nvim"; # Default terminal editor
+    VISUAL = "nvim";
+    SUDO_EDITOR = "nvim";
+    EDITOR = "nvim";
 
     # Development tools
-    DIRENV_LOG_FORMAT = ""; # Silence direnv logging output
+    DIRENV_LOG_FORMAT = ""; # Silence direnv logging
   };
 }
