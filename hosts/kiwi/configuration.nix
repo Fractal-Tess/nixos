@@ -86,9 +86,9 @@
     display = {
       hyprland.enable = true;
       waybar.enable = true;
-      regreet = {
+      ly = {
         enable = true;
-        symlinkBackgrounds = true;
+        autoLogin = false;
       };
     };
 
