@@ -93,6 +93,7 @@
         ssh.enable = true;
       };
 
+
       # Virtualization
       virtualization = {
         docker = {
@@ -140,26 +141,56 @@
 
   # Core system services
   services = {
-    # TLP - Power management for laptops
+    # TLP - Aggressive power management for server use
     tlp = {
       enable = true;
       settings = {
+        # CPU scaling - always use powersave
         CPU_SCALING_GOVERNOR_ON_AC = "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-        CPU_ENERGY_PERF_POLICY_ON_AC = "powersave";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "powersave";
+        # Energy performance policy - maximum power savings
+        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 
+        # CPU performance limits - very conservative for server
         CPU_MIN_PERF_ON_AC = 0;
-        CPU_MAX_PERF_ON_AC = 60;
+        CPU_MAX_PERF_ON_AC = 30;
         CPU_MIN_PERF_ON_BAT = 0;
         CPU_MAX_PERF_ON_BAT = 20;
 
-        # Optional helps save long term battery health
-        START_CHARGE_THRESH_BAT0 = 40; # 40 and below it starts to charge
-        STOP_CHARGE_THRESH_BAT0 = 60; # 60 and above it stops charging
+        # Aggressive power management
+        RUNTIME_PM_ON_AC = "auto";
+        RUNTIME_PM_ON_BAT = "auto";
+
+        # USB power saving
+        USB_AUTOSUSPEND = 1;
+
+        # PCI Express power saving
+        PCIE_ASPM_ON_AC = "powersupersave";
+        PCIE_ASPM_ON_BAT = "powersupersave";
+
+        # Disk power management
+        DISK_APM_LEVEL_ON_AC = "128";
+        DISK_APM_LEVEL_ON_BAT = "1";
+
+        # Network power saving
+        WIFI_PWR_ON_AC = "on";
+        WIFI_PWR_ON_BAT = "on";
+
+        # Sound card power saving
+        SOUND_POWER_SAVE_ON_AC = 1;
+        SOUND_POWER_SAVE_ON_BAT = 1;
+        SOUND_POWER_SAVE_CONTROLLER = "Y";
+
+        # Battery thresholds for longevity
+        START_CHARGE_THRESH_BAT0 = 40;
+        STOP_CHARGE_THRESH_BAT0 = 60;
       };
     };
+
+    # Disable power-profiles-daemon as it conflicts with TLP
+    power-profiles-daemon.enable = false;
   };
 
   #============================================================================
