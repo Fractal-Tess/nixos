@@ -105,7 +105,7 @@
       firecracker.enable = false;
       kubernetes.enable = false;
 
-      # --- Containers   --- 
+      # --- Containers   ---
       # containers = {
       #   # Add container configurations here if needed
       # };
@@ -121,34 +121,16 @@
     services.samba.mount = {
       enable = true;
       shares = [
-        # {
-        #   mountPoint = "/mnt/blockade";
-        #   device = "//rp.netbird.cloud/blockade";
-        #   username = "smbuser";
-        #   password = "smbpass";
-        # }
-        # {
-        #   mountPoint = "/mnt/greystone";
-        #   device = "//rp.netbird.cloud/greystone";
-        #   username = "smbuser";
-        #   password = "smbpass";
-        # }
+        {
+          mountPoint = "/mnt/blockade";
+          device = "//neo.netbird.cloud/blockade";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
         {
           mountPoint = "/mnt/oracle";
           device = "//oracle.netbird.cloud/home";
           username = "smbuser";
-          password = "smbpass";
-        }
-        {
-          mountPoint = "/mnt/vault";
-          device = "//vd.netbird.cloud/vault";
-          username = username;
-          password = "smbpass";
-        }
-        {
-          mountPoint = "/mnt/backup";
-          device = "//vd.netbird.cloud/backup";
-          username = username;
           password = "smbpass";
         }
       ];
@@ -199,7 +181,7 @@
   };
   users.groups.${username} = { members = [ username ]; };
 
-  # Make users mutable 
+  # Make users mutable
   users.mutableUsers = true;
 
   # Home-Manger
@@ -213,6 +195,9 @@
 
   # Fonts
   fonts.packages = with pkgs; [
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.caskaydia-mono
+    nerd-fonts.jetbrains-mono
     font-awesome
     powerline-fonts
     powerline-symbols
@@ -267,4 +252,3 @@
   system.stateVersion = "24.05"; # Did you read the comment?
 
 }
-
