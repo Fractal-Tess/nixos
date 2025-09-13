@@ -127,6 +127,7 @@
     # Development utilities
     flyctl # Command-line tool for fly.io
     hyperfine # Command-line benchmarking tool
+    geekbench_6 # benchmarking tool
     tokei # Count code statistics by language
     entr # Run arbitrary commands when files change
     watchexec # Execute commands in response to file modifications
