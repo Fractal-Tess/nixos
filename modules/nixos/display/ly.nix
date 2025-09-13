@@ -11,6 +11,9 @@ in
   options.modules.display.ly = {
     # Option to enable/disable the ly display manager
     enable = mkEnableOption "ly display manager";
+
+    # Option to enable automatic login without password prompt
+    autoLogin = mkEnableOption "ly auto login";
   };
 
   # Configuration that applies when this module is enabled
@@ -25,7 +28,32 @@ in
     # Enable ly display manager
     services.displayManager.ly = {
       enable = true;
+      settings = {
+        # Basic ly configuration
+        animation = "none";
+        bigclock = false;
+        clear_password = true;
+        hide_borders = false;
+        hide_f1_commands = false;
+        load_config = true;
+        save_file = "/tmp/ly-save";
+        term_reset_cursor = true;
+      };
     };
+
+    # Configure auto login if enabled
+    services.displayManager.autoLogin = mkIf cfg.autoLogin {
+      enable = true;
+      user = username;
+    };
+
+    # Use regular Hyprland instead of UWSM to avoid session conflicts
+    services.displayManager.defaultSession = "hyprland";
+    
+    # Add session configuration
+    services.displayManager.sessionPackages = [ 
+      config.programs.hyprland.package
+    ];
   };
 }
 
