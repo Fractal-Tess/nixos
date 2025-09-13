@@ -34,8 +34,7 @@
             }
           ];
         };
-    in
-    {
+    in {
       nixosConfigurations = {
         vd = mkHost {
           hostname = "vd";
@@ -43,6 +42,10 @@
         };
         neo = mkHost {
           hostname = "neo";
+          username = "fractal-tess";
+        };
+        kiwi = mkHost {
+          hostname = "kiwi";
           username = "fractal-tess";
         };
       };
