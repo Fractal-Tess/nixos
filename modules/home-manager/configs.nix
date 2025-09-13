@@ -3,8 +3,8 @@
 with lib;
 
 let
-  waybarConfig = if osConfig.networking.hostName == "neo" then
-    ../../config/waybar/config-neo.jsonc
+  waybarConfig = if osConfig.networking.hostName == "kiwi" then
+    ../../config/waybar/config-kiwi.jsonc
   else
     ../../config/waybar/config-vd.jsonc;
 in {

@@ -1,170 +1,257 @@
-{ pkgs, username, lib, osConfig, ... }:
+{ pkgs, username, ... }:
 
-with lib;
-let cfg = osConfig;
-in {
+{
+  #============================================================================
+  # IMPORTS
+  #============================================================================
+
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs.nix
     ../../modules/home-manager/theming.nix
   ];
 
-  # Home Manager
-  home.username = username;
-  home.homeDirectory = "/home/${username}";
+  #============================================================================
+  # HOME MANAGER CONFIGURATION
+  #============================================================================
 
-  # Home manager version - don't change this
-  home.stateVersion = "24.05";
+  # Basic home configuration
+  home = {
+    username = username;
+    homeDirectory = "/home/${username}";
+    stateVersion = "24.05"; # Don't change this
+  };
 
-  # Let Home Manager install and manage itself.
+  # Enable Home Manager self-management
   programs.home-manager.enable = true;
 
-  # Has to exist so other home manager modules can mkMerge
+  # USER PACKAGES
+  #============================================================================
+
   home.packages = with pkgs; [
-    # === SYSTEM UTILITIES ===
-    usbutils # USB device utilities
+
+    #--------------------------------------------------------------------------
+    # SYSTEM UTILITIES
+    #--------------------------------------------------------------------------
+
+    # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
-    trash-cli # Command line interface to FreeDesktop.org trash
+    nvtopPackages.nvidia # NVIDIA GPU monitoring
     ddcutil # Monitor control utility (DDC/CI)
-    sops # Secret management tool
-    xfce.thunar
+    usbutils # USB device utilities
 
-    # === SEARCH TOOLS ===
+    # File system tools
+    gparted # Partition editor
+    parted # Command-line partition tool
+    bleachbit # System cleaner
+    trash-cli # FreeDesktop.org trash interface
+    dysk # Modern disk usage utility with visual tree representation
+    tree # Directory tree display utility
+    eza # Modern replacement for ls with color and Git integration
+
+    # File managers
+    xfce.thunar # Lightweight file manager
+    pcmanfm # Alternative lightweight file manager
+
+    # Archive management
+    mate.engrampa # Archive manager
+    p7zip # 7-Zip implementation
+    unzip # Extract compressed files in a ZIP archive
+    zip # Create and extract ZIP archives
+
+    # Search and text processing
     fzf # Command-line fuzzy finder
     ripgrep # Fast search tool (grep alternative)
     sd # Intuitive find & replace CLI
+    jq # Command-line JSON processor
+    yq # YAML/XML processor (jq for YAML)
+    gron # Make JSON greppable
+    fx # Command-line JSON processing tool
 
-    # === PROCESS MANAGEMENT ===
+    # Process management and system info
     procs # Modern replacement for ps
+    bottom # Cross-platform graphical process/system monitor
+    htop # Interactive process viewer
 
-    # === NETWORKING TOOLS ===
+    # Security and secrets
+    sops # Secret management tool
+    seahorse # GUI for GNOME Keyring
+
+    #--------------------------------------------------------------------------
+    # NETWORKING TOOLS
+    #--------------------------------------------------------------------------
+
+    # Network analysis and monitoring
     ngrok # Expose local servers to the internet
+    lsof # Tool to list open files
     nmap # Network discovery and security auditing
+    wireshark # Network protocol analyzer
+    netcat # Networking utility for reading/writing network connections
+    iperf3 # Network performance measurement
+    bandwhich # Terminal bandwidth utilization tool
+    nload # Console application which monitors network traffic
+    speedtest-cli # Command line interface for testing internet bandwidth
+
+    # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
     wakeonlan # Wake devices using Wake-on-LAN
-    hping # Command-line TCP/IP packet assembler/analyzer
-    oha # HTTP load generator
 
-    # === DEVELOPMENT TOOLS ===
-    # AI Assistants
+    # Network testing and analysis
+    hping # TCP/IP packet assembler/analyzer
+    oha # HTTP load generator
+    mtr # Network diagnostic tool combining ping and traceroute
+    dig # DNS lookup tool
+    whois # Whois client for domain/IP information
+
+    #--------------------------------------------------------------------------
+    # DEVELOPMENT TOOLS
+    #--------------------------------------------------------------------------
+
+    # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
+    cursor-cli # Command-line interface for Cursor AI editor
+    claude-flow # Enterprise AI agent orchestration platform
 
-    # Languages & Runtimes
+    # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
 
-    # Build Tools
+    # Build tools
     gnumake # Build automation tool
 
-    # Development Utilities
+    # Development utilities
     flyctl # Command-line tool for fly.io
-    jq # Command-line JSON processor
     hyperfine # Command-line benchmarking tool
+    tokei # Count code statistics by language
+    entr # Run arbitrary commands when files change
+    watchexec # Execute commands in response to file modifications
+    grex # Generate regular expressions from test cases
 
-    # Version Control
+    # Version control
     gh # GitHub CLI
+    forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
 
-    # Security Tools
+    # Security tools
     burpsuite # Web vulnerability scanner
 
-    # === LANGUAGE SERVERS ===
-    # Web Development
-    prettierd # Code formatter daemon for web technologies
-    svelte-language-server # Language server for Svelte
-    emmet-language-server # Language server for Emmet
-    tailwindcss-language-server # Language server for Tailwind CSS
-    typescript-language-server # Language server for TypeScript
-    astro-language-server # Language server for Astro
+    #--------------------------------------------------------------------------
+    # LANGUAGE SERVERS & FORMATTERS
+    #--------------------------------------------------------------------------
+
+    # Language servers
+    svelte-language-server # Svelte language server
+    emmet-language-server # Emmet language server
+    tailwindcss-language-server # Tailwind CSS language server
+    typescript-language-server # TypeScript language server
+    astro-language-server # Astro language server
     vscode-langservers-extracted # HTML/CSS/JSON language servers
+    package-version-server # NPM package version server
+    docker-compose-language-service # Docker Compose language server
+    dockerfile-language-server-nodejs # Dockerfile language server
+    rust-analyzer # Rust language server
+    lua-language-server # Lua language server
+    phpactor # PHP language server
+    nixd # Nix language server
+    nil # Alternative Nix language server
+    sqls # SQL language server
+    gopls # Go language server
 
-    # DevOps
-    docker-compose-language-service # Language server for Docker Compose
-    dockerfile-language-server-nodejs # Language server for Dockerfiles
-
-    # Programming Languages
-    rust-analyzer # Language server for Rust
-    lua-language-server # Language server for Lua
+    # Formatters
     stylua # Lua code formatter
-    # nginx-language-server # Language server for Nginx - temporarily disabled due to pygls dependency issue
-    phpactor # Language server for PHP
-    nixd # Language server for Nix
     nixpkgs-fmt # Nix code formatter
     nixfmt-classic # Alternative Nix formatter
-    sqls # Language server for SQL
-    gopls # Language server for Go
+    prettierd # Code formatter daemon
 
-    # === MULTIMEDIA TOOLS ===
+    #--------------------------------------------------------------------------
+    # MULTIMEDIA TOOLS
+    #--------------------------------------------------------------------------
+
+    # Audio/Video processing
     ffmpeg-full # Complete multimedia solution
     cava # Console-based audio visualizer
 
-    # === SYSTEM MONITORING ===
-    stress # Workload generator for system testing
-    tokei # Count code statistics by language
+    # Media players
+    vlc # Versatile media player
+    mpv # Minimalist video player
 
-    # === WAYLAND UTILITIES ===
-    swww # Efficient animated wallpaper daemon for Wayland
+    # Image viewers and editors
+    nomacs # Image viewer
+    gimp # GNU Image Manipulation Program
+    inkscape # Vector graphics editor
+
+    # Video editing and streaming
+    kdePackages.kdenlive # Video editor
+    obs-studio # Streaming and recording software
+    kooha # Screen recorder for Wayland
+    blender # 3D modeling and animation
+
+    # Audio editing
+    audacity # Audio editor and recorder
+
+    #--------------------------------------------------------------------------
+    # WAYLAND/HYPRLAND UTILITIES
+    #--------------------------------------------------------------------------
+
+    swww # Animated wallpaper daemon for Wayland
     waypaper # Wallpaper manager for Wayland
-    wl-clipboard # Command-line clipboard utilities for Wayland
+    wl-clipboard # Clipboard utilities for Wayland
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
-    # (flameshot.override { enableWlrSupport = true; })
-
-    # === TERMINAL ENHANCEMENTS ===
-    nitch # Lightweight system information fetch
-    lolcat # Rainbow text output
-    nh # Nix helper CLI (use system package to avoid ownership issues)
-    zathura # Document viewer
-
-    # === GUI APPLICATIONS ===
-    # Launchers & System Tools
-    ulauncher # Application launcherr
-    wofi # Wayland native application launcher
     swaynotificationcenter # Notification daemon for Wayland
-    rpi-imager # Raspberry Pi Imaging Utility
-    f3 # Sd card checker
+    gource # Version control visualization
 
-    # Web Browsers
+    #--------------------------------------------------------------------------
+    # GUI APPLICATIONS
+    #--------------------------------------------------------------------------
+
+    # Application launchers
+    ulauncher # Application launcher
+    wofi # Wayland native application launcher
+
+    # Web browsers
     firefox # Open-source web browser
     google-chrome # Google's web browser
-    # chromium # Chromium web browser
+    vivaldi # Feature-rich web browser
+    vivaldi-ffmpeg-codecs # Video codecs for Vivaldi
     microsoft-edge # Microsoft's web browser
     tor-browser # Privacy-focused browser
-
-    # File Management
-    pcmanfm # Lightweight file manager
-    mate.engrampa # Archive manager
-
-    # Media Players
-    vlc # Versatile media player
-    mpv # Minimalist video player
-    kooha # Screen recorder for Wayland
-    nomacs # Image viewer
-    obs-studio # Streaming and recording software
 
     # Terminals
     warp-terminal # Modern terminal with AI features
 
-    # === COMMUNICATION ===
+    # System tools
+    rpi-imager # Raspberry Pi Imaging Utility
+    f3 # SD card checker
+
+    #--------------------------------------------------------------------------
+    # COMMUNICATION
+    #--------------------------------------------------------------------------
+
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    bitwarden # Password manager
-    viber-appimage # Voice and messaging app
+    viber-appimage # Instant messaging
     slack # Team collaboration platform
     thunderbird # Email client
 
-    # === OFFICE & PRODUCTIVITY ===
+    #--------------------------------------------------------------------------
+    # OFFICE & PRODUCTIVITY
+    #--------------------------------------------------------------------------
+
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    kdePackages.kdenlive # Video editor
+    bitwarden # Password manager
 
-    # === DEVELOPMENT ENVIRONMENTS ===
+    #--------------------------------------------------------------------------
+    # DEVELOPMENT ENVIRONMENTS
+    #--------------------------------------------------------------------------
+
     code-cursor # VS Code fork with AI features
     zed-editor # High-performance code editor
     responsively-app # Web development tool for responsive design
@@ -172,34 +259,77 @@ in {
     postman # API development environment
     filezilla # FTP client
 
-    # === GAMING ===
-    # steam # Gaming platform
-    # (steam.override {
-    #   extraPkgs = pkgs: [ openldap ];
-    #   # nativeOnly = true;
-    # }).run
-    # # steam-run # Steam runtime
+    #--------------------------------------------------------------------------
+    # GAMING
+    #--------------------------------------------------------------------------
+
     polymc # Minecraft launcher
     bottles # Wine wrapper
     heroic # Game launcher
-    mangohud # FPS counter
-    protonup-qt # Proton wrapper
-    # wineWowPackages.stable # Windows compatibility layer
+    mangohud # FPS counter overlay
+    protonup-qt # Proton version manager
     (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
-    # === THEMING & CUSTOMIZATION ===
+    #--------------------------------------------------------------------------
+    # TERMINAL ENHANCEMENTS
+    #--------------------------------------------------------------------------
+
+    # System information and utilities
+    nitch # Lightweight system information fetch
+    fastfetch # Fast system information tool
+    lolcat # Rainbow text output
+    nh # Nix helper CLI
+    zathura # Document viewer
+
+    # Modern CLI replacements and enhancements
+    bat # Modern cat replacement with syntax highlighting
+    fd # Modern find replacement
+    zoxide # Smarter cd command with frecency
+    tldr # Simplified man pages
+    duf # Modern df replacement with better output
+    du-dust # Modern du replacement
+    choose # Human-friendly alternative to cut and awk
+
+    #--------------------------------------------------------------------------
+    # THEMING & CUSTOMIZATION
+    #--------------------------------------------------------------------------
+
     nordic # Nordic theme
     font-manager # Font management tool
     cliphist # Clipboard history tool
 
-    # === COMMENTED OUT ===
-    blender
-    # kicad
-    audacity
-    gimp
-    inkscape
+    #--------------------------------------------------------------------------
+    # MISCELLANEOUS
+    #--------------------------------------------------------------------------
 
     qbittorrent # BitTorrent client
-  ];
+    stress # System stress testing tool
 
+    #--------------------------------------------------------------------------
+    # COMMENTED OUT / DISABLED
+    #--------------------------------------------------------------------------
+
+    # Steam gaming platform - configured at system level
+    # steam
+    # (steam.override {
+    #   extraPkgs = pkgs: [ openldap ];
+    #   nativeOnly = true;
+    # }).run
+    # steam-run
+
+    # Alternative browsers
+    # chromium
+
+    # Development tools
+    # kicad              # PCB design tool
+
+    # Windows compatibility
+    # wineWowPackages.stable
+
+    # Screenshot tools (using grim/slurp instead)
+    # (flameshot.override { enableWlrSupport = true; })
+
+    # Nginx language server - temporarily disabled
+    # nginx-language-server
+  ];
 }
