@@ -88,7 +88,6 @@
       waybar.enable = true;
       ly = {
         enable = true;
-        autoLogin = false;
       };
     };
 
