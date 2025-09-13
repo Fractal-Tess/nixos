@@ -46,7 +46,12 @@ in {
       user = username;
     };
 
-    # Set default session to Hyprland
-    services.displayManager.defaultSession = "hyprland";
+    # Set default session to Hyprland with UWSM
+    services.displayManager.defaultSession = "hyprland-uwsm";
+    
+    # Add UWSM session configuration
+    services.displayManager.sessionPackages = [ 
+      config.programs.hyprland.package
+    ];
   };
 }
