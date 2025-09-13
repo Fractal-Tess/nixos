@@ -78,9 +78,9 @@
         autoLogin = true;
       };
       waybar.enable = true;
-      regreet = {
-        enable = false;
-        symlinkBackgrounds = true;
+      ly = {
+        enable = true;
+        autoLogin = true;
       };
     };
 
