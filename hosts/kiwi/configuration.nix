@@ -26,16 +26,11 @@
     settings = {
       experimental-features = [ "nix-command" "flakes" ];
       auto-optimise-store = true;
-      substituters = [ "https://hyprland.cachix.org" ];
-      trusted-public-keys = [
-        "hyprland.cachix.org-1:a7pgxzMz7+chwVL3/pzj6jIBMioiJM7ypFP8PwtkuGc="
-      ];
     };
 
     gc = {
       automatic = true;
       dates = "weekly";
-      options = "--delete-older-than 7d";
     };
   };
 
@@ -133,6 +128,18 @@
           username = "smbuser";
           password = "smbpass";
         }
+        {
+          mountPoint = "/mnt/vault";
+          device = "//vd.netbird.cloud/vault";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
+        {
+          mountPoint = "/mnt/backup";
+          device = "//vd.netbird.cloud/backup";
+          username = "fractal-tess";
+          password = "smbpass";
+        }
       ];
     };
 
@@ -152,8 +159,6 @@
       enable = true;
       ssh.enable = true;
     };
-
-
   };
 
   # Bluetooth

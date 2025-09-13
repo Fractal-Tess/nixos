@@ -130,6 +130,12 @@
               username = "fractal-tess";
               password = "smbpass";
             }
+            {
+              mountPoint = "/mnt/kiwi";
+              device = "//kiwi.netbird.cloud/kiwi";
+              username = "fractal-tess";
+              password = "smbpass";
+            }
           ];
         };
 
@@ -252,6 +258,9 @@
   #============================================================================
 
   fonts.packages = with pkgs; [
+    nerd-fonts.caskaydia-cove
+    nerd-fonts.caskaydia-mono
+    nerd-fonts.jetbrains-mono
     font-awesome
     powerline-fonts
     powerline-symbols
