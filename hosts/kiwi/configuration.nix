@@ -86,8 +86,10 @@
     display = {
       hyprland.enable = true;
       waybar.enable = true;
-      ly = {
+      ly.enable = false;
+      sddm = {
         enable = true;
+        autoLogin = false;
       };
     };
 
