@@ -86,11 +86,7 @@
     display = {
       hyprland.enable = true;
       waybar.enable = true;
-      ly = {
-        enable = true;
-        autoLogin = false;
-      };
-      sddm.enable = false;
+      regreet.enable = true;
     };
 
     # Services

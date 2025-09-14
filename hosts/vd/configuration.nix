@@ -73,15 +73,10 @@
 
     # Display system
     display = {
-      hyprland = {
-        enable = true;
-        autoLogin = true;
-      };
+      hyprland.enable = true;
       waybar.enable = true;
-      ly = {
-        enable = true;
-        autoLogin = true;
-      };
+      autologin.enable = true;
+      ly.enable = true;
     };
 
     # Services
