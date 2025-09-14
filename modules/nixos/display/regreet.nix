@@ -11,9 +11,6 @@ in {
     # Option to enable/disable the ReGreet display manager
     enable = mkEnableOption "ReGreet";
 
-    # Option to enable automatic login without password prompt
-    autoLogin = mkEnableOption "ReGreet auto login";
-
     # Option to enable symlinking backgrounds to /var/lib/regreet-backgrounds
     symlinkBackgrounds = mkEnableOption
       "Symlink backgrounds to /var/lib/regreet-backgrounds for regreet access";
@@ -29,15 +26,7 @@ in {
     }];
 
     # Enable greetd service
-    services.greetd = {
-      enable = true;
-      settings = mkIf cfg.autoLogin {
-        initial_session = {
-          command = "${config.programs.hyprland.package}/bin/Hyprland";
-          user = username;
-        };
-      };
-    };
+    services.greetd.enable = true;
 
     # Enable regreet as the greeter
     programs.regreet = {

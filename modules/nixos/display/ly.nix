@@ -11,9 +11,6 @@ in
   options.modules.display.ly = {
     # Option to enable/disable the ly display manager
     enable = mkEnableOption "ly display manager";
-
-    # Option to enable automatic login without password prompt
-    autoLogin = mkEnableOption "ly auto login";
   };
 
   # Configuration that applies when this module is enabled
@@ -39,11 +36,6 @@ in
       };
     };
 
-    # Configure auto login if enabled  
-    services.displayManager.autoLogin = mkIf cfg.autoLogin {
-      enable = true;
-      user = username;
-    };
 
     # Ensure proper environment for Hyprland
     services.displayManager.environment = {
