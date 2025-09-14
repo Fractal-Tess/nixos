@@ -25,8 +25,19 @@ in
         "ly is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
     }];
 
-    # Enable ly display manager
-    services.displayManager.ly.enable = true;
+    # Enable ly display manager with specific configuration
+    services.displayManager.ly = {
+      enable = true;
+      settings = {
+        animation = "none";
+        clear_password = true;
+        hide_borders = false;
+        hide_f1_commands = false;
+        load_config = true;
+        save_file = "/tmp/ly-save";
+        term_reset_cursor = true;
+      };
+    };
 
     # Configure auto login if enabled  
     services.displayManager.autoLogin = mkIf cfg.autoLogin {
@@ -40,8 +51,19 @@ in
       NIXOS_OZONE_WL = "1";
     };
 
-    # Use Hyprland UWSM session (same as working SDDM config)
-    services.displayManager.defaultSession = "hyprland-uwsm";
+    # Create a fixed Hyprland UWSM session that stops existing sessions first
+    # Based on Reddit solution: https://www.reddit.com/r/hyprland/comments/1i2ap4o/
+    environment.etc."wayland-sessions/hyprland-ly-fixed.desktop".text = ''
+      [Desktop Entry]
+      Name=Hyprland (UWSM Fixed)
+      Comment=Hyprland with UWSM session cleanup fix
+      Exec=/bin/sh -c "uwsm stop 2>/dev/null || true; uwsm start -F /run/current-system/sw/bin/Hyprland"
+      Type=Application
+      DesktopNames=Hyprland
+    '';
+
+    # Use the fixed UWSM session
+    services.displayManager.defaultSession = "hyprland-ly-fixed";
   };
 }
 
