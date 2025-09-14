@@ -86,7 +86,10 @@
     display = {
       hyprland.enable = true;
       waybar.enable = true;
-      regreet.enable = true;
+      regreet = {
+        enable = true;
+        symlinkBackgrounds = true;
+      };
     };
 
     # Services
@@ -161,7 +164,9 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [ 
+    canta-theme
+  ];
 
   # Brightness control
   programs.light.enable = true;
