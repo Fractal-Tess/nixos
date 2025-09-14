@@ -166,9 +166,10 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [
-    crush # File compression utility
-  ];
+  environment.systemPackages = with pkgs;
+    [
+      crush # File compression utility
+    ];
 
   # Gaming configuration
   programs.steam = {
@@ -255,6 +256,8 @@
     nerd-fonts.caskaydia-cove
     nerd-fonts.caskaydia-mono
     nerd-fonts.jetbrains-mono
+    cascadia-code
+
     font-awesome
     powerline-fonts
     powerline-symbols
