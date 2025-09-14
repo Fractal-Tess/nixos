@@ -207,9 +207,6 @@
     dbus.enable = true;
     gvfs.enable = true;
 
-    # Secrets management
-    gnome.gnome-keyring.enable = true;
-
     # Printing support
     printing = {
       enable = true;
@@ -257,7 +254,6 @@
     nerd-fonts.caskaydia-mono
     nerd-fonts.jetbrains-mono
     cascadia-code
-
     font-awesome
     powerline-fonts
     powerline-symbols
