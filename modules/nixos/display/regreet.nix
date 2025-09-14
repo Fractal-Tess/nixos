@@ -36,11 +36,16 @@ in {
       cageArgs = [ "-m" "last" ];
 
 
-      # Minimal configuration with default styling
+      # Minimal configuration with dark theme
       settings = {
         commands = {
           reboot = [ "systemctl" "reboot" ];
           poweroff = [ "systemctl" "poweroff" ];
+        };
+        appearance = {
+          theme = "Adwaita-dark";
+          icon_theme = "Adwaita";
+          cursor_theme = "Adwaita";
         };
       };
     };
