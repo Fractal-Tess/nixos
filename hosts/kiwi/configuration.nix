@@ -44,6 +44,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+    allowBroken = true; # Allow broken packages for fingerprint drivers
     permittedInsecurePackages = [ "libsoup-2.74.3" ];
   };
 
@@ -54,6 +55,7 @@
   # DDC support for external monitor brightness control
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot.kernelModules = [ "i2c-dev" ];
+  # boot.kernelParams = [ "amd_pstate=disable" ];
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
@@ -63,6 +65,32 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
+
+  # Fingerprint authentication - disabled due to unsupported device ID 2808:c652
+  # services.fprintd = {
+  #   enable = true;
+  # };
+
+  # PAM configuration for fingerprint authentication
+  # security.pam.services = {
+  #   # Enable fingerprint auth for SDDM (main login)
+  #   sddm.fprintAuth = true;
+  #
+  #   # CRITICAL WORKAROUND: Disable fprint for login service
+  #   # This prevents Issue #171136 where GUI password auth breaks
+  #   # login.fprintAuth = false;
+  #
+  #   # Enable fingerprint for other services
+  #   sudo.fprintAuth = true; # sudo commands
+  #   swaylock.fprintAuth = true; # Screen lock (if using)
+  #   hyprlock.fprintAuth = true; # Hyprland lock (if using)
+  # };
+  #
+  # # Ensure fprintd daemon starts properly
+  # systemd.services.fprintd = {
+  #   wantedBy = [ "multi-user.target" ];
+  #   serviceConfig.Type = "simple";
+  # };
 
   # Memory management
   zramSwap.enable = true;
@@ -214,16 +242,22 @@
     tlp = {
       enable = true;
       settings = {
-        # CPU_SCALING_GOVERNOR_ON_AC = "performance";
-        # CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        #
-        # CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
-        # CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-        # CPU_MIN_PERF_ON_AC = 0;
-        # CPU_MAX_PERF_ON_AC = 100;
-        # CPU_MIN_PERF_ON_BAT = 0;
-        # CPU_MAX_PERF_ON_BAT = 50;
+        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+
+        CPU_MAX_FREQ_ON_AC = 3100000;
+        CPU_MAX_FREQ_ON_BAT = 3100000;
+
+        CPU_MIN_PERF_ON_AC = 20;
+        CPU_MAX_PERF_ON_AC = 70;
+        CPU_MIN_PERF_ON_BAT = 0;
+        CPU_MAX_PERF_ON_BAT = 50;
+
+        CPU_BOOST_ON_AC = 1; # enable boost on AC
+        CPU_BOOST_ON_BAT = 1; # disable boost on battery for power saving
       };
     };
   };
