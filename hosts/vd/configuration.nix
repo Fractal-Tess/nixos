@@ -76,7 +76,6 @@
       hyprland.enable = true;
       waybar.enable = true;
       autologin.enable = true;
-      ly.enable = true;
     };
 
     # Services
