@@ -17,7 +17,7 @@ bindkey -e
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh || echo "Error: Failed to load p10k config"
 
 # Load custom secrets
-[[ -f ~/.secrets.zsh ]] && source  ~/.secrets.zsh || echo "Error: Failed to load secrets"
+[[ -f ~/.secrets.zsh ]] && source ~/.secrets.zsh
 
 PATH=~/.console-ninja/.bin:$PATH
 
