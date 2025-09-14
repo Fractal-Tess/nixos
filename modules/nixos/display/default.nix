@@ -1,1 +1,1 @@
-{ ... }: { imports = [ ./hyprland.nix ./ly.nix ./regreet.nix ./sddm.nix ./waybar.nix ]; }
+{ ... }: { imports = [ ./autologin.nix ./hyprland.nix ./ly.nix ./regreet.nix ./sddm.nix ./waybar.nix ]; }
