@@ -35,16 +35,19 @@ in {
 
       cageArgs = [ "-m" "last" ];
 
-
-      # Minimal configuration with dark theme
+      # Configuration with Canta theme and background
       settings = {
         commands = {
           reboot = [ "systemctl" "reboot" ];
           poweroff = [ "systemctl" "poweroff" ];
         };
+        background = {
+          path = "/var/lib/regreet-backgrounds/evening-sky.png";
+          fit = "Cover";
+        };
         appearance = {
-          theme = "Adwaita-dark";
-          icon_theme = "Adwaita";
+          theme = "Canta-dark";
+          icon_theme = "Canta";
           cursor_theme = "Adwaita";
         };
       };
