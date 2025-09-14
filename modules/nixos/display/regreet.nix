@@ -42,7 +42,7 @@ in {
           poweroff = [ "systemctl" "poweroff" ];
         };
         background = {
-          path = "/var/lib/regreet-backgrounds/evening-sky.png";
+          path = "/var/lib/regreet-backgrounds/bg_28.jpg";
           fit = "Cover";
         };
         appearance = {
