@@ -11,9 +11,6 @@ in
   options.modules.display.sddm = {
     # Option to enable/disable SDDM display manager
     enable = mkEnableOption "SDDM display manager";
-
-    # Option to enable the astronaut theme
-    enableAstronautTheme = mkEnableOption "SDDM Astronaut theme" // { default = true; };
   };
 
   # Configuration that applies when this module is enabled
@@ -30,8 +27,8 @@ in
       enable = true;
       wayland.enable = true;
       package = pkgs.kdePackages.sddm;
-      theme = mkIf cfg.enableAstronautTheme "sddm-astronaut-theme";
-      extraPackages = mkIf cfg.enableAstronautTheme [ pkgs.sddm-astronaut ];
+      theme = "sddm-astronaut-theme";
+      extraPackages = with pkgs; [ sddm-astronaut ];
     };
 
     # Use Hyprland UWSM session (as shown in error message)
