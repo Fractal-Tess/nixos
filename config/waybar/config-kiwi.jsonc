@@ -28,6 +28,8 @@
       "custom/padd",
       "disk#blockade",
       "disk#oracle",
+      "disk#vault",
+      "disk#backup",
       "disk#root",
       "custom/pad",
       "pulseaudio",
@@ -64,6 +66,20 @@
       "path": "/mnt/oracle",
       "format": "oracle: {percentage_used}%",
       "tooltip-format": "Oracle: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#vault": {
+      "interval": 30,
+      "path": "/mnt/vault",
+      "format": "vault: {percentage_used}%",
+      "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
+      "unit": "GB"
+    },
+    "disk#backup": {
+      "interval": 30,
+      "path": "/mnt/backup",
+      "format": "backup: {percentage_used}%",
+      "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
       "unit": "GB"
     },
     "disk#root": {
