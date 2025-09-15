@@ -189,7 +189,7 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [];
+  environment.systemPackages = with pkgs; [ ];
 
   # Brightness control
   programs.light.enable = true;
@@ -249,28 +249,28 @@
         CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
         # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
-        CPU_MAX_FREQ_ON_AC = 2000000;  # Max performance on AC
+        CPU_MAX_FREQ_ON_AC = 2000000; # Max performance on AC
         CPU_MAX_FREQ_ON_BAT = 1800000; # Balanced performance on battery
-        CPU_MIN_FREQ_ON_AC = 1600000;  # Don't go too low on AC
+        CPU_MIN_FREQ_ON_AC = 1600000; # Don't go too low on AC
         CPU_MIN_FREQ_ON_BAT = 1600000; # Conservative minimum
 
         # Performance scaling percentages
-        CPU_MIN_PERF_ON_AC = 50;  # Higher baseline on AC
+        CPU_MIN_PERF_ON_AC = 0; # Higher baseline on AC
         CPU_MAX_PERF_ON_AC = 100; # Full performance when needed
-        CPU_MIN_PERF_ON_BAT = 20; # Lower baseline on battery
+        CPU_MIN_PERF_ON_BAT = 0; # Lower baseline on battery
         CPU_MAX_PERF_ON_BAT = 80; # Cap performance on battery
 
         # CPU boost settings
-        CPU_BOOST_ON_AC = 1;      # Enable boost on AC
-        CPU_BOOST_ON_BAT = 0;     # Disable boost on battery for power saving
+        CPU_BOOST_ON_AC = 1; # Enable boost on AC
+        CPU_BOOST_ON_BAT = 0; # Disable boost on battery for power saving
 
         # Additional power management
-        CPU_HWP_DYN_BOOST_ON_AC = 1;   # Hardware P-state dynamic boost on AC
-        CPU_HWP_DYN_BOOST_ON_BAT = 0;  # Disable on battery
-        
+        CPU_HWP_DYN_BOOST_ON_AC = 1; # Hardware P-state dynamic boost on AC
+        CPU_HWP_DYN_BOOST_ON_BAT = 0; # Disable on battery
+
         # Turbo boost settings
-        SCHED_POWERSAVE_ON_AC = 0;     # Performance scheduling on AC
-        SCHED_POWERSAVE_ON_BAT = 1;    # Power-saving scheduling on battery
+        SCHED_POWERSAVE_ON_AC = 0; # Performance scheduling on AC
+        SCHED_POWERSAVE_ON_BAT = 1; # Power-saving scheduling on battery
       };
     };
   };
