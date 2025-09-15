@@ -137,7 +137,6 @@
 
   # Core system services
   services = {
-    # TLP - Power management for laptop
     tlp = {
       enable = true;
       settings = {
@@ -147,7 +146,7 @@
         CPU_MIN_PERF_ON_AC = 0;
         CPU_MAX_PERF_ON_AC = 100;
 
-        CPU_BOOST_ON_AC = 0; # disable boost on AC
+        CPU_BOOST_ON_AC = 0;
       };
     };
   };
