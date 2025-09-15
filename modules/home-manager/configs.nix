@@ -10,7 +10,7 @@ let
 in {
   # Hyprland
   xdg.configFile.hypr = mkIf osConfig.modules.display.hyprland.enable {
-    source = ../../config/hyprland;
+    source = ../../config/hypr;
     recursive = true;
   };
 

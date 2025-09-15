@@ -19,7 +19,7 @@
   home = {
     username = username;
     homeDirectory = "/home/${username}";
-    stateVersion = "24.05"; # Don't change this
+    stateVersion = "25.05"; # Don't change this
   };
 
   # Enable Home Manager self-management
@@ -212,7 +212,7 @@
     #--------------------------------------------------------------------------
 
     # Application launchers
-    ulauncher # Application launcher
+    # ulauncher # Application launcher
     wofi # Wayland native application launcher
 
     # Web browsers
@@ -288,7 +288,6 @@
     tldr # Simplified man pages
     duf # Modern df replacement with better output
     du-dust # Modern du replacement
-    choose # Human-friendly alternative to cut and awk
 
     #--------------------------------------------------------------------------
     # THEMING & CUSTOMIZATION

@@ -189,9 +189,7 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [
-    canta-theme
-  ];
+  environment.systemPackages = with pkgs; [];
 
   # Brightness control
   programs.light.enable = true;
