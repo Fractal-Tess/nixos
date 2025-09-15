@@ -189,7 +189,7 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [ linuxKernel.packages.linux_zen.cpupower ];
 
   # Brightness control
   programs.light.enable = true;
