@@ -212,7 +212,6 @@
     #--------------------------------------------------------------------------
 
     # Application launchers
-    # ulauncher # Application launcher
     wofi # Wayland native application launcher
 
     # Web browsers
