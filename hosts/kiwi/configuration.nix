@@ -245,14 +245,14 @@
         CPU_SCALING_GOVERNOR_ON_AC = "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 
-        CPU_MAX_FREQ_ON_AC = 3100000;
+        CPU_MAX_FREQ_ON_AC = 4547946;
         CPU_MAX_FREQ_ON_BAT = 3100000;
 
-        CPU_MIN_PERF_ON_AC = 20;
-        CPU_MAX_PERF_ON_AC = 70;
+        CPU_MIN_PERF_ON_AC = 30;
+        CPU_MAX_PERF_ON_AC = 100;
         CPU_MIN_PERF_ON_BAT = 0;
         CPU_MAX_PERF_ON_BAT = 50;
 
