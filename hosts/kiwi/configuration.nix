@@ -55,7 +55,7 @@
   # DDC support for external monitor brightness control
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot.kernelModules = [ "i2c-dev" ];
-  # boot.kernelParams = [ "amd_pstate=disable" ];
+  boot.kernelParams = [ "amd_pstate=disable" ];
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
