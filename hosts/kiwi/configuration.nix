@@ -242,22 +242,37 @@
     tlp = {
       enable = true;
       settings = {
-        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
-        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        # CPU governors: performance on AC, schedutil on battery
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
+        CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
 
-        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+        # Energy performance policies
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
-        CPU_MAX_FREQ_ON_AC = 4547946;
-        CPU_MAX_FREQ_ON_BAT = 3100000;
+        # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
+        CPU_MAX_FREQ_ON_AC = 2000000;  # Max performance on AC
+        CPU_MAX_FREQ_ON_BAT = 1800000; # Balanced performance on battery
+        CPU_MIN_FREQ_ON_AC = 1600000;  # Don't go too low on AC
+        CPU_MIN_FREQ_ON_BAT = 1600000; # Conservative minimum
 
-        CPU_MIN_PERF_ON_AC = 30;
-        CPU_MAX_PERF_ON_AC = 100;
-        CPU_MIN_PERF_ON_BAT = 0;
-        CPU_MAX_PERF_ON_BAT = 50;
+        # Performance scaling percentages
+        CPU_MIN_PERF_ON_AC = 50;  # Higher baseline on AC
+        CPU_MAX_PERF_ON_AC = 100; # Full performance when needed
+        CPU_MIN_PERF_ON_BAT = 20; # Lower baseline on battery
+        CPU_MAX_PERF_ON_BAT = 80; # Cap performance on battery
 
-        CPU_BOOST_ON_AC = 1; # enable boost on AC
-        CPU_BOOST_ON_BAT = 1; # disable boost on battery for power saving
+        # CPU boost settings
+        CPU_BOOST_ON_AC = 1;      # Enable boost on AC
+        CPU_BOOST_ON_BAT = 0;     # Disable boost on battery for power saving
+
+        # Additional power management
+        CPU_HWP_DYN_BOOST_ON_AC = 1;   # Hardware P-state dynamic boost on AC
+        CPU_HWP_DYN_BOOST_ON_BAT = 0;  # Disable on battery
+        
+        # Turbo boost settings
+        SCHED_POWERSAVE_ON_AC = 0;     # Performance scheduling on AC
+        SCHED_POWERSAVE_ON_BAT = 1;    # Power-saving scheduling on battery
       };
     };
   };
