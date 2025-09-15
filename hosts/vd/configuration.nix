@@ -21,8 +21,8 @@
   # SYSTEM CONFIGURATION
   #============================================================================
 
-  # Release version - DO NOT CHANGE unless you know what you're doing
-  system.stateVersion = "24.05";
+  # DO NOT CHANGE.
+  system.stateVersion = "25.05";
 
   #============================================================================
   # NIX CONFIGURATION
@@ -75,6 +75,7 @@
     display = {
       hyprland.enable = true;
       waybar.enable = true;
+      sddm.enable = true;
       autologin.enable = true;
     };
 
@@ -166,10 +167,7 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs;
-    [
-      crush # File compression utility
-    ];
+  environment.systemPackages = with pkgs; [ ];
 
   # Gaming configuration
   programs.steam = {
@@ -179,23 +177,6 @@
 
     # Enhanced compatibility
     extraCompatPackages = with pkgs; [ protonup ];
-
-    # Required libraries for Wine/Proton
-    extraPackages = with pkgs; [
-      # Basic dependencies
-      keyutils
-      libkrb5
-      libpng
-      libpulseaudio
-
-      # Media support
-      gst_all_1.gst-plugins-base
-      gst_all_1.gst-plugins-good
-
-      # 32-bit libraries
-      pkgsi686Linux.keyutils
-      pkgsi686Linux.libkrb5
-    ];
   };
 
   #============================================================================

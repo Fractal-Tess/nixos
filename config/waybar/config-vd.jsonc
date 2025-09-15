@@ -41,7 +41,7 @@
       "cpu",
       "custom/gpu#nvidia",
       "memory",
-      // "hyprland/language",
+      "hyprland/language",
       "clock",
       "custom/pad",
       "custom/notification",
