@@ -245,8 +245,8 @@
 
         CPU_SCALING_GOVERNOR_ON_AC = "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
         # # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
         # CPU_MAX_FREQ_ON_AC = 1800000; # Max performance on AC
@@ -262,7 +262,7 @@
 
         # CPU boost settings
         CPU_BOOST_ON_AC = 1; # Enable boost on AC
-        CPU_BOOST_ON_BAT = 0; # Disable boost on battery for power saving
+        CPU_BOOST_ON_BAT = 1; # Disable boost on battery for power saving
       };
     };
   };
