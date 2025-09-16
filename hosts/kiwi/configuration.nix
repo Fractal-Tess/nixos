@@ -55,7 +55,7 @@
   # DDC support for external monitor brightness control
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot.kernelModules = [ "i2c-dev" ];
-  boot.kernelParams = [ "amd_pstate=disable" ];
+  boot.kernelParams = [ ];
   services.udev.extraRules = ''
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
@@ -189,7 +189,7 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [ linuxKernel.packages.linux_zen.cpupower ];
+  environment.systemPackages = with pkgs; [ ];
 
   # Brightness control
   programs.light.enable = true;
@@ -240,37 +240,29 @@
     tlp = {
       enable = true;
       settings = {
-        # CPU governors: performance on AC, schedutil on battery
-        CPU_SCALING_GOVERNOR_ON_AC = "performance";
-        CPU_SCALING_GOVERNOR_ON_BAT = "schedutil";
+        CPU_DRIVER_OPMODE_ON_AC = "active";
+        CPU_DRIVER_OPMODE_ON_BAT = "active";
 
-        # Energy performance policies
-        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power";
 
-        # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
-        CPU_MAX_FREQ_ON_AC = 2000000; # Max performance on AC
-        CPU_MAX_FREQ_ON_BAT = 1800000; # Balanced performance on battery
-        CPU_MIN_FREQ_ON_AC = 1600000; # Don't go too low on AC
-        CPU_MIN_FREQ_ON_BAT = 1600000; # Conservative minimum
+        # # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
+        # CPU_MAX_FREQ_ON_AC = 1800000; # Max performance on AC
+        # CPU_MAX_FREQ_ON_BAT = 1800000; # Balanced performance on battery
+        # CPU_MIN_FREQ_ON_AC = 1100000; # Don't go too low on AC
+        # CPU_MIN_FREQ_ON_BAT = 1100000; # Conservative minimum
 
         # Performance scaling percentages
-        CPU_MIN_PERF_ON_AC = 0; # Higher baseline on AC
-        CPU_MAX_PERF_ON_AC = 100; # Full performance when needed
-        CPU_MIN_PERF_ON_BAT = 0; # Lower baseline on battery
-        CPU_MAX_PERF_ON_BAT = 80; # Cap performance on battery
+        # CPU_MIN_PERF_ON_AC = 0; # Higher baseline on AC
+        # CPU_MAX_PERF_ON_AC = 100; # Full performance when needed
+        # CPU_MIN_PERF_ON_BAT = 0; # Lower baseline on battery
+        # CPU_MAX_PERF_ON_BAT = 80; # Cap performance on battery
 
         # CPU boost settings
         CPU_BOOST_ON_AC = 1; # Enable boost on AC
         CPU_BOOST_ON_BAT = 0; # Disable boost on battery for power saving
-
-        # Additional power management
-        CPU_HWP_DYN_BOOST_ON_AC = 1; # Hardware P-state dynamic boost on AC
-        CPU_HWP_DYN_BOOST_ON_BAT = 0; # Disable on battery
-
-        # Turbo boost settings
-        SCHED_POWERSAVE_ON_AC = 0; # Performance scheduling on AC
-        SCHED_POWERSAVE_ON_BAT = 1; # Power-saving scheduling on battery
       };
     };
   };

@@ -1,8 +1,4 @@
 { config, ... }: {
-  # git signing
-  home.file.".ssh/allowed_signers".text =
-    "* ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAI..."; # Replace with actual key content
-
   programs.git = {
     enable = true;
     lfs = { enable = true; };
