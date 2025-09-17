@@ -68,6 +68,7 @@
     yq # YAML/XML processor (jq for YAML)
     gron # Make JSON greppable
     fx # Command-line JSON processing tool
+    calc # Command-line calculator
 
     # Process management and system info
     procs # Modern replacement for ps
