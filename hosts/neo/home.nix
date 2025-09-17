@@ -64,6 +64,7 @@ with lib;
     jq # Command-line JSON processor
     yq # YAML/XML processor (jq for YAML)
     fx # Command-line JSON processing tool
+    calc # Command-line calculator
 
     # Process management and system info  
     procs # Modern replacement for ps
