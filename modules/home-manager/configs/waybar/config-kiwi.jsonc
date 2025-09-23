@@ -4,7 +4,8 @@
     "position": "top",
     "mod": "dock",
     "output": [
-      "eDP-1"
+      "eDP-1",
+      "HDMI-A-1"
     ],
     "margin-left": 8,
     "margin-right": 8,
