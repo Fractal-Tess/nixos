@@ -240,29 +240,28 @@
     tlp = {
       enable = true;
       settings = {
+        # CPU driver operation mode
         CPU_DRIVER_OPMODE_ON_AC = "active";
         CPU_DRIVER_OPMODE_ON_BAT = "active";
 
-        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+        # CPU scaling governors
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
-        CPU_ENERGY_PERF_POLICY_ON_AC = "balance_performance";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "powersave";
 
-        # # Frequency limits (using available frequencies: 2.0GHz, 1.8GHz, 1.6GHz)
-        # CPU_MAX_FREQ_ON_AC = 1800000; # Max performance on AC
-        # CPU_MAX_FREQ_ON_BAT = 1800000; # Balanced performance on battery
-        # CPU_MIN_FREQ_ON_AC = 1100000; # Don't go too low on AC
-        # CPU_MIN_FREQ_ON_BAT = 1100000; # Conservative minimum
+        # Energy performance policies
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
 
-        # Performance scaling percentages
-        # CPU_MIN_PERF_ON_AC = 0; # Higher baseline on AC
-        # CPU_MAX_PERF_ON_AC = 100; # Full performance when needed
-        # CPU_MIN_PERF_ON_BAT = 0; # Lower baseline on battery
-        # CPU_MAX_PERF_ON_BAT = 80; # Cap performance on battery
+        # CPU frequency limits (in kHz)
+        # Limiting max frequency to reduce heat and power consumption
+        CPU_SCALING_MIN_FREQ_ON_AC = 0;
+        CPU_SCALING_MAX_FREQ_ON_AC = 4100000; # 4.1GHz max on AC
+        CPU_SCALING_MIN_FREQ_ON_BAT = 0;
+        CPU_SCALING_MAX_FREQ_ON_BAT = 3500000; # 3.5GHz max on battery
 
         # CPU boost settings
-        CPU_BOOST_ON_AC = 1; # Enable boost on AC
-        CPU_BOOST_ON_BAT = 1; # Disable boost on battery for power saving
+        CPU_BOOST_ON_AC = 1; # Allow boost on AC
+        CPU_BOOST_ON_BAT = 0; # Disable boost on battery for power saving
       };
     };
   };
