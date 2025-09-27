@@ -24,7 +24,7 @@ let
 
     # kiwi - Laptop with external monitor setup
     monitor=eDP-1, 1920x1080@60, 0x0, 1 # Laptop monitor (left)
-    monitor=HDMI-A-1, 1920x1080@60, 1920x0, 1 # Dell U2414H monitor (right)
+    monitor=HDMI-A-1, preferred, auto-right, 1 # Dell U2414H monitor (right)
 
     # Hyprland bug
     # monitor=Unknown-1, disable
@@ -40,3 +40,4 @@ in
     else if osConfig.networking.hostName == "kiwi" then kiwiMonitorConfig
     else vdMonitorConfig; # fallback
 }
+
