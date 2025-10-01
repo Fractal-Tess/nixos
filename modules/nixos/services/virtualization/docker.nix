@@ -72,14 +72,12 @@ in {
         # host = [ "unix:///var/run/docker.sock" "tcp://0.0.0.0:2375" ];
 
         # Additional network settings for Netbird integration
-        default-address-pools = [{
-          base = "172.17.0.0/12";
-          size = 16;
-        }
+        default-address-pools = [
           {
-            base = "10.0.0.0/8"; # Additional space if needed
-            size = 16;
-          }];
+            base = "172.18.0.0/16";
+            size = 24;
+          }
+        ];
 
         # DNS search domains for Netbird
         dns-search = [ "netbird.cloud" ];
