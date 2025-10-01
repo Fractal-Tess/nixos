@@ -1,4 +1,4 @@
-{ lib, hostname, ... }:
+{ lib, hostname, pkgs, ... }:
 
 with lib;
 
@@ -45,6 +45,7 @@ with lib;
 
     services.netbird.enable = mkDefault true;
     services.globalprotect.enable = mkDefault true;
+    services.globalprotect.csdWrapper = mkDefault "${pkgs.openconnect}/libexec/openconnect/hipreport.sh";
   };
 }
 
