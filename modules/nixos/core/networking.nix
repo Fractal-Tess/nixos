@@ -10,12 +10,6 @@ with lib;
       networkmanager.enable = mkDefault true;
       wireless.enable = mkDefault false;
 
-      # DNS configuration to resolve internal domains
-      nameservers = [ "10.1.111.17" "8.8.8.8" "1.1.1.1" ];
-
-      # # Add search domains for internal network
-      search = [ "int" ];
-
       # Enable IP forwarding for Docker containers to access VPN networks
       firewall = {
         enable = mkDefault true;
@@ -29,8 +23,6 @@ with lib;
     };
 
     services.netbird.enable = mkDefault true;
-    services.globalprotect.enable = mkDefault true;
-    services.globalprotect.csdWrapper = mkDefault "${pkgs.openconnect}/libexec/openconnect/hipreport.sh";
   };
 }
 
