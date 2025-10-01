@@ -29,8 +29,8 @@ with lib;
     };
 
     services.netbird.enable = mkDefault true;
-    services.globalprotect.enable = mkDefault true;
-    services.globalprotect.csdWrapper = mkDefault "${pkgs.openconnect}/libexec/openconnect/hipreport.sh";
+    # services.globalprotect.enable = mkDefault true;
+    # services.globalprotect.csdWrapper = mkDefault "${pkgs.openconnect}/libexec/openconnect/hipreport.sh";
   };
 }
 
