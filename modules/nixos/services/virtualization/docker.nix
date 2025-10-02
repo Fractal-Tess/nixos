@@ -10,17 +10,10 @@ in {
     nvidia = mkEnableOption "Nvidia support";
     devtools = mkEnableOption "Devtools";
 
-    dns = mkOption {
-      type = types.listOf types.str;
-      default = [ "100.91.242.113" "1.1.1.1" "1.0.0.1" "8.8.8.8" "8.8.4.4" ];
-      description =
-        "DNS servers to use for the Docker daemon (Netbird DNS first, then fallbacks)";
-    };
-
-    useNetbirdDNS = mkOption {
-      type = types.bool;
-      default = true;
-      description = "Whether to prioritize Netbird DNS for Docker containers";
+    subnet = mkOption {
+      type = types.str;
+      default = "172.20.0.0/16";
+      description = "Subnet for Docker bridge network to avoid conflicts with VPN networks";
     };
   };
 
@@ -49,38 +42,61 @@ in {
         setSocketVariable = true;
       };
 
-      # Additional daemon settings for better Netbird integration
-      daemon.settings = mkIf cfg.useNetbirdDNS {
-        # DNS configuration
-        dns = cfg.dns;
-
-        # # Network settings for better VPN integration
-        # ip-forward = true;
-        # iptables = true;
-
-        # # Ensure Docker can route to VPN networks
-        # userland-proxy = false;
-
-        # # MTU settings for VPN compatibility
-        # mtu = 1400;
-
-
-        # # DNS options for better resolution
-        # dns-opts = [ "use-vc" "timeout:2" "attempts:3" ];
-
-        # # Allow Docker to use host networking when needed
-        # host = [ "unix:///var/run/docker.sock" "tcp://0.0.0.0:2375" ];
-
-        # Additional network settings for Netbird integration
+      # Additional daemon settings for network configuration
+      daemon.settings = {
+        # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
         default-address-pools = [
           {
-            base = "172.18.0.0/16";
+            base = cfg.subnet;
+            size = 24;
+          }
+          {
+            base = "172.21.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.22.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.23.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.24.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.25.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.26.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.27.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.28.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.29.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.30.0.0/16";
+            size = 24;
+          }
+          {
+            base = "172.31.0.0/16";
             size = 24;
           }
         ];
-
-        # DNS search domains for Netbird
-        dns-search = [ "netbird.cloud" ];
+        # Fixed bridge network configuration
+        "fixed-cidr" = "172.20.0.0/24";
       };
     };
 
