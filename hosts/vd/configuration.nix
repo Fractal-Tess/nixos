@@ -86,6 +86,7 @@
       sops = {
         enable = true;
         ssh.enable = true;
+        z_ai.enable = true;
       };
 
       # Virtualization
