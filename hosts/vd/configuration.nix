@@ -95,10 +95,7 @@
           rootless = true;
           devtools = true;
           nvidia = true;
-          useNetbirdDNS = true;
         };
-        # firecracker.enable = true;
-        # kubernetes.enable = true;
       };
 
       # Samba configuration
