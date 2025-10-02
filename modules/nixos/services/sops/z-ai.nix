@@ -10,11 +10,11 @@ in {
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {
     sops.secrets = {
-      z_ai = {
+      api_key = {
         owner = username;
         sopsFile = ../../../../secrets/z-ai.yaml;
         format = "yaml";
-        path = "/home/${username}/.config/secrets/z-ai";
+        path = "/home/${username}/.config/secrets/z-ai.apikey";
       };
     };
   };
