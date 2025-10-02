@@ -133,8 +133,6 @@
           rootless = true;
           devtools = true;
         };
-        firecracker.enable = false;
-        kubernetes.enable = false;
       };
 
       # Samba configuration

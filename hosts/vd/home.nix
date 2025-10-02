@@ -97,6 +97,7 @@
     # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
+    gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
     wakeonlan # Wake devices using Wake-on-LAN
 
     # Network testing and analysis
