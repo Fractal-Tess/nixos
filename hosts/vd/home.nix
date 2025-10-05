@@ -34,6 +34,9 @@
     # SYSTEM UTILITIES
     #--------------------------------------------------------------------------
 
+    # USB and boot tools
+    ventoy # Bootable USB creation tool
+
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
     btop # Resource monitor with CPU, memory, disk, network
