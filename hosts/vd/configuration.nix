@@ -45,7 +45,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "electron-27.3.11" "libsoup-2.74.3" ];
+    permittedInsecurePackages = [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" ];
   };
 
   #============================================================================
