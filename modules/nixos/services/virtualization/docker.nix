@@ -12,7 +12,7 @@ in {
 
     subnet = mkOption {
       type = types.str;
-      default = "172.20.0.0/16";
+      default = "172.20.0.1/16";
       description = "Subnet for Docker bridge network to avoid conflicts with VPN networks";
     };
   };
@@ -44,59 +44,15 @@ in {
 
       # Additional daemon settings for network configuration
       daemon.settings = {
+        bip = cfg.subnet;
         # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
+        # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
         default-address-pools = [
-          {
-            base = cfg.subnet;
-            size = 24;
-          }
           {
             base = "172.21.0.0/16";
             size = 24;
           }
-          {
-            base = "172.22.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.23.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.24.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.25.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.26.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.27.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.28.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.29.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.30.0.0/16";
-            size = 24;
-          }
-          {
-            base = "172.31.0.0/16";
-            size = 24;
-          }
         ];
-        # Fixed bridge network configuration
-        "fixed-cidr" = "172.20.0.0/24";
       };
     };
 
