@@ -1,6 +1,6 @@
 #!/usr/bin/env zsh
 
-Z_AI_APIKEY=$(< ~/.config/secrets/z-ai.apikey)
+Z_AI_APIKEY=$(< ~/.config/secrets/z-ai/apikey)
 
 export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
 
