@@ -30,6 +30,7 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/claude-flow)
+                (import ./overlays/zed-overlay.nix)
               ];
             }
           ];
