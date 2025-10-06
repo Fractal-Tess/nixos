@@ -94,7 +94,8 @@ log_error() {
 # Function to kill existing wallpaper processes
 kill_existing_wallpapers() {
     local pids
-    pids=$(pgrep -f "linux-wallpaperengine" 2>/dev/null || true)
+    # Only match the actual linux-wallpaperengine binary, not this script
+    pids=$(pgrep -x "linux-wallpaperengine" 2>/dev/null || true)
     
     if [[ -n "$pids" ]]; then
         log "Killing existing wallpaper processes: $pids"
@@ -104,7 +105,7 @@ kill_existing_wallpapers() {
         sleep 1
         
         # Force kill if still running
-        pids=$(pgrep -f "linux-wallpaperengine" 2>/dev/null || true)
+        pids=$(pgrep -x "linux-wallpaperengine" 2>/dev/null || true)
         if [[ -n "$pids" ]]; then
             log "Force killing remaining processes: $pids"
             echo "$pids" | xargs kill -KILL 2>/dev/null || true
