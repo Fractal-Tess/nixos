@@ -1,0 +1,12 @@
+Running with: linux-wallpaperengine --screen-root HDMI-A-1 --bg 2359043440 --scaling fill 
+Detected "scene.pkg" file at "/home/fractal-tess/.local/share/Steam/steamapps/workshop/content/431960/2359043440/scene.pkg". Adding to list of searchable paths
+No "gifscene.pkg" file found at "/home/fractal-tess/.local/share/Steam/steamapps/workshop/content/431960/2359043440/gifscene.pkg". Defaulting to normal folder storage
+Cannot find required key (origin) in json: Particle emitter must have an origin
+Composing materials is not supported yet...
+Vector property doesn't have user member, this could mean an scripted value
+Vector property doesn't have user member, this could mean an scripted value
+Cannot find required key (origin) in json: Particle emitter must have an origin
+[mp3float @ 0x39d99d00] Could not update timestamps for skipped samples.
+Stop requested by signal 15
+Stopping
+INFO: Leaked thread (0x39d7c990)
