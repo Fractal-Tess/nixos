@@ -38,8 +38,6 @@ in
   # USER PACKAGES
   #============================================================================
 
-
-
   home.packages = with pkgs; [
 
     #--------------------------------------------------------------------------
@@ -217,6 +215,7 @@ in
 
     swww # Animated wallpaper daemon for Wayland
     waypaper # Wallpaper manager for Wayland
+    linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
