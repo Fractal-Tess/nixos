@@ -10,8 +10,9 @@
     let
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-        (system: f (import nixpkgs { inherit system; }));
-    in {
+          (system: f (import nixpkgs { inherit system; }));
+    in
+    {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
@@ -56,7 +57,7 @@
 
             # DevOps
             docker-compose-language-service
-            dockerfile-language-server-nodejs
+            dockerfile-language-server
 
             # Programming Languages
             nginx-language-server

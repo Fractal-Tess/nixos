@@ -157,7 +157,7 @@
     vscode-langservers-extracted # HTML/CSS/JSON language servers
     package-version-server # NPM package version server
     docker-compose-language-service # Docker Compose language server
-    dockerfile-language-server-nodejs # Dockerfile language server
+    dockerfile-language-server # Dockerfile language server
     rust-analyzer # Rust language server
     lua-language-server # Lua language server
     phpactor # PHP language server
