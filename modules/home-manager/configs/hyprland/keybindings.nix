@@ -55,6 +55,10 @@
     # Color picker
     bind = $mainMod, Z, exec, hyprpicker
 
+    # Wallpaper engine
+    bind = $mainMod, B, exec, ~/nixos/scripts/linux-wallpaperengine/wallpaper.sh
+    bind = $mainMod SHIFT, B, exec, ~/nixos/scripts/linux-wallpaperengine/wallpaper.sh fit
+
     # Lock screen
     bind = $mainMod, L, exec, hyprlock
 
@@ -101,7 +105,7 @@
     # Restart Waybar
     bind = $mainMod SHIFT, R, exec, pkill waybar && waybar &
     # Toggle Waybar visibility
-    bind = $mainMod SHIFT, T, exec, pkill -SIGUSR1 waybar
+    bind = $mainMod SHIFT, T, exec, ~/nixos/scripts/waybar-toggle.sh
 
     # Volume Controls with correct keycodes and XF86Audio symbols
     # Volume Up (XF86AudioRaiseVolume - 123)
