@@ -9,12 +9,16 @@ in {
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {
+
+    systemd.tmpfiles.rules =
+      [ "d /home/${username}/.config/secrets/z-ai 0755 ${username} users -" ];
+
     sops.secrets = {
       api_key = {
         owner = username;
         sopsFile = ../../../../secrets/z-ai.yaml;
         format = "yaml";
-        path = "/home/${username}/.config/secrets/z-ai.apikey";
+        path = "/home/${username}/.config/secrets/z-ai/apikey";
       };
     };
   };

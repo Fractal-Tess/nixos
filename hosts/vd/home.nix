@@ -1,15 +1,5 @@
 { pkgs, username, ... }:
 
-let
-  zed-wrapped = pkgs.writeShellScriptBin "zed" ''
-    export ANTHROPIC_BASE_URL="https://api.z.ai/api/anthropic"
-    if [ -f "$HOME/.config/secrets/z-ai.apikey" ]; then
-      export ANTHROPIC_AUTH_TOKEN="$(cat "$HOME/.config/secrets/z-ai.apikey")"
-    fi
-    exec ${pkgs.zed-editor}/bin/zeditor "$@"
-  '';
-in
-
 {
   #============================================================================
   # IMPORTS
@@ -18,6 +8,7 @@ in
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs
+    ../../modules/home-manager/programs/zed.nix
     ../../modules/home-manager/theming.nix
   ];
 
@@ -268,7 +259,6 @@ in
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
-    zed-wrapped # Wrapped zed with environment variables
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
     postman # API development environment

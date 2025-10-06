@@ -5,7 +5,7 @@ with lib;
 let cfg = config.modules.services.sops;
 in {
 
-  imports = [ ./ssh.nix ./z-ai.nix ];
+  imports = [ ./ssh.nix ./z-ai.nix ./linux-wallpaperengine.nix ];
 
   options.modules.services.sops = {
     enable = mkEnableOption "SOPS secrets management";
