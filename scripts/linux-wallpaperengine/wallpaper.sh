@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 
-# Simple wallpaper startup script for linux-wallpaperengine
+# Optimized wallpaper startup script for linux-wallpaperengine
 # This script starts wallpaper engine on all detected screens using secrets
+# Uses optimized settings: 25 FPS, silent, no mouse interaction, no parallax
 
 set -euo pipefail  # Exit on error, undefined vars, pipe failures
 
@@ -51,6 +52,7 @@ show_help() {
 Usage: ${SCRIPT_NAME} [SCALING_MODE]
 
 Start linux-wallpaperengine on all detected screens using secrets.
+Uses optimized settings: 25 FPS, silent, no mouse interaction, no parallax.
 
 ARGUMENTS:
     SCALING_MODE    Scaling mode for wallpapers (default: ${DEFAULT_SCALING_MODE})
@@ -94,8 +96,8 @@ log_error() {
 # Function to kill existing wallpaper processes
 kill_existing_wallpapers() {
     local pids
-    # Only match the actual linux-wallpaperengine binary, not this script
-    pids=$(pgrep -x "linux-wallpaperengine" 2>/dev/null || true)
+    # Match running wallpaper engine processes by their command line arguments
+    pids=$(pgrep -f "linux-wallpaperengine --screen-root" 2>/dev/null || true)
     
     if [[ -n "$pids" ]]; then
         log "Killing existing wallpaper processes: $pids"
@@ -105,7 +107,7 @@ kill_existing_wallpapers() {
         sleep 1
         
         # Force kill if still running
-        pids=$(pgrep -x "linux-wallpaperengine" 2>/dev/null || true)
+        pids=$(pgrep -f "linux-wallpaperengine --screen-root" 2>/dev/null || true)
         if [[ -n "$pids" ]]; then
             log "Force killing remaining processes: $pids"
             echo "$pids" | xargs kill -KILL 2>/dev/null || true
@@ -156,17 +158,23 @@ main() {
     for screen in "${screens[@]}"; do
         local wallpaper_id
         if wallpaper_id=$(map_monitor_to_wallpaper_id "$screen"); then
-            log "Starting on $screen (ID: $wallpaper_id)"
-            echo screen: $screen
-            echo wallpaper_id: $wallpaper_id
-            echo scaling_mode: $scaling_mode
+            log "Starting wallpaper on $screen (ID: $wallpaper_id)"
 
-            if nohup linux-wallpaperengine \
+            # Start wallpaper engine in background with optimized settings
+            if linux-wallpaperengine \
                 --screen-root "$screen" \
                 --bg "$wallpaper_id" \
                 --scaling "$scaling_mode" \
-                > /dev/null 2>&1 & then
-                ((started_count++))
+                --fps 25 \
+                --silent \
+                --disable-mouse \
+                --disable-parallax \
+                > /dev/null 2>&1 &
+            then
+                log "Successfully started wallpaper on $screen (PID: $!)"
+                ((started_count++)) || true
+                # Small delay to prevent overwhelming the system
+                sleep 0.5
             else
                 log_error "Failed to start wallpaper on $screen"
             fi
