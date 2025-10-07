@@ -144,6 +144,7 @@
 
     # Security tools
     burpsuite # Web vulnerability scanner
+    john # John the Ripper password cracker
 
     #--------------------------------------------------------------------------
     # LANGUAGE SERVERS & FORMATTERS
