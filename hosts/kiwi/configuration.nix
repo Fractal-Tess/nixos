@@ -1,4 +1,9 @@
-{ pkgs, inputs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 
 {
   #============================================================================
@@ -24,13 +29,23 @@
   # Release version - DO NOT CHANGE unless you know what you're doing
   system.stateVersion = "25.05";
 
+
+  # Enable link dynamic
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    # code-cursor # VS Code fork with AI features
+  ];
+
   #============================================================================
   # NIX CONFIGURATION
   #============================================================================
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -94,10 +109,12 @@
 
   # Memory management
   zramSwap.enable = true;
-  swapDevices = [{
-    device = "/swapfile";
-    size = 16 * 1024; # 16GB
-  }];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16 * 1024; # 16GB
+    }
+  ];
 
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
@@ -173,12 +190,14 @@
         # Share local directories
         share = {
           enable = true;
-          shares = [{
-            name = "home";
-            path = "/home/${username}";
-            forceUser = username;
-            forceGroup = "users";
-          }];
+          shares = [
+            {
+              name = "home";
+              path = "/home/${username}";
+              forceUser = username;
+              forceGroup = "users";
+            }
+          ];
         };
       };
     };
@@ -222,6 +241,13 @@
   };
 
   #============================================================================
+  # SECURITY & CERTIFICATES
+  #============================================================================
+
+  # Custom CA certificates
+  security.pki.certificateFiles = [ ../../config/certs/carrierx.crt ];
+
+  #============================================================================
   # SYSTEM SERVICES
   #============================================================================
 
@@ -249,19 +275,19 @@
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
         # Energy performance policies
-        CPU_ENERGY_PERF_POLICY_ON_AC = "power";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "balance_power";
+        CPU_ENERGY_PERF_POLICY_ON_AC = "default";
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
 
         # CPU frequency limits (in kHz)
         # Limiting max frequency to reduce heat and power consumption
         # CPU_SCALING_MIN_FREQ_ON_AC = 0;
         CPU_SCALING_MAX_FREQ_ON_AC = 4100000; # 4.1GHz max on AC
         # CPU_SCALING_MIN_FREQ_ON_BAT = 0;
-        # CPU_SCALING_MAX_FREQ_ON_BAT = 3500000; # 3.5GHz max on battery
+        CPU_SCALING_MAX_FREQ_ON_BAT = 3700000; # 3.7GHz max on battery
 
         # CPU boost settings
         CPU_BOOST_ON_AC = 1; # Allow boost on AC
-        CPU_BOOST_ON_BAT = 0; # Disable boost on battery for power saving
+        CPU_BOOST_ON_BAT = 1; # Allow boot on BAT
       };
     };
   };
@@ -277,12 +303,19 @@
       isNormalUser = true;
       description = "default user";
       password = "password";
-      extraGroups =
-        [ "networkmanager" "wheel" "video" "fractal-tess" "wireshark" ];
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+        "video"
+        "fractal-tess"
+        "wireshark"
+      ];
       packages = [ ];
     };
 
-    groups.${username} = { members = [ username ]; };
+    groups.${username} = {
+      members = [ username ];
+    };
   };
 
   #============================================================================
@@ -337,4 +370,3 @@
     MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
   };
 }
-

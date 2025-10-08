@@ -1,4 +1,4 @@
-{ pkgs, username, ... }:
+{ pkgs, username, inputs, lib, ... }:
 
 {
   #============================================================================
@@ -10,6 +10,7 @@
     ../../modules/home-manager/configs
     ../../modules/home-manager/programs/zed.nix
     ../../modules/home-manager/theming.nix
+    inputs.nix4nvchad.homeManagerModule
   ];
 
   #============================================================================
@@ -25,6 +26,18 @@
 
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
+
+  # Disable default neovim to avoid conflict with NvChad
+  programs.neovim.enable = lib.mkForce false;
+
+  # Enable NvChad
+  programs.nvchad = {
+    enable = true;
+    extraPackages = with pkgs; [
+      # Language servers
+    ];
+    backup = true;
+  };
 
   # USER PACKAGES
   #============================================================================
@@ -78,7 +91,7 @@
 
     # Security and secrets
     sops # Secret management tool
-    seahorse # GUI for GNOME Keyring
+    # seahorse # GUI for GNOME Keyring
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS
@@ -86,7 +99,7 @@
 
     # Network analysis and monitoring
     ngrok # Expose local servers to the internet
-    lsof # Tool to list open files
+    lsof # Tool to list open files and processes listening on ports
     nmap # Network discovery and security auditing
     wireshark # Network protocol analyzer
     netcat # Networking utility for reading/writing network connections
@@ -103,7 +116,6 @@
     wakeonlan # Wake devices using Wake-on-LAN
 
     # Network testing and analysis
-    hping # TCP/IP packet assembler/analyzer
     oha # HTTP load generator
     mtr # Network diagnostic tool combining ping and traceroute
     dig # DNS lookup tool
@@ -141,38 +153,6 @@
     gh # GitHub CLI
     forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
-
-    # Security tools
-    burpsuite # Web vulnerability scanner
-    john # John the Ripper password cracker
-
-    #--------------------------------------------------------------------------
-    # LANGUAGE SERVERS & FORMATTERS
-    #--------------------------------------------------------------------------
-
-    # Language servers
-    svelte-language-server # Svelte language server
-    emmet-language-server # Emmet language server
-    tailwindcss-language-server # Tailwind CSS language server
-    typescript-language-server # TypeScript language server
-    astro-language-server # Astro language server
-    vscode-langservers-extracted # HTML/CSS/JSON language servers
-    package-version-server # NPM package version server
-    docker-compose-language-service # Docker Compose language server
-    dockerfile-language-server # Dockerfile language server
-    rust-analyzer # Rust language server
-    lua-language-server # Lua language server
-    phpactor # PHP language server
-    nixd # Nix language server
-    nil # Alternative Nix language server
-    sqls # SQL language server
-    gopls # Go language server
-
-    # Formatters
-    stylua # Lua code formatter
-    nixpkgs-fmt # Nix code formatter
-    nixfmt-classic # Alternative Nix formatter
-    prettierd # Code formatter daemon
 
     #--------------------------------------------------------------------------
     # MULTIMEDIA TOOLS
@@ -223,6 +203,7 @@
 
     # Web browsers
     firefox # Open-source web browser
+    chromium # Open source chrome base
     google-chrome # Google's web browser
     vivaldi # Feature-rich web browser
     vivaldi-ffmpeg-codecs # Video codecs for Vivaldi
@@ -253,6 +234,7 @@
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
     bitwarden # Password manager
+    zathura # Document viewer
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT ENVIRONMENTS
@@ -265,6 +247,34 @@
     postman # API development environment
     filezilla # FTP client
 
+    # Language servers
+    svelte-language-server
+    emmet-language-server
+    tailwindcss-language-server
+    typescript-language-server
+    astro-language-server
+    vscode-langservers-extracted
+    package-version-server
+    docker-compose-language-service
+    dockerfile-language-server
+    rust-analyzer
+    lua-language-server
+    phpactor
+    nixd
+    nil
+    sqls
+    gopls
+
+    # Formatters
+    stylua
+    prettierd
+    nixfmt # Nix code formatter
+
+    # Development tools
+    nodejs_22
+    gcc
+    gnumake
+
     #--------------------------------------------------------------------------
     # GAMING
     #--------------------------------------------------------------------------
@@ -274,7 +284,7 @@
     heroic # Game launcher
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
-    (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
+    # (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
     #--------------------------------------------------------------------------
     # TERMINAL ENHANCEMENTS
@@ -285,16 +295,14 @@
     fastfetch # Fast system information tool
     lolcat # Rainbow text output
     nh # Nix helper CLI
-    zathura # Document viewer
 
     # Modern CLI replacements and enhancements
+    file # Program that shows the type of files
     bat # Modern cat replacement with syntax highlighting
     fd # Modern find replacement
-    zoxide # Smarter cd command with frecency
-    tldr # Simplified man pages
+    # zoxide # Smarter cd command with frecency
     duf # Modern df replacement with better output
     du-dust # Modern du replacement
-    choose # Human-friendly alternative to cut and awk
 
     #--------------------------------------------------------------------------
     # THEMING & CUSTOMIZATION
@@ -303,39 +311,5 @@
     nordic # Nordic theme
     font-manager # Font management tool
     cliphist # Clipboard history tool
-
-    #--------------------------------------------------------------------------
-    # MISCELLANEOUS
-    #--------------------------------------------------------------------------
-
-    qbittorrent # BitTorrent client
-    stress # System stress testing tool
-
-    #--------------------------------------------------------------------------
-    # COMMENTED OUT / DISABLED
-    #--------------------------------------------------------------------------
-
-    # Steam gaming platform - configured at system level
-    # steam
-    # (steam.override {
-    #   extraPkgs = pkgs: [ openldap ];
-    #   nativeOnly = true;
-    # }).run
-    # steam-run
-
-    # Alternative browsers
-    # chromium
-
-    # Development tools
-    # kicad              # PCB design tool
-
-    # Windows compatibility
-    # wineWowPackages.stable
-
-    # Screenshot tools (using grim/slurp instead)
-    # (flameshot.override { enableWlrSupport = true; })
-
-    # Nginx language server - temporarily disabled
-    # nginx-language-server
   ];
 }
