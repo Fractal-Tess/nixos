@@ -12,10 +12,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    nix4nvchad = {
+      url = "github:nix-community/nix4nvchad";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     polymc.url = "github:PolyMC/PolyMC";
   };
 
-  outputs = { self, nixpkgs, polymc, sops-nix, ... }@inputs:
+  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, ... }@inputs:
     let
       mkHost = { hostname, username }:
         nixpkgs.lib.nixosSystem {
