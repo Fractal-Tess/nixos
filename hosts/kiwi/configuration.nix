@@ -29,7 +29,6 @@
   # Release version - DO NOT CHANGE unless you know what you're doing
   system.stateVersion = "25.05";
 
-
   # Enable link dynamic
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -80,32 +79,6 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
-
-  # Fingerprint authentication - disabled due to unsupported device ID 2808:c652
-  # services.fprintd = {
-  #   enable = true;
-  # };
-
-  # PAM configuration for fingerprint authentication
-  # security.pam.services = {
-  #   # Enable fingerprint auth for SDDM (main login)
-  #   sddm.fprintAuth = true;
-  #
-  #   # CRITICAL WORKAROUND: Disable fprint for login service
-  #   # This prevents Issue #171136 where GUI password auth breaks
-  #   # login.fprintAuth = false;
-  #
-  #   # Enable fingerprint for other services
-  #   sudo.fprintAuth = true; # sudo commands
-  #   swaylock.fprintAuth = true; # Screen lock (if using)
-  #   hyprlock.fprintAuth = true; # Hyprland lock (if using)
-  # };
-  #
-  # # Ensure fprintd daemon starts properly
-  # systemd.services.fprintd = {
-  #   wantedBy = [ "multi-user.target" ];
-  #   serviceConfig.Type = "simple";
-  # };
 
   # Memory management
   zramSwap.enable = true;
@@ -348,6 +321,8 @@
   #============================================================================
 
   environment.variables = {
+    # Used by the wallpaper script to determine which wallpaper script to use
+    WALLPAPER_TYPE = "WAYPAPER";
     # Default editor configuration
     VISUAL = "nvim";
     SUDO_EDITOR = "nvim";
