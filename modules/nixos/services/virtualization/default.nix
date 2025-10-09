@@ -1,3 +1,9 @@
-{ ... }: {
-  imports = [ ./docker.nix ./firecracker.nix ./kubernetes.nix ./podman.nix ];
+{ ... }:
+{
+  imports = [
+    ./docker.nix
+    ./firecracker.nix
+    ./kubernetes.nix
+    ./podman.nix
+  ];
 }
