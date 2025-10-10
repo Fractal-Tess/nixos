@@ -53,6 +53,9 @@ in {
             size = 24;
           }
         ];
+        # DNS settings for containers
+        dns = ["1.1.1.1" "8.8.8.8"];
+        dns-search = ["int" "netbird.cloud"];
       };
     };
 
