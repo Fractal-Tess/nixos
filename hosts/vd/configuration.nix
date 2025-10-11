@@ -45,7 +45,8 @@
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages = [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" ];
+    permittedInsecurePackages =
+      [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" ];
   };
 
   #============================================================================
@@ -121,12 +122,6 @@
             {
               mountPoint = "/mnt/blockade";
               device = "//neo.netbird.cloud/blockade";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/kiwi";
-              device = "//kiwi.netbird.cloud/kiwi";
               username = "fractal-tess";
               password = "smbpass";
             }

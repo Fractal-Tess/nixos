@@ -144,7 +144,7 @@
     lazygit # Simple terminal UI for git
 
     # Security tools
-    burpsuite # Web vulnerability scanner
+    # burpsuite # Web vulnerability scanner
 
     #--------------------------------------------------------------------------
     # LANGUAGE SERVERS & FORMATTERS
@@ -273,7 +273,7 @@
     heroic # Game launcher
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
-    (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
+    # (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
 
     #--------------------------------------------------------------------------
     # TERMINAL ENHANCEMENTS
