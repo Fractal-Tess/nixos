@@ -295,6 +295,7 @@
     fastfetch # Fast system information tool
     lolcat # Rainbow text output
     nh # Nix helper CLI
+    man-pages # C programming language man pages
 
     # Modern CLI replacements and enhancements
     file # Program that shows the type of files

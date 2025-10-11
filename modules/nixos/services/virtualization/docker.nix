@@ -13,7 +13,18 @@ in {
     subnet = mkOption {
       type = types.str;
       default = "172.20.0.1/16";
-      description = "Subnet for Docker bridge network to avoid conflicts with VPN networks";
+      description = "Gateway for Docker bridge network to avoid conflicts with VPN networks";
+    };
+
+    addressPools = mkOption {
+      type = types.listOf (types.attrsOf types.anything);
+      default = [
+        {
+          base = "172.21.0.0/16";
+          size = 24;
+        }
+      ];
+      description = "Default address pools for Docker networks to avoid VPN conflicts";
     };
   };
 
@@ -32,30 +43,22 @@ in {
     virtualisation.docker = {
       enable = true;
       package = (pkgs.docker.override (args: { buildxSupport = true; }));
-      # This is required for containers which are created with the 
-      # --restart=always flag to work. 
+      # This is required for containers which are created with the
+      # --restart=always flag to work.
       enableOnBoot = true;
 
-      # Configure the Docker to run in rootless mode 
+      # Configure the Docker to run in rootless mode
       rootless = mkIf cfg.rootless {
         enable = true;
         setSocketVariable = true;
-      };
-
-      # Additional daemon settings for network configuration
-      daemon.settings = {
-        bip = cfg.subnet;
-        # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
-        # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
-        default-address-pools = [
-          {
-            base = "172.21.0.0/16";
-            size = 24;
-          }
-        ];
-        # DNS settings for containers
-        dns = ["1.1.1.1" "8.8.8.8"];
-        dns-search = ["int" "netbird.cloud"];
+        daemon.settings = {
+          bip = cfg.subnet;
+          # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
+          # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
+          default-address-pools = cfg.addressPools;
+          dns = ["1.1.1.1" "8.8.8.8"];
+          "dns-search" = ["netbird.cloud" "int"];
+        };
       };
     };
 
