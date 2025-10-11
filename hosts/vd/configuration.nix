@@ -24,6 +24,13 @@
   # DO NOT CHANGE.
   system.stateVersion = "25.05";
 
+  programs.nix-ld.enable = true;
+  programs.nix-ld.libraries = with pkgs; [
+    glib
+    glibc
+    # code-cursor # VS Code fork with AI features
+  ];
+
   #============================================================================
   # NIX CONFIGURATION
   #============================================================================

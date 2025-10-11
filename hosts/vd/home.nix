@@ -285,6 +285,7 @@
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
+    man-pages
 
     # Modern CLI replacements and enhancements
     bat # Modern cat replacement with syntax highlighting
