@@ -44,3 +44,14 @@ chmod +x "$target_dir/$executable_name"
 
 echo "Successfully moved '$executable' to '$target_dir/$executable_name'"
 echo "You can now run it with: $target_dir/$executable_name"
+
+# Open cutter with the moved binary in background
+echo "Opening cutter with the binary..."
+cutter "$target_dir/$executable_name" >/dev/null 2>&1 &
+
+echo "Cutter is now running in the background with the binary loaded."
+
+# Change to the target directory
+cd "$target_dir"
+
+echo "Changed directory to: $target_dir"

@@ -131,7 +131,7 @@
       samba = {
         # Mount remote shares
         mount = {
-          enable = true;
+          enable = false;
           shares = [
             {
               mountPoint = "/mnt/blockade";
