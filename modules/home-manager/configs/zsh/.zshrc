@@ -141,21 +141,7 @@ ppwn() {
     echo "FT{EXAMPLE_FLAG}" > "$target_dir/flag.txt"
     echo "flag.txt created: $target_dir/flag.txt"
 
-    # Create common dependency files that CTF binaries might need
-    echo "Creating common dependency files..."
-
-    # Create input.txt for binaries that read from files
-    echo "test_input" > "$target_dir/input.txt"
-    echo "input.txt created: $target_dir/input.txt"
-
-    # Create data.txt for various challenges
-    echo "sample_data" > "$target_dir/data.txt"
-    echo "data.txt created: $target_dir/data.txt"
-
-    # Create payload.txt for testing inputs
-    echo "A" * 100 > "$target_dir/payload.txt"
-    echo "payload.txt created: $target_dir/payload.txt"
-
+    
     # Create analysis directory
     analysis_dir="$target_dir/analysis"
     mkdir -p "$analysis_dir"
@@ -177,6 +163,27 @@ ppwn() {
     echo "Running strings analysis..."
     strings "$target_dir/$executable_name" > "$analysis_dir/strings.txt" 2>&1
     echo "strings output saved to: $analysis_dir/strings.txt"
+
+    # Run objdump disassembly analysis
+    echo "Running objdump disassembly analysis..."
+    # Disassemble all sections
+    objdump -D "$target_dir/$executable_name" > "$analysis_dir/objdump_full.txt" 2>&1
+    echo "objdump full disassembly saved to: $analysis_dir/objdump_full.txt"
+
+    # Disassemble specific common sections
+    for section in .text .data .bss .rodata .got .plt; do
+        echo "Disassembling section: $section"
+        objdump -j "$section" -d "$target_dir/$executable_name" > "$analysis_dir/objdump_${section#.}.txt" 2>/dev/null
+        if [ $? -eq 0 ]; then
+            echo "objdump $section section saved to: $analysis_dir/objdump_${section#.}.txt"
+        fi
+    done
+
+    # Get section headers information
+    objdump -h "$target_dir/$executable_name" > "$analysis_dir/objdump_sections.txt" 2>&1
+    echo "objdump section headers saved to: $analysis_dir/objdump_sections.txt"
+
+    echo "objdump analysis completed."
 
     # Run pwntools analysis
     echo "Running pwntools analysis..."
