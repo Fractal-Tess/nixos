@@ -27,6 +27,15 @@
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
 
+  #============================================================================
+  # SHELL CONFIGURATION
+  #============================================================================
+
+  # Add custom scripts to PATH
+  home.sessionPath = [
+    "/home/${username}/nixos/scripts"
+  ];
+
   # Disable default neovim to avoid conflict with NvChad
   programs.neovim.enable = lib.mkForce false;
 
