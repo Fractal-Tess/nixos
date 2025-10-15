@@ -1,0 +1,46 @@
+#!/usr/bin/env bash
+
+# ppwn script - Move binary to ~/nixos/ctfs/ppwn/<name>/
+
+# Check if an executable was provided as second argument
+if [ $# -lt 1 ]; then
+    echo "Usage: ppwn <executable>"
+    exit 1
+fi
+
+executable="$1"
+
+# Check if the executable exists
+if [ ! -f "$executable" ]; then
+    echo "Error: File '$executable' does not exist"
+    exit 1
+fi
+
+# Check if the file is executable
+if [ ! -x "$executable" ]; then
+    echo "Warning: File '$executable' is not executable, but proceeding anyway"
+fi
+
+# Get the executable name (basename without path)
+executable_name=$(basename "$executable")
+
+# Prompt user for folder name, default to executable name
+read -p "Enter folder name (default: $executable_name): " folder_name
+
+# Use default if user didn't enter anything
+if [ -z "$folder_name" ]; then
+    folder_name="$executable_name"
+fi
+
+# Create the target directory
+target_dir="$HOME/nixos/ctfs/ppwn/$folder_name"
+mkdir -p "$target_dir"
+
+# Move the executable to the target directory
+mv "$executable" "$target_dir/"
+
+# Make it executable
+chmod +x "$target_dir/$executable_name"
+
+echo "Successfully moved '$executable' to '$target_dir/$executable_name'"
+echo "You can now run it with: $target_dir/$executable_name"
