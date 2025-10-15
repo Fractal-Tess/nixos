@@ -19,7 +19,7 @@ bindkey -e
 # Load custom secrets
 [[ -f ~/.secrets.zsh ]] && source ~/.secrets.zsh
 
-PATH=~/.console-ninja/.bin:$PATH
+PATH=/home/fractal-tess/nixos/scripts:$PATH
 
 # pnpm
 export PNPM_HOME="/home/fractal-tess/.local/share/pnpm"
@@ -57,6 +57,56 @@ alias p10k-down='prompt_powerlevel9k_teardown'
 alias p10k-up='prompt_powerlevel9k_setup'
 alias ca='cursor-agent'
 alias zai='~/nixos/scripts/claude-code/z-ai.sh'
+
+# ppwn function that changes directory after running the script
+ppwn() {
+    local executable="$1"
+    if [ $# -lt 1 ]; then
+        echo "Usage: ppwn <executable>"
+        return 1
+    fi
+
+    # Check if the executable exists
+    if [ ! -f "$executable" ]; then
+        echo "Error: File '$executable' does not exist"
+        return 1
+    fi
+
+    # Get the executable name
+    local executable_name=$(basename "$executable")
+
+    # Prompt user for folder name, default to executable name
+    read -p "Enter folder name (default: $executable_name): " folder_name
+
+    # Use default if user didn't enter anything
+    if [ -z "$folder_name" ]; then
+        folder_name="$executable_name"
+    fi
+
+    # Create the target directory
+    local target_dir="$HOME/dev/ctfs/ppwn/$folder_name"
+    mkdir -p "$target_dir"
+
+    # Move the executable to the target directory
+    mv "$executable" "$target_dir/"
+
+    # Make it executable
+    chmod +x "$target_dir/$executable_name"
+
+    echo "Successfully moved '$executable' to '$target_dir/$executable_name'"
+    echo "You can now run it with: $target_dir/$executable_name"
+
+    # Open cutter with the moved binary in background
+    echo "Opening cutter with the binary..."
+    cutter "$target_dir/$executable_name" >/dev/null 2>&1 &
+
+    echo "Cutter is now running in the background with the binary loaded."
+
+    # Change to the target directory
+    cd "$target_dir"
+
+    echo "Changed directory to: $target_dir"
+}
 
 #End
 if [[ -n $CURSOR_TRACE_ID ]]; then
