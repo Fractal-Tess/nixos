@@ -1,14 +1,29 @@
 #!/usr/bin/env bash
 
-# ppwn script - Move binary to ~/nixos/ctfs/ppwn/<name>/
+# ppwn script - Move binary to ~/nixos/ctfs/ppwn/<name>/ or init current directory
 
-# Check if an executable was provided as second argument
-if [ $# -lt 1 ]; then
-    echo "Usage: ppwn <executable>"
-    exit 1
+# Check if init mode is requested
+if [ "$1" = "init" ]; then
+    # Init mode - work in current directory
+    if [ $# -lt 2 ]; then
+        echo "Usage: ppwn init <executable>"
+        exit 1
+    fi
+
+    executable="$2"
+    init_mode=true
+    target_dir=$(pwd)
+else
+    # Normal mode - create new directory
+    if [ $# -lt 1 ]; then
+        echo "Usage: ppwn <executable>"
+        echo "Usage: ppwn init <executable>  # Initialize current directory"
+        exit 1
+    fi
+
+    executable="$1"
+    init_mode=false
 fi
-
-executable="$1"
 
 # Check if the executable exists
 if [ ! -f "$executable" ]; then
@@ -24,20 +39,28 @@ fi
 # Get the executable name (basename without path)
 executable_name=$(basename "$executable")
 
-# Prompt user for folder name, default to executable name
-read -p "Enter folder name (default: $executable_name): " folder_name
+# In init mode, don't move the executable, just work with it in place
+if [ "$init_mode" = true ]; then
+    echo "Initializing current directory for binary analysis..."
+    echo "Working with executable: $executable_name"
+    echo "Analysis directory: $target_dir"
+else
+    # Normal mode - prompt for folder name and move executable
+    read -p "Enter folder name (default: $executable_name): " folder_name
 
-# Use default if user didn't enter anything
-if [ -z "$folder_name" ]; then
-    folder_name="$executable_name"
+    # Use default if user didn't enter anything
+    if [ -z "$folder_name" ]; then
+        folder_name="$executable_name"
+    fi
+
+    # Create the target directory
+    target_dir="$HOME/dev/ctfs/ppwn/$folder_name"
+    mkdir -p "$target_dir"
+
+    # Move the executable to the target directory
+    mv "$executable" "$target_dir/"
+    echo "Moved '$executable' to '$target_dir/$executable_name'"
 fi
-
-# Create the target directory
-target_dir="$HOME/dev/ctfs/ppwn/$folder_name"
-mkdir -p "$target_dir"
-
-# Move the executable to the target directory
-mv "$executable" "$target_dir/"
 
 # Make it executable
 chmod +x "$target_dir/$executable_name"
@@ -82,7 +105,11 @@ else
     echo "ℹ️  Unknown file type, skipping compatibility fixes"
 fi
 
-echo "Successfully moved '$executable' to '$target_dir/$executable_name'"
+if [ "$init_mode" = true ]; then
+    echo "Current directory initialized for '$executable_name'"
+else
+    echo "Successfully moved '$executable' to '$target_dir/$executable_name'"
+fi
 
 # Create flag.txt file
 echo "Creating flag.txt..."
@@ -190,7 +217,10 @@ echo "exploit.py template created: $target_dir/exploit.py"
 
 echo "Security analysis completed."
 
-# Change to the target directory
-cd "$target_dir"
-
-echo "Changed directory to: $target_dir"
+# Change to the target directory (only in normal mode)
+if [ "$init_mode" = false ]; then
+    cd "$target_dir"
+    echo "Changed directory to: $target_dir"
+else
+    echo "Analysis files created in current directory"
+fi
