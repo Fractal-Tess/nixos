@@ -29,6 +29,7 @@
     glib
     glibc
     libxext
+    libx11
     # code-cursor # VS Code fork with AI features
   ];
 
