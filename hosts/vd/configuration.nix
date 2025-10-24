@@ -31,7 +31,7 @@
     libxext
     libx11
     libxrender
-    # code-cursor # VS Code fork with AI features
+    libxtst
   ];
 
   #============================================================================
