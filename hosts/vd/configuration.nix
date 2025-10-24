@@ -28,6 +28,7 @@
   programs.nix-ld.libraries = with pkgs; [
     glib
     glibc
+    libxext
     # code-cursor # VS Code fork with AI features
   ];
 
