@@ -6,7 +6,7 @@
       pager = "less -FR";
       theme = "TwoDark";
     };
-    extraPackages = with pkgs.bat-extras; [ batdiff batman batgrep batwatch ];
+    extraPackages = with pkgs.bat-extras; [ batdiff batman batwatch ];
     themes = {
       dracula = {
         src = pkgs.fetchFromGitHub {
