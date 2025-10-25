@@ -23,6 +23,6 @@ with lib;
 
   qt = mkIf (osConfig.modules.display.hyprland.enable or false) {
     enable = true;
-    platformTheme.name = "gtk";
+    platformTheme.name = "gtk3";
   };
 }
