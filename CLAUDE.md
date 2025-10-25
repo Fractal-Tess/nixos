@@ -14,9 +14,20 @@ This is a comprehensive NixOS configuration repository with modular architecture
 - `nixos-rebuild build --flake .#hostname` - Build configuration only
 - `home-manager switch --flake .#hostname@username` - Apply home-manager configuration
 
+### Update Workflow Automation
+- `./update.sh` - **Enterprise-grade update workflow** with git integration:
+  - Pulls remote changes and detects conflicts
+  - Stages all changes automatically
+  - Rebuilds NixOS configuration
+  - Commits with incrementing messages (Update #1, #2, etc.)
+  - Pushes to remote repository
+  - Handles error recovery and rollback
+  - Provides colored terminal output with status indicators
+
 ### Development Environments
-- `nix develop ./shells/language/` - Enter development shell for specific language (rust, python3, go, etc.)
-- `nix develop` - Use default development shell in language directories
+- `cd shells/language && nix develop` - Enter language-specific development shell
+- Each shell provides complete toolchain (rust-analyzer, python venv, etc.)
+- Development shells are completely independent of system configuration
 
 ### Maintenance
 - `nix-collect-garbage -d` - Clean old generations
@@ -44,13 +55,15 @@ This is a comprehensive NixOS configuration repository with modular architecture
 
 ### Development Shells
 - **shells/** - Language-specific development environments using flakes
-  - Each language has its own flake.nix with appropriate toolchain
-  - Supports: rust, python3, go, java, c#, c, php, js, react-native, tauri, unity, maui
+  - Each language has its own flake.nix with complete toolchain
+  - **Languages**: rust, python3 (CUDA-enabled), go, java, c#, c, php, js, react-native, tauri, unity, maui, pentesting
+  - **Special features**: Python shell creates venv automatically, Rust includes cross-compilation targets
 
 ### Customizations
-- **overlays/** - Custom package modifications and additions
-- **secrets/** - SOPS-encrypted configuration files
+- **overlays/** - Custom package modifications and additions (claude-flow, cursor, responsively-app, viber)
+- **secrets/** - SOPS-encrypted configuration files (secrets.yaml, ssh.yaml, z-ai.yaml, linux-wallpaperengine.json)
 - **config/** - Static configuration files for applications
+- **scripts/** - System utility scripts for audio, display, power management, and screenshots
 
 ## Module System
 
@@ -67,11 +80,11 @@ modules = {
 
 ## Host-Specific Configuration
 
-- **vd** - Desktop workstation with NVIDIA GPU, full development environment
-- **neo** - Laptop configuration
+- **vd** - Desktop workstation with NVIDIA GPU, full development environment, complete virtualization stack
+- **neo** - Laptop with AMD GPU, optimized for mobile use (TLP power management, reduced virtualization)
 - **kiwi** - Additional host configuration
 
-Each host inherits from the common modules but can override settings as needed.
+Each host inherits from common modules but can override settings. The system demonstrates flexibility through different hardware configurations and use cases.
 
 ## Development Environment Usage
 
@@ -84,4 +97,38 @@ nix develop  # Enters Rust development environment with rust-analyzer, clippy, e
 
 ## Secret Management
 
-Uses SOPS for encrypted secrets. SSH keys and sensitive configuration are stored in the `secrets/` directory and decrypted during system build.
+Uses SOPS for encrypted secrets with multiple encrypted files:
+- `secrets/secrets.yaml` - General system secrets
+- `secrets/ssh.yaml` - SSH key configurations
+- `secrets/z-ai.yaml` - AI service configurations
+- `secrets/linux-wallpaperengine.json` - Wallpaper engine settings
+
+Secrets are automatically decrypted during system build using SSH keys.
+
+## Advanced Features
+
+### VPN-Aware Docker Networking
+Docker configuration uses custom subnets (172.20.0.0/16, 172.21.0.0/16) to avoid conflicts with common VPN ranges, supporting both rootless and NVIDIA GPU-enabled containers.
+
+### Hyprland Configuration Modularity
+Hyprland settings are split into logical modules:
+- `monitors.nix` - Display-specific configurations
+- `keybindings.nix` - Keyboard shortcuts and bindings
+- `gestures.nix` - Touchpad/mouse gesture configurations
+- `settings.nix` - General Hyprland settings
+- `windows.nix` - Window management rules
+- `startup.nix` - Application startup configurations
+
+### Enterprise-Grade Update Workflow
+The `update.sh` script provides sophisticated automation:
+- Remote change detection and conflict handling
+- Automatic git staging with intelligent commit messaging
+- Colored terminal output with comprehensive error handling
+- Rollback capabilities and git state recovery
+- Safety checks for sudo privileges and repository state
+
+### AI Development Integration
+- **Cursor** - VS Code fork with AI features and custom patches
+- **Claude-flow** - Enterprise AI agent orchestration platform
+- **aider-chat** - AI-powered pair programming tool
+- Multiple AI development environments and configurations

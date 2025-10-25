@@ -233,7 +233,7 @@
     warp-terminal # Modern terminal with AI features
 
     # System tools
-    rpi-imager # Raspberry Pi Imaging Utility
+    # rpi-imager # Raspberry Pi Imaging Utility (temporarily disabled due to build issues)
     f3 # SD card checker
 
     #--------------------------------------------------------------------------
