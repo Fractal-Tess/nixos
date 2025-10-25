@@ -129,7 +129,12 @@
   #============================================================================
 
   # Essential system packages (minimal for server)
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [
+    brightnessctl # Brightness control for laptops
+  ];
+
+  # Brightness control
+  programs.light.enable = true;
 
   #============================================================================
   # SYSTEM SERVICES

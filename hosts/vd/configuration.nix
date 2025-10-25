@@ -185,7 +185,12 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [
+    brightnessctl # Brightness control for laptops
+  ];
+
+  # Brightness control
+  programs.light.enable = true;
 
   # Gaming configuration
   programs.steam = {
