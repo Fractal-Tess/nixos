@@ -165,5 +165,11 @@
     bind = , XF86Battery, exec, notify-send "Battery key pressed"
     # WWW Search
     bind = , XF86Search, exec, $browser https://www.google.com
+
+    # Laptop lid switch events
+    # Disable laptop screen when lid is closed (only if AC power is connected and external monitors are present)
+    bindl = , switch:on:Lid Switch, exec, ~/nixos/scripts/lid-close-handler.sh close
+    # Re-enable laptop screen when lid is opened
+    bindl = , switch:off:Lid Switch, exec, ~/nixos/scripts/lid-close-handler.sh open
   '';
 }

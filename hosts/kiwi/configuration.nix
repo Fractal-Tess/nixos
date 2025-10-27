@@ -235,6 +235,15 @@
       drivers = [ ]; # Add printer drivers as needed
     };
 
+    # Systemd logind configuration for lid switch handling
+    logind = {
+      settings = {
+        Login = {
+          HandleLidSwitch = "ignore"; # Let Hyprland handle lid switch events
+        };
+      };
+    };
+
     # TLP - Power management for laptop
     tlp = {
       enable = true;

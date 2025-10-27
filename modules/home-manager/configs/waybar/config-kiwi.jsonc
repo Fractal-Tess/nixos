@@ -5,6 +5,7 @@
     "mod": "dock",
     "output": [
       "eDP-1",
+      "DP-3",
       "HDMI-A-1"
     ],
     "margin-left": 8,
