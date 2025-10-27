@@ -59,8 +59,9 @@
 
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
+    acpi # Advanced Configuration and Power Interface (for battery/AC power detection)
     btop # Resource monitor with CPU, memory, disk, network
-    nvtopPackages.nvidia # NVIDIA GPU monitoring
+    # nvtopPackages.nvidia # NVIDIA GPU monitoring (commented out due to CUDA download issues)
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
 
@@ -223,7 +224,7 @@
     warp-terminal # Modern terminal with AI features
 
     # System tools
-    rpi-imager # Raspberry Pi Imaging Utility
+    # rpi-imager # Raspberry Pi Imaging Utility (commented out due to build failure)
     f3 # SD card checker
 
     #--------------------------------------------------------------------------
