@@ -20,7 +20,7 @@ with lib;
       # Enable IP forwarding for Docker containers to access VPN networks
       firewall = {
         enable = mkDefault true;
-        allowedTCPPorts = mkMerge [ ];
+        allowedTCPPorts = mkDefault [ 631 ]; # CUPS printing service
         allowedUDPPorts = mkMerge [ ];
 
         # Allow Docker traffic
