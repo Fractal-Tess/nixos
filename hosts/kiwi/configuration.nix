@@ -181,7 +181,31 @@
   #============================================================================
 
   # Essential system packages
-  environment.systemPackages = with pkgs; [ ];
+  environment.systemPackages = with pkgs; [
+    # Printing utilities
+    cups  # CUPS printing system
+    ghostscript  # PostScript and PDF interpreter
+    poppler_utils  # PDF utilities (pdftops, pdfinfo, etc.)
+
+    # Network printing
+    gutenprint  # High-quality printer drivers
+
+    # Command-line printing tools (these are provided by cups)
+    # lpr, lpstat, cancel, lpq are included with cups
+
+    # Scanner support
+    sane-frontends  # Scanner utilities
+    xsane  # GUI scanner frontend
+  ];
+
+  # Enable SANE for scanner support
+  hardware.sane = {
+    enable = true;
+    extraBackends = with pkgs; [
+      sane-airscan  # Driverless scanning
+      hplip  # HP scanner backend (includes libsane-hpaio)
+    ];
+  };
 
   # Brightness control
   programs.light.enable = true;
@@ -229,10 +253,71 @@
     dbus.enable = true;
     gvfs.enable = true;
 
-    # Printing support
+    # Printing support - CUPS configuration
     printing = {
       enable = true;
-      drivers = [ ]; # Add printer drivers as needed
+
+      # Start CUPS on boot
+      startWhenNeeded = true;
+
+      # Default paper size and language
+      defaultShared = true;
+
+      # Drivers for common printers
+      drivers = with pkgs; [
+        # Generic drivers
+        cups-filters
+        foomatic-filters
+        gutenprint
+
+        # HP printer drivers
+        hplip
+
+        # Brother printer drivers
+        brlaser
+
+        # Canon printer drivers
+        cnijfilter2
+
+        # Epson printer drivers
+        epson-escpr
+
+        # Samsung printer drivers
+        splix
+
+        # Lexmark printer drivers
+        postscript-lexmark
+
+        # PostScript printer support
+        ghostscript
+      ];
+
+      # Additional CUPS settings
+      extraConf = ''
+        # Allow remote administration
+        <Location /admin>
+          Order allow,deny
+          Allow localhost
+          Allow @LOCAL
+        </Location>
+
+        # Log level for troubleshooting
+        LogLevel info
+      '';
+    };
+
+    # Enable Avahi for automatic printer discovery
+    avahi = {
+      enable = true;
+      nssmdns4 = true;
+      openFirewall = true;
+
+      # Publish CUPS printers on the network
+      publish = {
+        enable = true;
+        userServices = true;
+        addresses = true;
+      };
     };
 
     # Systemd logind configuration for lid switch handling
@@ -291,8 +376,16 @@
         "video"
         "fractal-tess"
         "wireshark"
+        "lp"  # Allow printer management
+        "scanner"  # Allow scanner usage
       ];
-      packages = [ ];
+      packages = with pkgs; [
+        # Printing utilities
+        system-config-printer  # GUI printer management
+        simple-scan  # Document scanning
+        hplip  # SANE backend for HP devices (includes libsane-hpaio)
+        sane-airscan  # Driverless scanning
+      ];
     };
 
     groups.${username} = {
