@@ -35,6 +35,12 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/claude-flow)
+                # Fix for renamed packages
+                (final: prev: {
+                  glxinfo = prev.mesa-demos;
+                  poppler_utils = prev.poppler-utils;
+                  protonup = prev.protonup-ng;
+                })
               ];
             }
           ];
