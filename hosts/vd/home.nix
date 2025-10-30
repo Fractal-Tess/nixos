@@ -252,7 +252,7 @@
 
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    bitwarden # Password manager
+    bitwarden-desktop # Password manager
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT ENVIRONMENTS
@@ -293,7 +293,7 @@
     zoxide # Smarter cd command with frecency
     tldr # Simplified man pages
     duf # Modern df replacement with better output
-    du-dust # Modern du replacement
+    dust # Modern du replacement
 
     #--------------------------------------------------------------------------
     # THEMING & CUSTOMIZATION

@@ -64,6 +64,7 @@
     # nvtopPackages.nvidia # NVIDIA GPU monitoring (commented out due to CUDA download issues)
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
+    mesa-demos # OpenGL and Mesa demo programs (includes glxinfo functionality)
 
     # File system tools
     gparted # Partition editor
@@ -243,7 +244,7 @@
 
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    bitwarden # Password manager
+    bitwarden-desktop # Password manager
     zathura # Document viewer
 
     #--------------------------------------------------------------------------
@@ -313,7 +314,7 @@
     fd # Modern find replacement
     # zoxide # Smarter cd command with frecency
     duf # Modern df replacement with better output
-    du-dust # Modern du replacement
+    dust # Modern du replacement
 
     #--------------------------------------------------------------------------
     # THEMING & CUSTOMIZATION
