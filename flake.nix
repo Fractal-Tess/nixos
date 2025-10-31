@@ -29,6 +29,7 @@
           modules = [
             ./hosts/${hostname}/configuration.nix
             {
+              nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
                 polymc.overlay
                 (import ./overlays/responsively-app.nix)
