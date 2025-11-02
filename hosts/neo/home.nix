@@ -33,7 +33,7 @@ with lib;
 
   # Add custom scripts to PATH
   home.sessionPath = [
-    "${config.home.homeDirectory}/nixos/scripts"
+    "/home/${username}/nixos/scripts"
   ];
 
   #============================================================================
