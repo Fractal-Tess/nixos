@@ -90,6 +90,7 @@
       automount.enable = true;
       sops = {
         enable = true;
+        z_ai.enable = true;
         ssh.enable = true;
       };
 
