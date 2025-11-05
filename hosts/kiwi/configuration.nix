@@ -324,7 +324,9 @@
     logind = {
       settings = {
         Login = {
-          HandleLidSwitch = "ignore"; # Let Hyprland handle lid switch events
+          HandleLidSwitch = "suspend"; # Suspend when lid is closed
+          HandleLidSwitchExternalPower = "suspend"; # Also suspend when on external power
+          HandleLidSwitchDocked = "ignore"; # Don't suspend when docked
         };
       };
     };
