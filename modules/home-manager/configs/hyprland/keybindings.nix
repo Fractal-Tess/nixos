@@ -18,8 +18,8 @@
     bind = $mainMod, F, togglefloating
     bind = $mainMod SHIFT, F, fullscreen
 
-    # Swap
-    bind = $mainMod, W, swapactiveworkspaces, 0 1
+    # Swap - Dynamic workspace switching between active monitors only
+    bind = $mainMod, W, exec, ~/nixos/scripts/workspace-switcher.sh swap
 
     bind = $mainMod SHIFT, H, movewindow, l
     bind = $mainMod SHIFT, L, movewindow, r
