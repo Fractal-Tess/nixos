@@ -30,7 +30,6 @@
           '';
           nativeBuildInputs = with pkgs; [
             jdk
-            lolcat
           ];
         };
       });
