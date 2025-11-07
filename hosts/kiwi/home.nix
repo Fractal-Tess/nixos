@@ -147,6 +147,7 @@
     pnpm # Fast, disk space efficient package manager
     bun # Fast, modern, all-in-one JavaScript runtime
     python3 # Python programming language
+    uv # Python package installer and resolver
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
     sqlite # SQLite database engine
