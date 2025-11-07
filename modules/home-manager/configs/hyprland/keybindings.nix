@@ -114,6 +114,19 @@
     # Volume Down (XF86AudioLowerVolume - 122)
     bind = , XF86AudioLowerVolume, exec, pactl set-sink-volume @DEFAULT_SINK@ -5%
 
+    # Additional volume controls for gaming keyboards with volume knobs
+    # Some keyboards send scroll events instead of standard XF86 keys
+    bind = , XF86AudioNext, exec, pactl set-sink-volume @DEFAULT_SINK@ +2%
+    bind = , XF86AudioPrev, exec, pactl set-sink-volume @DEFAULT_SINK@ -2%
+
+    # Alternative keycodes that some gaming keyboards use
+    bindr = , 123, exec, pactl set-sink-volume @DEFAULT_SINK@ +1%
+    bindr = , 122, exec, pactl set-sink-volume @DEFAULT_SINK@ -1%
+
+    # Generic scroll events (for keyboards that send scroll events)
+    bindr = , 276, exec, pactl set-sink-volume @DEFAULT_SINK@ +1%
+    bindr = , 277, exec, pactl set-sink-volume @DEFAULT_SINK@ -1%
+
     # Default mute toggle using standard mute key
     bind = , XF86AudioMute, exec, pactl set-sink-mute @DEFAULT_SINK@ toggle && notify-send "Audio" "$(pactl get-sink-mute @DEFAULT_SINK@ | grep -q 'yes' && echo '🔇 Muted' || echo '🔊 Unmuted')" -h string:x-canonical-private-synchronous:audio-status
 
