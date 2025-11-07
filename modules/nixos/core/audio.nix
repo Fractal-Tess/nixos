@@ -12,7 +12,7 @@ with lib;
 
     # Install essential audio control utilities
     environment.systemPackages =
-      mkMerge [ (with pkgs; [ playerctl pavucontrol ]) ];
+      mkMerge [ (with pkgs; [ playerctl pavucontrol wev ]) ];
 
     # Configure PipeWire as the main audio server
     services.pipewire = {
