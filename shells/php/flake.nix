@@ -10,8 +10,9 @@
     let
       eachSystem = f:
         nixpkgs.lib.genAttrs (import systems)
-        (system: f (import nixpkgs { inherit system; }));
-    in {
+          (system: f (import nixpkgs { inherit system; }));
+    in
+    {
       devShells = eachSystem (pkgs: {
         default = pkgs.mkShell {
           shellHook = ''
@@ -38,13 +39,10 @@
             # laravel
 
             # Nodejs runtime
-            bun
-
-            nodePackages.npm
-            nodejs
-            yarn
-            pnpm
-
+            # bun
+            # nodejs
+            # yarn
+            #pnpm
           ];
         };
       });

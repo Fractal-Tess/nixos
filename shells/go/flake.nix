@@ -3,7 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    systems.url = "github:fractal-tess/nix-systems";
+    systems.url = "github:nix-systems/default";
   };
 
   outputs = { self, systems, nixpkgs, ... }:
@@ -31,7 +31,6 @@
           packages = with pkgs; [
             # go 1.20 (specified by overlay)
             go
-            lolcat
 
             # goimports, godoc, etc.
             gotools
