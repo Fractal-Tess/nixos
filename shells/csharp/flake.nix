@@ -56,21 +56,8 @@
             # .NET SDK (specified by overlay)
             dotnet-sdk
 
-            # Development tools
-            sqlite # Local database development
-
-            # Formatting and tools
-            prettierd
-            lolcat
-
             # Additional tools (commented out by default)
             # omnisharp-roslyn # C# language server
-            # nodejs # For client-side development
-            # bun
-            # deno
-            # nodePackages.npm
-            # yarn
-            # pnpm
           ];
         };
       });

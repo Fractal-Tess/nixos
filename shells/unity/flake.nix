@@ -39,9 +39,6 @@
 
             # .NET SDK
             dotnet-sdk_8
-
-            # Terminal text colorizer
-            lolcat
           ];
         };
       });
