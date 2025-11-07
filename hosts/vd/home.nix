@@ -124,8 +124,11 @@
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
+    bun # Fast, modern, all-in-one JavaScript runtime
+    python3 # Python programming language
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
+    sqlite # SQLite database engine
 
     # Build tools
     gnumake # Build automation tool
