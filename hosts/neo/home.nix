@@ -115,8 +115,10 @@ with lib;
     nodejs_22 # JavaScript runtime
     bun # Fast, modern, all-in-one JavaScript runtime
     deno # JavaScript runtime
+    python3 # Python programming language
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
+    sqlite # SQLite database engine
 
     # Build tools
     gnumake # Build automation tool
