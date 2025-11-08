@@ -23,6 +23,7 @@
 
   # DO NOT CHANGE.
   system.stateVersion = "25.05";
+  services.libinput.enable = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -191,6 +192,11 @@
     bluez-tools # Bluetooth command line tools
     bluetuith # TUI Bluetooth manager
     pavucontrol # Audio control (for Bluetooth audio devices)
+
+    # Volume knob monitoring dependencies
+    evtest # Input device event monitoring
+    libnotify # For notify-send command
+    pulseaudio # For pactl command
   ];
 
   # Brightness control
@@ -249,7 +255,7 @@
       description = "default user";
       password = "password";
       extraGroups =
-        [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" "bluetooth" ];
+        [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
       packages = [ ];
     };
 
