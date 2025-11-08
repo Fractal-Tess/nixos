@@ -187,6 +187,10 @@
   # Essential system packages
   environment.systemPackages = with pkgs; [
     brightnessctl # Brightness control for laptops
+    bluez # Bluetooth stack
+    bluez-tools # Bluetooth command line tools
+    bluetuith # TUI Bluetooth manager
+    pavucontrol # Audio control (for Bluetooth audio devices)
   ];
 
   # Brightness control
@@ -216,6 +220,21 @@
       enable = true;
       drivers = [ ]; # Add printer drivers as needed
     };
+
+    # Bluetooth GUI services
+    blueman.enable = true;
+  };
+
+  # Bluetooth support
+  hardware.bluetooth = {
+    enable = true;
+    powerOnBoot = true;
+    settings = {
+      General = {
+        Enable = "Source,Sink,Media,Socket";
+        Experimental = true;
+      };
+    };
   };
 
   #============================================================================
@@ -230,7 +249,7 @@
       description = "default user";
       password = "password";
       extraGroups =
-        [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
+        [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" "bluetooth" ];
       packages = [ ];
     };
 
