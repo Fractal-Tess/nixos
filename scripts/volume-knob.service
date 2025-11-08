@@ -1,0 +1,16 @@
+[Unit]
+Description=Volume Knob Monitor for KBP7075W Wireless Keyboard
+After=graphical-session.target
+PartOf=graphical-session.target
+
+[Service]
+Type=simple
+User=%i
+Environment=DISPLAY=:0
+Environment=WAYLAND_DISPLAY=wayland-1
+ExecStart=/home/fractal-tess/nixos/scripts/volume-knob-service.py
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=default.target
