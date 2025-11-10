@@ -75,6 +75,9 @@
   '';
   hardware.i2c.enable = true;
 
+  # VMware virtualization support
+  virtualisation.vmware.host.enable = true;
+
   # Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
