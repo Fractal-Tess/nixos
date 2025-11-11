@@ -69,8 +69,20 @@
   # DDC support for external monitor brightness control
   # https://discourse.nixos.org/t/how-to-enable-ddc-brightness-control-i2c-permissions/20800/6
   boot.kernelModules = [ "i2c-dev" ];
-  boot.kernelParams = [ ];
+  boot.kernelParams = [
+    "amd_pstate=active" # Use active mode for better power management on AMD CPUs
+    "pcie_aspm=powersupersave" # Aggressive PCIe ASPM for power saving
+    "processor.max_cstate=9" # Allow deeper CPU C-states
+    "intel_idle.max_cstate=9" # Allow deeper idle states (works on AMD too)
+    "nvme_core.default_ps_max_latency_us=5500" # NVMe aggressive power saving
+  ];
+
+  # Optimize I/O scheduler for better power efficiency
   services.udev.extraRules = ''
+    # Use deadline scheduler for better power efficiency on SSDs/NVMe
+    ACTION=="add|change", KERNEL=="sd[a-z]", ATTR{queue/scheduler}="deadline"
+    ACTION=="add|change", KERNEL=="nvme[0-9]*", ATTR{queue/scheduler}="none"
+    # DDC support for external monitor brightness control
     KERNEL=="i2c-[0-9]*", GROUP="i2c", MODE="0660"
   '';
   hardware.i2c.enable = true;
@@ -241,6 +253,16 @@
   };
 
   #============================================================================
+  # NETWORKING AND DNS CONFIGURATION
+  #============================================================================
+
+  # Custom hosts file entries for local DNS resolution
+  networking.extraHosts = ''
+    127.0.0.1 web.local
+    ::1 web.local
+  '';
+
+  #============================================================================
   # SECURITY & CERTIFICATES
   #============================================================================
 
@@ -346,20 +368,59 @@
         CPU_SCALING_GOVERNOR_ON_AC = "powersave";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
-        # Energy performance policies
-        CPU_ENERGY_PERF_POLICY_ON_AC = "default";
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
+        # Energy performance policies - Maximum efficiency
+        CPU_ENERGY_PERF_POLICY_ON_AC = "power"; # Maximum efficiency on AC
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "power"; # Maximum efficiency on battery
 
-        # CPU frequency limits (in kHz)
+        # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
-        # CPU_SCALING_MIN_FREQ_ON_AC = 0;
-        CPU_SCALING_MAX_FREQ_ON_AC = 4100000; # 4.1GHz max on AC
-        # CPU_SCALING_MIN_FREQ_ON_BAT = 0;
-        CPU_SCALING_MAX_FREQ_ON_BAT = 3700000; # 3.7GHz max on battery
+        CPU_SCALING_MIN_FREQ_ON_AC = 1096000; # ~1.1GHz minimum for stability
+        CPU_SCALING_MAX_FREQ_ON_AC = 2400000; # 2.4GHz max on AC for efficiency
+        CPU_SCALING_MIN_FREQ_ON_BAT = 1096000; # ~1.1GHz minimum on battery
+        CPU_SCALING_MAX_FREQ_ON_BAT = 2000000; # 2.0GHz max on battery for efficiency
 
-        # CPU boost settings
-        CPU_BOOST_ON_AC = 1; # Allow boost on AC
-        CPU_BOOST_ON_BAT = 1; # Allow boot on BAT
+        # CPU boost settings - Disabled for maximum efficiency
+        CPU_BOOST_ON_AC = 0; # Disable boost on AC
+        CPU_BOOST_ON_BAT = 0; # Disable boost on battery
+
+        # Additional power saving settings
+        # Platform profile - Maximum efficiency
+        PLATFORM_PROFILE_ON_AC = "low-power";
+        PLATFORM_PROFILE_ON_BAT = "low-power";
+
+        # Runtime Power Management for PCIe
+        RUNTIME_PM_ON_AC = "auto";
+        RUNTIME_PM_ON_BAT = "auto";
+        RUNTIME_PM_DRIVER_BLACKLIST = "mei_me";
+
+        # USB autosuspend
+        USB_AUTOSUSPEND = 1;
+        USB_BLACKLIST_BTUSB = 0;
+        USB_BLACKLIST_PHONE = 0;
+
+        # SATA link power management
+        SATA_LINKPWR_ON_AC = "min_power";
+        SATA_LINKPWR_ON_BAT = "min_power";
+
+        # PCI devices aggressive power management
+        PCIE_ASPM_ON_AC = "powersupersave";
+        PCIE_ASPM_ON_BAT = "powersupersave";
+
+        # WiFi power saving
+        WIFI_PWR_ON_AC = "on";
+        WIFI_PWR_ON_BAT = "on";
+
+        # Sound power saving
+        SOUND_POWER_SAVE_ON_AC = 1;
+        SOUND_POWER_SAVE_ON_BAT = 1;
+
+        # Screen backlight brightness (as percentage)
+        BRIGHTNESS_START = 20;
+        BRIGHTNESS_STEP = 5;
+
+        # Display power management - More aggressive
+        RESTORE_DEVICE_STATE_ON_STARTUP = 1;
+        RESTORE_THRESHOLDS_ON_BAT = 1;
       };
     };
   };
