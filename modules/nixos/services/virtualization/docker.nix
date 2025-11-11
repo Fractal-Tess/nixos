@@ -56,7 +56,7 @@ in {
           # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
           # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
           default-address-pools = cfg.addressPools;
-          dns = ["1.1.1.1" "8.8.8.8"];
+          dns = ["10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8"];
           "dns-search" = ["netbird.cloud" "int"];
         };
       };
