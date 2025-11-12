@@ -365,62 +365,19 @@
         CPU_DRIVER_OPMODE_ON_BAT = "active";
 
         # CPU scaling governors
-        CPU_SCALING_GOVERNOR_ON_AC = "powersave";
+        CPU_SCALING_GOVERNOR_ON_AC = "performance";
         CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
 
         # Energy performance policies - Maximum efficiency
-        CPU_ENERGY_PERF_POLICY_ON_AC = "power"; # Maximum efficiency on AC
+        CPU_ENERGY_PERF_POLICY_ON_AC = "default"; # Maximum efficiency on AC
         CPU_ENERGY_PERF_POLICY_ON_BAT = "power"; # Maximum efficiency on battery
 
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
         CPU_SCALING_MIN_FREQ_ON_AC = 1096000; # ~1.1GHz minimum for stability
-        CPU_SCALING_MAX_FREQ_ON_AC = 2400000; # 2.4GHz max on AC for efficiency
+        CPU_SCALING_MAX_FREQ_ON_AC = 390000; # 3.6GHz max on AC for efficiency
         CPU_SCALING_MIN_FREQ_ON_BAT = 1096000; # ~1.1GHz minimum on battery
-        CPU_SCALING_MAX_FREQ_ON_BAT = 2000000; # 2.0GHz max on battery for efficiency
-
-        # CPU boost settings - Disabled for maximum efficiency
-        CPU_BOOST_ON_AC = 0; # Disable boost on AC
-        CPU_BOOST_ON_BAT = 0; # Disable boost on battery
-
-        # Additional power saving settings
-        # Platform profile - Maximum efficiency
-        PLATFORM_PROFILE_ON_AC = "low-power";
-        PLATFORM_PROFILE_ON_BAT = "low-power";
-
-        # Runtime Power Management for PCIe
-        RUNTIME_PM_ON_AC = "auto";
-        RUNTIME_PM_ON_BAT = "auto";
-        RUNTIME_PM_DRIVER_BLACKLIST = "mei_me";
-
-        # USB autosuspend
-        USB_AUTOSUSPEND = 1;
-        USB_BLACKLIST_BTUSB = 0;
-        USB_BLACKLIST_PHONE = 0;
-
-        # SATA link power management
-        SATA_LINKPWR_ON_AC = "min_power";
-        SATA_LINKPWR_ON_BAT = "min_power";
-
-        # PCI devices aggressive power management
-        PCIE_ASPM_ON_AC = "powersupersave";
-        PCIE_ASPM_ON_BAT = "powersupersave";
-
-        # WiFi power saving
-        WIFI_PWR_ON_AC = "on";
-        WIFI_PWR_ON_BAT = "on";
-
-        # Sound power saving
-        SOUND_POWER_SAVE_ON_AC = 1;
-        SOUND_POWER_SAVE_ON_BAT = 1;
-
-        # Screen backlight brightness (as percentage)
-        BRIGHTNESS_START = 20;
-        BRIGHTNESS_STEP = 5;
-
-        # Display power management - More aggressive
-        RESTORE_DEVICE_STATE_ON_STARTUP = 1;
-        RESTORE_THRESHOLDS_ON_BAT = 1;
+        CPU_SCALING_MAX_FREQ_ON_BAT = 340000; # 3.4GHz max on battery for efficiency
       };
     };
   };
