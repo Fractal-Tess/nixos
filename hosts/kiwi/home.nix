@@ -156,7 +156,7 @@
     gnumake # Build automation tool
 
     # Development utilities
-    flyctl # Command-line tool for fly.io
+    # flyctl # Command-line tool for fly.io
     hyperfine # Command-line benchmarking tool
     geekbench_6 # benchmarking tool
     tokei # Count code statistics by language
