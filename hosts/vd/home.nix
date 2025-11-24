@@ -270,6 +270,7 @@
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
+    antigravity
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
     postman # API development environment
