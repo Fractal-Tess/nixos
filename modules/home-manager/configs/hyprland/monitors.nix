@@ -10,7 +10,7 @@ let
     ################
 
     # vd - Desktop setup
-    monitor=DP-3, 2560x1080@75, 0x0, 1 # LG monitor
+    monitor=DP-1, 2560x1080@75, 0x0, 1 # LG monitor
     monitor=HDMI-A-1, 2560x1440@144, 2560x0, 1 # Acer monitor
 
     # Hyprland bug
