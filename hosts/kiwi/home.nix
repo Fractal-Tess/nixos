@@ -140,6 +140,7 @@
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
     cursor-cli # Command-line interface for Cursor AI editor
+    gemini-cli # CLI interface for google's gemini 
     claude-flow # Enterprise AI agent orchestration platform
 
     # Programming languages and runtimes
@@ -256,6 +257,7 @@
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
+    antigravity # Google's vscode fork
     vscode # Open soure editor
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
