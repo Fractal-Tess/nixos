@@ -366,17 +366,17 @@
 
         # CPU scaling governors
         CPU_SCALING_GOVERNOR_ON_AC = "performance";
-        CPU_SCALING_GOVERNOR_ON_BAT = "powersave";
+        CPU_SCALING_GOVERNOR_ON_BAT = "performance";
 
-        # Energy performance policies - Maximum efficiency
-        CPU_ENERGY_PERF_POLICY_ON_AC = "default"; # Maximum efficiency on AC
-        CPU_ENERGY_PERF_POLICY_ON_BAT = "power"; # Maximum efficiency on battery
+        # Energy performance policies 
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance"; 
+        CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
 
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
-        CPU_SCALING_MIN_FREQ_ON_AC = 1096000; # ~1.1GHz minimum for stability
+        CPU_SCALING_MIN_FREQ_ON_AC = 2000000; # ~2GHz minimum for stability
         CPU_SCALING_MAX_FREQ_ON_AC = 3900000; # 3.9GHz max on AC for efficiency
-        CPU_SCALING_MIN_FREQ_ON_BAT = 1096000; # ~1.1GHz minimum on battery
+        CPU_SCALING_MIN_FREQ_ON_BAT = 1400000; # ~1.4GHz minimum on battery
         CPU_SCALING_MAX_FREQ_ON_BAT = 3400000; # 3.4GHz max on battery for efficiency
       };
     };
