@@ -11,6 +11,7 @@
       gpg.ssh.allowedSignersFile = "/home/fractal-tess/.ssh/allowed_signers";
       user.email = "vgfractal@gmail.com";
       user.name = "Fractal-Tess";
+      credential.helper = "/etc/profiles/per-user/fractal-tess/bin/git-credential-netrc -f /home/fractal-tess/.netrc";
     };
   };
 
