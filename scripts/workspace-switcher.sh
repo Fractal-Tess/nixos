@@ -40,25 +40,14 @@ swap_active_workspaces() {
 
             echo "Swapping workspaces between monitor $monitor1 and monitor $monitor2"
             hyprctl dispatch swapactiveworkspaces "$monitor1" "$monitor2"
-
-            # Send notification
-            if command -v notify-send >/dev/null 2>&1; then
-                notify-send "Workspace Switch" "Swapped workspaces between monitors $monitor1 ↔ $monitor2" -t 2000
-            fi
             ;;
         1)
             # Only one active monitor
             echo "Only one active monitor found (${monitors[0]}). Cannot swap workspaces."
-            if command -v notify-send >/dev/null 2>&1; then
-                notify-send "Workspace Switch" "Only one active monitor - cannot swap" -t 3000
-            fi
             ;;
         2)
             # No active monitors
             echo "No active monitors found."
-            if command -v notify-send >/dev/null 2>&1; then
-                notify-send "Workspace Switch" "No active monitors found" -t 3000
-            fi
             ;;
     esac
 }
