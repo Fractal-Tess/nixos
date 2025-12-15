@@ -7,7 +7,7 @@
     exec-once = wl-paste --watch cliphist store
     exec-once = blueman-applet
     exec-once = nm-applet
-    exec-once = netbird-ui
+    # exec-once = netbird-ui
     exec-once = hypridle
   '';
 }
