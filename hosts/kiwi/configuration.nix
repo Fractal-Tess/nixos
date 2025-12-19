@@ -225,6 +225,10 @@
   # Brightness control
   programs.light.enable = true;
 
+  # Wireshark configuration - enables packet capture for non-root users
+  # This automatically sets up dumpcap with CAP_NET_RAW and CAP_NET_ADMIN capabilities
+  programs.wireshark.enable = true;
+
   # Gaming configuration
   programs.steam = {
     enable = true;
