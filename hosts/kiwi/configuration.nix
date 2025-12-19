@@ -198,27 +198,27 @@
   # Essential system packages
   environment.systemPackages = with pkgs; [
     # Printing utilities
-    cups  # CUPS printing system
-    ghostscript  # PostScript and PDF interpreter
-    poppler_utils  # PDF utilities (pdftops, pdfinfo, etc.)
+    cups # CUPS printing system
+    ghostscript # PostScript and PDF interpreter
+    poppler_utils # PDF utilities (pdftops, pdfinfo, etc.)
 
     # Network printing
-    gutenprint  # High-quality printer drivers
+    gutenprint # High-quality printer drivers
 
     # Command-line printing tools (these are provided by cups)
     # lpr, lpstat, cancel, lpq are included with cups
 
     # Scanner support
-    sane-frontends  # Scanner utilities
-    xsane  # GUI scanner frontend
+    sane-frontends # Scanner utilities
+    xsane # GUI scanner frontend
   ];
 
   # Enable SANE for scanner support
   hardware.sane = {
     enable = true;
     extraBackends = with pkgs; [
-      sane-airscan  # Driverless scanning
-      hplip  # HP scanner backend (includes libsane-hpaio)
+      sane-airscan # Driverless scanning
+      hplip # HP scanner backend (includes libsane-hpaio)
     ];
   };
 
@@ -372,8 +372,8 @@
         CPU_SCALING_GOVERNOR_ON_AC = "performance";
         CPU_SCALING_GOVERNOR_ON_BAT = "performance";
 
-        # Energy performance policies 
-        CPU_ENERGY_PERF_POLICY_ON_AC = "performance"; 
+        # Energy performance policies
+        CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
 
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
@@ -403,15 +403,15 @@
         "video"
         "fractal-tess"
         "wireshark"
-        "lp"  # Allow printer management
-        "scanner"  # Allow scanner usage
+        "lp" # Allow printer management
+        "scanner" # Allow scanner usage
       ];
       packages = with pkgs; [
         # Printing utilities
-        system-config-printer  # GUI printer management
-        simple-scan  # Document scanning
-        hplip  # SANE backend for HP devices (includes libsane-hpaio)
-        sane-airscan  # Driverless scanning
+        system-config-printer # GUI printer management
+        simple-scan # Document scanning
+        hplip # SANE backend for HP devices (includes libsane-hpaio)
+        sane-airscan # Driverless scanning
       ];
     };
 
