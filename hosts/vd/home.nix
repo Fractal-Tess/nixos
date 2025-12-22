@@ -246,8 +246,8 @@
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber-appimage # Instant messaging
-    slack # Team collaboration platform
+    viber # Instant messaging
+    # slack # Team collaboration platform (temporarily disabled due to download failure)
     thunderbird # Email client
 
     #--------------------------------------------------------------------------

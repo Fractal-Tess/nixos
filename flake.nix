@@ -33,7 +33,6 @@
               nixpkgs.overlays = [
                 polymc.overlay
                 (import ./overlays/responsively-app.nix)
-                (import ./overlays/viber.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/claude-flow)
                 # Fix for renamed packages
