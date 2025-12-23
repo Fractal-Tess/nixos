@@ -17,8 +17,14 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    polymc.url = "github:PolyMC/PolyMC";
-    flare.url = "github:ByteAtATime/flare/feat/nix";
+    polymc = {
+      url = "github:PolyMC/PolyMC";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    flare = {
+      url = "github:ByteAtATime/flare/feat/nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, ... }@inputs:
