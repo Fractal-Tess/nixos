@@ -12,6 +12,7 @@
     # Example binds, see https://wiki.hyprland.org/Configuring/Binds/ for more
     #
     # Managing windows
+    bind = $mainMod, SPACE, exec, env WEBKIT_DISABLE_DMABUF_RENDERER=1 flare
     bind = $mainMod, P, exec, $menu
     bind = $mainMod SHIFT, Q, killactive
     bind = $mainMod, Return, exec, $terminal

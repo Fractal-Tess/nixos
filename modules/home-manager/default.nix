@@ -1,4 +1,4 @@
-{ pkgs, config, ... }: {
+{ pkgs, config, inputs, ... }: {
   imports = [
     ./programs/direnv.nix
     ./programs/zoxide.nix
@@ -9,6 +9,7 @@
     ./programs/neovim.nix
     ./programs/eza.nix
     ./programs/bat.nix
+    ./programs/flare.nix
   ];
 }
 

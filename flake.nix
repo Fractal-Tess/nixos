@@ -18,9 +18,10 @@
     };
 
     polymc.url = "github:PolyMC/PolyMC";
+    flare.url = "github:ByteAtATime/flare/feat/nix";
   };
 
-  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, ... }@inputs:
+  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, ... }@inputs:
     let
       mkHost = { hostname, username }:
         nixpkgs.lib.nixosSystem {
