@@ -13,18 +13,18 @@ in {
     subnet = mkOption {
       type = types.str;
       default = "172.20.0.1/16";
-      description = "Gateway for Docker bridge network to avoid conflicts with VPN networks";
+      description =
+        "Gateway for Docker bridge network to avoid conflicts with VPN networks";
     };
 
     addressPools = mkOption {
       type = types.listOf (types.attrsOf types.anything);
-      default = [
-        {
-          base = "172.21.0.0/16";
-          size = 24;
-        }
-      ];
-      description = "Default address pools for Docker networks to avoid VPN conflicts";
+      default = [{
+        base = "172.21.0.0/16";
+        size = 24;
+      }];
+      description =
+        "Default address pools for Docker networks to avoid VPN conflicts";
     };
   };
 
@@ -56,8 +56,14 @@ in {
           # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
           # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
           default-address-pools = cfg.addressPools;
-          dns = ["10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8"];
-          "dns-search" = ["netbird.cloud" "int"];
+          # Use systemd-resolved stub resolver (127.0.0.53) for DNS resolution
+          # This ensures Docker can resolve .int domains via the host's DNS configuration
+          # Fallback to public DNS if systemd-resolved is unavailable
+          dns =
+            [ "127.0.0.53" "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
+          "dns-search" = [ "netbird.cloud" "int" ];
+          # Increase DNS timeout to handle slower VPN DNS resolution
+          "dns-opts" = [ "timeout:5" "attempts:3" ];
         };
       };
     };
