@@ -9,5 +9,6 @@
     exec-once = nm-applet
     # exec-once = netbird-ui
     exec-once = hypridle
+    exec-once = env WEBKIT_DISABLE_DMABUF_RENDERER=1 flare
   '';
 }
