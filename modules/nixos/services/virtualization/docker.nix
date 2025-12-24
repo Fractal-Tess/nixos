@@ -59,8 +59,7 @@ in {
           # Use systemd-resolved stub resolver (127.0.0.53) for DNS resolution
           # This ensures Docker can resolve .int domains via the host's DNS configuration
           # Fallback to public DNS if systemd-resolved is unavailable
-          dns =
-            [ "127.0.0.53" "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
+          dns = [ "127.0.0.53" "1.1.1.1" "8.8.8.8" ];
           "dns-search" = [ "netbird.cloud" "int" ];
           # Increase DNS timeout to handle slower VPN DNS resolution
           "dns-opts" = [ "timeout:5" "attempts:3" ];
