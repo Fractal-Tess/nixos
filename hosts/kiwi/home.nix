@@ -239,7 +239,7 @@
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber-appimage # Instant messaging
+    viber # Instant messaging
     slack # Team collaboration platform
     thunderbird # Email client
 
