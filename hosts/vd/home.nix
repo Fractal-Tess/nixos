@@ -118,6 +118,8 @@
     # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
+    opencode
+    appimage-run
     cursor-cli # Command-line interface for Cursor AI editor
     claude-flow # Enterprise AI agent orchestration platform
 
