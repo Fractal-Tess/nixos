@@ -81,6 +81,7 @@ with lib;
 
     # Security and secrets
     sops # Secret management tool
+    openssl # Cryptography toolkit
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS
