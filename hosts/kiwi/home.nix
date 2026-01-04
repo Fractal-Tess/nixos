@@ -103,6 +103,7 @@
     # Security and secrets
     sops # Secret management tool
     # seahorse # GUI for GNOME Keyring
+    openssl # Cryptography toolkit
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS

@@ -82,6 +82,7 @@
     # Security and secrets
     sops # Secret management tool
     seahorse # GUI for GNOME Keyring
+    openssl # Cryptography toolkit
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS
@@ -148,6 +149,7 @@
     gh # GitHub CLI
     forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
+    graphite-cli # CLI for creating stacked git changes
 
     # Security tools
     # burpsuite # Web vulnerability scanner
