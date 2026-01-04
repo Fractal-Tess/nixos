@@ -11,4 +11,4 @@ export ANTHROPIC_DEFAULT_SONNET_MODEL="glm-4.7"
 export ANTHROPIC_DEFAULT_OPUS_MODEL="glm-4.7"
 export GRAPHITI_ENABLED=true
 
-appimage-run ./Auto-Claude-2.7.1-linux-x86_64.AppImage
+appimage-run ~/.local/bin/Auto-Claude-2.7.1-linux-x86_64.AppImage
