@@ -98,7 +98,7 @@
     # https://wiki.hyprland.org/Configuring/Variables/#misc
     misc {
       disable_hyprland_logo = true # If true disables the random hyprland logo / anime girl background. :(
-      new_window_takes_over_fullscreen = 2  # optional: controls behavior when spawning on fullscreen workspace
+      on_focus_under_fullscreen = 2  # optional: controls behavior when spawning on fullscreen workspace
       enable_swallow = true                 # optional: window swallowing behavior
       mouse_move_focuses_monitor = true     # ensures proper focus behavior
       mouse_move_enables_dpms = true        # optional: prevents screen timeout issues
