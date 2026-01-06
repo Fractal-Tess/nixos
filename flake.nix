@@ -5,7 +5,7 @@
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
     sops-nix = {
-      url = "github:Mic92/sops-nix";
+      url = "github:Mic92/sops-nix/master";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -44,13 +44,6 @@
                 polymc.overlay
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
-                (import ./overlays/claude-flow)
-                # Fix for renamed packages
-                (final: prev: {
-                  glxinfo = prev.mesa-demos;
-                  poppler_utils = prev.poppler-utils;
-                  protonup = prev.protonup-ng;
-                })
               ];
             }
           ];
