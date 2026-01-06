@@ -54,7 +54,7 @@
     eza # Modern replacement for ls with color and Git integration
 
     # File managers
-    xfce.thunar # Lightweight file manager
+    thunar # Lightweight file manager
     pcmanfm # Alternative lightweight file manager
 
     # Archive management
@@ -122,7 +122,6 @@
     opencode
     appimage-run
     cursor-cli # Command-line interface for Cursor AI editor
-    claude-flow # Enterprise AI agent orchestration platform
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
