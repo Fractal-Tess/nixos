@@ -88,7 +88,8 @@
   hardware.i2c.enable = true;
 
   # VMware virtualization support
-  virtualisation.vmware.host.enable = true;
+  # Disabled due to build stuck issue (vmware-unpack-env-17.6.4-bwrap)
+  # virtualisation.vmware.host.enable = true;
 
   # Bluetooth
   hardware.bluetooth.enable = true;
@@ -200,7 +201,6 @@
     # Printing utilities
     cups # CUPS printing system
     ghostscript # PostScript and PDF interpreter
-    poppler_utils # PDF utilities (pdftops, pdfinfo, etc.)
 
     # Network printing
     gutenprint # High-quality printer drivers
@@ -236,7 +236,9 @@
     gamescopeSession.enable = true; # Better gaming performance
 
     # Enhanced compatibility
-    extraCompatPackages = with pkgs; [ protonup ];
+    extraCompatPackages = with pkgs; [ 
+      #protonup
+    ];
 
     # Required libraries for Wine/Proton
     extraPackages = with pkgs; [
@@ -304,9 +306,6 @@
 
         # Brother printer drivers
         brlaser
-
-        # Canon printer drivers
-        cnijfilter2
 
         # Epson printer drivers
         epson-escpr
