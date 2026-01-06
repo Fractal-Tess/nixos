@@ -82,6 +82,7 @@ with lib;
     # Security and secrets
     sops # Secret management tool
     openssl # Cryptography toolkit
+    infisical # Infisical CLI for secret management
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS
