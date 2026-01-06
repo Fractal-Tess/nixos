@@ -8,7 +8,6 @@
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs
-    ../../modules/home-manager/programs/zed.nix
     ../../modules/home-manager/theming.nix
   ];
 
@@ -275,6 +274,7 @@
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
+    zed-editor # Zed editor
     antigravity
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
