@@ -104,6 +104,7 @@
     sops # Secret management tool
     # seahorse # GUI for GNOME Keyring
     openssl # Cryptography toolkit
+    infisical # Infisical CLI for secret management
 
     #--------------------------------------------------------------------------
     # NETWORKING TOOLS

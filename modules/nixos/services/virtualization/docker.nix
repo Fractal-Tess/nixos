@@ -47,6 +47,21 @@ in {
       # --restart=always flag to work.
       enableOnBoot = true;
 
+      # Common daemon settings for both regular and rootless Docker
+      daemon.settings = mkIf (!cfg.rootless) {
+        bip = cfg.subnet;
+        # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
+        # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
+        default-address-pools = cfg.addressPools;
+        # Use VPN DNS servers directly for .int domain resolution
+        # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
+        # Fallback to public DNS if VPN DNS is unavailable
+        dns = [ "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
+        "dns-search" = [ "int" "netbird.cloud" ];
+        # Increase DNS timeout to handle slower VPN DNS resolution
+        "dns-opts" = [ "timeout:5" "attempts:3" ];
+      };
+
       # Configure the Docker to run in rootless mode
       rootless = mkIf cfg.rootless {
         enable = true;
@@ -56,11 +71,11 @@ in {
           # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
           # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
           default-address-pools = cfg.addressPools;
-          # Use systemd-resolved stub resolver (127.0.0.53) for DNS resolution
-          # This ensures Docker can resolve .int domains via the host's DNS configuration
-          # Fallback to public DNS if systemd-resolved is unavailable
-          dns = [ "127.0.0.53" "1.1.1.1" "8.8.8.8" ];
-          "dns-search" = [ "netbird.cloud" "int" ];
+          # Use VPN DNS servers directly for .int domain resolution
+          # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
+          # Fallback to public DNS if VPN DNS is unavailable
+          dns = [ "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
+          "dns-search" = [ "int" "netbird.cloud" ];
           # Increase DNS timeout to handle slower VPN DNS resolution
           "dns-opts" = [ "timeout:5" "attempts:3" ];
         };
