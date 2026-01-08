@@ -14,7 +14,7 @@ in {
       [ "d /home/${username}/.config/secrets/z-ai 0755 ${username} users -" ];
 
     sops.secrets = {
-      api_key = {
+      z_ai_api_key = {
         owner = username;
         sopsFile = ../../../../secrets/z-ai.yaml;
         format = "yaml";

@@ -14,7 +14,7 @@ in {
       [ "d /home/${username}/.config/secrets/minimax 0755 ${username} users -" ];
 
     sops.secrets = {
-      api_key = {
+      minimax_api_key = {
         owner = username;
         sopsFile = ../../../../secrets/minimax.yaml;
         format = "yaml";
