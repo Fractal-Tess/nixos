@@ -131,6 +131,7 @@
         enable = true;
         ssh.enable = true;
         z_ai.enable = true;
+        minimax.enable = true;
         linux_wallpaperengine.enable = true;
       };
 
