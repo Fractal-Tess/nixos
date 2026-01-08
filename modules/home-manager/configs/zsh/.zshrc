@@ -57,6 +57,7 @@ alias p10k-down='prompt_powerlevel9k_teardown'
 alias p10k-up='prompt_powerlevel9k_setup'
 alias ca='cursor-agent'
 alias zai='~/nixos/scripts/claude-code/z-ai.sh'
+alias minimax='~/nixos/scripts/claude-code/minimax.sh'
 
 # End
 if [[ -n $CURSOR_TRACE_ID ]]; then
