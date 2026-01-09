@@ -376,6 +376,8 @@
         CPU_ENERGY_PERF_POLICY_ON_AC = "performance";
         CPU_ENERGY_PERF_POLICY_ON_BAT = "default";
 
+        CPU_BOOST_ON_AC = 0;
+
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
         CPU_SCALING_MIN_FREQ_ON_AC = 2000000; # ~2GHz minimum for stability
