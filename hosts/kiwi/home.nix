@@ -140,6 +140,7 @@
     # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
+    opencode
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini 
 
