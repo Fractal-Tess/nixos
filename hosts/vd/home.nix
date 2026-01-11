@@ -20,6 +20,9 @@
     username = username;
     homeDirectory = "/home/${username}";
     stateVersion = "25.05"; # Don't change this
+    sessionVariables = {
+      PNPM_HOME = "$HOME/.local/share/pnpm";
+    };
   };
 
   # Enable Home Manager self-management
@@ -178,7 +181,7 @@
     # Formatters
     stylua # Lua code formatter
     nixpkgs-fmt # Nix code formatter
-    nixfmt-classic # Alternative Nix formatter
+    nixfmt # Nix code formatter
     prettierd # Code formatter daemon
 
     #--------------------------------------------------------------------------
@@ -238,6 +241,7 @@
 
     # Terminals
     warp-terminal # Modern terminal with AI features
+    waveterm # Wave terminal for seamless workflows
 
     # System tools
     # rpi-imager # Raspberry Pi Imaging Utility (temporarily disabled due to build issues)
@@ -250,7 +254,7 @@
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
     viber # Instant messaging
-    # slack # Team collaboration platform (temporarily disabled due to download failure)
+    slack # Team collaboration platform (temporarily disabled due to download failure)
     thunderbird # Email client
 
     #--------------------------------------------------------------------------
@@ -273,7 +277,7 @@
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
-    zed-editor # Zed editor
+    # zed-editor # Zed editor
     antigravity
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
