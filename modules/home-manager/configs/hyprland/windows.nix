@@ -11,7 +11,7 @@
 
     windowrulev2 = minsize 200 400, float, title:^(UnityEngine.*)
     windowrulev2 = minsize 200 400, float, title:^(UnityEditor.*)
-    windowrulev2 = float, class:^(kitty)$
+    windowrulev2 = float, class:^(ghostty)$
     windowrulev2 = float, class:^(dev.warp.Warp)$
     windowrulev2 = float, title:^(File Operation Progress)$
     windowrulev2 = workspace 1, class:^(discord)$
