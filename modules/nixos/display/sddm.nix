@@ -6,11 +6,9 @@ let
   cfg = config.modules.display.sddm;
   hyprland = config.modules.display.hyprland;
 
-  custom-sddm-astronaut = pkgs.sddm-astronaut.override {
-    embeddedTheme = "pixel_sakura";
-  };
-in
-{
+  custom-sddm-astronaut =
+    pkgs.sddm-astronaut.override { embeddedTheme = "pixel_sakura"; };
+in {
   options.modules.display.sddm = {
     # Option to enable/disable SDDM display manager
     enable = mkEnableOption "SDDM display manager";
@@ -43,18 +41,17 @@ in
           CursorSize = 24;
         };
       };
-      extraPackages = with pkgs; [
-        custom-sddm-astronaut
-      ];
+      extraPackages = with pkgs; [ custom-sddm-astronaut ];
     };
 
-    environment.systemPackages = with pkgs; [
-      custom-sddm-astronaut
-      # kdePackages.qtmultimedia
-    ];
+    environment.systemPackages = with pkgs;
+      [
+        custom-sddm-astronaut
+        # kdePackages.qtmultimedia
+      ];
 
-    # Use Hyprland UWSM session (as shown in error message)
-    services.displayManager.defaultSession = "hyprland-uwsm";
+    # Use Hyprland session
+    services.displayManager.defaultSession = "hyprland";
   };
 }
 
