@@ -1,8 +1,12 @@
 { pkgs, ... }:
 
 {
-  # Enable ZSH  as the default shell (config is done in home-manager)
-  users.defaultUserShell = pkgs.zsh;
+  # Enable Fish as the default shell (config is done in home-manager)
+  users.defaultUserShell = pkgs.fish;
+
+  programs.fish = {
+    enable = true;
+  };
 
   # ZSH
   programs.zsh = {
@@ -19,7 +23,11 @@
       # Fetch suggestions asynchronously
       async = true;
       # Use history and completion strategies
-      strategy = [ "history" "completion" "match_prev_cmd" ];
+      strategy = [
+        "history"
+        "completion"
+        "match_prev_cmd"
+      ];
     };
     # Syntax highlighting
     syntaxHighlighting.enable = true;
@@ -34,7 +42,12 @@
 
     ohMyZsh = {
       enable = true;
-      plugins = [ "sudo" "direnv" "zsh-navigation-tools" "zoxide" ];
+      plugins = [
+        "sudo"
+        "direnv"
+        "zsh-navigation-tools"
+        "zoxide"
+      ];
     };
 
     shellAliases = {
@@ -82,4 +95,3 @@
 
   };
 }
-

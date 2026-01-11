@@ -1,4 +1,5 @@
-{ ... }: {
+{ ... }:
+{
   imports = [
     # Core system modules
     ./core/audio.nix
@@ -6,6 +7,7 @@
     ./core/locale.nix
     ./core/networking.nix
     ./core/security.nix
+
     ./core/shell.nix
     ./core/time.nix
 
