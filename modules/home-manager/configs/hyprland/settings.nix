@@ -23,7 +23,7 @@
     $terminal = kitty
     $fileManager = thunar
     $menu = wofi --show drun
-    $browser = vivaldi
+    $browser = vivaldi --remote-debugging-port=9222
     $editor = cursor
 
     general {
