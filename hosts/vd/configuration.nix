@@ -1,4 +1,9 @@
-{ pkgs, inputs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 
 {
   #============================================================================
@@ -41,7 +46,10 @@
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -56,8 +64,12 @@
 
   nixpkgs.config = {
     allowUnfree = true;
-    permittedInsecurePackages =
-      [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" "ventoy-1.1.10" ];
+    permittedInsecurePackages = [
+      "electron-27.3.11"
+      "libsoup-2.74.3"
+      "ventoy-1.1.07"
+      "ventoy-1.1.10"
+    ];
   };
 
   #============================================================================
@@ -262,12 +274,20 @@
       isNormalUser = true;
       description = "default user";
       password = "password";
-      extraGroups =
-        [ "networkmanager" "video" "input" "seat" "wheel" "fractal-tess" ];
+      extraGroups = [
+        "networkmanager"
+        "video"
+        "input"
+        "seat"
+        "wheel"
+        "fractal-tess"
+      ];
       packages = [ ];
     };
 
-    groups.${username} = { members = [ username ]; };
+    groups.${username} = {
+      members = [ username ];
+    };
   };
 
   #============================================================================
