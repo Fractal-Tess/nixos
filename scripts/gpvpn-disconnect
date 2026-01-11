@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+
+# Disconnect GlobalProtect VPN
+
+set -euo pipefail
+
+if pgrep -f "gpclient connect" > /dev/null; then
+    sudo pkill -f "gpclient connect"
+    echo "VPN disconnected"
+else
+    echo "No active VPN connection found"
+fi

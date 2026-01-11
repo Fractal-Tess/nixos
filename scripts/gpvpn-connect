@@ -1,0 +1,17 @@
+#!/usr/bin/env bash
+
+# GlobalProtect VPN connection script for Wayland/Hyprand
+# Fixes GTK initialization by setting proper Wayland environment variables
+
+set -euo pipefail
+
+# Wayland environment variables needed for GTK authentication
+export WAYLAND_DISPLAY=wayland-1
+export DISPLAY=:0
+export XDG_RUNTIME_DIR=/run/user/$(id -u)
+
+# Run gpclient with the environment preserved
+sudo -E WAYLAND_DISPLAY="$WAYLAND_DISPLAY" \
+        DISPLAY="$DISPLAY" \
+        XDG_RUNTIME_DIR="$XDG_RUNTIME_DIR" \
+        gpclient connect gpvpn.carrierx.com

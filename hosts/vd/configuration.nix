@@ -57,7 +57,7 @@
   nixpkgs.config = {
     allowUnfree = true;
     permittedInsecurePackages =
-      [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" ];
+      [ "electron-27.3.11" "libsoup-2.74.3" "ventoy-1.1.07" "ventoy-1.1.10" ];
   };
 
   #============================================================================
@@ -209,7 +209,7 @@
     gamescopeSession.enable = true; # Better gaming performance
 
     # Enhanced compatibility
-    extraCompatPackages = with pkgs; [ protonup ];
+    extraCompatPackages = with pkgs; [ protonup-ng ];
   };
 
   #============================================================================
