@@ -9,6 +9,11 @@ if test -f ~/.secrets.fish
   source ~/.secrets.fish
 end
 
+# Load abbreviations
+if test -f ~/.config/fish/abbr.fish
+  source ~/.config/fish/abbr.fish
+end
+
 # Add scripts to PATH
 if test -d ~/nixos/scripts
   fish_add_path ~/nixos/scripts
@@ -50,15 +55,11 @@ if test -n "$CURSOR_TRACE_ID"
 end
 
 # ============================================================================
-# CLIPBOARD UTILITIES
+# CLIPBOARD UTILITIES (see fish.nix for abbreviations)
 # ============================================================================
 
-function cc
-  wl-copy --primary --trim-newline
-end
-
 function cv
-  wl-paste --primary --no-newline
+  wl-paste --no-newline
 end
 
 function clipcopy
