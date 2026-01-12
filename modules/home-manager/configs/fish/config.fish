@@ -60,3 +60,7 @@ end
 function cv
   wl-paste --primary --no-newline
 end
+
+function clipcopy
+  wl-copy --primary --trim-newline
+end

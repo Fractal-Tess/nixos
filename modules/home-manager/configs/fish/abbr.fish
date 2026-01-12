@@ -6,7 +6,7 @@
 
 abbr -a pcuptime "uptime | awk '{print \$3}' | sed 's/,//'"
 abbr -a cat "bat"
-abbr -a cc "clipcopy"
+abbr -a cc "wl-copy --primary --trim-newline"
 abbr -a diff "batdiff"
 abbr -a man "batman"
 abbr -a ll "eza -l"
