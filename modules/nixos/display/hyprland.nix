@@ -1,8 +1,16 @@
-{ config, lib, pkgs, username, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 
 with lib;
-let cfg = config.modules.display.hyprland;
-in {
+let
+  cfg = config.modules.display.hyprland;
+in
+{
   # Options for Hyprland configuration
   options.modules.display.hyprland = {
     enable = mkEnableOption "Hyprland";
@@ -42,7 +50,10 @@ in {
     };
 
     # Add ghostty terminal to system packages
-    environment.systemPackages = [ pkgs.ghostty ];
+    environment.systemPackages = [
+      pkgs.ghostty
+      pkgs.ncurses
+    ];
     # Enable dconf for GTK/Flatpak app settings
     # programs.dconf.enable = true;
 
