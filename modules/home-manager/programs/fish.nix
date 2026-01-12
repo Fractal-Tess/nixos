@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 
 {
@@ -64,7 +65,8 @@
       # Standard aliases
       pcuptime = "uptime | awk '{print \$3}' | sed 's/,//'";
       cat = "bat";
-      cc = "clipcopy";
+      cc = "wl-copy --trim-newline";
+      cv = "wl-paste --no-newline";
       diff = "batdiff";
       man = "batman";
       ll = "eza -l";
