@@ -19,7 +19,7 @@
       # Background blur (kitty: background_blur = 96)
       "background-blur" = 96;
 
-      "theme" = "GitHub Dark";
+      "theme" = "Cursor Dark";
 
       # Bell (kitty: enable_audio_bell = false)
       # In Ghostty, we disable audio bell by not including it in bell-features
