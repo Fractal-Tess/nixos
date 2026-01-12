@@ -48,3 +48,15 @@ if test -n "$CURSOR_TRACE_ID"
     source "$HOME/.iterm2_shell_integration.fish"
   end
 end
+
+# ============================================================================
+# CLIPBOARD UTILITIES
+# ============================================================================
+
+function cc
+  wl-copy --primary --trim-newline
+end
+
+function cv
+  wl-paste --primary --no-newline
+end
