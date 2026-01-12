@@ -6,6 +6,9 @@
     enableZshIntegration = true;
     systemd.enable = true;
     settings = {
+      # Use xterm-256color for maximum compatibility (xterm-ghostty requires custom terminfo)
+      "term" = "xterm-256color";
+
       # Font configuration (matching kitty)
       "font-family" = "CaskaydiaCoveNerdFont";
       "font-size" = 12;
