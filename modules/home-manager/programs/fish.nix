@@ -1,8 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 
 {
@@ -44,10 +43,10 @@
       #   name = "pure";
       #   src = pkgs.fishPlugins.pure.src;
       # } # Alternative theme
-      {
-        name = "sponge";
-        src = pkgs.fishPlugins.sponge.src;
-      }
+      # {
+      #   name = "sponge";
+      #   src = pkgs.fishPlugins.sponge.src;
+      # }
       # fish-ai - AI assistant plugin for fish shell
       {
         name = "fish-ai";

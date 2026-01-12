@@ -1,8 +1,9 @@
-{ pkgs, ... }:
+{ ... }:
 {
   programs.ghostty = {
     enable = true;
     enableFishIntegration = true;
+    enableZshIntegration = true;
     settings = {
       # Font configuration (matching kitty)
       "font-family" = "CaskaydiaCoveNerdFont";
