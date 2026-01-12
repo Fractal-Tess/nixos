@@ -4,6 +4,7 @@
     enable = true;
     enableFishIntegration = true;
     enableZshIntegration = true;
+    systemd.enable = true;
     settings = {
       # Font configuration (matching kitty)
       "font-family" = "CaskaydiaCoveNerdFont";
