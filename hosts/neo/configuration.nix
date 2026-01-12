@@ -1,4 +1,9 @@
-{ pkgs, inputs, username, ... }:
+{
+  pkgs,
+  inputs,
+  username,
+  ...
+}:
 
 {
   #============================================================================
@@ -31,7 +36,10 @@
 
   nix = {
     settings = {
-      experimental-features = [ "nix-command" "flakes" ];
+      experimental-features = [
+        "nix-command"
+        "flakes"
+      ];
       auto-optimise-store = true;
     };
 
@@ -55,10 +63,12 @@
 
   # Memory management
   zramSwap.enable = true;
-  swapDevices = [{
-    device = "/swapfile";
-    size = 16 * 1024; # 16GB
-  }];
+  swapDevices = [
+    {
+      device = "/swapfile";
+      size = 16 * 1024; # 16GB
+    }
+  ];
 
   # Laptop lid settings - ignore lid close when docked/external power
   services.logind.settings.Login = {
@@ -171,12 +181,19 @@
       isNormalUser = true;
       description = "default user";
       password = "password";
-      extraGroups =
-        [ "networkmanager" "wheel" "video" "fractal-tess" "wireshark" ];
+      extraGroups = [
+        "networkmanager"
+        "wheel"
+        "video"
+        "fractal-tess"
+        "wireshark"
+      ];
       packages = [ ];
     };
 
-    groups.${username} = { members = [ username ]; };
+    groups.${username} = {
+      members = [ username ];
+    };
   };
 
   #============================================================================
@@ -196,6 +213,9 @@
   #============================================================================
 
   environment.variables = {
+    # Terminal type for maximum compatibility
+    TERM = "xterm-256color";
+
     # Default editor configuration
     VISUAL = "nvim";
     SUDO_EDITOR = "nvim";
