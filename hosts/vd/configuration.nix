@@ -281,6 +281,7 @@
         "seat"
         "wheel"
         "fractal-tess"
+        "dialout"
       ];
       packages = [ ];
     };
