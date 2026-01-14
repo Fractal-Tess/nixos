@@ -187,6 +187,7 @@
         "video"
         "fractal-tess"
         "wireshark"
+        "docker"
       ];
       packages = [ ];
     };
