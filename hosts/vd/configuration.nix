@@ -1,8 +1,7 @@
-{
-  pkgs,
-  inputs,
-  username,
-  ...
+{ pkgs
+, inputs
+, username
+, ...
 }:
 
 {
@@ -39,6 +38,7 @@
     libxrender
     libxtst
   ];
+  hardware.nvidia-container-toolkit.enable = true;
 
   #============================================================================
   # NIX CONFIGURATION

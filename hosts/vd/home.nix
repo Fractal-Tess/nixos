@@ -277,7 +277,7 @@
     #--------------------------------------------------------------------------
 
     code-cursor # VS Code fork with AI features
-    # zed-editor # Zed editor
+    zed-editor # Zed editor
     antigravity
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
