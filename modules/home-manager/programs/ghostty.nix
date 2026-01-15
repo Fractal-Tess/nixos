@@ -22,7 +22,9 @@
       # Background blur (kitty: background_blur = 96)
       "background-blur" = 96;
 
+
       "theme" = "Cursor Dark";
+      "keybind" = "ctrl+shift+w=close_surface";
 
       # Bell (kitty: enable_audio_bell = false)
       # In Ghostty, we disable audio bell by not including it in bell-features
