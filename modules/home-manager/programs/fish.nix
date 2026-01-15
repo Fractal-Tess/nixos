@@ -49,15 +49,15 @@
       #   src = pkgs.fishPlugins.sponge.src;
       # }
       # fish-ai - AI assistant plugin for fish shell
-      {
-        name = "fish-ai";
-        src = pkgs.fetchFromGitHub {
-          owner = "Realiserad";
-          repo = "fish-ai";
-          rev = "0193ac2f30a01939bb221ba6830bbea0e3271a3c";
-          sha256 = "sha256-AQ5RbpnnSuX7z8kMrrjgHhS4StARu2BJVWz3V+RvQvo=";
-        };
-      }
+      # {
+      #   name = "fish-ai";
+      #   src = pkgs.fetchFromGitHub {
+      #     owner = "Realiserad";
+      #     repo = "fish-ai";
+      #     rev = "0193ac2f30a01939bb221ba6830bbea0e3271a3c";
+      #     sha256 = "sha256-AQ5RbpnnSuX7z8kMrrjgHhS4StARu2BJVWz3V+RvQvo=";
+      #   };
+      # }
     ];
 
     # Shell abbreviations
@@ -121,49 +121,11 @@
         fish_add_path ~/nixos/scripts
       end
 
-      # pnpm configuration
-      if test -d "$PNPM_HOME"
-        fish_add_path "$PNPM_HOME"
-      end
-
       # Auto-start Hyprland on TTY1 if no Wayland session
       if status is-login
         and test -z "$WAYLAND_DISPLAY"
         and test "$XDG_VTNR" = "1"
         exec Hyprland
-      end
-
-      # Cursor trace integration
-      if test -n "$CURSOR_TRACE_ID"
-        set -g PROMPT_EOL_MARK ""
-        if test -f "$HOME/.iterm2_shell_integration.fish"
-          source "$HOME/.iterm2_shell_integration.fish"
-        end
-      end
-
-      # Install fish-ai Python package and create bin symlink if needed
-      if not test -d ~/.local/share/fish-ai/.venv
-        mkdir -p ~/.local/share/fish-ai
-        cd ~/.local/share/fish-ai
-        uv venv
-        source .venv/bin/activate
-        uv pip install git+https://github.com/Realiserad/fish-ai.git 2>/dev/null || true
-        deactivate
-      end
-
-      # Create bin symlink for fish-ai if it doesn't exist
-      if test -d ~/.local/share/fish-ai/.venv/bin -a ! -d ~/.local/share/fish-ai/bin
-        mkdir -p ~/.local/share/fish-ai/bin
-        for f in ~/.local/share/fish-ai/.venv/bin/*
-          if test -f "$f"
-            ln -sf "$f" ~/.local/share/fish-ai/bin/(basename "$f") 2>/dev/null || true
-          end
-        end
-      end
-
-      # Add fish-ai bin to PATH if it exists
-      if test -d ~/.local/share/fish-ai/bin
-        fish_add_path ~/.local/share/fish-ai/bin
       end
     '';
   };
