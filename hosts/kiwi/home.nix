@@ -221,6 +221,7 @@
     # Web browsers
     firefox # Open-source web browser
     chromium # Open source chrome base
+    tor-browser # Anonymous web browser
     google-chrome # Google's web browser
     vivaldi # Feature-rich web browser
     vivaldi-ffmpeg-codecs # Video codecs for Vivaldi
