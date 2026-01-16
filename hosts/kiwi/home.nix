@@ -123,6 +123,7 @@
     # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
+    protonvpn-gui
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
     # globalprotect-openconnect
     wakeonlan # Wake devices using Wake-on-LAN
