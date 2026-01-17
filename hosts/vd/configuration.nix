@@ -39,6 +39,7 @@
     libxtst
   ];
   hardware.nvidia-container-toolkit.enable = true;
+  hardware.graphics.enable32Bit = true;
 
   #============================================================================
   # NIX CONFIGURATION
@@ -145,24 +146,24 @@
         mount = {
           enable = true;
           shares = [
-            {
-              mountPoint = "/mnt/oracle";
-              device = "//oracle.netbird.cloud/home";
-              username = "smbuser";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/neo";
-              device = "//neo.netbird.cloud/home";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/blockade";
-              device = "//neo.netbird.cloud/blockade";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
+            # {
+            #   mountPoint = "/mnt/oracle";
+            #   device = "//oracle.netbird.cloud/home";
+            #   username = "smbuser";
+            #   password = "smbpass";
+            # }
+            # {
+            #   mountPoint = "/mnt/neo";
+            #   device = "//neo.netbird.cloud/home";
+            #   username = "fractal-tess";
+            #   password = "smbpass";
+            # }
+            # {
+            #   mountPoint = "/mnt/blockade";
+            #   device = "//neo.netbird.cloud/blockade";
+            #   username = "fractal-tess";
+            #   password = "smbpass";
+            # }
           ];
         };
 
@@ -211,9 +212,6 @@
     libnotify # For notify-send command
     pulseaudio # For pactl command
   ];
-
-  # Brightness control
-  programs.light.enable = true;
 
   # Gaming configuration
   programs.steam = {
