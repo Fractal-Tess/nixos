@@ -1,9 +1,17 @@
-{ config, lib, pkgs, username, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.virtualization.docker;
-in {
+let
+  cfg = config.modules.services.virtualization.docker;
+in
+{
   options.modules.services.virtualization.docker = {
     enable = mkEnableOption "Docker";
     rootless = mkEnableOption "Rootless Docker";
@@ -13,18 +21,18 @@ in {
     subnet = mkOption {
       type = types.str;
       default = "172.20.0.1/16";
-      description =
-        "Gateway for Docker bridge network to avoid conflicts with VPN networks";
+      description = "Gateway for Docker bridge network to avoid conflicts with VPN networks";
     };
 
     addressPools = mkOption {
       type = types.listOf (types.attrsOf types.anything);
-      default = [{
-        base = "172.21.0.0/16";
-        size = 24;
-      }];
-      description =
-        "Default address pools for Docker networks to avoid VPN conflicts";
+      default = [
+        {
+          base = "172.21.0.0/16";
+          size = 24;
+        }
+      ];
+      description = "Default address pools for Docker networks to avoid VPN conflicts";
     };
   };
 
@@ -42,10 +50,16 @@ in {
     # Configure the Docker virtualisation
     virtualisation.docker = {
       enable = true;
-      package = (pkgs.docker.override (args: { buildxSupport = true; }));
+      package = (
+        pkgs.docker.override (args: {
+          buildxSupport = true;
+        })
+      );
       # This is required for containers which are created with the
       # --restart=always flag to work.
       enableOnBoot = true;
+      # Disable live restore to allow clean container shutdown
+      liveRestore = false;
 
       # Common daemon settings for both regular and rootless Docker
       daemon.settings = mkIf (!cfg.rootless) {
@@ -56,10 +70,21 @@ in {
         # Use VPN DNS servers directly for .int domain resolution
         # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
         # Fallback to public DNS if VPN DNS is unavailable
-        dns = [ "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
-        "dns-search" = [ "int" "netbird.cloud" ];
+        dns = [
+          "10.1.111.17"
+          "10.1.111.19"
+          "1.1.1.1"
+          "8.8.8.8"
+        ];
+        "dns-search" = [
+          "int"
+          "netbird.cloud"
+        ];
         # Increase DNS timeout to handle slower VPN DNS resolution
-        "dns-opts" = [ "timeout:5" "attempts:3" ];
+        "dns-opts" = [
+          "timeout:5"
+          "attempts:3"
+        ];
       };
 
       # Configure the Docker to run in rootless mode
@@ -74,16 +99,28 @@ in {
           # Use VPN DNS servers directly for .int domain resolution
           # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
           # Fallback to public DNS if VPN DNS is unavailable
-          dns = [ "10.1.111.17" "10.1.111.19" "1.1.1.1" "8.8.8.8" ];
-          "dns-search" = [ "int" "netbird.cloud" ];
+          dns = [
+            "10.1.111.17"
+            "10.1.111.19"
+            "1.1.1.1"
+            "8.8.8.8"
+          ];
+          "dns-search" = [
+            "int"
+            "netbird.cloud"
+          ];
           # Increase DNS timeout to handle slower VPN DNS resolution
-          "dns-opts" = [ "timeout:5" "attempts:3" ];
+          "dns-opts" = [
+            "timeout:5"
+            "attempts:3"
+          ];
         };
       };
     };
 
     # Add the required system packages for Docker
-    environment.systemPackages = with pkgs;
+    environment.systemPackages =
+      with pkgs;
       mkMerge [
         # --- Docker ---
         [
