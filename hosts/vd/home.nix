@@ -123,6 +123,7 @@
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
     opencode
+    amp-cli
     appimage-run
     cursor-cli # Command-line interface for Cursor AI editor
 
