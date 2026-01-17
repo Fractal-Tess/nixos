@@ -1,8 +1,7 @@
-{
-  config,
-  lib,
-  pkgs,
-  ...
+{ config
+, lib
+, pkgs
+, ...
 }:
 
 {
@@ -41,6 +40,11 @@
         src = pkgs.fishPlugins.tide.src;
         # tide configure --auto --style=Lean --prompt_colors='True color' --show_time='12-hour format' --lean_prompt_height='Two lines' --prompt_connection=Disconnected --prompt_spacing=Sparse --icons='Many icons' --transient=Yes
       } # Theme (uncomment after testing: tide configure)
+
+      {
+        name = "bass";
+        src = pkgs.fishPlugins.bass.src;
+      } #Fish function making it easy to use utilities written for Bash in Fish shell
       # {
       #   name = "pure";
       #   src = pkgs.fishPlugins.pure.src;
