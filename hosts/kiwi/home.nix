@@ -126,6 +126,7 @@
     protonvpn-gui
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
     # globalprotect-openconnect
+
     wakeonlan # Wake devices using Wake-on-LAN
 
     # Network testing and analysis
@@ -142,6 +143,7 @@
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
     opencode
+    amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini 
 

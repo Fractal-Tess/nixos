@@ -286,6 +286,13 @@
       packages = [ ];
     };
 
+    users.dokploy = {
+      isNormalUser = true;
+      description = "dokploy";
+      shell = pkgs.bash;
+      extraGroups = [ "docker" ];
+    };
+
     groups.${username} = {
       members = [ username ];
     };
