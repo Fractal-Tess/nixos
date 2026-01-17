@@ -1,8 +1,7 @@
-{
-  pkgs,
-  inputs,
-  username,
-  ...
+{ pkgs
+, inputs
+, username
+, ...
 }:
 
 {
@@ -293,7 +292,6 @@
       shell = pkgs.bash;
       extraGroups = [
         "docker"
-        "wheel"
       ];
     };
 
