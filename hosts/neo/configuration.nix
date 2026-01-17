@@ -195,7 +195,7 @@
       isNormalUser = true;
       description = "dokploy";
       shell = pkgs.bash;
-      extraGroups = [ "docker" "wheel" ];
+      extraGroups = [ "docker" ];
     };
 
     groups.${username} = {
