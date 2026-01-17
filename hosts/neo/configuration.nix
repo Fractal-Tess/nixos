@@ -1,8 +1,7 @@
-{
-  pkgs,
-  inputs,
-  username,
-  ...
+{ pkgs
+, inputs
+, username
+, ...
 }:
 
 {
@@ -190,6 +189,13 @@
         "docker"
       ];
       packages = [ ];
+    };
+
+    users.dokploy = {
+      isNormalUser = true;
+      description = "dokploy";
+      shell = pkgs.bash;
+      extraGroups = [ "docker" ];
     };
 
     groups.${username} = {
