@@ -103,6 +103,13 @@
         ssh.enable = true;
       };
 
+      # Dokploy worker node configuration
+      dokploy = {
+        enable = true;
+        # No Traefik for private server
+        traefik.enable = false;
+      };
+
       # Virtualization
       virtualization = {
         docker = {
@@ -140,11 +147,10 @@
 
   # Essential system packages (minimal for server)
   environment.systemPackages = with pkgs; [
-    brightnessctl # Brightness control for laptops
+    opencode
+    btop
+    rclone
   ];
-
-  # Brightness control
-  programs.light.enable = true;
 
   #============================================================================
   # SYSTEM SERVICES
@@ -191,12 +197,7 @@
       packages = [ ];
     };
 
-    users.dokploy = {
-      isNormalUser = true;
-      description = "dokploy";
-      shell = pkgs.bash;
-      extraGroups = [ "docker" ];
-    };
+    # dokploy user is now managed by the dokploy module
 
     groups.${username} = {
       members = [ username ];

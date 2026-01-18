@@ -130,11 +130,20 @@
         linux_wallpaperengine.enable = true;
       };
 
+      # Dokploy worker node configuration
+      dokploy = {
+        enable = true;
+        # No Traefik for this host
+        traefik.enable = false;
+      };
+
       # Virtualization
+      # NOTE: Changed rootless to false for Dokploy/Swarm compatibility
+      # Swarm mode is incompatible with rootless Docker
       virtualization = {
         docker = {
           enable = true;
-          rootless = true;
+          rootless = false; # Required for Dokploy/Swarm
           devtools = true;
           nvidia = true;
         };
@@ -280,18 +289,12 @@
         "wheel"
         "fractal-tess"
         "dialout"
+        "docker" # Added for non-rootless Docker access
       ];
       packages = [ ];
     };
 
-    users.dokploy = {
-      isNormalUser = true;
-      description = "dokploy";
-      shell = pkgs.bash;
-      extraGroups = [
-        "docker"
-      ];
-    };
+    # dokploy user is now managed by the dokploy module
 
     groups.${username} = {
       members = [ username ];
