@@ -419,22 +419,24 @@ main() {
     check_git_conflicts
     
     # Step 2: Stage local changes (required for nix flake)
-    local had_changes="false"
-    if stage_local_changes; then
-        had_changes="true"
-    fi
+    stage_local_changes
     
     # Step 3: Rebuild NixOS
     rebuild_nixos
     
-    # Step 4: Commit and push if we had changes
+    # Step 4: Commit and push only if there are staged changes
+    local had_changes="false"
     local pushed="false"
-    if [[ "$had_changes" == "true" ]]; then
+    if [[ -n "$(git diff --cached --name-only 2>/dev/null)" ]]; then
+        had_changes="true"
         if commit_changes; then
             if push_changes; then
                 pushed="true"
             fi
         fi
+    else
+        print_step "No changes to commit"
+        print_info "Configuration rebuilt successfully, no new commits needed"
     fi
     
     # Show summary
