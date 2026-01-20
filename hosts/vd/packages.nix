@@ -311,6 +311,8 @@
 
     qbittorrent # BitTorrent client
     stress # System stress testing tool
+    xp-pen-g430-driver # Drawing tablet
+
 
     #--------------------------------------------------------------------------
     # BLUETOOTH & AUDIO (from existing configuration.nix)
