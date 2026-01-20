@@ -20,6 +20,9 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
+
+    # System-wide packages
+    ./packages.nix
   ];
 
   #============================================================================
@@ -196,23 +199,6 @@
   #============================================================================
   # SYSTEM PACKAGES & PROGRAMS
   #============================================================================
-
-  # Essential system packages
-  environment.systemPackages = with pkgs; [
-    # Printing utilities
-    cups # CUPS printing system
-    ghostscript # PostScript and PDF interpreter
-
-    # Network printing
-    gutenprint # High-quality printer drivers
-
-    # Command-line printing tools (these are provided by cups)
-    # lpr, lpstat, cancel, lpq are included with cups
-
-    # Scanner support
-    sane-frontends # Scanner utilities
-    xsane # GUI scanner frontend
-  ];
 
   # Enable SANE for scanner support
   hardware.sane = {
@@ -408,13 +394,7 @@
         "lp" # Allow printer management
         "scanner" # Allow scanner usage
       ];
-      packages = with pkgs; [
-        # Printing utilities
-        system-config-printer # GUI printer management
-        simple-scan # Document scanning
-        hplip # SANE backend for HP devices (includes libsane-hpaio)
-        sane-airscan # Driverless scanning
-      ];
+      packages = [ ];
     };
 
     groups.${username} = {
