@@ -30,7 +30,9 @@
 
   # DO NOT CHANGE.
   system.stateVersion = "25.05";
+
   services.libinput.enable = true;
+  hardware.opentabletdriver.enable = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
