@@ -22,6 +22,8 @@
     stateVersion = "25.05"; # Don't change this
     sessionVariables = {
       PNPM_HOME = "$HOME/.local/share/pnpm";
+      PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
     };
   };
 
@@ -122,6 +124,9 @@
     # AI assistants
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
+
+    # Testing
+    playwright-driver.browsers # Playwright browsers for e2e testing
     opencode
     amp-cli
     appimage-run
