@@ -133,13 +133,6 @@
         linux_wallpaperengine.enable = true;
       };
 
-      # Dokploy worker node configuration
-      dokploy = {
-        enable = true;
-        # No Traefik for this host
-        traefik.enable = false;
-      };
-
       # Virtualization
       # NOTE: Changed rootless to false for Dokploy/Swarm compatibility
       # Swarm mode is incompatible with rootless Docker
@@ -282,8 +275,6 @@
       ];
       packages = [ ];
     };
-
-    # dokploy user is now managed by the dokploy module
 
     groups.${username} = {
       members = [ username ];
