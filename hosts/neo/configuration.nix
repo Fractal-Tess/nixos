@@ -19,6 +19,9 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
+
+    # System-wide packages
+    ./packages.nix
   ];
 
   #============================================================================
@@ -140,18 +143,6 @@
       };
     };
   };
-
-  #============================================================================
-  # SYSTEM PACKAGES & PROGRAMS
-  #============================================================================
-
-  # Essential system packages (minimal for server)
-  environment.systemPackages = with pkgs; [
-    opencode
-    btop
-    rclone
-    git
-  ];
 
   #============================================================================
   # SYSTEM SERVICES

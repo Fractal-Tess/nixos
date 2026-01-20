@@ -346,7 +346,7 @@ show_summary() {
     print_header "Update Complete"
     
     local new_gen
-    new_gen=$(nixos-rebuild list-generations 2>/dev/null | grep 'current' | head -1 | awk '{print $1}' || echo "?")
+    new_gen=$(sudo nixos-rebuild list-generations 2>/dev/null | awk '$NF == "True" {print $1}' || echo "?")
     local last_commit
     last_commit=$(git log -1 --pretty=format:"%h - %s" 2>/dev/null || echo "None")
     
