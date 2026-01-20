@@ -409,12 +409,6 @@ main() {
     # Show banner
     show_banner
     
-    # Check sudo access
-    if ! sudo -v; then
-        print_error "This script requires sudo privileges"
-        exit 1
-    fi
-    
     # Step 1: Pull latest changes (handles conflicts)
     check_git_conflicts
     
