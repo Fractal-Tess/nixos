@@ -26,8 +26,8 @@ in
     };
 
     dataDir = mkOption {
-      type = types.path;
-      default = /etc/dokploy;
+      type = types.str;
+      default = "/etc/dokploy";
       description = "Directory for Dokploy data and configurations";
     };
 
