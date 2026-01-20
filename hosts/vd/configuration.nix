@@ -19,6 +19,9 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
+
+    # System-wide packages
+    ./packages.nix
   ];
 
   #============================================================================
@@ -207,20 +210,6 @@
   #============================================================================
   # SYSTEM PACKAGES & PROGRAMS
   #============================================================================
-
-  # Essential system packages
-  environment.systemPackages = with pkgs; [
-    brightnessctl # Brightness control for laptops
-    bluez # Bluetooth stack
-    bluez-tools # Bluetooth command line tools
-    bluetuith # TUI Bluetooth manager
-    pavucontrol # Audio control (for Bluetooth audio devices)
-
-    # Volume knob monitoring dependencies
-    evtest # Input device event monitoring
-    libnotify # For notify-send command
-    pulseaudio # For pactl command
-  ];
 
   # Gaming configuration
   programs.steam = {
