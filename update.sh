@@ -216,7 +216,7 @@ stage_local_changes() {
     
     if [[ -z "$changes" ]]; then
         print_info "No local changes to stage"
-        return 1
+        return 0
     fi
     
     # Show what will be staged
