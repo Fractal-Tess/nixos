@@ -105,13 +105,6 @@
         ssh.enable = true;
       };
 
-      # Dokploy worker node configuration
-      dokploy = {
-        enable = true;
-        # No Traefik for private server
-        traefik.enable = false;
-      };
-
       # Virtualization
       virtualization = {
         docker = {
@@ -187,8 +180,6 @@
       ];
       packages = [ ];
     };
-
-    # dokploy user is now managed by the dokploy module
 
     groups.${username} = {
       members = [ username ];

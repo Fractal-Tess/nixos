@@ -5,7 +5,6 @@
     ./adb/default.nix
     ./auto_cpu/default.nix
     ./automount/default.nix
-    ./dokploy/default.nix
     ./samba/default.nix
     ./sops/default.nix
     ./ssh/default.nix
