@@ -378,7 +378,7 @@ EOF
     
     # Show recent generations
     echo -e "  ${BOLD}Recent Generations:${NC}"
-    nixos-rebuild list-generations 2>/dev/null | tail -5 | while read -r line; do
+    sudo nixos-rebuild list-generations 2>/dev/null | tail -5 | while read -r line; do
         if echo "$line" | grep -q "current"; then
             echo -e "  ${GREEN}${ARROW} $line${NC}"
         else
