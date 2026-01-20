@@ -69,7 +69,7 @@ print_dim() {
 show_banner() {
     local hostname="${HOSTNAME:-$(hostname)}"
     local current_gen
-    current_gen=$(nixos-rebuild list-generations 2>/dev/null | grep 'current' | head -1 | awk '{print $1}' || echo "?")
+    current_gen=$(sudo nixos-rebuild list-generations 2>/dev/null | awk '$NF == "True" {print $1}' || echo "?")
     local kernel
     kernel=$(uname -r)
     local last_commit
@@ -118,7 +118,9 @@ EOF
     printf "${BOLD}│${NC}  %-18s ${YELLOW}%-40s${NC}${BOLD}│${NC}\n" "Local Changes:" "$local_changes file(s)"
     echo -e "${BOLD}├─────────────────────────────────────────────────────────────┤${NC}"
     echo -e "${BOLD}│${NC}  ${CYAN}Last Commit${NC}                                                ${BOLD}│${NC}"
-    echo -e "${BOLD}│${NC}  ${DIM}$(echo "$last_commit" | cut -c1-59)${NC}  ${BOLD}│${NC}"
+    local truncated_commit
+    truncated_commit=$(printf "%-57.57s" "$last_commit")
+    echo -e "${BOLD}│${NC}  ${DIM}${truncated_commit}${NC}  ${BOLD}│${NC}"
     echo -e "${BOLD}└─────────────────────────────────────────────────────────────┘${NC}"
     echo
 }
