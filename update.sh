@@ -314,7 +314,7 @@ rebuild_nixos() {
         
         # Show new generation info
         local new_gen
-        new_gen=$(nixos-rebuild list-generations 2>/dev/null | grep 'current' | head -1 || echo "unknown")
+        new_gen=$(sudo nixos-rebuild list-generations 2>/dev/null | awk '$NF == "True" {print $1}' || echo "unknown")
         print_info "Current generation: $new_gen"
         
         return 0
@@ -378,8 +378,8 @@ EOF
     
     # Show recent generations
     echo -e "  ${BOLD}Recent Generations:${NC}"
-    sudo nixos-rebuild list-generations 2>/dev/null | tail -5 | while read -r line; do
-        if echo "$line" | grep -q "current"; then
+    sudo nixos-rebuild list-generations 2>/dev/null | head -6 | while read -r line; do
+        if echo "$line" | grep -qE 'True$'; then
             echo -e "  ${GREEN}${ARROW} $line${NC}"
         else
             echo -e "  ${DIM}  $line${NC}"
