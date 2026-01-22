@@ -24,7 +24,7 @@ let
 
     # kiwi - Laptop with external monitor setup
     monitor=eDP-1, 1920x1080@60, 0x0, 1 # Laptop monitor (left)
-    monitor=DP-1, 1920x1080@60, 1920x0, 1 # Dell U2414H monitor (middle)
+    monitor=DP-1, 2560x1440@59.95, 1920x0, 1 # Dell U2717D monitor (middle)
     monitor=HDMI-A-1, 2560x1440@59.95, 3840x0, 1 # Dell U2717D monitor (right)
 
     # Hyprland bug
@@ -37,8 +37,10 @@ in
 
   # Select device-specific monitor config based on hostname
   deviceMonitorConfig =
-    if osConfig.networking.hostName == "vd" then vdMonitorConfig
-    else if osConfig.networking.hostName == "kiwi" then kiwiMonitorConfig
-    else vdMonitorConfig; # fallback
+    if osConfig.networking.hostName == "vd" then
+      vdMonitorConfig
+    else if osConfig.networking.hostName == "kiwi" then
+      kiwiMonitorConfig
+    else
+      vdMonitorConfig; # fallback
 }
-
