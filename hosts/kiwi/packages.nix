@@ -68,6 +68,7 @@
     ngrok # Expose local servers to the internet
     lsof # Tool to list open files and processes listening on ports
     nmap # Network discovery and security auditing
+    netscanner # Network scanner
     wireshark # Network protocol analyzer
     netcat # Networking utility for reading/writing network connections
     iperf3 # Network performance measurement
@@ -100,7 +101,7 @@
     opencode
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
-    gemini-cli # CLI interface for google's gemini 
+    gemini-cli # CLI interface for google's gemini
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
