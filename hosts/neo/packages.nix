@@ -40,7 +40,7 @@
     fx # Command-line JSON processing tool
     calc # Command-line calculator
 
-    # Process management and system info  
+    # Process management and system info
     procs # Modern replacement for ps
     htop # Interactive process viewer
 
@@ -56,14 +56,15 @@
     # Essential network tools
     ngrok # Expose local servers to the internet
     nmap # Network discovery and security auditing
+    netscanner # Network scanner
     netcat # Networking utility for reading/writing network connections
     iperf3 # Network performance measurement
     bandwhich # Terminal bandwidth utilization tool
     speedtest-cli # Command line interface for testing internet bandwidth
-    
+
     # Network management
     wakeonlan # Wake devices using Wake-on-LAN
-    
+
     # Network testing and diagnostics
     hping # TCP/IP packet assembler/analyzer
     oha # HTTP load generator
@@ -93,7 +94,7 @@
     gnumake # Build automation tool
 
     # Development utilities
-    gh # GitHub CLI  
+    gh # GitHub CLI
     hyperfine # Command-line benchmarking tool
     tokei # Count code statistics by language
     entr # Run arbitrary commands when files change
@@ -140,7 +141,7 @@
     lolcat # Rainbow text output
     nh # Nix helper CLI
     stress # Workload generator for system testing
-    
+
     # Modern CLI replacements and enhancements
     bat # Modern cat replacement with syntax highlighting
     fd # Modern find replacement
