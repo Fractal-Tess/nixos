@@ -99,14 +99,8 @@
   hardware.bluetooth.powerOnBoot = true;
   services.blueman.enable = true;
 
-  # Memory management
+  # Memory management - use zram + hardware swap partition
   zramSwap.enable = true;
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16 * 1024; # 16GB
-    }
-  ];
 
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
@@ -223,7 +217,7 @@
     gamescopeSession.enable = true; # Better gaming performance
 
     # Enhanced compatibility
-    extraCompatPackages = with pkgs; [ 
+    extraCompatPackages = with pkgs; [
       #protonup
     ];
 
