@@ -210,6 +210,7 @@
 
     # Application launchers
     wofi # Wayland native application launcher
+    handy # Speech-to-text application (offline)
 
     # Web browsers
     firefox # Open-source web browser

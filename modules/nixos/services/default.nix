@@ -8,6 +8,7 @@
     ./samba/default.nix
     ./sops/default.nix
     ./ssh/default.nix
+    ./syncthing/default.nix
     ./virtualization/default.nix
   ];
 }
