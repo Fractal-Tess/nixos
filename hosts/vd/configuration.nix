@@ -1,7 +1,8 @@
-{ pkgs
-, inputs
-, username
-, ...
+{
+  pkgs,
+  inputs,
+  username,
+  ...
 }:
 
 {
@@ -127,7 +128,10 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
-      syncthing.enable = true;
+      syncthing = {
+        enable = true;
+        guiAddress = "0.0.0.0:8384";
+      };
       sops = {
         enable = true;
         ssh.enable = true;
@@ -147,61 +151,13 @@
           nvidia = true;
         };
       };
-
-      # Samba configuration
-      samba = {
-        # Mount remote shares
-        mount = {
-          enable = true;
-          shares = [
-            # {
-            #   mountPoint = "/mnt/oracle";
-            #   device = "//oracle.netbird.cloud/home";
-            #   username = "smbuser";
-            #   password = "smbpass";
-            # }
-            # {
-            #   mountPoint = "/mnt/neo";
-            #   device = "//neo.netbird.cloud/home";
-            #   username = "fractal-tess";
-            #   password = "smbpass";
-            # }
-            # {
-            #   mountPoint = "/mnt/blockade";
-            #   device = "//neo.netbird.cloud/blockade";
-            #   username = "fractal-tess";
-            #   password = "smbpass";
-            # }
-          ];
-        };
-
-        # Share local directories
-        share = {
-          enable = true;
-          shares = [
-            {
-              name = "home";
-              path = "/home/${username}";
-              forceUser = username;
-              forceGroup = "users";
-            }
-            {
-              name = "vault";
-              path = "/mnt/vault";
-              forceUser = username;
-              forceGroup = "users";
-            }
-            {
-              name = "backup";
-              path = "/mnt/backup";
-              forceUser = username;
-              forceGroup = "users";
-            }
-          ];
-        };
-      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [
+    631
+    8384
+  ];
 
   #============================================================================
   # SYSTEM PACKAGES & PROGRAMS

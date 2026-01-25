@@ -124,7 +124,10 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
-      syncthing.enable = true;
+      syncthing = {
+        enable = true;
+        guiAddress = "0.0.0.0:8384";
+      };
       sops = {
         enable = true;
         ssh.enable = true;
@@ -141,55 +144,13 @@
           devtools = true;
         };
       };
-
-      # Samba configuration
-      samba = {
-        # Mount remote shares
-        mount = {
-          enable = false;
-          shares = [
-            {
-              mountPoint = "/mnt/blockade";
-              device = "//neo.netbird.cloud/blockade";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/oracle";
-              device = "//oracle.netbird.cloud/home";
-              username = "smbuser";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/vault";
-              device = "//vd.netbird.cloud/vault";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
-            {
-              mountPoint = "/mnt/backup";
-              device = "//vd.netbird.cloud/backup";
-              username = "fractal-tess";
-              password = "smbpass";
-            }
-          ];
-        };
-
-        # Share local directories
-        share = {
-          enable = true;
-          shares = [
-            {
-              name = "home";
-              path = "/home/${username}";
-              forceUser = username;
-              forceGroup = "users";
-            }
-          ];
-        };
-      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [
+    631
+    8384
+  ];
 
   #============================================================================
   # SYSTEM PACKAGES & PROGRAMS
