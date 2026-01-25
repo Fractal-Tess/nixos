@@ -1,5 +1,6 @@
 { inputs
 , username
+, pkgs
 , ...
 }:
 
@@ -188,6 +189,7 @@
       uid = 1001;
       home = "/home/dokploy";
       createHome = true;
+      shell = pkgs.bash;
       extraGroups = [ "docker" ];
     };
 
