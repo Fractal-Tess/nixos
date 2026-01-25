@@ -100,7 +100,10 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
-      syncthing.enable = true;
+      syncthing = {
+        enable = true;
+        guiAddress = "0.0.0.0:8384";
+      };
       sops = {
         enable = true;
         z_ai.enable = true;
