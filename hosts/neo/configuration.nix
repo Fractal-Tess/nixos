@@ -1,7 +1,8 @@
-{ inputs
-, username
-, pkgs
-, ...
+{
+  inputs,
+  username,
+  pkgs,
+  ...
 }:
 
 {
@@ -118,28 +119,13 @@
           devtools = true;
         };
       };
-
-      # Samba configuration
-      samba.share = {
-        enable = true;
-        openFirewall = true;
-        shares = [
-          {
-            name = "home";
-            path = "/home/${username}";
-            forceUser = username;
-            forceGroup = "users";
-          }
-          {
-            name = "blockade";
-            path = "/mnt/blockade";
-            forceUser = username;
-            forceGroup = "users";
-          }
-        ];
-      };
     };
   };
+
+  networking.firewall.allowedTCPPorts = [
+    631
+    8384
+  ];
 
   #============================================================================
   # SYSTEM SERVICES
