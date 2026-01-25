@@ -181,6 +181,15 @@
       packages = [ ];
     };
 
+    users.dokploy = {
+      isNormalUser = true;
+      description = "Dokploy service user";
+      uid = 1001;
+      home = "/home/dokploy";
+      createHome = true;
+      extraGroups = [ "docker" ];
+    };
+
     groups.${username} = {
       members = [ username ];
     };
