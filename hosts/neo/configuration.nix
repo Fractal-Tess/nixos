@@ -99,6 +99,7 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
+      syncthing.enable = true;
       sops = {
         enable = true;
         z_ai.enable = true;
