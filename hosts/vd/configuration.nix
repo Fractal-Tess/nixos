@@ -127,6 +127,7 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
+      syncthing.enable = true;
       sops = {
         enable = true;
         ssh.enable = true;

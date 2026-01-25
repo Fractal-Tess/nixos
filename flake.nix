@@ -44,6 +44,7 @@
                 polymc.overlay
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
+                (import ./overlays/handy.nix)
               ];
             }
           ];
