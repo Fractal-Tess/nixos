@@ -198,6 +198,7 @@
     waypaper # Wallpaper manager for Wayland
     linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
+    wtype # Text input simulation for Wayland (required for Handy app)
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
