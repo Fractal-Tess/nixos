@@ -23,9 +23,9 @@ let
     ################
 
     # kiwi - Laptop with external monitor setup
-    monitor=eDP-1, 1920x1080@60, 0x0, 1 # Laptop monitor (left)
-    monitor=DP-1, 2560x1440@59.95, 1920x0, 1 # Dell U2717D monitor (middle)
-    monitor=HDMI-A-1, 2560x1440@59.95, 3840x0, 1 # Dell U2717D monitor (right)
+    # Larger monitor on left (2560x1440), smaller on right (1920x1080)
+    monitor=DP-1, 2560x1440@59.95, 0x0, 1 # Dell U2717D monitor (left)
+    monitor=eDP-1, 1920x1080@60, 2560x0, 1 # Laptop monitor (right)
 
     # Hyprland bug
     # monitor=Unknown-1, disable
