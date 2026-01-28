@@ -23,10 +23,10 @@ let
     ################
 
     # kiwi - Laptop with external monitor setup
-    # Left-to-right: laptop (eDP-1) -> DP-1 (main) -> HDMI-A-1 (24")
+    # Left-to-right: laptop (eDP-1) -> DP-1 (main, Dell U2717D) -> HDMI-A-1 (24", Dell U2414H)
     monitor=DP-1, 2560x1440@59.95, auto, 1
     monitor=eDP-1, 1920x1080@60, auto-left, 1
-    monitor=HDMI-A-1, 2560x1440@59.95, auto-right, 1
+    monitor=HDMI-A-1, 1920x1080@60, auto-right, 1
 
     # Hyprland bug
     # monitor=Unknown-1, disable
