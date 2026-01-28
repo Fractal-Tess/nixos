@@ -23,10 +23,10 @@ let
     ################
 
     # kiwi - Laptop with external monitor setup
-    # HDMI-A-1 (smaller) on left, DP-1 (larger) in middle, eDP-1 (laptop) on right
-    monitor=HDMI-A-1, 2560x1440@59.95, 0x0, 1 # Dell U2717D monitor (left)
-    monitor=DP-1, 2560x1440@59.95, 2560x0, 1 # Dell U2717D monitor (middle)
-    monitor=eDP-1, 1920x1080@60, 5120x0, 1 # Laptop monitor (right)
+    # Left-to-right: laptop (eDP-1) -> DP-1 (main) -> HDMI-A-1 (24")
+    monitor=DP-1, 2560x1440@59.95, auto, 1
+    monitor=eDP-1, 1920x1080@60, auto-left, 1
+    monitor=HDMI-A-1, 2560x1440@59.95, auto-right, 1
 
     # Hyprland bug
     # monitor=Unknown-1, disable
