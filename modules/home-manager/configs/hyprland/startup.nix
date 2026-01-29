@@ -2,6 +2,7 @@
 
 {
   startup = ''
+    exec-once = gnome-keyring-daemon --start --components=secrets
     exec-once = /home/fractal-tess/nixos/scripts/wallpaper/wallpaper.sh
     exec-once = hyprctl setcursor Nordzy-cursors 24
     exec-once = wl-paste --watch cliphist store
