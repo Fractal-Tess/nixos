@@ -9,8 +9,8 @@
     # See https://wiki.hyprland.org/Configuring/Window-Rules/ for more
     # See https://wiki.hyprland.org/Configuring/Workspace-Rules/ for workspace rules
 
-    windowrule = minsize 200 400, float, title:^(UnityEngine.*)
-    windowrule = minsize 200 400, float, title:^(UnityEditor.*)
+    windowrule = min_size 200 400, float, title:^(UnityEngine.*)
+    windowrule = min_size 200 400, float, title:^(UnityEditor.*)
     windowrule = float, class:^(ghostty)$
     windowrule = float, class:^(dev.warp.Warp)$
     windowrule = float, title:^(File Operation Progress)$
