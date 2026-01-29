@@ -218,6 +218,10 @@
   # Custom CA certificates
   security.pki.certificateFiles = [ ../../config/certs/carrierx.crt ];
 
+  # PAM integration for GNOME Keyring automatic unlock on login
+  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.sddm.enableGnomeKeyring = true;
+
   #============================================================================
   # SYSTEM SERVICES
   #============================================================================
@@ -226,6 +230,9 @@
   services = {
     dbus.enable = true;
     gvfs.enable = true;
+
+    # GNOME Keyring - secure credential storage
+    gnome.gnome-keyring.enable = true;
 
     # Printing support - CUPS configuration
     printing = {
