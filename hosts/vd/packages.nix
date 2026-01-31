@@ -122,6 +122,8 @@
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
     sqlite # SQLite database engine
+    cudaPackages.cudatoolkit # CUDA Toolkit for GPU acceleration
+    cudaPackages.cudnn # cuDNN for deep learning
 
     # Build tools
     gnumake # Build automation tool
@@ -206,6 +208,7 @@
     linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
     wtype # Text input simulation for Wayland (required for Handy app)
+    libayatana-appindicator # System tray support for apps (required for Handy)
     grim # Screenshot utility for Wayland
     slurp # Region selector for Wayland
     hyprpicker # Color picker for Hyprland
