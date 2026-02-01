@@ -79,19 +79,6 @@
       ls = "eza";
       update = "~/nixos/update.sh";
 
-      # Dev environment setup
-      ncs-csharp = "_ncs_setup csharp";
-      ncs-go = "_ncs_setup go";
-      ncs-java = "_ncs_setup java";
-      ncs-maui = "_ncs_setup maui";
-      ncs-php = "_ncs_setup php";
-      ncs-nodejs = "_ncs_setup node";
-      ncs-python3 = "_ncs_setup python3";
-      ncs-react-native = "_ncs_setup react-native";
-      ncs-rust = "_ncs_setup rust";
-      ncs-tauri = "_ncs_setup tauri";
-      ncs-unity = "_ncs_setup unity";
-
       # Nix develop shortcuts
       nas-c = "nix develop ~/nixos/shells/c";
       nas-csharp = "nix develop ~/nixos/shells/csharp";
@@ -192,6 +179,31 @@
         direnv allow
 
         echo "Direnv for $lang has been set up. Happy coding!"
+      end
+
+      # Nix Enter Shell (nec) - Enter a dev shell without copying files
+      function nec
+        if test -z "$argv[1]"
+          echo "Usage: nec <shell-type>"
+          echo ""
+          echo "Available shells:"
+          ls ~/nixos/shells/
+          return 1
+        end
+
+        set -l shell_type $argv[1]
+        set -l shell_path "$HOME/nixos/shells/$shell_type"
+
+        if test ! -d "$shell_path"
+          echo "Error: Shell '$shell_type' not found in ~/nixos/shells/"
+          echo ""
+          echo "Available shells:"
+          ls ~/nixos/shells/
+          return 1
+        end
+
+        echo "Entering nix dev shell for: $shell_type"
+        nix develop "$shell_path"
       end
     '';
   };
