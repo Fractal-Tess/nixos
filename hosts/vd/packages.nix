@@ -206,7 +206,6 @@
 
     swww # Animated wallpaper daemon for Wayland
     waypaper # Wallpaper manager for Wayland
-    linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)

@@ -56,9 +56,9 @@
     # Color picker
     bind = $mainMod, Z, exec, hyprpicker
 
-    # Wallpaper engine
-    bind = $mainMod, B, exec, ~/nixos/scripts/linux-wallpaperengine/wallpaper.sh
-    bind = $mainMod SHIFT, B, exec, ~/nixos/scripts/linux-wallpaperengine/wallpaper.sh fit
+    # Wallpaper engine (waypaper)
+    bind = $mainMod, B, exec, ~/nixos/scripts/wallpaper/waypaper.sh
+    bind = $mainMod SHIFT, B, exec, waypaper
 
     # Lock screen
     bind = $mainMod, L, exec, hyprlock
