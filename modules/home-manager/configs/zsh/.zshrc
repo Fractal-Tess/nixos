@@ -28,23 +28,6 @@ case ":$PATH:" in
   *) export PATH="$PNPM_HOME:$PATH" ;;
 esac
 
-# Function to set up and copy Nix development shell files
-function _ncs_setup() {
-  local lang="$1"
-  if [ -d "$HOME/nixos/shells/$lang" ]; then
-    cp -r "$HOME/nixos/shells/$lang/"* "$PWD"
-    echo "use flake" > ".envrc"
-    if [ -d .git ]; then
-      git add flake.lock flake.nix .envrc
-      direnv allow
-    fi
-    echo "Direnv for $lang has been set up. Happy coding!"
-  else
-    echo "No development shell found for $lang"
-  fi
-}
-
-
 if [[ -n $CURSOR_TRACE_ID ]]; then
   PROMPT_EOL_MARK=""
   test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"

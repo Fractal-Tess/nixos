@@ -1,7 +1,8 @@
-{ config
-, lib
-, pkgs
-, ...
+{
+  config,
+  lib,
+  pkgs,
+  ...
 }:
 
 {
@@ -44,7 +45,7 @@
       {
         name = "bass";
         src = pkgs.fishPlugins.bass.src;
-      } #Fish function making it easy to use utilities written for Bash in Fish shell
+      } # Fish function making it easy to use utilities written for Bash in Fish shell
       # {
       #   name = "pure";
       #   src = pkgs.fishPlugins.pure.src;
@@ -131,6 +132,66 @@
         and test -z "$WAYLAND_DISPLAY"
         and test "$XDG_VTNR" = "1"
         exec Hyprland
+      end
+
+      # NixOS Create Shell (ncs) - Function to set up dev environments
+      function ncs
+        if test -z "$argv[1]"
+          echo "Usage: ncs <shell-type>"
+          echo ""
+          echo "Available shells:"
+          ls ~/nixos/shells/
+          return 1
+        end
+
+        set -l shell_type $argv[1]
+        set -l shell_path "$HOME/nixos/shells/$shell_type"
+
+        if test ! -d "$shell_path"
+          echo "Error: Shell '$shell_type' not found in ~/nixos/shells/"
+          echo ""
+          echo "Available shells:"
+          ls ~/nixos/shells/
+          return 1
+        end
+
+        echo "Creating nix shell environment for: $shell_type"
+        _ncs_setup $shell_type
+        echo "Done! Environment ready."
+      end
+
+      # Helper function for ncs
+      function _ncs_setup
+        set -l lang $argv[1]
+        set -l target_dir "$HOME/nixos/shells/$lang"
+
+        if test ! -d "$target_dir"
+          echo "No development shell found for $lang"
+          return 1
+        end
+
+        # Copy flake.nix and flake.lock
+        cp "$target_dir/flake.nix" "$PWD/"
+        cp "$target_dir/flake.lock" "$PWD/"
+
+        # Copy .envrc if it exists in the shell template
+        if test -f "$target_dir/.envrc"
+          cp "$target_dir/.envrc" "$PWD/"
+        else
+          # Create default .envrc
+          echo "use flake" > .envrc
+        end
+
+        # Initialize git if not present
+        if test ! -d .git
+          git init
+        end
+
+        # Add files to git and allow direnv
+        git add flake.lock flake.nix .envrc
+        direnv allow
+
+        echo "Direnv for $lang has been set up. Happy coding!"
       end
     '';
   };

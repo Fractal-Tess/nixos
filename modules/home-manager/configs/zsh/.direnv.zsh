@@ -1,2 +1,0 @@
-
-# Direnv & Shell helpers
