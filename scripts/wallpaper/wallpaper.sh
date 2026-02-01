@@ -6,17 +6,17 @@
 set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-readonly TYPE="${WALLPAPER_TYPE:-LINUX_WALLPAPERENGINE}"
+readonly TYPE="${WALLPAPER_TYPE:-WAYPAPER}"
 
 case "$TYPE" in
-    LINUX_WALLPAPERENGINE)
-        exec "${SCRIPT_DIR}/linux_wallpaperengine.sh" "$@"
-        ;;
     WAYPAPER)
         exec "${SCRIPT_DIR}/waypaper.sh" "$@"
         ;;
+    LINUX_WALLPAPERENGINE)
+        exec "${SCRIPT_DIR}/linux_wallpaperengine.sh" "$@"
+        ;;
     *)
-        echo "Error: Invalid WALLPAPER_TYPE='$TYPE'. Use LINUX_WALLPAPERENGINE or WAYPAPER" >&2
+        echo "Error: Invalid WALLPAPER_TYPE='$TYPE'. Use WAYPAPER or LINUX_WALLPAPERENGINE" >&2
         exit 1
         ;;
 esac

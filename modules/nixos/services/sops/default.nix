@@ -1,11 +1,22 @@
-{ config, lib, username, ... }:
+{
+  config,
+  lib,
+  username,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.sops;
-in {
+let
+  cfg = config.modules.services.sops;
+in
+{
 
-  imports = [ ./ssh.nix ./z-ai.nix ./minimax.nix ./linux-wallpaperengine.nix ];
+  imports = [
+    ./ssh.nix
+    ./z-ai.nix
+    ./minimax.nix
+  ];
 
   options.modules.services.sops = {
     enable = mkEnableOption "SOPS secrets management";
