@@ -1,8 +1,7 @@
-{
-  inputs,
-  username,
-  pkgs,
-  ...
+{ inputs
+, username
+, pkgs
+, ...
 }:
 
 {
@@ -142,10 +141,7 @@
         START_CHARGE_THRESH_BAT0 = 60;
         STOP_CHARGE_THRESH_BAT0 = 65;
 
-        CPU_MIN_PERF_ON_AC = 0;
-        CPU_MAX_PERF_ON_AC = 80;
-
-        CPU_BOOST_ON_AC = 0;
+        CPU_BOOST_ON_AC = 1;
       };
     };
   };
