@@ -34,6 +34,7 @@
     thunar # Lightweight file manager
     pcmanfm # Alternative lightweight file manager
     nextcloud-client # Nextcloud sync client
+    yazi # Terminal file manager with image preview
 
     # Archive management
     mate.engrampa # Archive manager
