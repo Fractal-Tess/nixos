@@ -58,6 +58,7 @@ in {
       dataDir = cfg.dataDir;
       configDir = cfg.configDir;
       openDefaultPorts = cfg.openDefaultPorts;
+      guiAddress = cfg.guiAddress;
 
       settings = mkMerge [
         {
