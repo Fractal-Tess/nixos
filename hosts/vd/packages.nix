@@ -109,9 +109,9 @@
 
     # Testing
     playwright-driver.browsers # Playwright browsers for e2e testing
-    opencode
-    amp-cli
-    appimage-run
+    opencode # AI code assistant CLI
+    amp-cli # Ampere CLI tool for cloud services
+    appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
 
     # Programming languages and runtimes
@@ -271,7 +271,7 @@
 
     code-cursor # VS Code fork with AI features
     zed-editor # Zed editor
-    antigravity
+    antigravity # Development environment tool
     responsively-app # Web development tool for responsive design
     dbgate # Database manager
     postman # API development environment
@@ -301,7 +301,7 @@
     lolcat # Rainbow text output
     nh # Nix helper CLI
     zathura # Document viewer
-    man-pages
+    man-pages # Linux manual pages
 
     # Modern CLI replacements and enhancements
     bat # Modern cat replacement with syntax highlighting
