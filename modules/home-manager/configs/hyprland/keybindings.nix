@@ -107,6 +107,7 @@
     bind = $mainMod SHIFT, R, exec, pkill waybar && waybar &
     # Toggle Waybar visibility
     bind = $mainMod SHIFT, T, exec, ~/nixos/scripts/waybar-toggle.sh
+    bind = $mainMod ALT, T, exec, ~/nixos/scripts/waybar-toggle.sh
 
     # Volume Controls with correct keycodes and XF86Audio symbols
     # Volume Up (XF86AudioRaiseVolume - 123)
