@@ -155,7 +155,7 @@
     inkscape # Vector graphics editor
 
     # Video editing and streaming
-    # kdePackages.kdenlive # Video editor
+    kdePackages.kdenlive # Video editor
     obs-studio # Streaming and recording software
     kooha # Screen recorder for Wayland
     blender # 3D modeling and animation
