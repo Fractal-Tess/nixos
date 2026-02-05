@@ -175,6 +175,9 @@
     slurp # Region selector for Wayland (required by satty)
     satty # Screenshot annotation tool for Wayland
     hyprpicker # Color picker for Hyprland
+    wtype # Text input simulation for Wayland (required for Handy app)
+    libayatana-appindicator # System tray support for apps (required for Handy)
+    handy # Speech-to-text application (offline)
     swaynotificationcenter # Notification daemon for Wayland
     gource # Version control visualization
 
