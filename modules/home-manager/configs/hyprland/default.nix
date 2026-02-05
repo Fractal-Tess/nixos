@@ -41,4 +41,9 @@ in
   xdg.configFile."hypr/hyprlock.conf" = mkIf osConfig.modules.display.hyprland.enable {
     source = ./hyprlock.conf;
   };
+
+  # Satty - Screenshot annotation tool config
+  xdg.configFile."satty/config.toml" = mkIf osConfig.modules.display.hyprland.enable {
+    source = ../satty/config.toml;
+  };
 }

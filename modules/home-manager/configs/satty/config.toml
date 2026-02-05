@@ -1,0 +1,17 @@
+[general]
+fullscreen = true
+early-exit = true
+copy-command = "wl-copy"
+output-filename = "~/Pictures/screenshots/satty-%Y%m%d-%H:%M:%S.png"
+save-after-copy = true
+initial-tool = "arrow"
+annotation-size-factor = 2
+corner-roundness = 12
+primary-highlighter = "block"
+disable-notifications = false
+no-window-decoration = true
+brush-smooth-history-size = 5
+
+[font]
+family = "Roboto"
+style = "Regular"
