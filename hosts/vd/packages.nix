@@ -209,6 +209,8 @@
     wl-clipboard # Clipboard utilities for Wayland
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)
+    grim # Screenshot utility for Wayland (required by satty)
+    slurp # Region selector for Wayland (required by satty)
     satty # Screenshot annotation tool for Wayland
     hyprpicker # Color picker for Hyprland
     swaynotificationcenter # Notification daemon for Wayland
