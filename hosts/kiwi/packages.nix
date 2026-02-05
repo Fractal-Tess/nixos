@@ -171,8 +171,7 @@
     waypaper # Wallpaper manager for Wayland
     # linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
-    grim # Screenshot utility for Wayland
-    slurp # Region selector for Wayland
+    satty # Screenshot annotation tool for Wayland
     hyprpicker # Color picker for Hyprland
     swaynotificationcenter # Notification daemon for Wayland
     gource # Version control visualization

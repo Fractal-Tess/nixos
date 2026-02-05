@@ -1,26 +1,20 @@
 #!/usr/bin/env bash
 
-# Waybar toggle script
-# Toggles waybar visibility by showing/hiding it
+WAYBAR_PID=$(pgrep -x "waybar" | head -1)
 
-set -euo pipefail
-
-# Check if waybar is running
-if pgrep -x "waybar" > /dev/null; then
-    # Waybar is running, toggle visibility
-    if pgrep -f "waybar.*--hidden" > /dev/null; then
-        # Waybar is hidden, show it
-        pkill -f "waybar.*--hidden"
+if [ -n "$WAYBAR_PID" ]; then
+    if tr '\0' ' ' < /proc/$WAYBAR_PID/cmdline 2>/dev/null | grep -q '\-\-hidden'; then
+        kill -9 "$WAYBAR_PID" 2>/dev/null
+        while kill -0 "$WAYBAR_PID" 2>/dev/null; do sleep 0.05; done
         waybar &
         notify-send "Waybar" "🟢 Shown" -h string:x-canonical-private-synchronous:waybar-status
     else
-        # Waybar is visible, hide it
-        pkill waybar
+        kill -9 "$WAYBAR_PID" 2>/dev/null
+        while kill -0 "$WAYBAR_PID" 2>/dev/null; do sleep 0.05; done
         waybar --hidden &
         notify-send "Waybar" "🔴 Hidden" -h string:x-canonical-private-synchronous:waybar-status
     fi
 else
-    # Waybar is not running, start it
     waybar &
     notify-send "Waybar" "🟢 Started" -h string:x-canonical-private-synchronous:waybar-status
 fi
