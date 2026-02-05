@@ -18,6 +18,7 @@
     windowrule = match:class ^(dev.zed.Zed)$, workspace 2
     windowrule = match:class ^(cursor)$, workspace 2
     windowrule = match:class ^(Vivaldi-stable)$, workspace 3
+    windowrule = match:class ^(com\.gabm\.satty)$, float on
     windowrule = match:class .*, suppress_event maximize
   '';
 }
