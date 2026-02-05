@@ -169,6 +169,7 @@
           devtools = true;
           nvidia = true;
         };
+        kubernetes.enable = true;
       };
     };
   };
