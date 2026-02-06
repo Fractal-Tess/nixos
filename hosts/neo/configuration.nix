@@ -1,7 +1,8 @@
-{ inputs
-, username
-, pkgs
-, ...
+{
+  inputs,
+  username,
+  pkgs,
+  ...
 }:
 
 {

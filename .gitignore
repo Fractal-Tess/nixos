@@ -3,3 +3,7 @@ Session.vim
 nixos-switch.log
 .direnv
 .crush
+
+# Embedded repositories
+Handy/
+k8s/
