@@ -161,6 +161,7 @@
           rootless = true;
           devtools = true;
         };
+        kubernetes.enable = true;
       };
     };
   };
