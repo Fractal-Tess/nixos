@@ -34,6 +34,7 @@ in
       kubectl
       kubernetes-helm
       k9s
+      kubeshark
       certmgr
     ];
 
