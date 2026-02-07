@@ -1,8 +1,7 @@
-{
-  pkgs,
-  inputs,
-  username,
-  ...
+{ pkgs
+, inputs
+, username
+, ...
 }:
 
 {
@@ -43,6 +42,7 @@
     libx11
     libxrender
     libxtst
+    libuuid
   ];
   hardware.nvidia-container-toolkit.enable = true;
   hardware.graphics.enable32Bit = true;
@@ -169,7 +169,7 @@
           devtools = true;
           nvidia = true;
         };
-
+        kubernetes.enable = true;
       };
     };
   };
