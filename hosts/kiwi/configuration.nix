@@ -122,25 +122,6 @@
 
     # Services
     services = {
-      # SMB share mounting
-      samba.mount = {
-        enable = true;
-        shares = [
-          {
-            mountPoint = "/mnt/blockade";
-            device = "//neo.netbird.cloud/blockade";
-            username = "username";
-            password = "password";
-          }
-          {
-            mountPoint = "/mnt/neo-home";
-            device = "//neo.netbird.cloud/neo-home";
-            username = "username";
-            password = "password";
-          }
-        ];
-      };
-
       sshd.enable = true;
       automount.enable = true;
       syncthing = {
