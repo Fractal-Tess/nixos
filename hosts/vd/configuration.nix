@@ -1,7 +1,8 @@
-{ pkgs
-, inputs
-, username
-, ...
+{
+  pkgs,
+  inputs,
+  username,
+  ...
 }:
 
 {
@@ -138,25 +139,6 @@
         z_ai.enable = true;
         minimax.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
-      };
-
-      # SMB share mounting
-      samba.mount = {
-        enable = true;
-        shares = [
-          {
-            mountPoint = "/mnt/blockade";
-            device = "//neo.netbird.cloud/blockade";
-            username = "username";
-            password = "password";
-          }
-          {
-            mountPoint = "/mnt/neo-home";
-            device = "//neo.netbird.cloud/neo-home";
-            username = "username";
-            password = "password";
-          }
-        ];
       };
 
       # Virtualization
