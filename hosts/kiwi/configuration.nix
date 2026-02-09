@@ -127,6 +127,20 @@
       syncthing = {
         enable = true;
         guiAddress = "0.0.0.0:8384";
+        overrideDevices = false;
+        overrideFolders = false;
+        settings = {
+          devices = {
+            "vd" = {
+              id = "EMPKFGK-UVXVPWQ-U2XOBDT-GIBZPXG-CTFEFFC-AV3OFNI-ZOCPY3M-UHOSCQ6";
+              addresses = [ "tcp://vd.netbird.cloud" ];
+            };
+            "neo" = {
+              id = "S2Y37JJ-ENKW65X-NTY3XIS-OEYF4PG-VACBQUK-N3CZVCF-MEK5QH3-PTNJUAR";
+              addresses = [ "tcp://neo.netbird.cloud" ];
+            };
+          };
+        };
       };
       sops = {
         enable = true;

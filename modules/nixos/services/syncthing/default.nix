@@ -1,9 +1,17 @@
-{ config, lib, pkgs, username, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.syncthing;
-in {
+let
+  cfg = config.modules.services.syncthing;
+in
+{
   options.modules.services.syncthing = {
     enable = mkEnableOption "Syncthing file synchronization";
 
@@ -45,8 +53,20 @@ in {
 
     settings = mkOption {
       type = types.attrs;
-      default = {};
+      default = { };
       description = "Extra configuration options for Syncthing (JSON REST API format).";
+    };
+
+    overrideDevices = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to delete devices not configured via settings.devices. If false, devices added via web interface persist.";
+    };
+
+    overrideFolders = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Whether to delete folders not configured via settings.folders. If false, folders added via web interface persist.";
     };
   };
 
@@ -59,15 +79,19 @@ in {
       configDir = cfg.configDir;
       openDefaultPorts = cfg.openDefaultPorts;
       guiAddress = cfg.guiAddress;
+      overrideDevices = cfg.overrideDevices;
+      overrideFolders = cfg.overrideFolders;
 
-      settings = mkMerge [
+      # Only apply declarative settings if explicitly configured
+      # This allows users to manage config through the web GUI
+      settings = mkIf (cfg.settings != { }) (mkMerge [
         {
           gui = {
             address = cfg.guiAddress;
           };
         }
         cfg.settings
-      ];
+      ]);
     };
 
     # Ensure the user has access to Syncthing data
