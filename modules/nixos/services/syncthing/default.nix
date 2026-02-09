@@ -68,6 +68,18 @@ in
       default = true;
       description = "Whether to delete folders not configured via settings.folders. If false, folders added via web interface persist.";
     };
+
+    guiUser = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Username for Syncthing GUI authentication.";
+    };
+
+    guiPasswordFile = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Path to file containing the plaintext password for Syncthing's GUI.";
+    };
   };
 
   config = mkIf cfg.enable {
@@ -81,13 +93,17 @@ in
       guiAddress = cfg.guiAddress;
       overrideDevices = cfg.overrideDevices;
       overrideFolders = cfg.overrideFolders;
+      inherit (cfg) guiPasswordFile;
 
       # Only apply declarative settings if explicitly configured
       # This allows users to manage config through the web GUI
-      settings = mkIf (cfg.settings != { }) (mkMerge [
+      settings = mkIf (cfg.settings != { } || cfg.guiUser != null) (mkMerge [
         {
           gui = {
             address = cfg.guiAddress;
+          }
+          // optionalAttrs (cfg.guiUser != null) {
+            user = cfg.guiUser;
           };
         }
         cfg.settings
