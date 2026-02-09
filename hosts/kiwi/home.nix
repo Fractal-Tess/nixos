@@ -1,4 +1,10 @@
-{ pkgs, username, inputs, lib, ... }:
+{
+  pkgs,
+  username,
+  inputs,
+  lib,
+  ...
+}:
 
 {
   #============================================================================
@@ -21,6 +27,10 @@
     username = username;
     homeDirectory = "/home/${username}";
     stateVersion = "24.05"; # Don't change this
+    sessionVariables = {
+      PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+    };
   };
 
   # Enable Home Manager self-management
