@@ -116,6 +116,7 @@
             "kiwi" = {
               id = "VBKYDOP-SIXFK2R-ON2TBRL-H2YDC2O-4U5LCC4-5HHRED2-LUVKEK6-CTX47Q4";
               addresses = [ "tcp://kiwi.netbird.cloud" ];
+              autoAcceptFolders = true;
             };
           };
         };
