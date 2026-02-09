@@ -35,6 +35,14 @@
   # Enable link dynamic
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
+    # Browser/Playwright dependencies
+    glib
+    glibc
+    libxext
+    libx11
+    libxrender
+    libxtst
+    libuuid
     # code-cursor # VS Code fork with AI features
   ];
 
