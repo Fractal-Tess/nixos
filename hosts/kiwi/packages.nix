@@ -110,6 +110,9 @@
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
 
+    # Testing/Automation
+    playwright-driver.browsers # Playwright browsers for e2e testing and agent-browser
+
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
