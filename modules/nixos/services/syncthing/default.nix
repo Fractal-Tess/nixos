@@ -113,6 +113,12 @@ in
     # Ensure the user has access to Syncthing data
     systemd.services.syncthing.serviceConfig = {
       UMask = "0027";
+      WorkingDirectory = cfg.dataDir;
     };
+
+    # Create data directory for syncthing
+    systemd.tmpfiles.rules = [
+      "d ${cfg.dataDir} 0755 ${cfg.user} ${cfg.group} -"
+    ];
   };
 }
