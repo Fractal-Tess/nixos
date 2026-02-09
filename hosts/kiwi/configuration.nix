@@ -137,11 +137,24 @@
               id = "EMPKFGK-UVXVPWQ-U2XOBDT-GIBZPXG-CTFEFFC-AV3OFNI-ZOCPY3M-UHOSCQ6";
               addresses = [ "tcp://vd.netbird.cloud" ];
               autoAcceptFolders = true;
+              untrusted = false;
             };
             "neo" = {
               id = "S2Y37JJ-ENKW65X-NTY3XIS-OEYF4PG-VACBQUK-N3CZVCF-MEK5QH3-PTNJUAR";
               addresses = [ "tcp://neo.netbird.cloud" ];
               autoAcceptFolders = true;
+              untrusted = false;
+            };
+          };
+          folders = {
+            "opencode-config" = {
+              path = "/home/fractal-tess/.config/opencode";
+              id = "opencode-config";
+              label = "opencode - config";
+              devices = [
+                "vd"
+                "neo"
+              ];
             };
           };
         };
