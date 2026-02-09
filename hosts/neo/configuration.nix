@@ -104,6 +104,21 @@
       syncthing = {
         enable = true;
         guiAddress = "0.0.0.0:8384";
+        overrideDevices = false;
+        overrideFolders = false;
+        settings = {
+          devices = {
+            "vd" = {
+              id = "EMPKFGK-UVXVPWQ-U2XOBDT-GIBZPXG-CTFEFFC-AV3OFNI-ZOCPY3M-UHOSCQ6";
+              addresses = [ "tcp://vd.netbird.cloud" ];
+              autoAcceptFolders = true;
+            };
+            "kiwi" = {
+              id = "VBKYDOP-SIXFK2R-ON2TBRL-H2YDC2O-4U5LCC4-5HHRED2-LUVKEK6-CTX47Q4";
+              addresses = [ "tcp://kiwi.netbird.cloud" ];
+            };
+          };
+        };
       };
       sops = {
         enable = true;
