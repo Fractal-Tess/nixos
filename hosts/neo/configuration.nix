@@ -112,11 +112,24 @@
               id = "EMPKFGK-UVXVPWQ-U2XOBDT-GIBZPXG-CTFEFFC-AV3OFNI-ZOCPY3M-UHOSCQ6";
               addresses = [ "tcp://vd.netbird.cloud" ];
               autoAcceptFolders = true;
+              untrusted = false;
             };
             "kiwi" = {
               id = "VBKYDOP-SIXFK2R-ON2TBRL-H2YDC2O-4U5LCC4-5HHRED2-LUVKEK6-CTX47Q4";
               addresses = [ "tcp://kiwi.netbird.cloud" ];
               autoAcceptFolders = true;
+              untrusted = false;
+            };
+          };
+          folders = {
+            "opencode-config" = {
+              path = "/home/fractal-tess/.config/opencode";
+              id = "opencode-config";
+              label = "opencode - config";
+              devices = [
+                "vd"
+                "kiwi"
+              ];
             };
           };
         };
