@@ -28,9 +28,14 @@
       url = "github:ByteAtATime/flare/feat/nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nix-matlab = {
+      url = "gitlab:doronbehar/nix-matlab";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, ... }@inputs:
+  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, nix-matlab, ... }@inputs:
     let
       mkHost = { hostname, username }:
         nixpkgs.lib.nixosSystem {
@@ -42,6 +47,7 @@
               nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
                 polymc.overlay
+                nix-matlab.overlay
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/handy.nix)
