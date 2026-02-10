@@ -185,6 +185,22 @@
         "type": "github"
       }
     },
+    "nixpkgs-openclaw": {
+      "locked": {
+        "lastModified": 1769968620,
+        "narHash": "sha256-dfMDa/qO1todzFqsWwYlyCu3rEXiUs76f2uqp5mUE00=",
+        "owner": "chrisportela",
+        "repo": "nixpkgs",
+        "rev": "e0fa20caaea4454d69a212111afc97e6caf3fdc3",
+        "type": "github"
+      },
+      "original": {
+        "owner": "chrisportela",
+        "ref": "cp/add-moltbot",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
     "nvchad-starter": {
       "flake": false,
       "locked": {
@@ -232,6 +248,7 @@
         "nix-matlab": "nix-matlab",
         "nix4nvchad": "nix4nvchad",
         "nixpkgs": "nixpkgs",
+        "nixpkgs-openclaw": "nixpkgs-openclaw",
         "polymc": "polymc",
         "sops-nix": "sops-nix"
       }
