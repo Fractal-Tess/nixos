@@ -1,5 +1,4 @@
 { pkgs, ... }:
-
 {
   #============================================================================
   # SYSTEM-WIDE PACKAGES
@@ -112,6 +111,7 @@
     aider-chat # AI pair programming in the terminal
     claude-code # AI code assistant
     opencode
+    openclaw # AI coding agent
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
@@ -146,6 +146,7 @@
     glab # GitLab CLI
     forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
+     gitkraken # Git GUI tool
 
     #--------------------------------------------------------------------------
     # MULTIMEDIA TOOLS

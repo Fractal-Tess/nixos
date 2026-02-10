@@ -70,7 +70,10 @@
   nixpkgs.config = {
     allowUnfree = true;
     allowBroken = true; # Allow broken packages for fingerprint drivers
-    permittedInsecurePackages = [ "libsoup-2.74.3" ];
+    permittedInsecurePackages = [
+      "libsoup-2.74.3"
+      "openclaw-2026.1.30"
+    ];
   };
 
   #============================================================================

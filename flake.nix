@@ -33,6 +33,10 @@
       url = "gitlab:doronbehar/nix-matlab";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    nixpkgs-openclaw = {
+      url = "github:chrisportela/nixpkgs/cp/add-moltbot";
+    };
   };
 
   outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, nix-matlab, ... }@inputs:
@@ -51,6 +55,15 @@
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/handy.nix)
+                (final: prev: {
+                  openclaw = (import inputs.nixpkgs-openclaw {
+                    system = final.system;
+                    config = {
+                      allowUnfree = true;
+                      permittedInsecurePackages = [ "openclaw-2026.1.30" ];
+                    };
+                  }).openclaw;
+                })
               ];
             }
           ];
