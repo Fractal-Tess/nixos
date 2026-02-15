@@ -159,6 +159,24 @@
                 "kiwi"
               ];
             };
+            "vivaldi-default" = {
+              path = "/home/fractal-tess/.config/vivaldi/Default";
+              id = "vivaldi-default";
+              label = "Vivaldi Default Profile";
+              devices = [
+                "neo"
+                "kiwi"
+              ];
+            };
+            "vivaldi-profile1" = {
+              path = "/home/fractal-tess/.config/vivaldi/Profile 1";
+              id = "vivaldi-profile1";
+              label = "Vivaldi Profile 1";
+              devices = [
+                "neo"
+                "kiwi"
+              ];
+            };
           };
         };
       };
