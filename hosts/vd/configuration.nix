@@ -200,6 +200,20 @@
           nvidia = true;
         };
       };
+
+      # Remote Desktop (Sunshine host + Moonlight client)
+      # Provides low-latency remote desktop/game streaming over Wayland
+      remote-desktop = {
+        enable = true;
+        sunshine = {
+          enable = true;
+          autoStart = true;
+          capSysAdmin = true; # Required for Wayland/KMS capture
+          openFirewall = true;
+          avahi = true;
+        };
+        moonlight = true; # Install Moonlight client
+      };
     };
   };
 
