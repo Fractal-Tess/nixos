@@ -203,6 +203,20 @@
         };
         kubernetes.enable = true;
       };
+
+      # Remote Desktop (Sunshine host + Moonlight client)
+      # Provides low-latency remote desktop/game streaming over Wayland
+      remote-desktop = {
+        enable = true;
+        sunshine = {
+          enable = true;
+          autoStart = true;
+          capSysAdmin = true; # Required for Wayland/KMS capture
+          openFirewall = true;
+          avahi = true;
+        };
+        moonlight = true; # Install Moonlight client
+      };
     };
   };
 
@@ -411,6 +425,7 @@
         "networkmanager"
         "wheel"
         "video"
+        "input" # Required for Sunshine remote desktop input
         "fractal-tess"
         "wireshark"
         "lp" # Allow printer management
