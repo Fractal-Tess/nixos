@@ -106,6 +106,8 @@
         guiAddress = "0.0.0.0:8384";
         overrideDevices = false;
         overrideFolders = false;
+        guiUser = "user";
+        guiPasswordFile = "/home/fractal-tess/.config/secrets/syncthing/pass";
         settings = {
           devices = {
             "vd" = {
@@ -136,6 +138,7 @@
         enable = true;
         z_ai.enable = true;
         ssh.enable = true;
+        syncthing.enable = true;
       };
 
       # Virtualization
