@@ -131,6 +131,88 @@
                 "kiwi"
               ];
             };
+            "vivaldi-default" = {
+              path = "/home/fractal-tess/.config/vivaldi/Default";
+              id = "vivaldi-default";
+              label = "Vivaldi Default Profile";
+              type = "sendreceive";
+              devices = [
+                "vd"
+                "kiwi"
+              ];
+              ignorePatterns = [
+                "Login Data"
+                "Login Data-journal"
+                "Login Data For Account"
+                "Login Data For Account-journal"
+                "Cookies"
+                "Cookies-journal"
+                "Extension Cookies"
+                "Extension Cookies-journal"
+                "Secure Preferences"
+                "GPUCache"
+                "DawnGraphiteCache"
+                "DawnWebGPUCache"
+                "blob_storage"
+                "Cache"
+                "Code Cache"
+                "Service Worker"
+                "BudgetDatabase"
+                "AutofillStrikeDatabase"
+                "AutofillAiModelCache"
+                "chrome_cart_db"
+                "commerce_subscription_db"
+                "discount_infos_db"
+                "discounts_db"
+                "parcel_tracking_db"
+                "shared_proto_db"
+                "CdmStorage.db*"
+                "DIPS*"
+                "heavy_ad_intervention_opt_out.db*"
+                "..com.vivaldi.Vivaldi.*"
+              ];
+            };
+            "vivaldi-profile1" = {
+              path = "/home/fractal-tess/.config/vivaldi/Profile 1";
+              id = "vivaldi-profile1";
+              label = "Vivaldi Profile 1";
+              type = "sendreceive";
+              devices = [
+                "vd"
+                "kiwi"
+              ];
+              ignorePatterns = [
+                "Login Data"
+                "Login Data-journal"
+                "Login Data For Account"
+                "Login Data For Account-journal"
+                "Cookies"
+                "Cookies-journal"
+                "Extension Cookies"
+                "Extension Cookies-journal"
+                "Secure Preferences"
+                "GPUCache"
+                "DawnGraphiteCache"
+                "DawnWebGPUCache"
+                "blob_storage"
+                "Cache"
+                "Code Cache"
+                "Service Worker"
+                "BudgetDatabase"
+                "AutofillStrikeDatabase"
+                "AutofillAiModelCache"
+                "chrome_cart_db"
+                "commerce_subscription_db"
+                "discount_infos_db"
+                "discounts_db"
+                "parcel_tracking_db"
+                "shared_proto_db"
+                "CdmStorage.db*"
+                "DIPS*"
+                "heavy_ad_intervention_opt_out.db*"
+                "..com.vivaldi.Vivaldi.*"
+              ];
+            };
           };
         };
       };
