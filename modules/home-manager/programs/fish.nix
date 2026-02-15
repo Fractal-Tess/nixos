@@ -97,6 +97,9 @@
       zai = "~/nixos/scripts/claude-code/z-ai.sh";
       minimax = "~/nixos/scripts/claude-code/minimax.sh";
       ca = "cursor-agent";
+
+      # Vibe-Kanban
+      vk = "~/nixos/scripts/launch-vibe-kanban-remote.sh";
     };
 
     # Interactive shell initialization
