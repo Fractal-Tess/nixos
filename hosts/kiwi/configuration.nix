@@ -491,5 +491,10 @@
     NIXOS_OZONE_WL = "1"; # Enable Wayland support in Electron/Ozone apps
     MOZ_USE_WAYLAND = 1; # Enable Wayland support in Firefox
     MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
+
+    # Playwright/Browser testing configuration
+    PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
+    PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+    AGENT_BROWSER_EXECUTABLE_PATH = "/run/current-system/sw/bin/chromium";
   };
 }
