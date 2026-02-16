@@ -67,14 +67,13 @@ in
         # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
         # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
         default-address-pools = cfg.addressPools;
-        # Use VPN DNS servers directly for .int domain resolution
-        # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
-        # Fallback to public DNS if VPN DNS is unavailable
+        # Use public DNS first for reliability, fallback to VPN DNS for .int domains
+        # 10.1.111.17 and 10.1.111.19 are NetBird DNS (only reachable via VPN)
         dns = [
-          "10.1.111.17"
-          "10.1.111.19"
           "1.1.1.1"
           "8.8.8.8"
+          "10.1.111.17"
+          "10.1.111.19"
         ];
         "dns-search" = [
           "int"
@@ -96,14 +95,13 @@ in
           # Network settings - use only 172.x.x.x subnets to avoid VPN conflicts
           # Explicitly exclude 10.x.x.x networks to prevent VPN conflicts
           default-address-pools = cfg.addressPools;
-          # Use VPN DNS servers directly for .int domain resolution
-          # 10.1.111.17 and 10.1.111.19 are the DNS servers from tun0 VPN interface
-          # Fallback to public DNS if VPN DNS is unavailable
+          # Use public DNS first for reliability, fallback to VPN DNS for .int domains
+          # 10.1.111.17 and 10.1.111.19 are NetBird DNS (only reachable via VPN)
           dns = [
-            "10.1.111.17"
-            "10.1.111.19"
             "1.1.1.1"
             "8.8.8.8"
+            "10.1.111.17"
+            "10.1.111.19"
           ];
           "dns-search" = [
             "int"
