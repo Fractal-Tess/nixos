@@ -27,7 +27,15 @@ in
     sops = {
       defaultSopsFile = ../../../../secrets/secrets.yaml;
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
+
+      secrets = {
+        openrouter_api_key = {
+          owner = username;
+          sopsFile = ../../../../secrets/secrets.json;
+          path = "/home/${username}/.config/secrets/openrouter_api_key";
+          format = "json";
+        };
+      };
     };
   };
-
 }

@@ -10,6 +10,8 @@ set -euo pipefail
 # Configuration
 readonly NIXOS_DIR="/home/fractal-tess/nixos"
 readonly FLAKE_PATH="${NIXOS_DIR}"
+readonly OPENROUTER_KEY_FILE="${HOME}/.config/secrets/openrouter_api_key"
+readonly OPENROUTER_MODEL="openai/gpt-5-nano"
 
 # Colors
 readonly RED='\033[0;31m'
@@ -253,18 +255,67 @@ get_next_commit_number() {
     fi
 }
 
+generate_commit_message() {
+    local diff_stat
+    diff_stat=$(git diff --cached --stat 2>/dev/null | head -20)
+
+    if [[ -z "$diff_stat" ]]; then
+        echo "Update #$(get_next_commit_number)"
+        return 0
+    fi
+
+    if [[ ! -r "$OPENROUTER_KEY_FILE" ]]; then
+        print_warning "OpenRouter key not found at $OPENROUTER_KEY_FILE, using fallback commit message"
+        echo "Update #$(get_next_commit_number)"
+        return 0
+    fi
+
+    local api_key
+    api_key=$(< "$OPENROUTER_KEY_FILE")
+
+    local payload tmpout http_code msg
+    payload=$(jq -cn --arg diff "$diff_stat" --arg model "$OPENROUTER_MODEL" '{
+      "model": $model,
+      "stream": false,
+      "messages": [{"role":"user","content":("Write a git commit message (max 72 chars, imperative mood, no quotes) for a NixOS config repo. Be brief. Changes:\n\n" + $diff + "\n\nRespond with ONLY the commit message, no explanations.")}],
+      "max_tokens": 2000
+    }' 2>/dev/null) || true
+
+    if [[ -z "$payload" ]]; then
+        echo "Update #$(get_next_commit_number)"
+        return 0
+    fi
+
+    tmpout=$(mktemp)
+    http_code=$(curl -s -w "%{http_code}" https://openrouter.ai/api/v1/chat/completions \
+      -H "Authorization: Bearer ${api_key}" \
+      -H "Content-Type: application/json" \
+      -d "$payload" -o "$tmpout" 2>/dev/null) || true
+
+    if [[ "$http_code" == "200" ]]; then
+        msg=$(jq -r '.choices[0].message.content // empty' "$tmpout" 2>/dev/null | tr -d '\n"' | head -c 72)
+    fi
+    rm -f "$tmpout"
+
+    if [[ -n "${msg:-}" ]]; then
+        echo "$msg"
+    else
+        echo "Update #$(get_next_commit_number)"
+    fi
+}
+
 commit_changes() {
     print_step "Committing changes..."
-    
+
     if [[ -z "$(git diff --cached --name-only 2>/dev/null)" ]]; then
         print_info "No staged changes to commit"
         return 1
     fi
-    
-    local commit_num
-    commit_num=$(get_next_commit_number)
-    local commit_msg="Update #${commit_num}"
-    
+
+    print_info "Generating commit message via AI..."
+    local commit_msg
+    commit_msg=$(generate_commit_message)
+
     if git commit -m "$commit_msg" >/dev/null 2>&1; then
         print_success "Committed: $commit_msg"
         return 0
