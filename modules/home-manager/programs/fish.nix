@@ -77,7 +77,7 @@
       man = "batman";
       ll = "eza -l";
       ls = "eza";
-      update = "~/nixos/update.sh";
+      update = "~/nixos/scripts/nixos/update.sh";
 
       # Nix develop shortcuts
       nas-c = "nix develop ~/nixos/shells/c";
@@ -97,6 +97,19 @@
       zai = "~/nixos/scripts/claude-code/z-ai.sh";
       minimax = "~/nixos/scripts/claude-code/minimax.sh";
       ca = "cursor-agent";
+
+      # NixOS Create Shell shortcuts
+      ncs-csharp = "_ncs_setup csharp";
+      ncs-go = "_ncs_setup go";
+      ncs-java = "_ncs_setup java";
+      ncs-maui = "_ncs_setup maui";
+      ncs-php = "_ncs_setup php";
+      ncs-nodejs = "_ncs_setup node";
+      ncs-python3 = "_ncs_setup python3";
+      ncs-react-native = "_ncs_setup react-native";
+      ncs-rust = "_ncs_setup rust";
+      ncs-tauri = "_ncs_setup tauri";
+      ncs-unity = "_ncs_setup unity";
 
       # Vibe-Kanban
       vk = "~/nixos/scripts/launch-vibe-kanban-remote.sh";
