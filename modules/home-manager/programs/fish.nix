@@ -77,7 +77,7 @@
       man = "batman";
       ll = "eza -l";
       ls = "eza";
-      update = "~/nixos/scripts/nixos/update.sh";
+      update = "~/nixos/scripts/nixos/update.ts";
 
       # Nix develop shortcuts
       nas-c = "nix develop ~/nixos/shells/c";
