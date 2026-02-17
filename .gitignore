@@ -1,4 +1,5 @@
 Session.vim
+node_modules
 
 nixos-switch.log
 .direnv
