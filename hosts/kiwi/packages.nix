@@ -146,7 +146,7 @@
     glab # GitLab CLI
     forgejo-cli # Forgejo CLI tool
     lazygit # Simple terminal UI for git
-     gitkraken # Git GUI tool
+    gitkraken # Git GUI tool
 
     #--------------------------------------------------------------------------
     # MULTIMEDIA TOOLS
@@ -284,6 +284,9 @@
     #--------------------------------------------------------------------------
     # TERMINAL ENHANCEMENTS
     #--------------------------------------------------------------------------
+
+    # Terminal multiplexers
+    zellij # Terminal multiplexer with layouts and session management
 
     # System information and utilities
     nitch # Lightweight system information fetch
