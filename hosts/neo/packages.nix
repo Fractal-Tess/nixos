@@ -136,6 +136,9 @@
     # TERMINAL ENHANCEMENTS
     #--------------------------------------------------------------------------
 
+    # Terminal multiplexers
+    zellij # Terminal multiplexer with layouts and session management
+
     # System information and utilities
     nitch # Lightweight system information fetch
     fastfetch # Fast system information tool
