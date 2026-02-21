@@ -1,0 +1,83 @@
+#!/usr/bin/env bun
+
+import { run } from "./lib/shell";
+import { log } from "./lib/log";
+
+const BOOST_PATH = "/sys/devices/system/cpu/cpufreq/boost";
+
+function getStatus(): boolean {
+  const result = run(["cat", BOOST_PATH]);
+  return result.out.trim() === "1";
+}
+
+function setBoost(enabled: boolean): boolean {
+  const value = enabled ? "1" : "0";
+  const r = Bun.spawnSync(["tee", BOOST_PATH], { 
+    stdin: new TextEncoder().encode(value),
+    stdout: "pipe", 
+    stderr: "pipe" 
+  });
+  return r.exitCode === 0;
+}
+
+function showUsage(): void {
+  console.log(`Usage: ${Bun.argv[1]} <command>
+
+Commands:
+  on      Enable CPU boost
+  off     Disable CPU boost
+  toggle  Toggle CPU boost state
+  status  Show current CPU boost status
+`);
+}
+
+function showStatus(): void {
+  const enabled = getStatus();
+  if (enabled) {
+    log.success("CPU boost is enabled");
+  } else {
+    log.info("CPU boost is disabled");
+  }
+}
+
+const command = Bun.argv[2];
+
+switch (command) {
+  case "on":
+    if (setBoost(true)) {
+      log.success("CPU boost enabled");
+    } else {
+      log.error("Failed to enable CPU boost (requires sudo)");
+      process.exit(1);
+    }
+    break;
+
+  case "off":
+    if (setBoost(false)) {
+      log.success("CPU boost disabled");
+    } else {
+      log.error("Failed to disable CPU boost (requires sudo)");
+      process.exit(1);
+    }
+    break;
+
+  case "toggle": {
+    const current = getStatus();
+    const next = !current;
+    if (setBoost(next)) {
+      log.success(`CPU boost ${next ? "enabled" : "disabled"}`);
+    } else {
+      log.error("Failed to toggle CPU boost (requires sudo)");
+      process.exit(1);
+    }
+    break;
+  }
+
+  case "status":
+    showStatus();
+    break;
+
+  default:
+    showUsage();
+    process.exit(1);
+}
