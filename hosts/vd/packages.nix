@@ -230,7 +230,7 @@
     google-chrome # Google's web browser
     vivaldi # Feature-rich web browser
     vivaldi-ffmpeg-codecs # Video codecs for Vivaldi
-    microsoft-edge # Microsoft's web browser
+    # microsoft-edge # Microsoft's web browser (temporarily disabled - version unavailable)
     tor-browser # Privacy-focused browser
 
     # Terminals
