@@ -5,7 +5,8 @@
     "mod": "dock",
     "output": [
       "eDP-1",
-      "DP-1"
+      "DP-1",
+      "DP-5"
     ],
     "margin-left": 8,
     "margin-right": 8,
