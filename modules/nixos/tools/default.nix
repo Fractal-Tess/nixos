@@ -1,0 +1,7 @@
+{ ... }:
+
+{
+  imports = [
+    ./kimi-cli.nix
+  ];
+}
