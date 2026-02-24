@@ -27,8 +27,8 @@ let
     monitor=DP-5, 2560x1440@59.95, 0x0, 1
     monitor=DP-3, 1920x1080@60, 2560x0, 1
 
-    # Disable laptop screen when external monitors are connected
-    monitor=eDP-1, disable
+    # Fallback: enable any unmatched monitor (e.g. laptop screen when undocked)
+    monitor=,preferred,auto,1
 
     # Hyprland bug
     # monitor=Unknown-1, disable
