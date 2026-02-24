@@ -218,6 +218,9 @@
         moonlight = true; # Install Moonlight client
       };
     };
+
+    # Tools
+    tools.kimi-cli.enable = true;
   };
 
   networking.firewall.allowedTCPPorts = [

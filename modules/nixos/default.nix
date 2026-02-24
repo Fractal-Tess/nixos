@@ -19,5 +19,7 @@
 
     # Services
     ./services/default.nix
+    # Tools
+    ./tools/default.nix
   ];
 }
