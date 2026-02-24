@@ -96,6 +96,7 @@
       # AI tools
       zai = "~/nixos/scripts/claude-code/z-ai.sh";
       minimax = "~/nixos/scripts/claude-code/minimax.sh";
+      kimi = "~/nixos/scripts/claude-code/kimi.sh";
       ca = "cursor-agent";
 
       # NixOS Create Shell shortcuts
