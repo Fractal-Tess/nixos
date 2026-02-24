@@ -6,8 +6,8 @@ unset ANTHROPIC_BASE_URL
 
 KIMI_APIKEY=$(< ~/.config/secrets/moonshot_ai)
 
-export ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropTHROPIC_AUTHic"
-export AN_TOKEN="$KIMI_APIKEY"
+export ANTHROPIC_BASE_URL="https://api.moonshot.ai/anthropic"
+export ANTHROPIC_AUTH_TOKEN="$KIMI_APIKEY"
 export ANTHROPIC_MODEL="kimi-k2-thinking-turbo"
 export ANTHROPIC_DEFAULT_OPUS_MODEL="kimi-k2-thinking-turbo"
 export ANTHROPIC_DEFAULT_SONNET_MODEL="kimi-k2-thinking-turbo"
