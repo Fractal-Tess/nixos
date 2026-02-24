@@ -16,7 +16,6 @@ in
     ./ssh.nix
     ./z-ai.nix
     ./minimax.nix
-    ./moonshot.nix
     ./syncthing.nix
   ];
 
@@ -34,6 +33,12 @@ in
           owner = username;
           sopsFile = ../../../../secrets/secrets.json;
           path = "/home/${username}/.config/secrets/openrouter_api_key";
+          format = "json";
+        };
+        moonshot_ai = {
+          owner = username;
+          sopsFile = ../../../../secrets/secrets.json;
+          path = "/home/${username}/.config/secrets/moonshot_ai";
           format = "json";
         };
       };

@@ -191,7 +191,6 @@
         ssh.enable = true;
         z_ai.enable = true;
         minimax.enable = true;
-        moonshot.enable = true;
         syncthing.enable = true;
       };
 
