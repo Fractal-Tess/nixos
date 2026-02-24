@@ -22,11 +22,13 @@ let
     ### MONITORS ###
     ################
 
-    # kiwi - Laptop with external monitor setup
-    # Left-to-right: laptop (eDP-1) -> DP-1 (main, Dell U2717D) -> HDMI-A-1 (24", Dell U2414H)
-    monitor=DP-1, 2560x1440@59.95, auto, 1
-    monitor=eDP-1, 1920x1080@60, auto-left, 1
-    monitor=HDMI-A-1, 1920x1080@60, auto-right, 1
+    # kiwi - External monitor setup
+    # Left-to-right: DP-5 (Dell U2717D, 2560x1440, bigger) -> DP-3 (Dell U2414H, 1920x1080)
+    monitor=DP-5, 2560x1440@59.95, 0x0, 1
+    monitor=DP-3, 1920x1080@60, 2560x0, 1
+
+    # Disable laptop screen when external monitors are connected
+    monitor=eDP-1, disable
 
     # Hyprland bug
     # monitor=Unknown-1, disable
