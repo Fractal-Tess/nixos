@@ -16,6 +16,7 @@ in
     ./ssh.nix
     ./z-ai.nix
     ./minimax.nix
+    ./moonshot.nix
     ./syncthing.nix
   ];
 
