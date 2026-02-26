@@ -20,7 +20,7 @@
     bind = $mainMod SHIFT, F, fullscreen
 
     # Swap - Dynamic workspace switching between active monitors only
-    bind = $mainMod, W, exec, ~/nixos/scripts/workspace-switcher.sh swap
+    bind = $mainMod, W, exec, ~/nixos/scripts/bin/workspace-switcher swap
 
     bind = $mainMod SHIFT, H, movewindow, l
     bind = $mainMod SHIFT, L, movewindow, r
@@ -51,7 +51,7 @@
     bind = $mainMod, h, exec, ~/nixos/scripts/bin/cliphist
 
     # Screenshot
-    bind = $mainMod SHIFT, X, exec, ~/nixos/scripts/screenshot.sh
+    bind = $mainMod SHIFT, X, exec, ~/nixos/scripts/bin/screenshot
 
     # Color picker
     bind = $mainMod, Z, exec, hyprpicker
@@ -101,13 +101,13 @@
     bindm = $mainMod, mouse:273, resizewindow
 
     # Power menu
-    bind = $mainMod, ESCAPE, exec, ~/nixos/scripts/powermenu.sh
+    bind = $mainMod, ESCAPE, exec, ~/nixos/scripts/bin/powermenu
 
     # Restart Waybar
     bind = $mainMod SHIFT, R, exec, pkill waybar && waybar &
     # Toggle Waybar visibility
-    bind = $mainMod SHIFT, T, exec, ~/nixos/scripts/waybar-toggle.sh
-    bind = $mainMod ALT, T, exec, ~/nixos/scripts/waybar-toggle.sh
+    bind = $mainMod SHIFT, T, exec, ~/nixos/scripts/bin/waybar-toggle
+    bind = $mainMod ALT, T, exec, ~/nixos/scripts/bin/waybar-toggle
 
     # Volume Controls with correct keycodes and XF86Audio symbols
     # Volume Up (XF86AudioRaiseVolume - 123)
@@ -160,7 +160,7 @@
     # Email
     bind = , XF86Mail, exec, notify-send "Mail key pressed"
     # Print Screen (Screenshot)
-    bind = , Print, exec, ~/nixos/scripts/screenshot.sh
+    bind = , Print, exec, ~/nixos/scripts/bin/screenshot
     # Screen Lock
     bind = , XF86ScreenSaver, exec, loginctl lock-session
     # Sleep
@@ -174,8 +174,8 @@
     bind = , XF86Display, exec, notify-send "Display key pressed"
 
     # Monitor Controls
-    bind = $mainMod, M, exec, ~/nixos/scripts/screen-manager.sh off && notify-send "Monitors" "🔴 Turned off" -h string:x-canonical-private-synchronous:monitor-status
-    bind = $mainMod SHIFT, M, exec, ~/nixos/scripts/screen-manager.sh on && notify-send "Monitors" "🟢 Turned on" -h string:x-canonical-private-synchronous:monitor-status
+    bind = $mainMod, M, exec, ~/nixos/scripts/bin/screen-manager off && notify-send "Monitors" "🔴 Turned off" -h string:x-canonical-private-synchronous:monitor-status
+    bind = $mainMod SHIFT, M, exec, ~/nixos/scripts/bin/screen-manager on && notify-send "Monitors" "🟢 Turned on" -h string:x-canonical-private-synchronous:monitor-status
     # Battery
     bind = , XF86Battery, exec, notify-send "Battery key pressed"
     # WWW Search
@@ -183,8 +183,8 @@
 
     # Laptop lid switch events
     # Disable laptop screen when lid is closed (only if AC power is connected and external monitors are present)
-    bindl = , switch:on:Lid Switch, exec, ~/nixos/scripts/lid-close-handler.sh close
+    bindl = , switch:on:Lid Switch, exec, ~/nixos/scripts/bin/lid-handler close
     # Re-enable laptop screen when lid is opened
-    bindl = , switch:off:Lid Switch, exec, ~/nixos/scripts/lid-close-handler.sh open
+    bindl = , switch:off:Lid Switch, exec, ~/nixos/scripts/bin/lid-handler open
   '';
 }
