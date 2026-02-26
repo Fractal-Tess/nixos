@@ -1,22 +1,27 @@
 #!/usr/bin/env bun
 // Clipboard history selector via cliphist + wofi
+
 import { Effect } from "effect";
 import { run } from "../lib/shell";
 
 const program = Effect.sync(() => {
+  // Kill existing wofi instance
   run(["pkill", "wofi"]);
 
+  // Get clipboard history
   const list = Bun.spawnSync(["cliphist", "list"], { stdout: "pipe" });
   if (!list.stdout?.byteLength) process.exit(0);
 
+  // Show selector
   const selection = Bun.spawnSync(["wofi", "-dmenu", "-p", "Clipboard:"], {
-    stdin:  list.stdout,
+    stdin: list.stdout,
     stdout: "pipe",
   });
   if (!selection.stdout?.byteLength || selection.exitCode !== 0) process.exit(0);
 
+  // Decode and copy to clipboard
   const decoded = Bun.spawnSync(["cliphist", "decode"], {
-    stdin:  selection.stdout,
+    stdin: selection.stdout,
     stdout: "pipe",
   });
   if (!decoded.stdout?.byteLength) process.exit(0);

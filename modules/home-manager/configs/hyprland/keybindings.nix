@@ -48,7 +48,7 @@
     bind = $mainMod, V, exec, $editor
     bind = $mainMod, y, exec, $browser https://youtube.com
     bind = $mainMod, g, exec, $browser https://github.com
-    bind = $mainMod, h, exec, ~/nixos/scripts/cliphistory.sh
+    bind = $mainMod, h, exec, ~/nixos/scripts/bin/cliphist
 
     # Screenshot
     bind = $mainMod SHIFT, X, exec, ~/nixos/scripts/screenshot.sh
