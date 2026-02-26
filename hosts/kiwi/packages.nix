@@ -108,6 +108,7 @@
     #--------------------------------------------------------------------------
 
     # AI assistants
+    opencode # AI coding assistant
     aider-chat # AI pair programming in the terminal
     openclaw # AI coding agent
     amp-cli
