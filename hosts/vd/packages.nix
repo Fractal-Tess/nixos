@@ -103,13 +103,8 @@
     # DEVELOPMENT TOOLS
     #--------------------------------------------------------------------------
 
-    # AI assistants
-    aider-chat # AI pair programming in the terminal
-    claude-code # AI code assistant
-
     # Testing
     playwright-driver.browsers # Playwright browsers for e2e testing
-    opencode # AI code assistant CLI
     amp-cli # Ampere CLI tool for cloud services
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
