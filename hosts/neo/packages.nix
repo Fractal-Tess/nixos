@@ -104,6 +104,7 @@
     # Version control
     gitea # Gitea CLI tool
     lazygit # Simple terminal UI for git
+    git-fame # Git repository statistics by contributor
 
     #--------------------------------------------------------------------------
     # LANGUAGE SERVERS & FORMATTERS
