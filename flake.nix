@@ -55,6 +55,7 @@
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/handy.nix)
+                (import ./overlays/kimi-cli)
                 (final: prev: {
                   openclaw = (import inputs.nixpkgs-openclaw {
                     system = final.system;
