@@ -105,9 +105,9 @@
 
     # Restart Waybar
     bind = $mainMod SHIFT, R, exec, pkill waybar && waybar &
-    # Toggle Waybar visibility
-    bind = $mainMod SHIFT, T, exec, ~/nixos/scripts/bin/waybar-toggle
-    bind = $mainMod ALT, T, exec, ~/nixos/scripts/bin/waybar-toggle
+    # Toggle Waybar visibility (SIGUSR1 toggles hidden mode)
+    bind = $mainMod SHIFT, T, exec, killall -SIGUSR1 waybar
+    bind = $mainMod ALT, T, exec, killall -SIGUSR1 waybar
 
     # Volume Controls with correct keycodes and XF86Audio symbols
     # Volume Up (XF86AudioRaiseVolume - 123)
