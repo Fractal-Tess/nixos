@@ -86,14 +86,37 @@ in
         cmd = "${pkgs.kimi-cli}/bin/kimi-cli --yolo ${workDirStr} web --host ${cfg.host} --port ${toString cfg.port} --public --network --dangerously-omit-auth --no-open ${allowedOriginsStr}";
       in ''
         export HOME=/home/${cfg.user}
+        # Disable terminal colors to help expect pattern matching
+        export NO_COLOR=1
 
         # Use expect to handle the interactive confirmation
         ${pkgs.expect}/bin/expect -c '
+          # Disable expect output buffering
+          exp_internal 0
+          set timeout 30
+
           spawn ${cmd}
-          expect "continue:"
-          send "I UNDERSTAND THE RISKS\r"
-          set wait_result [wait]
-          exit [lindex $wait_result 3]
+
+          # Wait for the security warning prompt
+          expect {
+            -re {continue:.*} {
+              send "I UNDERSTAND THE RISKS\r"
+              exp_continue
+            }
+            eof {
+              # Process ended - check exit status
+              set wait_result [wait]
+              set exit_code [lindex $wait_result 3]
+              if {$exit_code != 0} {
+                puts "Process exited with code $exit_code"
+              }
+              exit $exit_code
+            }
+            timeout {
+              puts "Timeout waiting for prompt"
+              exit 1
+            }
+          }
         '
       '';
     };
