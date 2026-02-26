@@ -140,6 +140,7 @@
     gitea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     graphite-cli # CLI for creating stacked git changes
+    git-fame # Git repository statistics by contributor
 
     # Security tools
     # burpsuite # Web vulnerability scanner
@@ -212,7 +213,7 @@
     satty # Screenshot annotation tool for Wayland
     hyprpicker # Color picker for Hyprland
     swaynotificationcenter # Notification daemon for Wayland
-    gource # Version control visualization
+    # gource # Version control visualization (temporarily disabled - build failure)
 
     #--------------------------------------------------------------------------
     # GUI APPLICATIONS

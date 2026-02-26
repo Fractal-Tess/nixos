@@ -147,6 +147,7 @@
     gitea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     gitkraken # Git GUI tool
+    git-fame # Git repository statistics by contributor
 
     #--------------------------------------------------------------------------
     # MULTIMEDIA TOOLS
@@ -190,7 +191,7 @@
     libayatana-appindicator # System tray support for apps (required for Handy)
     handy # Speech-to-text application (offline)
     swaynotificationcenter # Notification daemon for Wayland
-    gource # Version control visualization
+    # gource # Version control visualization (temporarily disabled - build failure)
 
     #--------------------------------------------------------------------------
     # GUI APPLICATIONS
