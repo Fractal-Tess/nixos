@@ -106,6 +106,21 @@ export const commitChanges = Effect.gen(function* () {
   return true;
 });
 
+export const commitChangesWithMessage = (msg: string) => Effect.gen(function* () {
+  if (!run(["git", "diff", "--cached", "--name-only"]).out) {
+    log.info("No staged changes to commit");
+    return false;
+  }
+
+  const committed = run(["git", "commit", "-m", msg]);
+  if (!committed.ok) {
+    yield* Effect.fail(new GitError({ operation: "commit" }));
+  }
+
+  log.success(`Committed: ${msg}`);
+  return true;
+});
+
 export const pushChanges = Effect.gen(function* () {
   log.step("Pushing to remote...");
   const branch = run(["git", "branch", "--show-current"]).out;
