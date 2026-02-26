@@ -12,5 +12,6 @@
     exec-once = hypridle
     exec-once = waybar
     exec-once = env WEBKIT_DISABLE_DMABUF_RENDERER=1 flare
+    exec-once = handy
   '';
 }
