@@ -176,6 +176,7 @@
     # Monitor Controls
     bind = $mainMod, M, exec, hyprctl dispatch dpms off && notify-send "Monitors" "🔴 Turned off" -h string:x-canonical-private-synchronous:monitor-status
     bind = $mainMod SHIFT, M, exec, hyprctl dispatch dpms on && notify-send "Monitors" "🟢 Turned on" -h string:x-canonical-private-synchronous:monitor-status
+    bind = $mainMod CTRL, M, exec, ~/nixos/scripts/bin/monitor-control toggle
     # Battery
     bind = , XF86Battery, exec, notify-send "Battery key pressed"
     # WWW Search
