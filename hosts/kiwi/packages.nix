@@ -109,8 +109,6 @@
 
     # AI assistants
     aider-chat # AI pair programming in the terminal
-    claude-code # AI code assistant
-    opencode
     openclaw # AI coding agent
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor

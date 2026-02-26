@@ -76,8 +76,6 @@
     #--------------------------------------------------------------------------
 
     # AI assistants
-    claude-code # AI code assistant
-    opencode
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
 
