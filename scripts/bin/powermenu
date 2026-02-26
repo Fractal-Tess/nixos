@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // Power menu via wofi
+
 import { Effect } from "effect";
 import { run } from "../lib/shell";
 

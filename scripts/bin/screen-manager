@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 // Screen, brightness, and session manager
-// Usage: screen-manager.ts <command> [value]
+// Usage: screen-manager <command> [value]
+
 import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, readdirSync } from "fs";
 import { run } from "../lib/shell";
@@ -184,7 +185,7 @@ const showStatus = () => {
 const showHelp = () => {
   console.log(`Universal Screen and Brightness Manager
 
-Usage: screen-manager.ts [COMMAND] [VALUE]
+Usage: screen-manager [COMMAND] [VALUE]
 
 SCREEN COMMANDS:
   off, off-screen         Turn screen off
@@ -203,6 +204,7 @@ BRIGHTNESS COMMANDS:
   bright-down [step]      Decrease brightness (default: ${BRIGHTNESS_STEP}%)
   bright-json             Output JSON for waybar
   bright-json-subdued     Output subdued JSON for waybar
+  <0-100>                 Set brightness directly (numeric)
 
 UTILITY COMMANDS:
   status                  Show current status
