@@ -171,14 +171,20 @@ in
         --replace-fail "@kimiCli@" "$out/bin/kimi-cli"
     '';
     
-    # Copy the web UI static files and prompts after installation
+    # Copy the web UI static files and all non-Python data files after installation
     postInstall = ''
       mkdir -p $out/lib/python3.13/site-packages/kimi_cli/web/static
       cp -r ${webUi}/* $out/lib/python3.13/site-packages/kimi_cli/web/static/
       
-      # Copy prompts directory (contains init.md, compact.md, etc.)
-      mkdir -p $out/lib/python3.13/site-packages/kimi_cli/prompts
-      cp -r $src/src/kimi_cli/prompts/* $out/lib/python3.13/site-packages/kimi_cli/prompts/
+      # Copy all non-Python data files (.md, .yaml, etc.) that setuptools doesn't include
+      (
+        cd $src/src/kimi_cli
+        find -L . -type f \( -name "*.md" -o -name "*.yaml" -o -name "*.yml" \) | while read f; do
+          dir=$(dirname "$f")
+          mkdir -p "$out/lib/python3.13/site-packages/kimi_cli/$dir"
+          cp "$f" "$out/lib/python3.13/site-packages/kimi_cli/$f"
+        done
+      )
     '';
 
     dependencies = [
