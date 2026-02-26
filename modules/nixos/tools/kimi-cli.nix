@@ -16,14 +16,9 @@ in
   };
 
   config = mkIf cfg.enable {
-    environment.systemPackages = with pkgs; [
-      # Install uv package manager
-      uv
-
-      # Wrapper script for kimi-cli
-      (writeShellScriptBin "kimi-cli" ''
-        exec ${pkgs.uv}/bin/uv tool run --python 3.13 kimi-cli "$@"
-      '')
+    environment.systemPackages = [
+      pkgs.kimi-cli
+      pkgs.ripgrep
     ];
   };
 }

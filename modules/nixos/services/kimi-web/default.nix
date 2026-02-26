@@ -9,10 +9,6 @@ with lib;
 
 let
   cfg = config.modules.services.kimi-web;
-  # Wrapper script for kimi-cli
-  kimi-cli = pkgs.writeShellScriptBin "kimi-cli" ''
-    exec ${pkgs.uv}/bin/uv tool run --python 3.13 kimi-cli "$@"
-  '';
 in
 {
   options.modules.services.kimi-web = {
@@ -59,7 +55,7 @@ in
     # Open firewall port
     networking.firewall.allowedTCPPorts = mkIf cfg.openFirewall [ cfg.port ];
 
-    # Create systemd user service
+    # Create systemd service using the properly packaged kimi-cli
     systemd.services.kimi-web = {
       description = "Kimi CLI Web UI Server";
       after = [ "network.target" ];
@@ -69,20 +65,15 @@ in
         Type = "simple";
         User = cfg.user;
         Group = cfg.user;
-        WorkingDirectory = cfg.workDir or "/home/${cfg.user}";
+        WorkingDirectory = if cfg.workDir != null then cfg.workDir else "/home/${cfg.user}";
         Restart = "on-failure";
         RestartSec = 5;
 
-        # Security hardening (still appropriate even with --dangerously-omit-auth)
-        NoNewPrivileges = true;
-        ProtectSystem = "strict";
-        ProtectHome = "read-only";
-        ReadWritePaths = [ "/home/${cfg.user}" ];
-        ProtectKernelTunables = true;
-        ProtectKernelModules = true;
-        ProtectControlGroups = true;
-        RestrictSUIDSGID = true;
-        PrivateTmp = true;
+        # Relaxed security for proper operation
+        NoNewPrivileges = false;
+        ProtectSystem = "off";
+        ProtectHome = "no";
+        PrivateTmp = false;
       };
 
       script = let
@@ -92,23 +83,22 @@ in
         workDirStr = if cfg.workDir != null
           then "--work-dir=${cfg.workDir}"
           else "";
+        cmd = "${pkgs.kimi-cli}/bin/kimi-cli --yolo ${workDirStr} web --host ${cfg.host} --port ${toString cfg.port} --public --network --dangerously-omit-auth --no-open ${allowedOriginsStr}";
       in ''
         export HOME=/home/${cfg.user}
-        export PATH="${pkgs.uv}/bin:$PATH"
 
-        exec ${kimi-cli}/bin/kimi-cli --yolo web \
-          --host ${cfg.host} \
-          --port ${toString cfg.port} \
-          --public \
-          --network \
-          --dangerously-omit-auth \
-          --no-open \
-          ${allowedOriginsStr} \
-          ${workDirStr}
+        # Use expect to handle the interactive confirmation
+        ${pkgs.expect}/bin/expect -c '
+          spawn ${cmd}
+          expect "continue:"
+          send "I UNDERSTAND THE RISKS\r"
+          set wait_result [wait]
+          exit [lindex $wait_result 3]
+        '
       '';
     };
 
-    # Ensure uv is available system-wide
-    environment.systemPackages = [ pkgs.uv ];
+    # Ensure kimi-cli and ripgrep are available
+    environment.systemPackages = [ pkgs.kimi-cli pkgs.ripgrep ];
   };
 }
