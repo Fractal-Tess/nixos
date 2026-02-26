@@ -1,0 +1,25 @@
+--- a/src/kimi_cli/web/runner/process.py
++++ b/src/kimi_cli/web/runner/process.py
+@@ -193,13 +193,11 @@ class SessionProcess:
+             # 16MB buffer for large messages (e.g., base64-encoded images)
+             STREAM_LIMIT = 16 * 1024 * 1024
+ 
+-            if getattr(sys, "frozen", False):
+-                worker_cmd = [sys.executable, "__web-worker", str(self.session_id)]
+-            else:
+-                worker_cmd = [
+-                    sys.executable,
+-                    "-m",
+-                    "kimi_cli.web.runner.worker",
+-                    str(self.session_id),
+-                ]
++            # Use kimi-cli directly instead of sys.executable
++            # This ensures the subprocess has access to all dependencies
++            worker_cmd = [
++                "@kimiCli@",
++                "__web-worker",
++                str(self.session_id),
++            ]
+ 
+             self._process = await asyncio.create_subprocess_exec(
+                 *worker_cmd,

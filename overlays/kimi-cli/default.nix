@@ -16,7 +16,7 @@ let
     pname = "kimi-cli-web";
     inherit version;
     src = src + "/web";
-    npmDepsHash = "sha256-CxpQr3aHS+l5CFeuBXMwGRdg4lG7Wxn10lg4YhYgwYA="; # Placeholder, will need to be updated
+    npmDepsHash = "sha256-CxpQr3aHS+l5CFeuBXMwGRdg4lG7Wxn10lg4YhYgwYA=";
     
     buildPhase = ''
       runHook preBuild
@@ -36,8 +36,14 @@ in
   # Python packages needed for kimi-cli
   python313 = prev.python313.override {
     packageOverrides = pyfinal: pyprev: {
+      # scalar-fastapi - override to disable pytest (no tests but pytest fails)
+      scalar-fastapi = pyprev.scalar-fastapi.overridePythonAttrs (oldAttrs: {
+        doCheck = false;
+        dontUsePytestCheck = true;
+      });
+
       # Streaming JSON parser
-      streamingjson = pythonPackages.buildPythonPackage rec {
+      streamingjson = pyfinal.buildPythonPackage rec {
         pname = "streamingjson";
         version = "0.0.5";
         pyproject = true;
@@ -47,7 +53,7 @@ in
           rev = version;
           hash = "sha256-XKqW5gbK55OKoAWftoh5CmGc0Sn5FOvGKmrAbsEvIMo=";
         };
-        build-system = [ pythonPackages.setuptools ];
+        build-system = [ pyfinal.setuptools ];
         pythonImportsCheck = [ "streamingjson" ];
         meta = {
           description = "A streamlined, user-friendly JSON streaming preprocessor";
@@ -57,7 +63,7 @@ in
       };
 
       # Python module for ripgrep
-      ripgrepy = pythonPackages.buildPythonPackage rec {
+      ripgrepy = pyfinal.buildPythonPackage rec {
         pname = "ripgrepy";
         version = "2.2.0";
         pyproject = true;
@@ -68,8 +74,8 @@ in
           hash = "sha256-+Q9O6sLXgdhjxN6+cTJvNhVg6cr0jByETJrlpnc+FEQ=";
         };
         build-system = [
-          pythonPackages.setuptools
-          pythonPackages.wheel
+          pyfinal.setuptools
+          pyfinal.wheel
         ];
         pythonImportsCheck = [ "ripgrepy" ];
         meta = {
@@ -80,23 +86,29 @@ in
       };
 
       # Kosong - LLM abstraction layer (from kimi-cli repo)
-      kosong = pythonPackages.buildPythonPackage {
+      kosong = pyfinal.buildPythonPackage {
         pname = "kosong";
         inherit version;
         pyproject = true;
         src = src + "/packages/kosong";
-        build-system = [ pythonPackages.uv-build ];
+        build-system = [ pyfinal.setuptools pyfinal.wheel ];
         pythonRelaxDeps = true;
+        prePatch = ''
+          # Replace uv_build with setuptools in pyproject.toml
+          substituteInPlace pyproject.toml \
+            --replace-fail 'requires = ["uv_build>=0.8.5,<0.10.0"]' 'requires = ["setuptools"]' \
+            --replace-fail 'build-backend = "uv_build"' 'build-backend = "setuptools.build_meta"'
+        '';
         dependencies = [
-          pythonPackages.jsonschema
-          pythonPackages.loguru
-          pythonPackages.openai
-          pythonPackages.pydantic
-          pythonPackages.python-dotenv
-          pythonPackages.typing-extensions
-          pythonPackages.mcp
-          pythonPackages.anthropic
-          pythonPackages.google-genai
+          pyfinal.jsonschema
+          pyfinal.loguru
+          pyfinal.openai
+          pyfinal.pydantic
+          pyfinal.python-dotenv
+          pyfinal.typing-extensions
+          pyfinal.mcp
+          pyfinal.anthropic
+          pyfinal.google-genai
         ];
         meta = {
           description = "Streaming-first LLM-abstraction layer";
@@ -106,20 +118,22 @@ in
       };
 
       # Kaos - OS abstraction layer (from kimi-cli repo)
-      kaos = pythonPackages.buildPythonPackage {
+      kaos = pyfinal.buildPythonPackage {
         pname = "kaos";
         inherit version;
         pyproject = true;
         src = src + "/packages/kaos";
-        build-system = [ pythonPackages.uv-build ];
+        build-system = [ pyfinal.setuptools pyfinal.wheel ];
         pythonRelaxDeps = true;
-        postPatch = ''
+        prePatch = ''
+          # Replace uv_build with setuptools in pyproject.toml
           substituteInPlace pyproject.toml \
-            --replace-fail "uv_build>=0.8.5,<0.9.0" "uv_build>=0.8.5,<0.10.0"
+            --replace-fail 'requires = ["uv_build>=0.8.5,<0.9.0"]' 'requires = ["setuptools"]' \
+            --replace-fail 'build-backend = "uv_build"' 'build-backend = "setuptools.build_meta"'
         '';
         dependencies = [
-          pythonPackages.aiofiles
-          pythonPackages.asyncssh
+          pyfinal.aiofiles
+          pyfinal.asyncssh
         ];
         meta = {
           description = "OS abstraction layer for agents";
@@ -139,13 +153,28 @@ in
     inherit version src;
     pyproject = true;
 
-    build-system = [ pythonPackages.uv-build ];
+    build-system = [ pythonPackages.setuptools pythonPackages.wheel ];
     pythonRelaxDeps = true;
+    
+    prePatch = ''
+      # Replace uv_build with setuptools in pyproject.toml
+      substituteInPlace pyproject.toml \
+        --replace-fail 'requires = ["uv_build>=0.8.5,<0.10.0"]' 'requires = ["setuptools"]' \
+        --replace-fail 'build-backend = "uv_build"' 'build-backend = "setuptools.build_meta"'
+    '';
 
-    # Copy the web UI static files to the package
+    patches = [ ./fix-worker-path.patch ];
+
+    # Patch the worker path before build
     preBuild = ''
-      mkdir -p src/kimi_cli/web/static
-      cp -r ${webUi}/* src/kimi_cli/web/static/
+      substituteInPlace src/kimi_cli/web/runner/process.py \
+        --replace-fail "@kimiCli@" "$out/bin/kimi-cli"
+    '';
+    
+    # Copy the web UI static files after installation
+    postInstall = ''
+      mkdir -p $out/lib/python3.13/site-packages/kimi_cli/web/static
+      cp -r ${webUi}/* $out/lib/python3.13/site-packages/kimi_cli/web/static/
     '';
 
     dependencies = [
