@@ -10,7 +10,6 @@
     "typescript": "^5"
   },
   "dependencies": {
-    "@anthropic-ai/claude-code": "^2.1.59",
     "effect": "^3.19.18"
   }
 }
