@@ -30,34 +30,35 @@ const program = Effect.gen(function* () {
   yield* checkGitConflicts;
   yield* stageLocalChanges;
 
-  // Check if there are local changes before proceeding
+  // Check if there are local changes - this determines if we commit/push later
   const hasLocalChanges = run(["git", "diff", "--cached", "--name-only"]).out.length > 0;
 
-  if (!hasLocalChanges) {
-    log.step("No local changes to rebuild");
-    log.info("Nothing to do - no configuration changes detected");
-    yield* showSummary(false, false);
-    return;
+  // Start generating commit message in the background if there are changes
+  let commitMessagePromise: Promise<string> | null = null;
+  if (hasLocalChanges) {
+    log.info("Starting AI commit message generation in background...");
+    commitMessagePromise = Effect.runPromise(generateCommitMessage);
   }
 
-  // Start generating commit message in the background while rebuilding
-  log.info("Starting AI commit message generation in background...");
-  const commitMessagePromise = Effect.runPromise(generateCommitMessage);
-
-  // Run rebuild while commit message is being generated
+  // Always run rebuild (even if no changes - for idempotency)
   yield* rebuildNixos;
 
-  // Wait for commit message to be ready
-  log.step("Finalizing commit...");
-  const commitMessage = yield* Effect.promise(() => commitMessagePromise);
+  // Only commit/push if there were local changes
+  if (hasLocalChanges && commitMessagePromise) {
+    log.step("Finalizing commit...");
+    const commitMessage = yield* Effect.promise(() => commitMessagePromise);
 
-  // Commit and push with the generated message
-  const committed = yield* commitChangesWithMessage(commitMessage);
-  const pushed = committed
-    ? yield* pipe(pushChanges, Effect.map(() => true), Effect.catchAll(() => Effect.succeed(false)))
-    : false;
+    const committed = yield* commitChangesWithMessage(commitMessage);
+    const pushed = committed
+      ? yield* pipe(pushChanges, Effect.map(() => true), Effect.catchAll(() => Effect.succeed(false)))
+      : false;
 
-  yield* showSummary(true, pushed);
+    yield* showSummary(true, pushed);
+  } else {
+    log.step("No local changes to commit");
+    log.info("Configuration rebuilt successfully, no new commits needed");
+    yield* showSummary(false, false);
+  }
 });
 
 const handleError = (error: GitError | NixosBuildError) => Effect.sync(() => {
