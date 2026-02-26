@@ -77,6 +77,7 @@
 
     # AI assistants
     opencode # AI coding assistant
+    claude-code # Claude Code CLI
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
 

@@ -109,6 +109,7 @@
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
     opencode # AI coding assistant
+    claude-code # Claude Code CLI
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime

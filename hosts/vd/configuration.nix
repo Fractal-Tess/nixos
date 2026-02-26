@@ -214,6 +214,19 @@
         };
         moonlight = true; # Install Moonlight client
       };
+
+      # Kimi Web UI service
+      kimi-web = {
+        enable = true;
+        port = 5494;
+        allowedOrigins = [
+          "http://vd.netbird.cloud:5494"
+          "http://localhost:5494"
+          "http://127.0.0.1:5494"
+        ];
+        workDir = "/home/fractal-tess";
+        openFirewall = true;
+      };
     };
   };
 

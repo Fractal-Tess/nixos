@@ -109,6 +109,7 @@
 
     # AI assistants
     opencode # AI coding assistant
+    claude-code # Claude Code CLI
     aider-chat # AI pair programming in the terminal
     openclaw # AI coding agent
     amp-cli
