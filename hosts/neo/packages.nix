@@ -26,6 +26,9 @@
     eza # Modern replacement for ls with color and Git integration
     trash-cli # FreeDesktop.org trash interface
 
+    # File managers
+    yazi # Terminal file manager with image preview
+
     # Archive management
     p7zip # 7-Zip implementation
     unzip # Extract compressed files in a ZIP archive
