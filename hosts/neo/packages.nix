@@ -102,7 +102,7 @@
     watchexec # Execute commands in response to file modifications
 
     # Version control
-    forgejo-cli # Forgejo CLI tool
+    gitea # Gitea CLI tool
     lazygit # Simple terminal UI for git
 
     #--------------------------------------------------------------------------

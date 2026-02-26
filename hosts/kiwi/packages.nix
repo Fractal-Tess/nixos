@@ -144,7 +144,7 @@
     # Version control
     gh # GitHub CLI
     glab # GitLab CLI
-    forgejo-cli # Forgejo CLI tool
+    gitea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     gitkraken # Git GUI tool
 
