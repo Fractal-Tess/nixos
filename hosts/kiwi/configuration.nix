@@ -221,6 +221,19 @@
 
     # Tools
     tools.kimi-cli.enable = true;
+
+    # Kimi Web UI service
+    services.kimi-web = {
+      enable = true;
+      port = 5494;
+      allowedOrigins = [
+        "http://kiwi.netbird.cloud:5494"
+        "http://localhost:5494"
+        "http://127.0.0.1:5494"
+      ];
+      workDir = "/home/fractal-tess";
+      openFirewall = true;
+    };
   };
 
   networking.firewall.allowedTCPPorts = [
