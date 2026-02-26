@@ -5,6 +5,7 @@
     ./adb/default.nix
     ./auto_cpu/default.nix
     ./automount/default.nix
+    ./kimi-web/default.nix
     ./remote-desktop/default.nix
     ./samba/default.nix
     ./sops/default.nix
