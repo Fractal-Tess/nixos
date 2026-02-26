@@ -232,6 +232,11 @@
         };
       };
     };
+
+    # Tools
+    tools = {
+      kimi-cli.enable = true;
+    };
   };
 
   networking.firewall.allowedTCPPorts = [
