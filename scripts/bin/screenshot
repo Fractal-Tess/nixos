@@ -1,6 +1,7 @@
 #!/usr/bin/env bun
 // Screenshot with region selection and Satty annotation
 // Uses ppm format for faster processing (uncompressed vs png)
+
 import { Effect } from "effect";
 
 const program = Effect.sync(() => {

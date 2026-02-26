@@ -251,7 +251,7 @@
       "format": "{volume} {icon}",
       "rotate": 0,
       "format-muted": "婢",
-      "on-click-right": "~/nixos/scripts/audio-sink-switch.sh",
+      "on-click-right": "~/nixos/scripts/bin/audio-sink",
       "on-click": "pactl set-sink-mute 0 toggle",
       "tooltip-format": "{icon} {desc} // {volume}%",
       "scroll-step": 5,

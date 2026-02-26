@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // Dynamic workspace switcher — swaps workspaces between active monitors
+
 import { Effect } from "effect";
 import { run } from "../lib/shell";
 
@@ -41,7 +42,7 @@ const status = Effect.sync(() => {
 
 const help = Effect.sync(() => {
   console.log("Dynamic Workspace Switcher\n");
-  console.log("Usage: workspace-switcher.ts [COMMAND]\n");
+  console.log("Usage: workspace-switcher [COMMAND]\n");
   console.log("Commands:");
   console.log("  swap    Swap workspaces between main active monitors (default)");
   console.log("  status  Show current monitor configuration");

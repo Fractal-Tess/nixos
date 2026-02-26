@@ -1,8 +1,9 @@
 #!/usr/bin/env bun
 // Audio sink control for waybar
 // Usage:
-//   audio-sink.ts        — Toggle mute/unmute current sink
-//   audio-sink.ts next   — Switch to next sink
+//   audio-sink        — Toggle mute/unmute current sink
+//   audio-sink next   — Switch to next sink
+
 import { Effect } from "effect";
 import { run } from "../lib/shell";
 

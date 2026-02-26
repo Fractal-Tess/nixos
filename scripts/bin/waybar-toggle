@@ -1,4 +1,6 @@
 #!/usr/bin/env bun
+// Waybar toggle - show/hide/start
+
 import { Effect } from "effect";
 import { readFileSync } from "fs";
 import { run } from "../lib/shell";
