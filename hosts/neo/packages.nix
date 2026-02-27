@@ -105,7 +105,7 @@
     watchexec # Execute commands in response to file modifications
 
     # Version control
-    gitea # Gitea CLI tool
+    tea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     git-fame # Git repository statistics by contributor
 
