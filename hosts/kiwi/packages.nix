@@ -145,7 +145,7 @@
     # Version control
     gh # GitHub CLI
     glab # GitLab CLI
-    gitea # Gitea CLI tool
+    tea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     gitkraken # Git GUI tool
     git-fame # Git repository statistics by contributor
