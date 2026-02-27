@@ -167,6 +167,11 @@
                 "neo"
                 "kiwi"
               ];
+              ignorePatterns = [
+                "!Sessions"
+                "!Sessions/**"
+                "*"
+              ];
             };
             "vivaldi-profile1" = {
               path = "/home/fractal-tess/.config/vivaldi/Profile 1";
@@ -175,6 +180,11 @@
               devices = [
                 "neo"
                 "kiwi"
+              ];
+              ignorePatterns = [
+                "!Sessions"
+                "!Sessions/**"
+                "*"
               ];
             };
           };
