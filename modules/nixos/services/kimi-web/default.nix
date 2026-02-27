@@ -97,26 +97,26 @@ in
 
           spawn ${cmd}
 
-          # Wait for the security warning prompt
+          # Wait for the security warning prompt and confirm
           expect {
             -re {continue:.*} {
               send "I UNDERSTAND THE RISKS\r"
-              exp_continue
             }
             eof {
-              # Process ended - check exit status
               set wait_result [wait]
-              set exit_code [lindex $wait_result 3]
-              if {$exit_code != 0} {
-                puts "Process exited with code $exit_code"
-              }
-              exit $exit_code
+              exit [lindex $wait_result 3]
             }
             timeout {
               puts "Timeout waiting for prompt"
               exit 1
             }
           }
+
+          # Server is running - wait indefinitely for it to exit
+          set timeout -1
+          expect eof
+          set wait_result [wait]
+          exit [lindex $wait_result 3]
         '
       '';
     };
