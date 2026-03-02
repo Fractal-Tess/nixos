@@ -33,6 +33,7 @@
       "cpu",
       "custom/gpu#nvidia",
       "memory",
+      "custom/swap",
       "hyprland/language",
       "clock",
       "custom/pad",
@@ -96,6 +97,14 @@
       "format": "{icon}",
       "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
       "max-length": 10
+    },
+    "custom/swap": {
+      "interval": 1,
+      "format": "{icon}",
+      "rotate": 270,
+      "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+      "exec": "~/nixos/scripts/swap-status.sh",
+      "return-type": "json"
     },
     "custom/gpu#nvidia": {
       "interval": 1,
