@@ -2,6 +2,7 @@
   pkgs,
   inputs,
   username,
+  lib,
   ...
 }:
 
@@ -91,6 +92,22 @@
 
   # Wake-on-LAN support
   networking.interfaces.enp34s0.wakeOnLan.enable = true;
+
+  #============================================================================
+  # MEMORY MANAGEMENT
+  #============================================================================
+
+  # Enable zram for compressed RAM swapping
+  zramSwap.enable = true;
+
+  # Keep existing 8GB swap partition + add 32GB swap file
+  swapDevices = [
+    { device = "/dev/disk/by-uuid/91550180-458a-427b-93d9-e1d6a93897d1"; }
+    {
+      device = "/swapfile";
+      size = 32 * 1024; # 32GB in MB
+    }
+  ];
 
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
