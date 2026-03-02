@@ -1,0 +1,100 @@
+#!/usr/bin/env bun
+// Audio sink selector - interactive wofi menu for choosing output device
+// Usage: audio-sink-selector
+
+import { Effect } from "effect";
+import { run } from "../lib/shell";
+
+interface Sink {
+  id: number;
+  name: string;
+  description: string;
+  isDefault: boolean;
+}
+
+const getSinks = (): Sink[] => {
+  const result = run(["wpctl", "status"]).out;
+  const lines = result.split("\n");
+  
+  // Find the Sinks section
+  const sinksStart = lines.findIndex(l => l.includes("Sinks:"));
+  const sourcesStart = lines.findIndex((l, i) => i > sinksStart && l.includes("Sources:"));
+  
+  if (sinksStart === -1) return [];
+  
+  const sinkLines = lines.slice(sinksStart, sourcesStart > 0 ? sourcesStart : undefined);
+  const sinks: Sink[] = [];
+  
+  for (const line of sinkLines) {
+    // Match lines like: "  45. Description [Name] (properties)"
+    // Or marked current: " * 45. Description [Name]"
+    const match = line.match(/^(\s*\*?\s*)(\d+)\.\s+(.+?)\s*\[(.+?)\]/);
+    if (match) {
+      const isDefault = line.includes("*");
+      const id = parseInt(match[2], 10);
+      const description = match[3].trim();
+      const name = match[4].trim();
+      sinks.push({ id, name, description, isDefault });
+    }
+  }
+  
+  return sinks;
+};
+
+const formatSinkEntry = (s: Sink): string => {
+  const indicator = s.isDefault ? "🔊" : "  ";
+  return `${indicator} ${s.description}`;
+};
+
+const selectSink = (sinks: Sink[]): number | null => {
+  const entries = sinks.map(formatSinkEntry).join("\n");
+  
+  run(["pkill", "wofi"]);
+  
+  const selection = Bun.spawnSync(
+    ["wofi", "-dmenu", "-p", "Select audio output:", "--cache-file", "/dev/null"],
+    { stdin: new TextEncoder().encode(entries), stdout: "pipe" }
+  );
+  
+  if (!selection.stdout?.byteLength || selection.exitCode !== 0) return null;
+  
+  const selected = new TextDecoder().decode(selection.stdout).trim();
+  // Extract sink description and find matching sink
+  const descMatch = selected.match(/^\s*(?:🔊)?\s+(.+)$/);
+  if (!descMatch) return null;
+  
+  const selectedDesc = descMatch[1].trim();
+  const sink = sinks.find(s => s.description === selectedDesc);
+  return sink?.id ?? null;
+};
+
+const notify = (title: string, msg: string) =>
+  run(["notify-send", title, msg, "-h", "string:x-canonical-private-synchronous:audio-sink"]);
+
+const selectAudioSink = Effect.sync(() => {
+  const sinks = getSinks();
+  if (sinks.length === 0) {
+    notify("Audio Error", "No audio sinks found");
+    return;
+  }
+  
+  if (sinks.length === 1) {
+    notify("Audio", `Only one sink: ${sinks[0].description}`);
+    return;
+  }
+  
+  const sinkId = selectSink(sinks);
+  if (!sinkId) return;
+  
+  const sink = sinks.find(s => s.id === sinkId);
+  if (!sink) return;
+  
+  run(["wpctl", "set-default", sinkId.toString()]);
+  notify("Audio Output", `🔊 ${sink.description}`);
+});
+
+const program = Effect.gen(function* () {
+  yield* selectAudioSink;
+});
+
+Effect.runSync(program);
