@@ -2,12 +2,10 @@
 // Audio sink selector - interactive wofi menu for choosing output device
 // Usage: audio-sink-selector
 
-import { Effect } from "effect";
 import { run } from "../lib/shell";
 
 interface Sink {
   id: number;
-  name: string;
   description: string;
   isDefault: boolean;
 }
@@ -16,25 +14,22 @@ const getSinks = (): Sink[] => {
   const result = run(["wpctl", "status"]).out;
   const lines = result.split("\n");
   
-  // Find the Sinks section
+  // Find the first Sinks section (audio devices)
   const sinksStart = lines.findIndex(l => l.includes("Sinks:"));
   const sourcesStart = lines.findIndex((l, i) => i > sinksStart && l.includes("Sources:"));
   
   if (sinksStart === -1) return [];
   
-  const sinkLines = lines.slice(sinksStart, sourcesStart > 0 ? sourcesStart : undefined);
+  const sinkLines = lines.slice(sinksStart + 1, sourcesStart > 0 ? sourcesStart : undefined);
   const sinks: Sink[] = [];
   
   for (const line of sinkLines) {
-    // Match lines like: "  45. Description [Name] (properties)"
-    // Or marked current: " * 45. Description [Name]"
-    const match = line.match(/^(\s*\*?\s*)(\d+)\.\s+(.+?)\s*\[(.+?)\]/);
+    const match = line.match(/^\s*[│├└─]*\s*(\*)?\s*(\d+)\.\s+(.+?)\s*(?:\[vol:.*\])?$/);
     if (match) {
-      const isDefault = line.includes("*");
+      const isDefault = match[1] === "*";
       const id = parseInt(match[2], 10);
       const description = match[3].trim();
-      const name = match[4].trim();
-      sinks.push({ id, name, description, isDefault });
+      sinks.push({ id, description, isDefault });
     }
   }
   
@@ -45,6 +40,9 @@ const formatSinkEntry = (s: Sink): string => {
   const indicator = s.isDefault ? "🔊" : "  ";
   return `${indicator} ${s.description}`;
 };
+
+const comparableLabel = (entry: string): string =>
+  entry.replace(/^\s*🔊\s*/u, "").trim();
 
 const selectSink = (sinks: Sink[]): number | null => {
   const entries = sinks.map(formatSinkEntry).join("\n");
@@ -59,42 +57,68 @@ const selectSink = (sinks: Sink[]): number | null => {
   if (!selection.stdout?.byteLength || selection.exitCode !== 0) return null;
   
   const selected = new TextDecoder().decode(selection.stdout).trim();
-  // Extract sink description and find matching sink
-  const descMatch = selected.match(/^\s*(?:🔊)?\s+(.+)$/);
-  if (!descMatch) return null;
+  const selectedLabel = comparableLabel(selected);
   
-  const selectedDesc = descMatch[1].trim();
-  const sink = sinks.find(s => s.description === selectedDesc);
-  return sink?.id ?? null;
+  // Debug: log what was selected
+  console.error(`Selected: ${JSON.stringify(selected)}`);
+  
+  // Match the selected line back to a sink
+  // The selection will be like "🔊 Description" or "  Description"
+  for (const sink of sinks) {
+    const entryLabel = comparableLabel(formatSinkEntry(sink));
+    if (selectedLabel === entryLabel) {
+      console.error(`Matched sink ${sink.id}: ${sink.description}`);
+      return sink.id;
+    }
+  }
+
+  const sink = sinks.find(s => s.description === selectedLabel);
+  if (sink) {
+    console.error(`Fallback matched sink ${sink.id}`);
+    return sink.id;
+  }
+  
+  console.error("No match found for selection");
+  return null;
 };
 
-const notify = (title: string, msg: string) =>
-  run(["notify-send", title, msg, "-h", "string:x-canonical-private-synchronous:audio-sink"]);
-
-const selectAudioSink = Effect.sync(() => {
-  const sinks = getSinks();
-  if (sinks.length === 0) {
-    notify("Audio Error", "No audio sinks found");
-    return;
+const notify = (title: string, msg: string) => {
+  try {
+    run(["notify-send", title, msg, "-h", "string:x-canonical-private-synchronous:audio-sink"]);
+  } catch {
+    // Silent fail
   }
-  
-  if (sinks.length === 1) {
-    notify("Audio", `Only one sink: ${sinks[0].description}`);
-    return;
-  }
-  
-  const sinkId = selectSink(sinks);
-  if (!sinkId) return;
-  
-  const sink = sinks.find(s => s.id === sinkId);
-  if (!sink) return;
-  
-  run(["wpctl", "set-default", sinkId.toString()]);
-  notify("Audio Output", `🔊 ${sink.description}`);
-});
+};
 
-const program = Effect.gen(function* () {
-  yield* selectAudioSink;
-});
+// Main
+const sinks = getSinks();
 
-Effect.runSync(program);
+if (sinks.length === 0) {
+  notify("Audio Error", "No audio sinks found");
+  process.exit(1);
+}
+
+if (sinks.length === 1) {
+  notify("Audio", `Only one sink: ${sinks[0].description}`);
+  process.exit(0);
+}
+
+const sinkId = selectSink(sinks);
+
+if (sinkId === null) {
+  console.error("No sink selected");
+  process.exit(0);
+}
+
+console.error(`Switching to sink ${sinkId}...`);
+
+const result = run(["wpctl", "set-default", sinkId.toString()]);
+console.error(`wpctl result: ok=${result.ok}, out=${result.out}`);
+
+if (!result.ok) {
+  notify("Audio Error", `Failed to switch: ${result.out}`);
+  process.exit(1);
+}
+
+const sink = sinks.find(s => s.id === sinkId);
+notify("Audio Output", `🔊 ${sink?.description ?? "Unknown"}`);
