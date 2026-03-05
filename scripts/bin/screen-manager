@@ -2,19 +2,20 @@
 // Screen, brightness, and session manager
 // Usage: screen-manager <command> [value]
 
-import { Effect } from "effect";
 import { existsSync, readFileSync, writeFileSync, readdirSync } from "fs";
 import { run } from "../lib/shell";
 import { log } from "../lib/log";
 
 const BRIGHTNESS_CACHE = "/tmp/brightness-cache";
 const BRIGHTNESS_STEP  = 10;
+const DDCUTIL_TIMEOUT  = "2s";
 
 // ─── Brightness tools ───────────────────────────────────────────────────────
 
 const hasBrightnessctl = () => run(["which", "brightnessctl"]).ok && existsSync("/sys/class/backlight");
 const hasLight         = () => run(["which", "light"]).ok && existsSync("/sys/class/backlight");
 const hasDdcutil       = () => run(["which", "ddcutil"]).ok;
+const runDdcutil       = (args: string[]) => run(["timeout", DDCUTIL_TIMEOUT, "ddcutil", ...args]);
 
 const availableMethods = () => {
   const m: string[] = [];
@@ -37,10 +38,10 @@ const initCache = () => {
     const cur = parseInt(run(["light", "-G"]).out);
     if (!isNaN(cur)) initial = cur;
   } else if (hasDdcutil()) {
-    const detect  = run(["ddcutil", "detect"]).out;
+    const detect  = runDdcutil(["detect"]).out;
     const busMatch = detect.match(/I2C bus.*?-(\d+)/);
     if (busMatch) {
-      const vcp = run(["ddcutil", "--bus", busMatch[1], "getvcp", "10"]).out;
+      const vcp = runDdcutil(["--bus", busMatch[1], "getvcp", "10"]).out;
       const val = parseInt(vcp.match(/current value =\s*(\d+)/)?.[1] ?? "");
       if (!isNaN(val)) initial = val;
     }
@@ -57,7 +58,7 @@ const getCachedBrightness = (): number => {
 };
 
 const getDdcutilBuses = (): string[] =>
-  run(["ddcutil", "detect"]).out
+  runDdcutil(["detect"]).out
     .split("\n")
     .filter(l => l.includes("I2C bus"))
     .map(l => l.match(/I2C bus.*?-(\d+)/)?.[1])
@@ -65,11 +66,7 @@ const getDdcutilBuses = (): string[] =>
 
 const setBrightnessDdcutil = (value: number) => {
   for (const bus of getDdcutilBuses()) {
-    const proc = Bun.spawn(
-      ["ddcutil", "--bus", bus, "--sleep-multiplier", ".1", "setvcp", "10", String(value)],
-      { stdin: "ignore", stdout: "ignore", stderr: "ignore" }
-    );
-    proc.unref();
+    runDdcutil(["--bus", bus, "--sleep-multiplier", ".1", "setvcp", "10", String(value)]);
   }
 };
 
@@ -118,14 +115,14 @@ const dpms = (state: "on" | "off"): boolean => {
 };
 
 const screenOffFallback = () => {
-  if (hasDdcutil())       { run(["ddcutil", "setvcp", "10", "0"]);   return; }
+  if (hasDdcutil())       { runDdcutil(["setvcp", "10", "0"]);   return; }
   if (hasBrightnessctl()) { run(["brightnessctl", "set", "0"]);       return; }
   if (hasLight())         { run(["light", "-S", "0"]);                return; }
   run(["xset", "dpms", "force", "off"]);
 };
 
 const screenOnFallback = () => {
-  if (hasDdcutil())       { run(["ddcutil", "setvcp", "10", "100"]);  return; }
+  if (hasDdcutil())       { runDdcutil(["setvcp", "10", "100"]);  return; }
   if (hasBrightnessctl()) { run(["brightnessctl", "set", "100%"]);    return; }
   if (hasLight())         { run(["light", "-S", "100"]);              return; }
   run(["xset", "dpms", "force", "on"]);
@@ -213,7 +210,7 @@ UTILITY COMMANDS:
 
 // ─── Main ────────────────────────────────────────────────────────────────────
 
-const program = Effect.sync(() => {
+const main = () => {
   const [, , action = "help", arg2] = process.argv;
 
   switch (action) {
@@ -288,6 +285,6 @@ const program = Effect.sync(() => {
       }
     }
   }
-});
+};
 
-Effect.runSync(program);
+main();
