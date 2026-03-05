@@ -51,8 +51,8 @@ self: super: {
       #!${super.stdenv.shell}
       set -e
 
-      install_root="''${XDG_DATA_HOME:-$HOME/.local/share}/ntws"
-      install_log="''${XDG_CACHE_HOME:-$HOME/.cache}/ntws/install.log"
+      install_root="''${XDG_DATA_HOME:-\$HOME/.local/share}/ntws"
+      install_log="''${XDG_CACHE_HOME:-\$HOME/.cache}/ntws/install.log"
       marker_file="\$install_root/.installed-version"
       lock_file="\$install_root/.install.lock"
       expected_version="${version}"
