@@ -245,6 +245,7 @@
     antigravity # Google's vscode fork
     vscode # Open soure editor
     responsively-app # Web development tool for responsive design
+    ntws # Interactive Brokers Desktop
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client

@@ -51,15 +51,40 @@ self: super: {
       #!${super.stdenv.shell}
       set -e
 
-      export LD_LIBRARY_PATH="${super.lib.makeLibraryPath runtimeLibs}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
       install_root="''${XDG_DATA_HOME:-$HOME/.local/share}/ntws"
+      install_log="''${XDG_CACHE_HOME:-$HOME/.cache}/ntws/install.log"
+      marker_file="\$install_root/.installed-version"
+      lock_file="\$install_root/.install.lock"
+      expected_version="${version}"
 
+      mkdir -p "\$install_root"
+
+      while ! (set -o noclobber; : > "\$lock_file") 2>/dev/null; do
+        sleep 1
+      done
+      trap 'rm -f "\$lock_file"' EXIT
+
+      needs_install=0
       if [ ! -x "\$install_root/ntws" ]; then
-        mkdir -p "\$install_root"
-        "$out/libexec/ntws-installer.sh" -q -overwrite -dir "\$install_root"
+        needs_install=1
+      elif [ ! -f "\$marker_file" ] || [ "\$(cat "\$marker_file")" != "\$expected_version" ]; then
+        needs_install=1
       fi
 
-      exec "\$install_root/ntws" "\$@"
+      if [ "\$needs_install" -eq 1 ]; then
+        mkdir -p "\$(dirname "\$install_log")"
+        if ! "$out/libexec/ntws-installer.sh" -q -overwrite -dir "\$install_root" >"\$install_log" 2>&1; then
+          echo "NTWS installation failed. See log: \$install_log" >&2
+          exit 1
+        fi
+        if [ ! -x "\$install_root/ntws" ]; then
+          echo "NTWS installation completed but launcher was not found at \$install_root/ntws" >&2
+          exit 1
+        fi
+        printf '%s\n' "\$expected_version" > "\$marker_file"
+      fi
+
+      exec env LD_LIBRARY_PATH="${super.lib.makeLibraryPath runtimeLibs}''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}" "\$install_root/ntws" "\$@"
       EOF
       chmod +x "$out/bin/ntws"
 

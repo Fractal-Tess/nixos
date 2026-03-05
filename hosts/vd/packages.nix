@@ -272,6 +272,7 @@
     zed-editor # Zed editor
     antigravity # Development environment tool
     responsively-app # Web development tool for responsive design
+    ntws # Interactive Brokers Desktop
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
