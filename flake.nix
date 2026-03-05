@@ -39,9 +39,20 @@
     };
   };
 
-  outputs = { self, nixpkgs, polymc, sops-nix, nix4nvchad, flare, nix-matlab, ... }@inputs:
+  outputs =
+    {
+      self,
+      nixpkgs,
+      polymc,
+      sops-nix,
+      nix4nvchad,
+      flare,
+      nix-matlab,
+      ...
+    }@inputs:
     let
-      mkHost = { hostname, username }:
+      mkHost =
+        { hostname, username }:
         nixpkgs.lib.nixosSystem {
           system = "x86_64-linux";
           specialArgs = { inherit inputs hostname username; };
@@ -55,21 +66,24 @@
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/handy.nix)
+                (import ./overlays/ntws.nix)
                 (import ./overlays/kimi-cli)
                 (final: prev: {
-                  openclaw = (import inputs.nixpkgs-openclaw {
-                    system = final.system;
-                    config = {
-                      allowUnfree = true;
-                      permittedInsecurePackages = [ "openclaw-2026.1.30" ];
-                    };
-                  }).openclaw;
+                  openclaw =
+                    (import inputs.nixpkgs-openclaw {
+                      system = final.system;
+                      config = {
+                        allowUnfree = true;
+                        permittedInsecurePackages = [ "openclaw-2026.1.30" ];
+                      };
+                    }).openclaw;
                 })
               ];
             }
           ];
         };
-    in {
+    in
+    {
       nixosConfigurations = {
         vd = mkHost {
           hostname = "vd";
