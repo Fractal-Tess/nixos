@@ -112,7 +112,6 @@
     opencode # AI coding assistant
     claude-code # Claude Code CLI
     aider-chat # AI pair programming in the terminal
-    openclaw # AI coding agent
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
@@ -223,7 +222,7 @@
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber # Instant messaging
+    # viber # Instant messaging (temporarily disabled - rate limited download)
     slack # Team collaboration platform
     thunderbird # Email client
 
