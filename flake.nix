@@ -68,16 +68,6 @@
                 (import ./overlays/handy.nix)
                 (import ./overlays/ntws.nix)
                 (import ./overlays/kimi-cli)
-                (final: prev: {
-                  openclaw =
-                    (import inputs.nixpkgs-openclaw {
-                      system = final.system;
-                      config = {
-                        allowUnfree = true;
-                        permittedInsecurePackages = [ "openclaw-2026.1.30" ];
-                      };
-                    }).openclaw;
-                })
               ];
             }
           ];

@@ -72,7 +72,6 @@
     allowBroken = true; # Allow broken packages for fingerprint drivers
     permittedInsecurePackages = [
       "libsoup-2.74.3"
-      "openclaw-2026.1.30"
     ];
   };
 
@@ -263,9 +262,6 @@
       hplip # HP scanner backend (includes libsane-hpaio)
     ];
   };
-
-  # Brightness control
-  programs.light.enable = true;
 
   # Wireshark configuration - enables packet capture for non-root users
   # This automatically sets up dumpcap with CAP_NET_RAW and CAP_NET_ADMIN capabilities
