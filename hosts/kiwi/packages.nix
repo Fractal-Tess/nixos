@@ -190,6 +190,7 @@
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)
     handy # Speech-to-text application (offline)
+    sox # Dependency of claude code voice
     swaynotificationcenter # Notification daemon for Wayland
     # gource # Version control visualization (temporarily disabled - build failure)
 
