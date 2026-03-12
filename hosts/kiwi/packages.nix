@@ -35,7 +35,7 @@
     yazi # Terminal file manager with image preview
 
     # Archive management
-    mate.engrampa # Archive manager
+    engrampa # Archive manager
     p7zip # 7-Zip implementation
     unzip # Extract compressed files in a ZIP archive
     zip # Create and extract ZIP archives

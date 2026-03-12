@@ -1,4 +1,9 @@
-{ lib, hostname, pkgs, ... }:
+{
+  lib,
+  hostname,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -14,8 +19,14 @@ with lib;
       wireless.enable = mkDefault false;
 
       # DNS configuration for VPN coexistence
-      nameservers = [ "1.1.1.1" "8.8.8.8" ];
-      search = [ "netbird.cloud" "int" ];
+      nameservers = [
+        "1.1.1.1"
+        "8.8.8.8"
+      ];
+      search = [
+        "netbird.cloud"
+        "int"
+      ];
 
       # Enable IP forwarding for Docker containers to access VPN networks
       firewall = {
@@ -24,7 +35,10 @@ with lib;
         allowedUDPPorts = mkMerge [ ];
 
         # Allow Docker traffic
-        trustedInterfaces = [ "docker0" "wt0" ];
+        trustedInterfaces = [
+          "docker0"
+          "wt0"
+        ];
       };
 
     };
@@ -32,7 +46,7 @@ with lib;
     services.netbird = {
       enable = mkDefault true;
       package = pkgs.netbird;
+      ui.enable = false;
     };
   };
 }
-
