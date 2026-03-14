@@ -161,6 +161,8 @@
     dockerfile-language-server # Dockerfile language server
     rust-analyzer # Rust language server
     lua-language-server # Lua language server
+    bash-language-server # Bash language server
+    yaml-language-server # YAML language server
     phpactor # PHP language server
     nixd # Nix language server
     nil # Alternative Nix language server
@@ -272,7 +274,8 @@
     zed-editor # Zed editor
     antigravity # Development environment tool
     responsively-app # Web development tool for responsive design
-    ntws # Interactive Brokers Desktop
+    vibe-kanban # Desktop Kanban board for vibe coding workflows
+    tradingview # Trading platform desktop app
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
