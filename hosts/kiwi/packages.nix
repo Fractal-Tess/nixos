@@ -245,7 +245,7 @@
     antigravity # Google's vscode fork
     vscode # Open soure editor
     responsively-app # Web development tool for responsive design
-    ntws # Interactive Brokers Desktop
+    tradingview # Trading platform desktop app
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
@@ -262,6 +262,8 @@
     dockerfile-language-server
     rust-analyzer
     lua-language-server
+    bash-language-server
+    yaml-language-server
     phpactor
     nixd
     nil

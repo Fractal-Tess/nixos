@@ -66,7 +66,7 @@
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/handy.nix)
-                (import ./overlays/ntws.nix)
+                (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
               ];
             }
