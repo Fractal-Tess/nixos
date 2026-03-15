@@ -1,6 +1,6 @@
 * {
-  font-family: "Adwaita Sans";
-  color: #f5f7f2;
+  font-family: "JetBrainsMono Nerd Font Propo";
+  color: #e5e1eb;
   box-shadow: none;
   text-shadow: none;
   border: none;
@@ -16,24 +16,40 @@
 }
 
 .control-center {
-  background: alpha(#111315, 0.96);
-  border: 1px solid #31363b;
+  background: alpha(#131319, 0.96);
+  border: 1px solid #474552;
   padding: 14px;
 }
 
 .notification,
-.widget-dnd,
-.widget-volume,
-.widget-mpris {
-  background: #191c1f;
-  border: 1px solid #31363b;
+.widget-dnd {
+  background: #201f26;
+  border: 1px solid #474552;
   margin: 0 6px 12px 6px;
   padding: 14px;
 }
 
+.widget-mpris {
+  background: #201f26;
+  border: 1px solid #474552;
+  border-bottom: none;
+  border-radius: 18px 18px 0 0;
+  margin: 0 6px 0 6px;
+  padding: 14px 14px 10px 14px;
+}
+
+.widget-volume {
+  background: #201f26;
+  border: 1px solid #474552;
+  border-top: none;
+  border-radius: 0 0 18px 18px;
+  margin: 0 6px 12px 6px;
+  padding: 10px 14px 14px 14px;
+}
+
 .notification:hover,
 .notification-default-action:hover {
-  background: #23272b;
+  background: #2a2930;
 }
 
 .widget-title {
@@ -45,32 +61,50 @@
 .widget-title label {
   font-size: 18px;
   font-weight: 700;
+  color: #c7bfff;
 }
 
 .widget-title > button,
 .close-button {
-  background: #9ac7a4;
-  color: #111315;
+  background: #c7bfff;
+  color: #131319;
   border-radius: 999px;
   padding: 8px 14px;
 }
 
+.widget-title > button label,
+.close-button label {
+  color: #131319;
+}
+
+.close-button {
+  min-width: 20px;
+  min-height: 20px;
+  padding: 2px 6px;
+  font-size: 10px;
+}
+
+.widget-title > button:hover,
+.close-button:hover {
+  background: #e4dfff;
+}
+
 .widget-dnd > switch {
-  background: #17191b;
+  background: #35343b;
   border-radius: 999px;
 }
 
 .widget-dnd > switch:checked,
 .widget-volume trough highlight {
-  background: #9ac7a4;
+  background: #c7bfff;
 }
 
 .widget-dnd > switch slider {
-  background: #f5f7f2;
+  background: #e5e1eb;
   border-radius: 999px;
 }
 
 .widget-volume trough {
-  background: #17191b;
+  background: #35343b;
   border-radius: 999px;
 }
