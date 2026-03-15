@@ -199,8 +199,8 @@
     #--------------------------------------------------------------------------
 
     # Application launchers
-    wofi # Wayland native application launcher
-
+    rofi # Launcher used by the Hyprland desktop config
+    rofi-calc # Calculator mode for rofi launcher
     # Web browsers
     firefox # Open-source web browser
     chromium # Open source chrome base

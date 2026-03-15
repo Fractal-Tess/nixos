@@ -1,0 +1,16 @@
+configuration {
+  modi: "drun,run,window,calc";
+  show-icons: true;
+  display-drun: "Apps";
+  display-run: "Run";
+  display-window: "Windows";
+  display-calc: "Math";
+  drun-display-format: "{name}";
+  hover-select: true;
+  me-select-entry: "";
+  terminal: "ghostty";
+  icon-theme: "Papirus-Dark";
+  font: "Adwaita Sans 12";
+}
+
+@theme "~/.config/rofi/theme.rasi"

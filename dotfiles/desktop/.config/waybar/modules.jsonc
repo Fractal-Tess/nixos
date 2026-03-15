@@ -1,0 +1,351 @@
+{
+"custom/System": {
+  "tooltip": false,
+  "format" : "",
+  "on-click": "~/nixos/scripts/bin/rofi-launcher drun -show-icons"
+               },
+"custom/powermenu": {
+  "tooltip": false,
+  "format" : "",
+  "on-click": "~/nixos/scripts/bin/powermenu"
+                    },
+"custom/notifications": {
+    "tooltip": true,
+    "format": "{icon}",
+    "format-icons": {
+      "notification": "󱅫",
+      "none": "󰂜",
+      "dnd-notification": "󰂠",
+      "dnd-none": "󰪓",
+      "inhibited-notification": "󰂛",
+      "inhibited-none": "󰪑",
+      "dnd-inhibited-notification": "󰂛",
+      "dnd-inhibited-none": "󰪑"
+    },
+    "return-type": "json",
+    "exec-if": "which swaync-client",
+    "exec": "swaync-client -swb",
+    "on-click": "swaync-client -t -sw",
+    "on-click-right": "swaync-client -d -sw",
+    "on-click-middle": "swaync-client -R; swaync-client -rs",
+    "escape": true
+	                     }, 
+"hyprland/window": {
+  "format": "{title}",
+  "max-length": 80,
+  "icon": true,
+  "icon-size": 24,
+},
+"hyprland/workspaces": {
+ "disable-scroll": true,
+  "all-outputs": false,
+  "format": "{icon}",
+  "format-icons": {
+  "default": "󰜌",
+  "active": "󰜋",
+                  },
+"persistent-workspaces" : {
+  "1" : [],
+  "2" : [],
+  "3" : [],
+  "4" : [],
+  "5" : [],
+                           },
+                      },  
+"tray": {
+  "spacing": 10,
+        },       
+"group/traywer": {
+ "orientation": "horizontal",
+ "drawer": {
+  "transition-left-to-right": false,
+  "click-to-reveal": true,
+ },
+ "modules": [
+"custom/trayicon",	
+ "tray",
+ ],
+},
+"group/sysmon": {
+ "orientation": "horizontal",
+ "modules": [
+"cpu",
+"custom/gpu#nvidia",
+"memory",
+"custom/swap"
+ ]
+},
+"group/idlevol": {
+ "orientation": "horizontal",
+ "modules": [
+"group/volume",
+"idle_inhibitor"
+ ]
+},
+"group/netblue": {
+ "orientation": "horizontal",
+ "modules": [
+"network",
+"bluetooth"
+ ]
+},
+"group/traywermen": {
+ "orientation": "horizontal",
+ "modules": [
+"group/traywer",
+"custom/powermenu"
+ ]
+},
+"custom/trayicon": {
+	 "format": "",
+   "tooltip": false,
+},
+"hyprland/language": {
+  "format": "{}",
+  "format-en": "en",
+  "format-bg": "bg"
+},
+"clock": {
+  "timezone": "Europe/Berlin",
+  "tooltip-format": "<big>{:L%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
+  "format" : " {:%H:%M}",
+  "format-alt" : "󰸗 {:L%a %d.%m.%y}", 
+    "calendar": {
+    "mode"          : "year",
+"mode-mon-col"  : 3,
+"weeks-pos"     : "right",
+"on-scroll"     : 1,
+"format": {
+"months":     "<span color='#c7bfff'><b>{}</b></span>",
+"days":       "<span color='#e5e1eb'>{}</span>",
+"weeks":      "<span color='#928f9e'>W{}</span>",
+"weekdays":   "<span color='#ffb787'><b>{}</b></span>",
+"today":      "<span color='#131319' background='#c7bfff'><b> {} </b></span>"
+  }
+        }, 
+        }, 
+"network": {
+  "tooltip": true,
+  "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
+  "format-ethernet": "<b>󰈀</b>  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}",
+  "format-wifi": "{icon}  {bandwidthDownBytes:>4}   {bandwidthUpBytes:>4}",
+  "tooltip-format": "Network: <big><b>{essid}</b></big>\nSignal strength: <b>{signaldBm}dBm ({signalStrength}%)</b>\nFrequency: <b>{frequency}MHz</b>\nInterface: <b>{ifname}</b>\nIP: <b>{ipaddr}/{cidr}</b>\nGateway: <b>{gwaddr}</b>\nNetmask: <b>{netmask}</b>",
+  "format-linked": "󰈀 {ifname} (No IP)",
+  "format-disconnected": " ",
+  "tooltip-format-disconnected": "Disconnected",
+  "interval": 1
+          },
+"disk#root": {
+  "interval": 30,
+  "path": "/",
+  "format": "Root {percentage_used}%",
+  "tooltip-format": "Root: {free} free of {total} ({percentage_used}%)",
+  "unit": "GB"
+},
+"disk#vault": {
+  "interval": 30,
+  "path": "/mnt/vault",
+  "format": "Vault {percentage_used}%",
+  "tooltip-format": "Vault: {free} free of {total} ({percentage_used}%)",
+  "unit": "GB"
+},
+"disk#backup": {
+  "interval": 30,
+  "path": "/mnt/backup",
+  "format": "Backup {percentage_used}%",
+  "tooltip-format": "Backup: {free} free of {total} ({percentage_used}%)",
+  "unit": "GB"
+},
+"bluetooth": {
+  "format": "󰂯",
+  "format-on": "󰂯",
+  "format-off": "󰂲",
+  "format-connected": "󰂯",
+  "format-disabled": "󰂲",
+  "tooltip-format": "{controller_alias}\n{num_connections} Connected",
+  "tooltip-format-connected": "{controller_alias}\n{num_connections} Connected\n\n{device_alias}",
+  "tooltip-format-enumerate-connected": "{device_alias}",
+  "tooltip-format-enumerate-connected-battery": "{device_alias}\t󰥄 {device_battery_percentage}%",
+  "on-click": "blueman-manager",
+  "on-click-right": "blueman-manager",
+},
+"custom/theme": {
+  "tooltip": false,
+  "format" : "",
+  "on-click" : "setsid ~/.config/ThemeSwitcher/Themes/Theme.sh",
+  "on-click-right" : "setsid ~/.config/ThemeSwitcher/Rounding/Rounding.sh",
+  "on-click-middle": "setsid ~/.config/ThemeSwitcher/Animations/Animations.sh"
+                },
+"custom/bar": {
+  "tooltip": false,
+  "format" : "",
+  "on-click" : "/home/elias/.config/ThemeSwitcher/Waybars/Waybar.sh",
+              },
+"pulseaudio": {
+  "tooltip": false,
+  "scroll-step": 5,
+  "format": "{icon}",
+  "format-muted": "󰟎",
+"format-icons": {
+  "default": ["󰋋"]
+                },
+  "on-click": "pamixer -t",                        
+  "on-click-right": "hyprctl dispatch exec '[float; size 879 879] pavucontrol'",        
+              }, 
+"pulseaudio/slider": {
+  "tooltip": false,
+  "min": 0,
+  "max": 100,
+  "orientation" : "horizontal",
+                     },
+"group/volume": {
+ "orientation": "horizontal",
+ "drawer" : {
+  "transition-left-to-right": false,
+  "click-to-reveal": false,
+ },
+ "modules": [
+  "pulseaudio",
+  "pulseaudio/slider",
+            ],
+}, 
+"idle_inhibitor": {
+ "format": "{icon}",
+ "format-icons": {
+ "activated": "",
+ "deactivated": "󰲓"
+ },
+ "tooltip-format-activated": "Idle inhibitor active",
+ "tooltip-format-deactivated": "Idle inhibitor inactive",
+},
+"mpris": {
+  "interval" : 1,
+  "tooltip-format" : "{artist}",
+  "max-length": 80,
+  "tooltip": true,
+  "format" : "{player_icon} « {title} »",
+  "format-paused" : "{status_icon} « {title} »",
+"player-icons": {
+  "default" : "",
+                },
+"status-icons": { 
+  "paused": "",
+                },
+},
+"cpu": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"]
+},
+"memory": {
+  "interval": 1,
+  "rotate": 270,
+  "format": "{icon}",
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "max-length": 10
+},
+"custom/swap": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "exec": "~/nixos/scripts/swap-status.sh",
+  "return-type": "json"
+},
+"custom/gpu#nvidia": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
+  "return-type": "json"
+},
+"custom/pacman": {
+    "format": "{} ",
+    "interval": 3600,                     
+    "exec": "checkupdates | wc -l",
+    "exec-if": "exit 0",                  
+    "on-click": "hyprctl dispatch exec \"[float; size 879 879] kitty bash -c \\\"figlet SYSTEMUPDATE! && yay -Syu && pkill -SIGRTMIN+8 waybar\\\"\"",
+    "signal": 8,
+    "tooltip-format": "{}  System package(s) ready to update" 
+},
+
+ "temperature": {
+    "interval": 1,
+    "hwmon-path": "/sys/class/hwmon/hwmon3/temp1_input",
+    "critical-threshold": 80,
+    "format-critical": " {temperatureC}°C",
+    "format": " {temperatureC}°C",
+    "tooltip-format": " {}°C represents the CPU core temperature" 
+},
+    "custom/left_div#1": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#2": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#3": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#4": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#5": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#6": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#7": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_div#8": {
+		"format": "",
+		"tooltip": false
+	},
+
+	// inverse
+	"custom/left_inv#1": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/left_inv#2": {
+		"format": "",
+		"tooltip": false
+	},
+
+	"custom/right_div#1": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/right_div#2": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/right_div#3": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/right_div#4": {
+		"format": "",
+		"tooltip": false
+	},
+	"custom/right_div#5": {
+		"format": "",
+		"tooltip": false
+	},
+
+	// inverse
+	"custom/right_inv#1": {
+		"format": "",
+		"tooltip": false
+	},
+}

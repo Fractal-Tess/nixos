@@ -1,0 +1,76 @@
+* {
+  font-family: "Adwaita Sans";
+  color: #f5f7f2;
+  box-shadow: none;
+  text-shadow: none;
+  border: none;
+}
+
+.control-center,
+.notification,
+.widget-dnd,
+.widget-volume,
+.widget-mpris,
+.widget-title {
+  border-radius: 18px;
+}
+
+.control-center {
+  background: alpha(#111315, 0.96);
+  border: 1px solid #31363b;
+  padding: 14px;
+}
+
+.notification,
+.widget-dnd,
+.widget-volume,
+.widget-mpris {
+  background: #191c1f;
+  border: 1px solid #31363b;
+  margin: 0 6px 12px 6px;
+  padding: 14px;
+}
+
+.notification:hover,
+.notification-default-action:hover {
+  background: #23272b;
+}
+
+.widget-title {
+  background: transparent;
+  margin: 6px 6px 12px 6px;
+  padding: 4px 0;
+}
+
+.widget-title label {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.widget-title > button,
+.close-button {
+  background: #9ac7a4;
+  color: #111315;
+  border-radius: 999px;
+  padding: 8px 14px;
+}
+
+.widget-dnd > switch {
+  background: #17191b;
+  border-radius: 999px;
+}
+
+.widget-dnd > switch:checked,
+.widget-volume trough highlight {
+  background: #9ac7a4;
+}
+
+.widget-dnd > switch slider {
+  background: #f5f7f2;
+  border-radius: 999px;
+}
+
+.widget-volume trough {
+  background: #17191b;
+  border-radius: 999px;
+}

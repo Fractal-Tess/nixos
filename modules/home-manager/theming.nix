@@ -1,28 +1,42 @@
-{ pkgs, osConfig, lib, ... }:
+{
+  pkgs,
+  osConfig,
+  lib,
+  ...
+}:
+
 with lib;
 
+let
+  theme = import ./configs/theme/palette.nix;
+in
 {
-
-  # Theming - only enable when display/GUI is available
-  gtk = with pkgs; mkIf (osConfig.modules.display.hyprland.enable or false) {
-    enable = true;
-    theme = {
-      name = "Nordic-darker";
-      package = nordic;
+  gtk =
+    with pkgs;
+    mkIf (osConfig.modules.display.hyprland.enable or false) {
+      enable = true;
+      theme = {
+        name = theme.gtk.themeName;
+        package = adw-gtk3;
+      };
+      iconTheme = {
+        name = theme.gtk.iconThemeName;
+        package = papirus-icon-theme;
+      };
+      cursorTheme = {
+        name = theme.gtk.cursorThemeName;
+        package = bibata-cursors;
+        size = theme.gtk.cursorSize;
+      };
+      font = {
+        name = theme.fonts.sans;
+        size = 11;
+      };
     };
-    iconTheme = {
-      name = "Nordzy-dark";
-      package = nordzy-icon-theme;
-    };
-    cursorTheme = {
-      name = "Nordzy-cursors";
-      package = nordzy-cursor-theme;
-      size = 32;
-    };
-  };
 
   qt = mkIf (osConfig.modules.display.hyprland.enable or false) {
     enable = true;
     platformTheme.name = "gtk3";
+    style.name = "adwaita-dark";
   };
 }

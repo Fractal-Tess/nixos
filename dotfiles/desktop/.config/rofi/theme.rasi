@@ -1,0 +1,101 @@
+* {
+  bg: #111315;
+  surface: #191c1f;
+  surface-alt: #23272b;
+  text: #f5f7f2;
+  muted: #a5aca3;
+  accent: #9ac7a4;
+  border: #31363b;
+  radius: 18px;
+  radius-small: 12px;
+}
+
+window {
+  width: 44em;
+  location: center;
+  anchor: center;
+  transparency: "real";
+  background-color: #111315f0;
+  border: 2px;
+  border-color: @border;
+  border-radius: @radius;
+  padding: 24px;
+}
+
+mainbox {
+  spacing: 18px;
+  children: [ inputbar, listview ];
+  background-color: transparent;
+}
+
+inputbar {
+  background-color: #191c1f;
+  border-radius: @radius-small;
+  padding: 14px 18px;
+  children: [ entry ];
+}
+
+entry {
+  placeholder: "Search apps, windows, or run a command";
+  placeholder-color: @muted;
+  text-color: @text;
+  background-color: transparent;
+}
+
+listview {
+  columns: 2;
+  lines: 5;
+  spacing: 12px;
+  cycle: true;
+  dynamic: true;
+  scrollbar: false;
+  background-color: transparent;
+}
+
+element {
+  orientation: horizontal;
+  spacing: 14px;
+  children: [ element-icon, element-text ];
+  border-radius: @radius-small;
+  padding: 16px;
+  background-color: @surface;
+  text-color: @text;
+}
+
+element normal.normal,
+element alternate.normal {
+  background-color: @surface;
+  text-color: @text;
+}
+
+element selected.normal {
+  background-color: @surface-alt;
+  border: 2px;
+  border-color: @accent;
+  text-color: @text;
+}
+
+element-text {
+  horizontal-align: 0.0;
+  vertical-align: 0.5;
+  background-color: transparent;
+  text-color: @text;
+  highlight: none;
+  margin: 8px 0 0 0;
+}
+
+element-icon {
+  size: 2.8em;
+  horizontal-align: 0.0;
+  vertical-align: 0.0;
+  background-color: transparent;
+}
+
+textbox,
+entry,
+scrollbar,
+sidebar,
+button {
+  background-color: transparent;
+  text-color: @text;
+}
