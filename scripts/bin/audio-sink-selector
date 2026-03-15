@@ -44,15 +44,31 @@ const formatSinkEntry = (s: Sink): string => {
 const comparableLabel = (entry: string): string =>
   entry.replace(/^\s*🔊\s*/u, "").trim();
 
+const hasCommand = (command: string): boolean =>
+  Bun.spawnSync(["which", command], { stdout: "ignore", stderr: "ignore" }).exitCode === 0;
+
 const selectSink = (sinks: Sink[]): number | null => {
   const entries = sinks.map(formatSinkEntry).join("\n");
-  
-  run(["pkill", "wofi"]);
-  
-  const selection = Bun.spawnSync(
-    ["wofi", "-dmenu", "-p", "Select audio output:", "--cache-file", "/dev/null"],
-    { stdin: new TextEncoder().encode(entries), stdout: "pipe" }
-  );
+
+  const menu = hasCommand("wofi") ? "wofi" : hasCommand("rofi") ? "rofi" : null;
+  if (!menu) {
+    notify("Audio Error", "No menu app found (install wofi or rofi)");
+    return null;
+  }
+
+  const selection =
+    menu === "wofi"
+      ? (() => {
+          run(["pkill", "wofi"]);
+          return Bun.spawnSync(
+            ["wofi", "-dmenu", "-p", "Select audio output:", "--cache-file", "/dev/null"],
+            { stdin: new TextEncoder().encode(entries), stdout: "pipe" }
+          );
+        })()
+      : Bun.spawnSync(["rofi", "-dmenu", "-p", "Select audio output:"], {
+          stdin: new TextEncoder().encode(entries),
+          stdout: "pipe",
+        });
   
   if (!selection.stdout?.byteLength || selection.exitCode !== 0) return null;
   

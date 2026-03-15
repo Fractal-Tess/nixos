@@ -256,6 +256,17 @@ tooltip label {
     border-radius: 1.5rem;
     margin: 0.5rem 0.2rem;
 }
+#datetime {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+}
+#datetime #clock, #datetime #language {
+    background: none;
+}
+#datetime #language {
+    padding-left: 0.72rem;
+}
 
 #disk,
 #disk-vault,
