@@ -1,0 +1,15 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly rofi_bin="/run/current-system/sw/bin/rofi"
+readonly plugin_dir="/run/current-system/sw/lib/rofi"
+readonly mode="${1:-drun}"
+
+shift || true
+
+exec "${rofi_bin}" \
+  -plugin-path "${plugin_dir}" \
+  -modes "drun,run,window,calc" \
+  -show "${mode}" \
+  "$@"

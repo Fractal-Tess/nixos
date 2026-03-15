@@ -222,7 +222,8 @@
     #--------------------------------------------------------------------------
 
     # Application launchers
-    wofi # Wayland native application launcher
+    rofi # Launcher used by the Hyprland desktop config
+    rofi-calc # Calculator mode for rofi launcher
     handy # Speech-to-text application (offline)
 
     # Web browsers

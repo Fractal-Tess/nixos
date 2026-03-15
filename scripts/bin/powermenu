@@ -1,31 +1,63 @@
-#!/usr/bin/env bun
-// Power menu via wofi
+#!/usr/bin/env bash
 
-import { Effect } from "effect";
-import { run } from "../lib/shell";
+set -euo pipefail
 
-const ENTRIES = "⇠ Logout\n⏾ Suspend\n⭮ Reboot\n⏻ Shutdown";
+readonly entries=$'󰌾  Lock\n󰜉  Reboot\n  Shutdown'
+readonly rofi_bin="/run/current-system/sw/bin/rofi"
+readonly plugin_dir="/run/current-system/sw/lib/rofi"
 
-const program = Effect.sync(() => {
-  run(["pkill", "wofi"]);
+choose_action() {
+  if [[ -n "${POWERMENU_CHOICE:-}" ]]; then
+    printf '%s\n' "${POWERMENU_CHOICE}"
+    return 0
+  fi
 
-  const selection = Bun.spawnSync(
-    ["wofi", "--width", "250", "--height", "210", "-p", "Power Menu:", "--dmenu", "--cache-file", "/dev/null"],
-    { stdin: new TextEncoder().encode(ENTRIES), stdout: "pipe" }
-  );
-  if (!selection.stdout?.byteLength || selection.exitCode !== 0) process.exit(0);
+  printf '%s\n' "${entries}" | "${rofi_bin}" \
+    -plugin-path "${plugin_dir}" \
+    -modes "drun,run,window,calc" \
+    -dmenu \
+    -i \
+    -p "Power" \
+    -theme-str 'window { width: 22em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: 3; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: "Adwaita Sans 18"; }'
+}
 
-  const chosen = new TextDecoder().decode(selection.stdout).trim().split(/\s+/)[1]?.toLowerCase();
+run_action() {
+  local chosen="$1"
 
-  switch (chosen) {
-    case "logout":
-      if (run(["hyprctl", "version"]).ok) run(["hyprctl", "dispatch", "exit"]);
-      else run(["loginctl", "terminate-user", process.env.USER ?? ""]);
-      break;
-    case "suspend":  run(["systemctl", "suspend"]);  break;
-    case "reboot":   run(["systemctl", "reboot"]);   break;
-    case "shutdown": run(["systemctl", "poweroff"]); break;
-  }
-});
+  case "${chosen}" in
+    Lock)
+      if [[ -n "${POWERMENU_DRY_RUN:-}" ]]; then
+        printf 'lock\n'
+      else
+        hyprlock
+      fi
+      ;;
+    Reboot)
+      if [[ -n "${POWERMENU_DRY_RUN:-}" ]]; then
+        printf 'reboot\n'
+      else
+        systemctl reboot
+      fi
+      ;;
+    Shutdown)
+      if [[ -n "${POWERMENU_DRY_RUN:-}" ]]; then
+        printf 'shutdown\n'
+      else
+        systemctl poweroff
+      fi
+      ;;
+    *)
+      exit 0
+      ;;
+  esac
+}
 
-Effect.runSync(program);
+selection="$(choose_action || true)"
+selection="$(printf '%s' "${selection}" | tr -d '\r' | sed '/^$/d' | head -n 1)"
+selection="$(printf '%s' "${selection}" | sed 's/^[^[:alpha:]]*//')"
+
+if [[ -z "${selection}" ]]; then
+  exit 0
+fi
+
+run_action "${selection}"

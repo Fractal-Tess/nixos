@@ -1,0 +1,146 @@
+@define-color bg #111315;
+@define-color surface #191c1f;
+@define-color surface-alt #23272b;
+@define-color panel #0d0f10;
+@define-color panel-alt #17191b;
+@define-color border #31363b;
+@define-color border-strong #474d53;
+@define-color text #f5f7f2;
+@define-color muted #a5aca3;
+@define-color accent #9ac7a4;
+@define-color accent-warm #d7b06a;
+@define-color info #8fb7d8;
+@define-color danger #d36d6d;
+
+* {
+  font-family: "Adwaita Sans";
+  font-size: 13px;
+  font-weight: 600;
+  min-height: 0;
+  color: @text;
+  border: none;
+}
+
+#waybar {
+  background: alpha(@panel, 0.88);
+  border: 1px solid alpha(@border-strong, 0.8);
+  border-radius: 18px;
+  box-shadow: 0 14px 40px 0 rgba(0, 0, 0, 0.45);
+}
+
+#custom-launcher,
+#clock,
+#network,
+#pulseaudio,
+#battery,
+#cpu,
+#memory,
+#disk,
+#custom-notification,
+#custom-brightness,
+#custom-gpu_nvidia,
+#mpris,
+#tray,
+#window {
+  background: alpha(@surface, 0.95);
+  border: 1px solid alpha(@border, 0.9);
+  border-radius: 12px;
+  padding: 0 12px;
+  margin: 7px 5px;
+  min-height: 28px;
+}
+
+#custom-launcher {
+  background: linear-gradient(135deg, alpha(@accent, 0.9), alpha(@accent-warm, 0.9));
+  color: @bg;
+  padding: 0 16px;
+  font-weight: 800;
+  margin-left: 9px;
+}
+
+#workspaces {
+  background: transparent;
+  margin: 7px 5px;
+}
+
+#workspaces button {
+  background: alpha(@surface, 0.7);
+  color: @muted;
+  border: 1px solid transparent;
+  border-radius: 12px;
+  padding: 0 10px;
+  margin: 0 4px;
+  transition: all 0.2s ease;
+}
+
+#workspaces button.active {
+  background: alpha(@accent, 0.16);
+  color: @text;
+  border-color: alpha(@accent, 0.6);
+}
+
+#workspaces button:hover {
+  background: alpha(@surface-alt, 0.95);
+  color: @text;
+}
+
+#window {
+  color: @muted;
+  padding-right: 18px;
+  padding-left: 18px;
+  min-width: 240px;
+}
+
+#clock {
+  background: alpha(@surface-alt, 0.98);
+  color: @text;
+  font-weight: 700;
+  padding: 0 18px;
+}
+
+#mpris,
+#disk,
+#network,
+#cpu,
+#memory,
+#custom-gpu_nvidia,
+#custom-brightness,
+#battery {
+  color: @muted;
+}
+
+#custom-notification {
+  color: @accent;
+  font-family: "JetBrainsMono Nerd Font";
+}
+
+#pulseaudio,
+#battery.charging,
+#battery.plugged {
+  color: @text;
+}
+
+#battery.warning:not(.charging) {
+  color: @accent-warm;
+}
+
+#battery.critical:not(.charging) {
+  color: @danger;
+}
+
+#tray {
+  padding-right: 14px;
+  padding-left: 14px;
+  margin-right: 9px;
+}
+
+tooltip {
+  background: @bg;
+  border: 1px solid @border;
+  border-radius: 12px;
+}
+
+tooltip label {
+  color: @text;
+  padding: 4px;
+}

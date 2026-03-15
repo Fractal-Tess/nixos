@@ -1,0 +1,294 @@
+@import "/home/fractal-tess/.config/waybar/colors.css";
+* {
+    font-family: JetBrainsMono Nerd Font Propo;
+    font-size: 0.78rem;
+    font-weight: bold;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    text-shadow: none;
+}
+window#waybar {
+    background: @background;
+    background-image: none;
+    box-shadow: none;
+    border: 0 solid @border;
+    border-radius: 1.35rem;
+}
+#custom-System {
+    background-color: @surface_container;
+    font-size: 0.78rem;
+    padding: 0rem 0.95rem;
+    color: @secondary;
+    border: 0 solid @border;
+    border-radius: 1rem;
+    transition: 0.3s all ease;
+    margin: 0.28rem 0.12rem;
+    margin-left: 0.32rem;
+}
+#custom-System:hover { color: @primary; }
+#clock {
+    background: @surface_container;
+    font-size: 0.78rem;
+    font-weight: bold;
+    border-radius: 1rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    color: @secondary;
+    border: 0 solid @border;
+    transition: 0.3s all ease;
+    margin: 0.28rem 0.12rem;
+}
+#clock:hover { color: @primary; }
+#tray {
+    border-radius: 1rem;
+    padding-left: 0rem;
+    padding-right: 0.5rem;
+    background-color: transparent;
+    color: @secondary;
+    border: 0 solid @border;
+    transition: 0.3s all ease;
+}
+#tray menu, menu {
+    background-color: @background;
+    color: @secondary;
+    border-radius: 1rem;
+    padding: 0;
+    border: 0 solid @border;
+}
+#tray menu menuitem:hover:last-child { border-bottom-left-radius: 1.5rem; border-bottom-right-radius: 1.5rem }
+#tray menu menuitem:hover:first-child { border-top-left-radius: 1.5rem; border-top-right-radius: 1.5rem }
+#tray menu menuitem:hover { background-color: @surface_container_highest; color: @on_surface_variant; border-radius: 0; }
+#workspaces {
+    margin: 0;
+    padding-left: 0.6rem;
+    padding-right: 0.6rem;
+    border-radius: 1rem;
+    background-color: @surface_container;
+    border: 0 solid @border;
+    transition: all 0.3s ease;
+    margin: 0.28rem 0.12rem;
+}
+#workspaces button {
+    box-shadow: none;
+    text-shadow: none; 
+    padding: 0rem; 
+    background: transparent;
+    border-radius: 0.8rem;
+    color: transparent; 
+    margin: 0rem;
+    transition: all 0.3s ease;
+}
+#workspaces button label {
+    font-size: 0.48rem;
+    background: @surface_container_high;
+    color: transparent;
+    border-radius: 1rem;
+    padding: 0rem 0.4rem;
+    margin: 0.65rem 0.16rem;
+    transition: all 0.3s ease;
+}
+#workspaces button.active label {
+    font-size: 0.48rem;
+    background: @primary;
+    color: transparent;
+    border-radius: 1rem;
+    padding: 0rem 1.6rem;
+    margin: 0.65rem 0.16rem;
+    transition: all 0.3s ease;
+}
+#workspaces button.active.empty label,
+#workspaces button.active label { color: transparent }
+#workspaces button.active.empty:hover label,
+#workspaces button.active:hover label { color: transparent; background: @primary }
+#workspaces button:hover label,
+#workspaces button.empty:hover label { background: @surface_container_highest; color: transparent }
+
+#workspaces button.active.empty,
+#workspaces button.active { color: transparent;  background: transparent; padding: 0rem }
+#workspaces button.active.empty:hover,
+#workspaces button.active:hover { color: transparent;  background: transparent }
+#workspaces button:hover { color: transparent;  background: transparent }
+#workspaces button.empty { color: transparent;  background: transparent }
+#workspaces button.empty:hover { color: transparent ; background: transparent }
+
+#network, #bluetooth, #pulseaudio, #traywer {
+    border-radius: 1rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    background-color: @surface_container;
+    color: @secondary;
+    border: 0 solid @border;
+    transition: 0.3s all ease;
+}
+#bluetooth { padding-left: 0.78rem; padding-right: 1.2rem }
+#pulseaudio { background: none; padding: 0 0 0 0.12rem; }
+#volume {
+    background: @surface_container;
+    border-radius: 1rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+}
+#pulseaudio-slider {
+    background: transparent; 
+    border-radius: 1rem;
+    padding: 0 0.8rem 0 0.32rem;
+    color: @secondary;
+    border: 0 solid @surface_container; 
+}
+#pulseaudio-slider slider {
+    background: @secondary;
+    min-height: 0;
+    min-width: 0;
+    margin: -0.3rem;
+    box-shadow: none;
+    border: 0 solid @surface_container;
+}
+#pulseaudio-slider trough {
+    background: @surface_container_high; 
+    min-width: 4.8rem;
+    min-height: 0.22rem;
+    box-shadow: none;
+    border-radius: 1rem;
+    border: 0 solid @surface_container;
+}
+
+#pulseaudio-slider highlight {
+    background: @primary;
+    border-radius: 1rem;
+    margin: 0;
+    box-shadow: none;
+    border: 0 solid @border;
+    color: @primary;
+}
+
+#network:hover, #bluetooth:hover, #pulseaudio:hover, #traywer:hover { color: @primary; }
+#mpris, #custom-theme, #custom-bar, #custom-notifications, #window {
+    font-size: 0.78rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    border-radius: 1rem;
+    color: @secondary;
+    background-color: @surface_container;
+    transition: 0.3s all ease;
+    margin: 0.28rem 0.12rem;
+}
+window#waybar.empty #window {
+    background-color: transparent;
+}
+#custom-powermenu {
+    font-size: 0.78rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    border-radius: 1rem;
+    color: @secondary;
+    background-color: @surface_container;
+    transition: 0.3s all ease;
+}
+#mpris:hover, #custom-theme:hover, #custom-bar:hover, #custom-powermenu:hover, #custom-notifications:hover, #window:hover {
+    color: @primary;
+}
+#custom-pacman, #temperature {
+    font-size: 0.78rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    border-radius: 1rem;
+    color: @secondary;
+    background-color: @surface_container;
+    transition: 0.3s all ease;
+}
+#custom-pacman:hover, #temperature:hover { color: @secondary_fixed }
+tooltip {
+    background-color: @background;
+    padding: 0.3125rem;
+    color: @secondary;
+    border-radius: 1rem;
+    border: 0 solid @border;
+}
+tooltip label {
+    padding: 0.24rem;
+    border-radius: 1rem;
+    font-weight: bold;
+    color: @secondary;
+}
+#idle_inhibitor {
+    background-color: @surface_container;
+    font-size: 0.78rem;
+    padding-left: 0.72rem;
+    padding-right: 0.72rem;
+    color: @secondary;
+    border-radius: 1rem;
+    transition: 0.3s all ease;
+}
+#idle_inhibitor:hover { color: @primary; }
+#custom-notifications, #custom-notifications:hover, #idle_inhibitor, #idle_inhibitor:hover { font-size: 1rem }
+#bluetooth, #bluetooth:hover { font-size: 0.92rem }
+#custom-System { font-size: 1.5rem }
+
+/* GROUP OVERRIDES */
+
+#volume, #pulseaudio, #idle_inhibitor {
+    background: none;
+}
+#volume { padding-right: 0.5rem }
+#idle_inhibitor { padding-left: 0.5rem }
+
+
+#idlevol {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+}
+
+#cpu,
+#memory,
+#custom-swap,
+#custom-gpu-nvidia {
+    background: none;
+    color: @secondary;
+    padding: 0;
+    margin: 0;
+    transition: 0.3s all ease;
+}
+#cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu-nvidia:hover { color: @primary; }
+#sysmon {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+}
+
+#disk,
+#disk-vault,
+#disk-backup,
+#disk-root {
+    background: @surface_container;
+    color: @on_surface;
+    border-radius: 1.2rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+    margin: 0.35rem 0.16rem;
+    font-size: 0.72rem;
+}
+
+#network, #bluetooth {
+    background: none;    
+}
+#network { padding-right: 0.5rem }
+#bluetooth { padding-left: 0.5rem }
+#netblue {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+}
+
+#traywer, #tray, #custom-powermenu {
+    background: none;
+}
+#traywer { padding-right: 0.5rem }
+#custom-powermenu { padding-left: 0.5rem }
+#traywermen {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+    margin-right: 0.6rem;
+}

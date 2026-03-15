@@ -7,9 +7,18 @@ set -euo pipefail
 
 readonly SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 readonly TYPE="${WALLPAPER_TYPE:-WAYPAPER}"
+readonly ACTION="${1:-restore}"
+
+if [[ "${TYPE}" == "WAYPAPER" ]]; then
+    "${SCRIPT_DIR}/sync-library.sh"
+fi
 
 case "$TYPE" in
     WAYPAPER)
+        if [[ "${ACTION}" == "open" ]]; then
+            shift || true
+            exec waypaper "$@"
+        fi
         exec "${SCRIPT_DIR}/waypaper.sh" "$@"
         ;;
     LINUX_WALLPAPERENGINE)

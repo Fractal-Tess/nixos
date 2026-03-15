@@ -360,6 +360,7 @@
   #============================================================================
 
   fonts.packages = with pkgs; [
+    adwaita-fonts
     nerd-fonts.caskaydia-cove
     nerd-fonts.caskaydia-mono
     nerd-fonts.jetbrains-mono

@@ -1,0 +1,31 @@
+[
+  {
+    "layer": "top",
+    "position": "top",
+    "mod": "dock",
+    "margin-left": 14,
+    "margin-right": 14,
+    "margin-top": 14,
+    "margin-bottom": 0,
+    "height": 42,
+    "exclusive": true,
+    "passthrough": false,
+    "gtk-layer-shell": true,
+    "reload_style_on_change": true,
+    "modules-left": ["hyprland/workspaces", "hyprland/window"],
+    "modules-center": ["clock"],
+    "modules-right": ["custom/launcher", "mpris", "disk#root", "network", "pulseaudio", "cpu", "memory", "custom/notification", "tray"],
+    "disk#root": { "interval": 30, "path": "/", "format": "Root {percentage_used}%", "tooltip-format": "Root: {free} free of {total} ({percentage_used}%)", "unit": "GB" },
+    "memory": { "interval": 3, "format": "Mem {percentage}%", "tooltip-format": "Memory: {used:0.1f}G / {total:0.1f}G" },
+    "cpu": { "interval": 3, "format": "CPU {usage}%", "tooltip-format": "CPU load: {usage}%" },
+    "tray": { "icon-size": 16, "rotate": 0, "spacing": 8 },
+    "custom/notification": { "tooltip": false, "format": "{icon}", "format-icons": { "notification": "󰅸", "none": "󰂜", "dnd-notification": "󰅸", "dnd-none": "󱏨", "inhibited-notification": "󰅸", "inhibited-none": "󰂜", "dnd-inhibited-notification": "󰅸", "dnd-inhibited-none": "󱏨" }, "return-type": "json", "exec-if": "which swaync-client", "exec": "swaync-client -swb", "on-click-right": "swaync-client -d -sw", "on-click": "swaync-client -t -sw", "escape": true },
+    "custom/launcher": { "format": "Apps", "tooltip": false, "on-click": "~/nixos/scripts/bin/rofi-launcher drun -show-icons", "on-click-right": "~/nixos/scripts/bin/rofi-launcher window" },
+    "hyprland/workspaces": { "format": "{icon}", "format-icons": { "default": "", "active": "" }, "persistent-workspaces": { "*": 6 } },
+    "clock": { "format": "{:%a %d %b  %H:%M}", "rotate": 0, "on-click": "swaync-client -t -sw" },
+    "network": { "tooltip": true, "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"], "rotate": 0, "format-ethernet": "Net {bandwidthDownBytes:>4} / {bandwidthUpBytes:>4}", "format-wifi": "WiFi {signalStrength}%", "interval": 3 },
+    "pulseaudio": { "format": "Vol {volume}% {icon}", "rotate": 0, "format-muted": "Vol mute ", "on-click": "wpctl set-mute @DEFAULT_AUDIO_SINK@ toggle", "scroll-step": 5, "format-icons": { "default": ["", "", ""] } },
+    "mpris": { "format": "{player_icon} {dynamic}", "player-icons": { "default": "󰎇", "firefox": "", "spotify": "" }, "max-length": 28, "dynamic-len": 28, "tooltip": false },
+    "hyprland/window": { "format": "{title}", "max-length": 38, "separate-outputs": true }
+  }
+]

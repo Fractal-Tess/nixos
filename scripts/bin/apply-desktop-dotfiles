@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -euo pipefail
+
+readonly repo_dir="${REPO_DIR:-${HOME}/nixos}"
+readonly stow_dir="${repo_dir}/dotfiles"
+readonly target_home="${HOME}"
+readonly host_name="${HOSTNAME_VALUE:-$(hostname)}"
+
+mkdir -p \
+  "${target_home}/.config/hypr/conf.d" \
+  "${target_home}/.config/waybar" \
+  "${target_home}/.local/share/wallpapers/library"
+
+stow --dir "${stow_dir}" --target "${target_home}" --restow desktop
+
+case "${host_name}" in
+  kiwi)
+    waybar_config="config-kiwi.jsonc"
+    monitor_config="monitors-kiwi.conf"
+    ;;
+  neo)
+    waybar_config="config-neo.jsonc"
+    monitor_config="monitors-neo.conf"
+    ;;
+  *)
+    waybar_config="config-vd.jsonc"
+    monitor_config="monitors-vd.conf"
+    ;;
+esac
+
+ln -sfn "${target_home}/.config/waybar/${waybar_config}" "${target_home}/.config/waybar/config.jsonc"
+ln -sfn "${target_home}/.config/hypr/conf.d/${monitor_config}" "${target_home}/.config/hypr/conf.d/monitors.conf"
+
+"${repo_dir}/scripts/wallpaper/sync-library.sh"
