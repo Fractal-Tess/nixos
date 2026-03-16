@@ -232,6 +232,14 @@ tooltip label {
 }
 #volume { padding-right: 0.5rem }
 #idle_inhibitor { padding-left: 0.5rem }
+#battery {
+    background: none;
+    color: @secondary;
+    padding-left: 0.5rem;
+    padding-right: 0.5rem;
+    transition: 0.3s all ease;
+}
+#battery:hover { color: @primary; }
 
 
 #idlevol {
@@ -251,6 +259,8 @@ tooltip label {
     transition: 0.3s all ease;
 }
 #cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu-nvidia:hover { color: @primary; }
+#cpu { padding-left: 0.5rem }
+#custom-swap, #custom-gpu-nvidia { padding-right: 0.5rem }
 #sysmon {
     background: @surface_container;
     border-radius: 1.5rem;
