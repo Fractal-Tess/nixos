@@ -74,7 +74,8 @@
  "orientation": "horizontal",
  "modules": [
 "group/volume",
-"idle_inhibitor"
+"idle_inhibitor",
+"battery"
  ]
 },
 "group/netblue": {
@@ -108,7 +109,6 @@
  ]
 },
 "clock": {
-  "timezone": "Europe/Berlin",
   "tooltip-format": "<big>{:L%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
   "format" : " {:%H:%M}",
   "format-alt" : "󰸗 {:L%a %d.%m.%y}", 
@@ -262,6 +262,17 @@
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
   "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
   "return-type": "json"
+},
+"battery": {
+  "states": {
+    "good": 95,
+    "warning": 30,
+    "critical": 20
+  },
+  "format": "{icon} {capacity}%",
+  "format-charging": "󰂄 {capacity}%",
+  "format-plugged": "󰂄 {capacity}%",
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
 },
 "custom/pacman": {
     "format": "{} ",
