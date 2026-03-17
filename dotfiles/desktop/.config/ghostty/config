@@ -1,0 +1,13 @@
+term = xterm-256color
+
+font-family = CaskaydiaCoveNerdFont
+font-size = 12
+
+scrollback-limit = 10000
+
+background-opacity = 0.75
+background-blur = 96
+
+keybind = ctrl+shift+w=close_surface
+
+theme = GitHub Dark

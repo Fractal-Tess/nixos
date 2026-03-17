@@ -233,7 +233,7 @@
 
     libreoffice # Office suite
     obsidian # Knowledge base and note-taking
-    bitwarden-desktop # Password manager
+    # bitwarden-desktop # Password manager -- broken: electron-39 patch failure (upstream nixpkgs bug)
     zathura # Document viewer
 
     #--------------------------------------------------------------------------
@@ -281,7 +281,7 @@
 
     polymc # Minecraft launcher
     bottles # Wine wrapper
-    heroic # Game launcher
+    # heroic # Game launcher -- broken: electron-39 patch failure (upstream nixpkgs bug)
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
     # (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager

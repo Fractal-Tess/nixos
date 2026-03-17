@@ -1,7 +1,5 @@
 { ... }:
 
 {
-  imports = [
-    ./zsh
-  ];
+  imports = [];
 }
