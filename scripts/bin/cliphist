@@ -1,32 +1,8 @@
-#!/usr/bin/env bun
-// Clipboard history selector via cliphist + wofi
+#!/usr/bin/env fish
 
-import { Effect } from "effect";
-import { run } from "../lib/shell";
+pkill rofi
 
-const program = Effect.sync(() => {
-  // Kill existing wofi instance
-  run(["pkill", "wofi"]);
+set selection (cliphist list | rofi -dmenu -p "Clipboard:")
+test -z "$selection"; and exit 0
 
-  // Get clipboard history
-  const list = Bun.spawnSync(["cliphist", "list"], { stdout: "pipe" });
-  if (!list.stdout?.byteLength) process.exit(0);
-
-  // Show selector
-  const selection = Bun.spawnSync(["wofi", "-dmenu", "-p", "Clipboard:"], {
-    stdin: list.stdout,
-    stdout: "pipe",
-  });
-  if (!selection.stdout?.byteLength || selection.exitCode !== 0) process.exit(0);
-
-  // Decode and copy to clipboard
-  const decoded = Bun.spawnSync(["cliphist", "decode"], {
-    stdin: selection.stdout,
-    stdout: "pipe",
-  });
-  if (!decoded.stdout?.byteLength) process.exit(0);
-
-  Bun.spawnSync(["wl-copy"], { stdin: decoded.stdout });
-});
-
-Effect.runSync(program);
+echo $selection | cliphist decode | wl-copy

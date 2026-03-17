@@ -107,6 +107,12 @@
   # Bluetooth
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
+  hardware.bluetooth.settings = {
+    Policy = {
+      AutoEnable = true;
+      AvrcpAbsoluteVolume = false; # Prevent headphones from pushing volume=0 on connect
+    };
+  };
   services.blueman.enable = true;
 
   # Memory management - use zram + hardware swap partition
