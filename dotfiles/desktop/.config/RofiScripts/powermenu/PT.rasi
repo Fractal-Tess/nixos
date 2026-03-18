@@ -1,0 +1,60 @@
+@import "~/.config/colors/colors.rasi"
+@import "~/.config/colors/rofiradius.rasi"
+
+window {
+  width: 4.578em;
+  padding: 0;
+  border: 0px;
+  border-color: var(primary);
+  border-radius: var(borderradius);
+  transparency: "real";
+  background-color: var(surface);
+}
+
+error-message {
+  enabled: false;
+}
+
+listview {
+  lines: 4;
+  layout: horizontal;
+  margin: 0;
+  padding: 0;
+  columns: 1;
+  background-color: transparent;
+  scrollbar: false;
+  cycle: false;
+  border: 0;
+}
+
+mainbox {
+  background-color: transparent;
+  spacing: 0;
+  padding: 30;
+  border-radius: var(borderradius);
+  children: [ listview ];
+}
+
+element {
+  padding: 5 50 5 50;
+  margin: 0 2 0 2;
+  border-radius: var(buttonradius);
+  border: 0;
+}
+
+element normal.normal {
+  background-color: transparent;
+  text-color: var(secondary);
+}
+
+element selected.normal {
+  background-color: var(surface-container-highest);
+  text-color: var(primary);
+}
+
+element-text {
+  background-color: #00000000;
+  text-color: inherit;
+  vertical-align: 0.5;
+  horizontal-align: 0.5;
+}

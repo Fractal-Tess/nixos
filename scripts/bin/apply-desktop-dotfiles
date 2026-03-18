@@ -10,7 +10,16 @@ readonly host_name="${HOSTNAME_VALUE:-$(hostname)}"
 mkdir -p \
   "${target_home}/.config/hypr/conf.d" \
   "${target_home}/.config/waybar" \
-  "${target_home}/.local/share/wallpapers/library"
+  "${target_home}/.local/share/wallpapers/library" \
+  "${target_home}/.config/colors" \
+  "${target_home}/.config/RofiScripts/WallpaperChanger" \
+  "${target_home}/.config/hypr/hyprconfigs" \
+  "${target_home}/.config/cava/themes" \
+  "${target_home}/.config/btop/themes" \
+  "${target_home}/.config/qt5ct/colors" \
+  "${target_home}/.config/qt6ct/colors" \
+  "${target_home}/.config/gtk-3.0" \
+  "${target_home}/.config/gtk-4.0"
 
 stow --dir "${stow_dir}" --target "${target_home}" --restow desktop
 

@@ -5,7 +5,7 @@
   "positionY": "top",
   "layer": "overlay",
   "control-center-layer": "top",
-  "control-center-width": 420,
+  "control-center-width": 480,
   "control-center-margin-top": 18,
   "control-center-margin-bottom": 18,
   "control-center-margin-right": 18,
@@ -16,12 +16,45 @@
   "timeout-low": 4,
   "timeout-critical": 0,
   "image-visibility": "when-available",
-  "widgets": ["title", "dnd", "mpris", "volume", "notifications"],
+  "widgets": ["mpris", "buttons-grid", "title", "dnd", "notifications"],
   "widget-config": {
-    "title": { "text": "Control Center", "clear-all-button": true, "button-text": "Clear" },
-    "dnd": { "text": "Focus mode" },
+    "title": { "text": "Notifications", "clear-all-button": true, "button-text": "Clear" },
+    "dnd": { "text": "Focus Mode" },
     "notifications": { "vexpand": true },
-    "mpris": { "image-size": 84, "image-radius": 12 },
-    "volume": { "label": "Vol", "show-per-app": false, "show-per-app-icon": true }
+    "mpris": { "image-size": 84, "image-radius": 12, "autohide": false },
+    "buttons-grid": {
+      "actions": [
+        {
+          "active": false,
+          "command": "setsid ~/.config/RofiScripts/Dark-Light-Mode/DLmode.sh",
+          "label": "",
+          "type": "button"
+        },
+        {
+          "active": false,
+          "command": "setsid ~/.config/RofiScripts/WallpaperChanger/wallrandom.sh",
+          "label": "󰥶",
+          "type": "button"
+        },
+        {
+          "active": false,
+          "command": "setsid ~/.config/swaync/scripts/screenshot.sh",
+          "label": "󰄀",
+          "type": "button"
+        },
+        {
+          "active": false,
+          "command": "setsid ~/.config/swaync/scripts/bluetooth.sh",
+          "label": "󰂯",
+          "type": "button"
+        },
+        {
+          "active": false,
+          "command": "setsid ~/.config/swaync/scripts/network.sh",
+          "label": "󰤨",
+          "type": "button"
+        }
+      ]
+    }
   }
 }
