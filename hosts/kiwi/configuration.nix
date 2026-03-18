@@ -115,6 +115,17 @@
   };
   services.blueman.enable = true;
 
+  # Unblock bluetooth rfkill soft-block on boot (systemd-rfkill restores off state otherwise)
+  systemd.services.bluetooth-rfkill-unblock = {
+    description = "Unblock bluetooth rfkill on boot";
+    before = [ "bluetooth.service" ];
+    wantedBy = [ "bluetooth.service" ];
+    serviceConfig = {
+      Type = "oneshot";
+      ExecStart = "/run/current-system/sw/bin/rfkill unblock bluetooth";
+    };
+  };
+
   # Memory management - use zram + hardware swap partition
   zramSwap.enable = true;
 
