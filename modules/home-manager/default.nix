@@ -16,5 +16,6 @@
     ./programs/fish.nix
     ./programs/bat.nix
     ./programs/flare.nix
+    ./programs/yazi.nix
   ];
 }
