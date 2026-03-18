@@ -1,4 +1,9 @@
 { pkgs, ... }: {
+  home.sessionVariables = {
+    EDITOR = "zed --wait";
+    VISUAL = "zed --wait";
+  };
+
   # Custom zed wrapper with z.ai API configuration
   home.packages = with pkgs;
     [

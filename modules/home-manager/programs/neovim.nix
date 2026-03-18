@@ -1,7 +1,7 @@
 { pkgs, ... }: {
   programs.neovim = {
     enable = true;
-    defaultEditor = true;
+    defaultEditor = false;
     viAlias = true;
     vimAlias = true;
   };
