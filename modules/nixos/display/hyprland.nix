@@ -49,9 +49,9 @@ in
       extraPortals = mkDefault [ pkgs.xdg-desktop-portal-gtk ];
     };
 
-    # Add ghostty terminal to system packages
+    # Add kitty terminal to system packages
     environment.systemPackages = [
-      pkgs.ghostty
+      pkgs.kitty
       pkgs.ncurses
     ];
     # Enable dconf for GTK/Flatpak app settings
