@@ -1,0 +1,9 @@
+configuration{
+ font: "JetBrainsMono Nerd Font 16";
+ modi: "dmenu";
+ fixed-num-lines: true;
+ show-icons: false;
+ location: 0;
+}
+
+@theme "~/.config/RofiScripts/WallpaperChanger/WMT.rasi"

@@ -1,0 +1,79 @@
+@import "~/.config/colors/colors.rasi"
+@import "~/.config/colors/rofiradius.rasi"
+
+window {
+  width: 50em;
+  padding: 0em;
+  border: 0px;
+  border-color: var(primary);
+  border-radius: var(borderradius);
+  transparency: "real";
+  background-color: var(surface);
+}
+
+error-message {
+  enabled: true;
+  padding: 0.8em;
+  background-color: transparent;
+  border-radius: var(borderradius);
+}
+
+entry {
+  hide-cursor-on-empty: true;
+  placeholder: " Search clipboard...";
+  placeholder-color: var(secondary);
+  text-color: var(secondary);
+  border: 0em;
+  padding: 0.4em 0.54em;
+  border-radius: var(buttonradius);
+  background-color: var(surface-container);
+}
+
+listview {
+  lines: 8;
+  margin: 0em;
+  padding: 0.8em 0em 0em 0em;
+  columns: 1;
+  background-color: transparent;
+  scrollbar: false;
+  cycle: false;
+  border: 0em;
+}
+
+mainbox {
+  background-color: transparent;
+  spacing: 0em;
+  padding: 0.8em;
+  border-radius: var(borderradius);
+  children: [ inputbar, listview ];
+}
+
+inputbar {
+  padding: 0em;
+  background-color: transparent;
+  children: [ entry ];
+  border: 0em;
+}
+
+element {
+  padding: 0.4em 0.54em;
+  margin: 0.14em;
+  border-radius: var(buttonradius);
+  border: 0em;
+}
+
+element normal.normal {
+  background-color: transparent;
+  text-color: var(secondary);
+}
+
+element selected.normal {
+  background-color: var(surface-container-highest);
+  text-color: var(on-surface);
+}
+
+element-text {
+  background-color: #00000000;
+  text-color: inherit;
+  vertical-align: 0.5;
+}
