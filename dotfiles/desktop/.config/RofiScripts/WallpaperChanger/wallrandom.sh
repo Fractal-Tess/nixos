@@ -14,5 +14,5 @@ while true; do
     [ "$selected" != "$last" ] && break
 done
 
-matugen image "$selected" -m dark -t scheme-fidelity --fallback-color grey
+matugen image "$selected" -m dark -t scheme-fidelity --fallback-color '#888888' --source-color-index 0
 echo "$selected" > "$LAST_WALLPAPER"
