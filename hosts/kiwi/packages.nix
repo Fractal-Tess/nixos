@@ -13,7 +13,7 @@
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
     acpi # Advanced Configuration and Power Interface (for battery/AC power detection)
-    btop # Resource monitor with CPU, memory, disk, network
+    btop-rocm # Resource monitor with CPU, memory, disk, network and AMD GPU support
     # nvtopPackages.nvidia # NVIDIA GPU monitoring (commented out due to CUDA download issues)
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
