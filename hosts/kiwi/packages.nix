@@ -180,6 +180,7 @@
     #--------------------------------------------------------------------------
 
     swww # Animated wallpaper daemon for Wayland
+    matugen # Material You color palette generator from wallpaper
     waypaper # Wallpaper manager for Wayland
     # linux-wallpaperengine # Wallpaper engine for Linux
     wl-clipboard # Clipboard utilities for Wayland
