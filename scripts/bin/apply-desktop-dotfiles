@@ -21,8 +21,6 @@ mkdir -p \
   "${target_home}/.config/gtk-3.0" \
   "${target_home}/.config/gtk-4.0"
 
-stow --dir "${stow_dir}" --target "${target_home}" --restow desktop
-
 case "${host_name}" in
   kiwi)
     waybar_config="config-kiwi.jsonc"
@@ -38,7 +36,19 @@ case "${host_name}" in
     ;;
 esac
 
-ln -sfn "${target_home}/.config/waybar/${waybar_config}" "${target_home}/.config/waybar/config.jsonc"
-ln -sfn "${target_home}/.config/hypr/conf.d/${monitor_config}" "${target_home}/.config/hypr/conf.d/monitors.conf"
+# Remove stale files/symlinks that can make stow fail on host-specific monitor config.
+rm -f "${target_home}/.config/hypr/conf.d/monitors.conf"
+for f in monitors-kiwi.conf monitors-neo.conf monitors-vd.conf; do
+  p="${target_home}/.config/hypr/conf.d/${f}"
+  if [ -e "${p}" ] && [ ! -L "${p}" ]; then
+    rm -f "${p}"
+  fi
+done
+
+stow --dir "${stow_dir}" --target "${target_home}" --restow desktop
+
+# Keep these links relative so stow can manage the directory cleanly.
+ln -sfn "${waybar_config}" "${target_home}/.config/waybar/config.jsonc"
+ln -sfn "${monitor_config}" "${target_home}/.config/hypr/conf.d/monitors.conf"
 
 "${repo_dir}/scripts/wallpaper/sync-library.sh"

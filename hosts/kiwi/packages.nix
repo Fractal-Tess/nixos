@@ -213,6 +213,7 @@
     # microsoft-edge # Microsoft's web browser (temporarily disabled - version unavailable)
 
     # Terminals
+    kitty # Fast GPU-accelerated terminal emulator
     warp-terminal # Modern terminal with AI features
 
     # System tools

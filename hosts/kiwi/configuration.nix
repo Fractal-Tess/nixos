@@ -284,6 +284,12 @@
   # This automatically sets up dumpcap with CAP_NET_RAW and CAP_NET_ADMIN capabilities
   programs.wireshark.enable = true;
 
+  # Graphics stack baseline for boot stability on new generations
+  hardware.graphics = {
+    enable = true;
+    enable32Bit = true;
+  };
+
   # Gaming configuration
   programs.steam = {
     enable = true;
@@ -423,7 +429,8 @@
 
     # TLP - Power management for laptop
     tlp = {
-      enable = true;
+      # Temporarily disabled due to boot hang on newer generations
+      enable = false;
       settings = {
         # CPU driver operation mode
         CPU_DRIVER_OPMODE_ON_AC = "active";
@@ -447,6 +454,9 @@
         CPU_SCALING_MAX_FREQ_ON_BAT = 3400000; # 3.4GHz max on battery for efficiency
       };
     };
+
+    # Keep basic power profile support while TLP is disabled
+    power-profiles-daemon.enable = true;
   };
 
   #============================================================================
