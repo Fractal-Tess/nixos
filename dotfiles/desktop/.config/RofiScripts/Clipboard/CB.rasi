@@ -1,5 +1,5 @@
 configuration{
- font: "JetBrainsMono Nerd Font 14";
+ font: "JetBrainsMono Nerd Font 11";
  modi: "dmenu";
  fixed-num-lines: false;
  show-icons: false;
