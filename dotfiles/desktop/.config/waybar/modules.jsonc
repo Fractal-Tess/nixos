@@ -65,7 +65,7 @@
  "orientation": "horizontal",
  "modules": [
 "cpu",
-"custom/gpu#nvidia",
+"custom/gpu#amd",
 "memory",
 "custom/swap"
  ]
@@ -255,12 +255,12 @@
   "exec": "~/nixos/scripts/swap-status.sh",
   "return-type": "json"
 },
-"custom/gpu#nvidia": {
+"custom/gpu#amd": {
   "interval": 1,
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
+  "exec": "~/nixos/scripts/gpu-amd-status.sh",
   "return-type": "json"
 },
 "battery": {

@@ -64,7 +64,8 @@ element {
   orientation: vertical;
 }
 
-element normal.normal {
+element normal.normal,
+element alternate.normal {
   background-color: transparent;
   text-color: var(secondary);
 }

@@ -192,6 +192,7 @@
     handy # Speech-to-text application (offline)
     sox # Dependency of claude code voice
     swaynotificationcenter # Notification daemon for Wayland
+    libnotify # notify-send command for desktop notifications
     # gource # Version control visualization (temporarily disabled - build failure)
 
     #--------------------------------------------------------------------------

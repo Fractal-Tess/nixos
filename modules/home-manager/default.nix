@@ -17,5 +17,6 @@
     ./programs/bat.nix
     ./programs/flare.nix
     ./programs/yazi.nix
+    ./services/battery-check.nix
   ];
 }
