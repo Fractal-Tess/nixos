@@ -20,7 +20,7 @@ for existing in target_dir.iterdir():
         existing.unlink()
 
 sources = [
-    ("local", repo_dir / "backgrounds"),
+    ("local", Path.home() / "wallpapers"),
     ("eljangus", repo_dir / "Wallpapers-reference" / "Walls"),
 ]
 
