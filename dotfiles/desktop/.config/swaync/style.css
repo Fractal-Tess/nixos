@@ -1,110 +1,150 @@
+@import "../colors/swayncradius.css";
+@import "../colors/colors.css";
+
 * {
-  font-family: "JetBrainsMono Nerd Font Propo";
-  color: #e5e1eb;
-  box-shadow: none;
+  font-family: "JetBrainsMono Nerd Font";
+  font-size: 14px;
   text-shadow: none;
+  color: @on_surface;
+  box-shadow: none;
   border: none;
+  outline: none;
 }
 
-.control-center,
-.notification,
-.widget-dnd,
-.widget-volume,
-.widget-mpris,
-.widget-title {
-  border-radius: 18px;
+.notification {
+  background-color: @surface_container;
+  padding: 18px;
+  color: @on_surface;
+}
+
+.notification button {
+  background-color: @primary;
+  color: @on_primary;
+  border-radius: var(--button-radius);
+}
+
+.notification button:hover {
+  background-color: @primary_container;
+  color: @on_primary_container;
+}
+
+.image {
+  border-radius: var(--button-radius);
+  margin-right: 18px;
+}
+
+.close-button {
+  background-color: @surface_container_high;
+  border-radius: var(--button-radius);
+  color: @on_surface;
+}
+
+.close-button:hover {
+  background-color: @error_container;
+  color: @on_error_container;
+}
+
+.notification-content {
+  background-color: transparent;
+  padding: 0;
+  color: @on_surface;
+}
+
+.notification-default-action:hover {
+  background-color: @surface_container_high;
+}
+
+.notification:hover {
+  background-color: @surface_container_high;
 }
 
 .control-center {
-  background: alpha(#131319, 0.96);
-  border: 1px solid #474552;
-  padding: 14px;
-}
-
-.notification,
-.widget-dnd {
-  background: #201f26;
-  border: 1px solid #474552;
-  margin: 0 6px 12px 6px;
-  padding: 14px;
-}
-
-.widget-mpris {
-  background: #201f26;
-  border: 1px solid #474552;
-  border-bottom: none;
-  border-radius: 18px 18px 0 0;
-  margin: 0 6px 0 6px;
-  padding: 14px 14px 10px 14px;
-}
-
-.widget-volume {
-  background: #201f26;
-  border: 1px solid #474552;
-  border-top: none;
-  border-radius: 0 0 18px 18px;
-  margin: 0 6px 12px 6px;
-  padding: 10px 14px 14px 14px;
-}
-
-.notification:hover,
-.notification-default-action:hover {
-  background: #2a2930;
+  border-radius: var(--border-radius);
+  color: @on_surface;
+  background-color: @background;
+  outline: none;
 }
 
 .widget-title {
-  background: transparent;
-  margin: 6px 6px 12px 6px;
-  padding: 4px 0;
+  margin: 10px 18px 5px 18px;
+  color: @on_surface;
 }
 
 .widget-title label {
-  font-size: 18px;
-  font-weight: 700;
-  color: #c7bfff;
+  font-size: 20px;
 }
 
-.widget-title > button,
-.close-button {
-  background: #c7bfff;
-  color: #131319;
-  border-radius: 999px;
-  padding: 8px 14px;
+.widget-title > button {
+  background-color: @surface_container;
+  color: @on_surface;
+  border-radius: var(--button-radius);
+  padding: 4px 18px;
 }
 
-.widget-title > button label,
-.close-button label {
-  color: #131319;
+.widget-title > button:hover {
+  background-color: @surface_container_high;
 }
 
-.close-button {
-  min-width: 20px;
-  min-height: 20px;
-  padding: 2px 6px;
-  font-size: 10px;
-}
-
-.widget-title > button:hover,
-.close-button:hover {
-  background: #e4dfff;
+.widget-dnd {
+  margin: 0px 18px 10px 18px;
 }
 
 .widget-dnd > switch {
-  background: #35343b;
-  border-radius: 999px;
+  border-radius: var(--button-radius);
+  background-color: @surface_container;
 }
 
-.widget-dnd > switch:checked,
-.widget-volume trough highlight {
-  background: #c7bfff;
+.widget-dnd > switch:checked {
+  background-color: @primary_container;
 }
 
 .widget-dnd > switch slider {
-  background: #e5e1eb;
-  border-radius: 999px;
+  background-color: @primary;
+  border-radius: var(--button-radius);
 }
 
-.widget-volume trough {
-  background: #35343b;
-  border-radius: 999px;
+.widget-mpris {
+  margin: 0px 18px 10px 18px;
+  background-color: @surface_container;
+  border-radius: var(--border-radius);
+  padding: 18px;
+}
+
+.widget-mpris-player {
+  padding: 8px;
+}
+
+.widget-mpris-title {
+  color: @on_surface;
+  font-weight: bold;
+}
+
+.widget-mpris-subtitle {
+  color: @on_surface_variant;
+}
+
+.widget-buttons-grid {
+  margin: 0px 18px 10px 18px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button {
+  background-color: @surface_container;
+  color: @on_surface;
+  border-radius: var(--button-radius);
+  padding: 10px 14px;
+  min-width: 56px;
+}
+
+.widget-buttons-grid > flowbox > flowboxchild > button:hover {
+  background-color: @surface_container_high;
+  color: @primary;
+}
+
+.notification-group {
+  margin: 6px 18px 0px 18px;
+}
+
+.notification-group-header {
+  color: @on_surface_variant;
+  font-size: 12px;
 }

@@ -17,6 +17,7 @@
     nvtopPackages.amd # AMD GPU monitoring
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
+    hyprpicker # Color picker for Wayland/Hyprland
 
     # File system tools
     bleachbit # Disk space cleaner
@@ -157,6 +158,16 @@
     tldr # Simplified man pages
     duf # Modern df replacement with better output
     choose # Human-friendly alternative to cut and awk
+
+    matugen # Material You color palette generator for dynamic theming
+    swww # Animated wallpaper daemon for Wayland
+    cava # Console-based audio visualizer
+    rofi-calc # Calculator mode for rofi launcher
+    cliphist # Clipboard history tool
+    wl-clipboard # Clipboard utilities for Wayland
+    brightnessctl # Screen brightness control
+    pamixer # PulseAudio/PipeWire volume control CLI
+    playerctl # Media player controller CLI
 
     #--------------------------------------------------------------------------
     # ADDITIONAL (from existing configuration.nix)
