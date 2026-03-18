@@ -21,6 +21,7 @@
   "hyprland/window",
 ],
  "modules-right": [
+  "group/sysmon",
   "group/idlevol",
   "group/netblue",
   "group/traywermen",
