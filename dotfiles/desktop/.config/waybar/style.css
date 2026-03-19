@@ -9,7 +9,7 @@
     text-shadow: none;
 }
 window#waybar {
-    background: @background;
+    background: alpha(#0D1117, 0.75);
     background-image: none;
     box-shadow: none;
     border: 0 solid @border;
