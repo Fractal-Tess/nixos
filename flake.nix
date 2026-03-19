@@ -24,11 +24,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    flare = {
-      url = "github:ByteAtATime/flare/feat/nix";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     nix-matlab = {
       url = "gitlab:doronbehar/nix-matlab";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -51,7 +46,7 @@
       polymc,
       sops-nix,
       nix4nvchad,
-      flare,
+
       nix-matlab,
       ...
     }@inputs:
