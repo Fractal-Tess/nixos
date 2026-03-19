@@ -55,7 +55,7 @@ in
       pkgs.ncurses
     ];
     # Enable dconf for GTK/Flatpak app settings
-    # programs.dconf.enable = true;
+    programs.dconf.enable = true;
 
     # Add nvidia driver for
     services.xserver.videoDrivers = mkMerge [

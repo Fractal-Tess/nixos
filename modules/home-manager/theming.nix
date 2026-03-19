@@ -39,4 +39,10 @@ in
     platformTheme.name = "gtk3";
     style.name = "adwaita-dark";
   };
+
+  dconf.settings = mkIf (osConfig.modules.display.hyprland.enable or false) {
+    "org/gnome/desktop/interface" = {
+      color-scheme = "prefer-dark";
+    };
+  };
 }
