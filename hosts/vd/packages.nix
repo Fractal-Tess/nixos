@@ -110,6 +110,8 @@
     cursor-cli # Command-line interface for Cursor AI editor
     opencode # AI coding assistant
     claude-code # Claude Code CLI
+    codex # OpenAI Codex CLI
+    t3code # T3 Code desktop app
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime

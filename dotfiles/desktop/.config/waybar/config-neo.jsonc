@@ -17,9 +17,7 @@
  "clock",
  
 ],
- "modules-center": [
-  "hyprland/window",
-],
+ "modules-center": [],
  "modules-right": [
   "group/sysmon",
   "group/idlevol",

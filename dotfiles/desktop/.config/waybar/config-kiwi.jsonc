@@ -14,9 +14,7 @@
  "custom/System",
  "hyprland/workspaces",
 ],
- "modules-center": [
-  "hyprland/window",
-],
+ "modules-center": [],
  "modules-right": [
    "disk#root",
    "group/idlevol",

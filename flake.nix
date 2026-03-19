@@ -37,6 +37,11 @@
     nixpkgs-openclaw = {
       url = "github:chrisportela/nixpkgs/cp/add-moltbot";
     };
+
+    t3code-nix = {
+      url = "github:Sawrz/t3code-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -68,6 +73,7 @@
                 (import ./overlays/handy.nix)
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
+                inputs.t3code-nix.overlays.default
               ];
             }
           ];
