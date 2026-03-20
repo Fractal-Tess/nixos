@@ -5,6 +5,7 @@
     Unit = {
       Description = "Battery level check — notify below 20%, shutdown below 10%";
       After = [ "graphical-session.target" ];
+      ConditionPathIsDirectory = "/sys/class/power_supply/BAT0";
     };
     Service = {
       Type = "oneshot";
