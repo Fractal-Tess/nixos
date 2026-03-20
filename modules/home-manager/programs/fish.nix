@@ -129,6 +129,12 @@
       # Add scripts to PATH
       if test -d ~/nixos/scripts
         fish_add_path ~/nixos/scripts
+        fish_add_path ~/nixos/scripts/bin
+        fish_add_path ~/nixos/scripts/hyprland
+        fish_add_path ~/nixos/scripts/nixos
+        fish_add_path ~/nixos/scripts/wallpaper
+        fish_add_path ~/nixos/scripts/waybar
+        fish_add_path ~/nixos/scripts/claude-code
       end
 
       # Auto-start Hyprland on TTY1 if no Wayland session
