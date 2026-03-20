@@ -16,7 +16,7 @@
 
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
-    btop # Resource monitor with CPU, memory, disk, network
+    btop-cuda # A btop application with nvidia support
     nvtopPackages.nvidia # NVIDIA GPU monitoring
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
