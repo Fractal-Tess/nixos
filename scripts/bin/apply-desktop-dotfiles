@@ -51,4 +51,9 @@ stow --dir "${stow_dir}" --target "${target_home}" --restow desktop
 ln -sfn "${waybar_config}" "${target_home}/.config/waybar/config.jsonc"
 ln -sfn "${monitor_config}" "${target_home}/.config/hypr/conf.d/monitors.conf"
 
+# Fix hypranimations.conf — stow can't resolve the chained relative symlink,
+# so replace it with a direct link to the RofiScripts animation config.
+ln -sfn "${target_home}/.config/RofiScripts/Animations/Horizontal/hypranimations.conf" \
+  "${target_home}/.config/hypr/hyprconfigs/hypranimations.conf"
+
 "${repo_dir}/scripts/wallpaper/sync-library.sh"
