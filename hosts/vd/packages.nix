@@ -113,6 +113,9 @@
     codex # OpenAI Codex CLI
     t3code # T3 Code desktop app
 
+    # AI / LLM
+    ollama-cuda # Run LLMs locally with NVIDIA GPU acceleration
+
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
