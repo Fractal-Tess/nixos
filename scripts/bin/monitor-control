@@ -46,11 +46,18 @@ const formatMonitorEntry = (m: Monitor): string => {
 const selectMonitor = (monitors: Monitor[], prompt: string): string | null => {
   const entries = monitors.map(formatMonitorEntry).join("\n");
   
-  run(["pkill", "wofi"]);
+  run(["pkill", "rofi"]);
   
   const selection = Bun.spawnSync(
-    ["wofi", "-dmenu", "-p", prompt, "--cache-file", "/dev/null"],
-    { stdin: new TextEncoder().encode(entries), stdout: "pipe" }
+    [
+      "/run/current-system/sw/bin/rofi",
+      "-plugin-path", "/run/current-system/sw/lib/rofi",
+      "-dmenu",
+      "-i",
+      "-p", prompt,
+      "-theme-str", `window { width: 28em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: ${monitors.length}; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: "Adwaita Sans 18"; }`,
+    ],
+    { stdin: new TextEncoder().encode(entries), stdout: "pipe", stderr: "pipe" }
   );
   
   if (!selection.stdout?.byteLength || selection.exitCode !== 0) return null;
