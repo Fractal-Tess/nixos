@@ -204,8 +204,40 @@ BRIGHTNESS COMMANDS:
   <0-100>                 Set brightness directly (numeric)
 
 UTILITY COMMANDS:
+  menu                    Open rofi brightness menu
   status                  Show current status
   help                    Show this help message`);
+};
+
+// ─── Rofi Menu ──────────────────────────────────────────────────────────────
+
+const rofiMenu = () => {
+  const cur = getCachedBrightness();
+  const entries = [
+    "☀  Brightness 100%",
+    "󰃝  Brightness 75%",
+    "󰃞  Brightness 50%",
+    "󰃜  Brightness 25%",
+  ].join("\n");
+
+  const r = Bun.spawnSync([
+    "/run/current-system/sw/bin/rofi",
+    "-plugin-path", "/run/current-system/sw/lib/rofi",
+    "-dmenu",
+    "-i",
+    "-p", `Brightness (${cur}%)`,
+    "-theme-str", `window { width: 22em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: 4; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: "Adwaita Sans 18"; }`,
+  ], { stdin: Buffer.from(entries), stdout: "pipe", stderr: "pipe" });
+
+  const result = { out: new TextDecoder().decode(r.stdout).trim(), ok: r.exitCode === 0 };
+  if (!result.ok || !result.out) return;
+
+  const match = result.out.match(/(\d+)%/);
+  if (match) {
+    const v = parseInt(match[1]);
+    setBrightness(v);
+    log.success(`Brightness set to ${v}%`);
+  }
 };
 
 // ─── Main ────────────────────────────────────────────────────────────────────
@@ -270,6 +302,8 @@ const main = () => {
       setBrightness(v);
       break;
     }
+
+    case "menu": rofiMenu(); break;
 
     case "status": showStatus(); break;
     case "help": case "--help": case "-h": showHelp(); break;
