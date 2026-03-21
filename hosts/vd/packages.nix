@@ -114,7 +114,7 @@
     t3code # T3 Code desktop app
 
     # AI / LLM
-    ollama-cuda # Run LLMs locally with NVIDIA GPU acceleration
+    # ollama-cuda # Run LLMs locally with NVIDIA GPU acceleration — re-enable after caches are trusted
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
