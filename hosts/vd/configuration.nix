@@ -18,6 +18,7 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    # inputs.comfyui-nix.nixosModules.default # temporarily disabled — re-enable after caches are trusted
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
@@ -358,6 +359,65 @@
     powerline-fonts
     powerline-symbols
   ];
+
+  #============================================================================
+  # COMFYUI
+  #============================================================================
+
+  # ComfyUI — temporarily disabled, re-enable after caches are trusted
+  # services.comfyui = {
+  #   enable = true;
+  #   gpuSupport = "cuda";
+  #   port = 8188;
+  #   listenAddress = "127.0.0.1";
+  #   dataDir = "/var/lib/comfyui";
+  #   enableManager = true;
+  #   extraArgs = [
+  #     "--lowvram"
+  #     "--extra-model-paths-config"
+  #     (toString (pkgs.writeText "extra-model-paths.yaml" ''
+  #       vault:
+  #         base_path: /mnt/vault/ComfyUI/models
+  #         checkpoints: checkpoints/
+  #         clip: clip/
+  #         clip_vision: clip_vision/
+  #         configs: configs/
+  #         controlnet: controlnet/
+  #         diffusers: diffusers/
+  #         diffusion_models: diffusion_models/
+  #         embeddings: embeddings/
+  #         gligen: gligen/
+  #         hypernetworks: hypernetworks/
+  #         loras: loras/
+  #         photomaker: photomaker/
+  #         style_models: style_models/
+  #         text_encoders: text_encoders/
+  #         unet: unet/
+  #         upscale_models: upscale_models/
+  #         vae: vae/
+  #         vae_approx: vae_approx/
+  #     ''))
+  #   ];
+  # };
+
+  # Binary caches for ComfyUI and CUDA packages (avoids building from source)
+  nix.settings = {
+    extra-substituters = [
+      "https://comfyui.cachix.org"
+      "https://nix-community.cachix.org"
+      "https://cuda-maintainers.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
+      "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
+      "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
+    ];
+    trusted-substituters = [
+      "https://comfyui.cachix.org"
+      "https://nix-community.cachix.org"
+      "https://cuda-maintainers.cachix.org"
+    ];
+  };
 
   #============================================================================
   # ENVIRONMENT VARIABLES

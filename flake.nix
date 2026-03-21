@@ -37,6 +37,10 @@
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    comfyui-nix = {
+      url = "github:utensils/comfyui-nix";
+    };
   };
 
   outputs =
