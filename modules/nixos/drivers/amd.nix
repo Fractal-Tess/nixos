@@ -2,10 +2,14 @@
 
 with lib;
 
-let cfg = config.modules.drivers.amd;
+let
+  cfg = config.modules.drivers.amd;
 
-in {
-  options.modules.drivers.amd = { enable = mkEnableOption "AMD GPU drivers"; };
+in
+{
+  options.modules.drivers.amd = {
+    enable = mkEnableOption "AMD GPU drivers";
+  };
 
   config = mkIf cfg.enable {
     # Add AMD driver for Xorg and Wayland

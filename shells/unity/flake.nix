@@ -5,18 +5,22 @@
     systems.url = "github:nix-systems/default";
   };
   outputs =
-    { systems
-    , nixpkgs
-    , ...
+    {
+      systems,
+      nixpkgs,
+      ...
     }:
     let
-      eachSystem = f:
+      eachSystem =
+        f:
         nixpkgs.lib.genAttrs (import systems) (
           system:
-          f (import nixpkgs {
-            inherit system;
-            config.allowUnfree = true;
-          })
+          f (
+            import nixpkgs {
+              inherit system;
+              config.allowUnfree = true;
+            }
+          )
         );
     in
     {

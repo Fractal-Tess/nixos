@@ -1,12 +1,20 @@
-{ pkgs, ... }: {
+{ pkgs, ... }:
+{
   programs.bat = {
     enable = true;
     config = {
-      map-syntax = [ "*.jenkinsfile:Groovy" "*.props:Java Properties" ];
+      map-syntax = [
+        "*.jenkinsfile:Groovy"
+        "*.props:Java Properties"
+      ];
       pager = "less -FR";
       theme = "TwoDark";
     };
-    extraPackages = with pkgs.bat-extras; [ batdiff batman batwatch ];
+    extraPackages = with pkgs.bat-extras; [
+      batdiff
+      batman
+      batwatch
+    ];
     themes = {
       dracula = {
         src = pkgs.fetchFromGitHub {

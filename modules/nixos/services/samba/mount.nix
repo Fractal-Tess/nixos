@@ -2,13 +2,16 @@
 
 with lib;
 
-let cfg = config.modules.services.samba.mount;
+let
+  cfg = config.modules.services.samba.mount;
 
-in {
+in
+{
   options.modules.services.samba.mount = {
     enable = mkEnableOption "SMB/CIFS share mounting";
     shares = mkOption {
-      type = with types;
+      type =
+        with types;
         listOf (submodule {
           options = {
             mountPoint = mkOption {
@@ -72,50 +75,55 @@ in {
           };
         });
       default = [ ];
-      description =
-        "List of SMB shares to mount. Each entry defines a share to be mounted.";
+      description = "List of SMB shares to mount. Each entry defines a share to be mounted.";
     };
   };
 
   config = mkIf cfg.enable {
     # For each share, create a fileSystems entry for mounting via systemd automount
-    fileSystems = listToAttrs (map (share: {
-      name = share.mountPoint;
-      value = {
-        device = share.device;
-        fsType = "cifs";
-        options =
-          # If credentialsFile is set, use it; otherwise, use username/password
-          let
-            baseOptions = [
-              # Set file ownership
-              "uid=${toString share.uid}"
-              "gid=${toString share.gid}"
-              # Use UTF-8 encoding for file names
-              "iocharset=utf8"
-              # Use SMB protocol version 3.0
-              "vers=3.0"
-              # Mount read-write
-              "rw"
-              # Use systemd automount for on-demand mounting
-              "x-systemd.automount"
-              # Do not mount automatically
-              "noauto"
-              # Do not fail if the share is unavailable (prevents boot/activation failure)
-              "nofail"
-              # Idle timeout
-              "x-systemd.idle-timeout=60s"
-              # Set device timeout
-              "x-systemd.device-timeout=5s"
-              # Limit mount attempts to 5 seconds to avoid long waits
-              "x-systemd.mount-timeout=5s"
-            ];
-          in if share.credentialsFile != null then
-            [ "credentials=${share.credentialsFile}" ] ++ baseOptions
-          else
-            [ "username=${share.username}" "password=${share.password}" ]
-            ++ baseOptions;
-      };
-    }) cfg.shares);
+    fileSystems = listToAttrs (
+      map (share: {
+        name = share.mountPoint;
+        value = {
+          device = share.device;
+          fsType = "cifs";
+          options =
+            # If credentialsFile is set, use it; otherwise, use username/password
+            let
+              baseOptions = [
+                # Set file ownership
+                "uid=${toString share.uid}"
+                "gid=${toString share.gid}"
+                # Use UTF-8 encoding for file names
+                "iocharset=utf8"
+                # Use SMB protocol version 3.0
+                "vers=3.0"
+                # Mount read-write
+                "rw"
+                # Use systemd automount for on-demand mounting
+                "x-systemd.automount"
+                # Do not mount automatically
+                "noauto"
+                # Do not fail if the share is unavailable (prevents boot/activation failure)
+                "nofail"
+                # Idle timeout
+                "x-systemd.idle-timeout=60s"
+                # Set device timeout
+                "x-systemd.device-timeout=5s"
+                # Limit mount attempts to 5 seconds to avoid long waits
+                "x-systemd.mount-timeout=5s"
+              ];
+            in
+            if share.credentialsFile != null then
+              [ "credentials=${share.credentialsFile}" ] ++ baseOptions
+            else
+              [
+                "username=${share.username}"
+                "password=${share.password}"
+              ]
+              ++ baseOptions;
+        };
+      }) cfg.shares
+    );
   };
 }

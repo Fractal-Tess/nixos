@@ -5,8 +5,7 @@ self: super: {
     version = "1.16.0";
 
     src = super.fetchurl {
-      url =
-        "https://github.com/responsively-org/responsively-app-releases/releases/download/v1.16.0/ResponsivelyApp-1.16.0.AppImage";
+      url = "https://github.com/responsively-org/responsively-app-releases/releases/download/v1.16.0/ResponsivelyApp-1.16.0.AppImage";
       sha256 = "sha256-r0wznN+7zZXKNFNFUV4hm2e4gd84M6hVcun4OfNEeSw=";
     };
 
@@ -30,8 +29,7 @@ self: super: {
     '';
 
     meta = with super.lib; {
-      description =
-        "A modified browser for fast & precise responsive web development.";
+      description = "A modified browser for fast & precise responsive web development.";
       homepage = "https://responsively.app/";
       license = licenses.mit;
       platforms = platforms.linux;

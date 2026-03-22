@@ -2,13 +2,16 @@
 
 with lib;
 
-let cfg = config.modules.services.samba.share;
+let
+  cfg = config.modules.services.samba.share;
 
-in {
+in
+{
   options.modules.services.samba.share = {
     enable = mkEnableOption "Samba share service";
     shares = mkOption {
-      type = with types;
+      type =
+        with types;
         listOf (submodule {
           options = {
             name = mkOption {
@@ -115,29 +118,37 @@ in {
           security = "user";
           # Use the default Samba password backend
           "passdb backend" = "tdbsam";
-        } // cfg.extraGlobal;
-      }) // listToAttrs (map (share: {
-        name = share.name;
-        value = lib.filterAttrs (_: v: v != null) ({
-          # Path to the shared directory
-          path = share.path;
-          # Make the share visible in network browsers
-          browseable = "yes";
-          # Set read-only or read-write
-          "read only" = if share.readOnly then "yes" else "no";
-          # Allow guest access if enabled
-          "guest ok" = if share.guestOk then "yes" else "no";
-          # Set file and directory creation masks
-          "create mask" = share.createMask;
-          "directory mask" = share.directoryMask;
-        } // optionalAttrs (share.forceUser != null) {
-          # Force all operations as this user
-          "force user" = share.forceUser;
-        } // optionalAttrs (share.forceGroup != null) {
-          # Force all operations as this group
-          "force group" = share.forceGroup;
-        });
-      }) cfg.shares);
+        }
+        // cfg.extraGlobal;
+      })
+      // listToAttrs (
+        map (share: {
+          name = share.name;
+          value = lib.filterAttrs (_: v: v != null) (
+            {
+              # Path to the shared directory
+              path = share.path;
+              # Make the share visible in network browsers
+              browseable = "yes";
+              # Set read-only or read-write
+              "read only" = if share.readOnly then "yes" else "no";
+              # Allow guest access if enabled
+              "guest ok" = if share.guestOk then "yes" else "no";
+              # Set file and directory creation masks
+              "create mask" = share.createMask;
+              "directory mask" = share.directoryMask;
+            }
+            // optionalAttrs (share.forceUser != null) {
+              # Force all operations as this user
+              "force user" = share.forceUser;
+            }
+            // optionalAttrs (share.forceGroup != null) {
+              # Force all operations as this group
+              "force group" = share.forceGroup;
+            }
+          );
+        }) cfg.shares
+      );
     };
   };
 }

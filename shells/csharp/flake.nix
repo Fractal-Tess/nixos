@@ -6,7 +6,13 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { self, systems, nixpkgs, ... }:
+  outputs =
+    {
+      self,
+      systems,
+      nixpkgs,
+      ...
+    }:
     let
       dotnetVersion = 8; # Change this to update the whole stack
       overlays = [
@@ -14,12 +20,17 @@
           dotnet-sdk = prev."dotnet-sdk_${toString dotnetVersion}";
         })
       ];
-      eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems) (system:
-          f (import nixpkgs {
-            inherit overlays system;
-            config.allowUnfree = true;
-          }));
+      eachSystem =
+        f:
+        nixpkgs.lib.genAttrs (import systems) (
+          system:
+          f (
+            import nixpkgs {
+              inherit overlays system;
+              config.allowUnfree = true;
+            }
+          )
+        );
     in
     {
       devShells = eachSystem (pkgs: {

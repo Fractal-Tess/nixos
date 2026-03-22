@@ -6,11 +6,11 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { nixpkgs, systems, ... }:
+  outputs =
+    { nixpkgs, systems, ... }:
     let
-      eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems)
-          (system: f (import nixpkgs { inherit system; }));
+      eachSystem =
+        f: nixpkgs.lib.genAttrs (import systems) (system: f (import nixpkgs { inherit system; }));
     in
     {
       devShells = eachSystem (pkgs: {
@@ -23,7 +23,7 @@
             nodejs # Optional, this is for if you have a js frontend
           ];
 
-          buildInputs = with pkgs;[
+          buildInputs = with pkgs; [
             at-spi2-atk
             atkmm
             cairo
