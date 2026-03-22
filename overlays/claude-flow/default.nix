@@ -20,17 +20,20 @@ final: prev: {
       sqlite.dev
     ];
 
-    buildInputs = with prev; [
-      sqlite
-      libuv
-    ] ++ prev.lib.optionals prev.stdenv.isDarwin [
-      prev.darwin.apple_sdk.frameworks.CoreFoundation
-      prev.darwin.apple_sdk.frameworks.Security
-    ];
+    buildInputs =
+      with prev;
+      [
+        sqlite
+        libuv
+      ]
+      ++ prev.lib.optionals prev.stdenv.isDarwin [
+        prev.darwin.apple_sdk.frameworks.CoreFoundation
+        prev.darwin.apple_sdk.frameworks.Security
+      ];
 
     env = {
       PYTHON = "${prev.python3}/bin/python";
-      SQLITE3_LIB_DIR = "${prev.sqlite}/lib";  
+      SQLITE3_LIB_DIR = "${prev.sqlite}/lib";
       SQLITE3_INCLUDE_DIR = "${prev.sqlite.dev}/include";
       npm_config_build_from_source = "true";
       PUPPETEER_SKIP_DOWNLOAD = "1";
@@ -54,4 +57,3 @@ final: prev: {
     };
   };
 }
-

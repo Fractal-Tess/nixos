@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -114,7 +119,7 @@ in
     };
 
     # Add user to vboxusers group for USB access
-    users.groups.vboxusers = mkIf cfg.host.enable {};
+    users.groups.vboxusers = mkIf cfg.host.enable { };
 
     # Add current user to vboxusers group
     users.users.${config.modules.username or "root"} = mkIf cfg.host.enable {

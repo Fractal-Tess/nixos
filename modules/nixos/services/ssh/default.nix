@@ -1,9 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.sshd;
-in {
+let
+  cfg = config.modules.services.sshd;
+in
+{
   options.modules.services.sshd = {
     enable = mkEnableOption "SSH daemon";
     ports = mkOption {

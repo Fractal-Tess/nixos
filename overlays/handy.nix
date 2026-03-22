@@ -5,8 +5,7 @@ self: super: {
     version = "0.7.0";
 
     src = super.fetchurl {
-      url =
-        "https://github.com/cjpais/Handy/releases/download/v0.7.0/Handy_0.7.0_amd64.AppImage";
+      url = "https://github.com/cjpais/Handy/releases/download/v0.7.0/Handy_0.7.0_amd64.AppImage";
       sha256 = "sha256-tTswFYLCPGtMbHAb2bQMsklRiRCVXLrtu4pQC8IHdqQ=";
     };
 
@@ -45,8 +44,7 @@ self: super: {
     '';
 
     meta = with super.lib; {
-      description =
-        "A free, open source, and extensible speech-to-text application that works completely offline.";
+      description = "A free, open source, and extensible speech-to-text application that works completely offline.";
       homepage = "https://github.com/cjpais/Handy";
       license = licenses.mit;
       platforms = platforms.linux;

@@ -76,52 +76,57 @@ in
         PrivateTmp = false;
       };
 
-      script = let
-        allowedOriginsStr = if cfg.allowedOrigins != [ ]
-          then "--allowed-origins=${lib.concatStringsSep "," cfg.allowedOrigins}"
-          else "";
-        workDirStr = if cfg.workDir != null
-          then "--work-dir=${cfg.workDir}"
-          else "";
-        cmd = "${pkgs.kimi-cli}/bin/kimi-cli --yolo ${workDirStr} web --host ${cfg.host} --port ${toString cfg.port} --public --network --dangerously-omit-auth --no-open ${allowedOriginsStr}";
-      in ''
-        export HOME=/home/${cfg.user}
-        # Disable terminal colors to help expect pattern matching
-        export NO_COLOR=1
+      script =
+        let
+          allowedOriginsStr =
+            if cfg.allowedOrigins != [ ] then
+              "--allowed-origins=${lib.concatStringsSep "," cfg.allowedOrigins}"
+            else
+              "";
+          workDirStr = if cfg.workDir != null then "--work-dir=${cfg.workDir}" else "";
+          cmd = "${pkgs.kimi-cli}/bin/kimi-cli --yolo ${workDirStr} web --host ${cfg.host} --port ${toString cfg.port} --public --network --dangerously-omit-auth --no-open ${allowedOriginsStr}";
+        in
+        ''
+          export HOME=/home/${cfg.user}
+          # Disable terminal colors to help expect pattern matching
+          export NO_COLOR=1
 
-        # Use expect to handle the interactive confirmation
-        ${pkgs.expect}/bin/expect -c '
-          # Disable expect output buffering
-          exp_internal 0
-          set timeout 30
+          # Use expect to handle the interactive confirmation
+          ${pkgs.expect}/bin/expect -c '
+            # Disable expect output buffering
+            exp_internal 0
+            set timeout 30
 
-          spawn ${cmd}
+            spawn ${cmd}
 
-          # Wait for the security warning prompt and confirm
-          expect {
-            -re {continue:.*} {
-              send "I UNDERSTAND THE RISKS\r"
+            # Wait for the security warning prompt and confirm
+            expect {
+              -re {continue:.*} {
+                send "I UNDERSTAND THE RISKS\r"
+              }
+              eof {
+                set wait_result [wait]
+                exit [lindex $wait_result 3]
+              }
+              timeout {
+                puts "Timeout waiting for prompt"
+                exit 1
+              }
             }
-            eof {
-              set wait_result [wait]
-              exit [lindex $wait_result 3]
-            }
-            timeout {
-              puts "Timeout waiting for prompt"
-              exit 1
-            }
-          }
 
-          # Server is running - wait indefinitely for it to exit
-          set timeout -1
-          expect eof
-          set wait_result [wait]
-          exit [lindex $wait_result 3]
-        '
-      '';
+            # Server is running - wait indefinitely for it to exit
+            set timeout -1
+            expect eof
+            set wait_result [wait]
+            exit [lindex $wait_result 3]
+          '
+        '';
     };
 
     # Ensure kimi-cli and ripgrep are available
-    environment.systemPackages = [ pkgs.kimi-cli pkgs.ripgrep ];
+    environment.systemPackages = [
+      pkgs.kimi-cli
+      pkgs.ripgrep
+    ];
   };
 }
