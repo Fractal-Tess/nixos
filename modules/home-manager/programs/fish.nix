@@ -124,7 +124,9 @@
       set fish_greeting
 
       # Zoxide shell integration
-      zoxide init fish | source
+      if command -q zoxide
+        zoxide init fish | source
+      end
 
       # Yazi wrapper — cd to chosen directory on exit
       function y

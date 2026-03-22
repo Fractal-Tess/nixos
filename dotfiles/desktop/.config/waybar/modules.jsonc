@@ -74,7 +74,7 @@
  "orientation": "horizontal",
  "modules": [
 "group/volume",
-"idle_inhibitor",
+"custom/lid-sleep",
 "battery"
  ]
 },
@@ -211,14 +211,13 @@
   "pulseaudio/slider",
             ],
 }, 
-"idle_inhibitor": {
- "format": "{icon}",
- "format-icons": {
- "activated": "",
- "deactivated": "󰲓"
- },
- "tooltip-format-activated": "Idle inhibitor active",
- "tooltip-format-deactivated": "Idle inhibitor inactive",
+"custom/lid-sleep": {
+ "format": "{}",
+ "return-type": "json",
+ "interval": 5,
+ "exec": "~/nixos/scripts/bin/lid-sleep-toggle",
+ "on-click": "~/nixos/scripts/bin/lid-sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
+ "signal": 9,
 },
 "mpris": {
   "interval" : 1,
