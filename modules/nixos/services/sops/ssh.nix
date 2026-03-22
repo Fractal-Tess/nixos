@@ -1,9 +1,16 @@
-{ config, lib, username, ... }:
+{
+  config,
+  lib,
+  username,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.sops.ssh;
-in {
+let
+  cfg = config.modules.services.sops.ssh;
+in
+{
   options.modules.services.sops.ssh = {
     enable = mkEnableOption "SSH secrets management via SOPS";
   };

@@ -1,7 +1,10 @@
-{ config, ... }: {
+{ config, ... }:
+{
   programs.git = {
     enable = true;
-    lfs = { enable = true; };
+    lfs = {
+      enable = true;
+    };
 
     settings = {
       init.defaultBranch = "main";

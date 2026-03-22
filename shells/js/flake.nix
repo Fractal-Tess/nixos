@@ -6,11 +6,11 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { nixpkgs, systems, ... }:
+  outputs =
+    { nixpkgs, systems, ... }:
     let
-      eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems)
-          (system: f (import nixpkgs { inherit system; }));
+      eachSystem =
+        f: nixpkgs.lib.genAttrs (import systems) (system: f (import nixpkgs { inherit system; }));
     in
     {
       devShells = eachSystem (pkgs: {

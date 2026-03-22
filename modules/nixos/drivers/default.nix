@@ -1,5 +1,8 @@
 { ... }:
 
 {
-  imports = [ ./amd.nix ./nvidia.nix ];
+  imports = [
+    ./amd.nix
+    ./nvidia.nix
+  ];
 }

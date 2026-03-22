@@ -1,7 +1,7 @@
 final: prev:
 let
   pythonPackages = prev.python313Packages;
-  
+
   # Version and source for kimi-cli
   version = "1.15.0";
   src = prev.fetchFromGitHub {
@@ -17,13 +17,13 @@ let
     inherit version;
     src = src + "/web";
     npmDepsHash = "sha256-CxpQr3aHS+l5CFeuBXMwGRdg4lG7Wxn10lg4YhYgwYA=";
-    
+
     buildPhase = ''
       runHook preBuild
       npm run build
       runHook postBuild
     '';
-    
+
     installPhase = ''
       runHook preInstall
       mkdir -p $out
@@ -91,7 +91,10 @@ in
         inherit version;
         pyproject = true;
         src = src + "/packages/kosong";
-        build-system = [ pyfinal.setuptools pyfinal.wheel ];
+        build-system = [
+          pyfinal.setuptools
+          pyfinal.wheel
+        ];
         pythonRelaxDeps = true;
         prePatch = ''
           # Replace uv_build with setuptools in pyproject.toml
@@ -123,7 +126,10 @@ in
         inherit version;
         pyproject = true;
         src = src + "/packages/kaos";
-        build-system = [ pyfinal.setuptools pyfinal.wheel ];
+        build-system = [
+          pyfinal.setuptools
+          pyfinal.wheel
+        ];
         pythonRelaxDeps = true;
         prePatch = ''
           # Replace uv_build with setuptools in pyproject.toml
@@ -153,9 +159,12 @@ in
     inherit version src;
     pyproject = true;
 
-    build-system = [ pythonPackages.setuptools pythonPackages.wheel ];
+    build-system = [
+      pythonPackages.setuptools
+      pythonPackages.wheel
+    ];
     pythonRelaxDeps = true;
-    
+
     prePatch = ''
       # Replace uv_build with setuptools in pyproject.toml
       substituteInPlace pyproject.toml \
@@ -170,12 +179,12 @@ in
       substituteInPlace src/kimi_cli/web/runner/process.py \
         --replace-fail "@kimiCli@" "$out/bin/kimi-cli"
     '';
-    
+
     # Copy the web UI static files and all non-Python data files after installation
     postInstall = ''
       mkdir -p $out/lib/python3.13/site-packages/kimi_cli/web/static
       cp -r ${webUi}/* $out/lib/python3.13/site-packages/kimi_cli/web/static/
-      
+
       # Copy all non-Python data files (.md, .yaml, etc.) that setuptools doesn't include
       (
         cd $src/src/kimi_cli

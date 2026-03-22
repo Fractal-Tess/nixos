@@ -1,9 +1,17 @@
-{ config, lib, pkgs, username, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  username,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.virtualization.podman;
-in {
+let
+  cfg = config.modules.services.virtualization.podman;
+in
+{
   options.modules.services.virtualization.podman = {
     enable = mkEnableOption "Podman";
     rootless = mkEnableOption "Rootless Podman";
@@ -28,8 +36,14 @@ in {
       # Enable Nvidia support if enabled (CDI is used)
       enableNvidia = cfg.nvidia;
       # Add extra packages for Podman
-      extraPackages = with pkgs;
-        [ podman-compose ] ++ (mkIf cfg.devtools [ dive buildkit lazydocker ]);
+      extraPackages =
+        with pkgs;
+        [ podman-compose ]
+        ++ (mkIf cfg.devtools [
+          dive
+          buildkit
+          lazydocker
+        ]);
     };
   };
 }

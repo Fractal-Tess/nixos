@@ -1,5 +1,8 @@
 { ... }:
 
 {
-  imports = [ ./mount.nix ./share.nix ];
+  imports = [
+    ./mount.nix
+    ./share.nix
+  ];
 }

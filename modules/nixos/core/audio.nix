@@ -1,4 +1,9 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
@@ -11,8 +16,13 @@ with lib;
     security.rtkit.enable = mkDefault true;
 
     # Install essential audio control utilities
-    environment.systemPackages =
-      mkMerge [ (with pkgs; [ playerctl pavucontrol wev ]) ];
+    environment.systemPackages = mkMerge [
+      (with pkgs; [
+        playerctl
+        pavucontrol
+        wev
+      ])
+    ];
 
     # Configure PipeWire as the main audio server
     services.pipewire = {
@@ -31,7 +41,9 @@ with lib;
     # Disable the standalone PulseAudio service since PipeWire provides compatibility
     services.pulseaudio = {
       enable = mkDefault false;
-      daemon.config = { flat-volumes = mkDefault "yes"; };
+      daemon.config = {
+        flat-volumes = mkDefault "yes";
+      };
     };
   };
 }

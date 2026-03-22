@@ -1,4 +1,9 @@
-{ config, lib, username, ... }:
+{
+  config,
+  lib,
+  username,
+  ...
+}:
 
 with lib;
 
@@ -6,24 +11,25 @@ let
   cfg = config.modules.display.regreet;
   hyprland = config.modules.display.hyprland;
 
-in {
+in
+{
   options.modules.display.regreet = {
     # Option to enable/disable the ReGreet display manager
     enable = mkEnableOption "ReGreet";
 
     # Option to enable symlinking backgrounds to /var/lib/regreet-backgrounds
-    symlinkBackgrounds = mkEnableOption
-      "Symlink backgrounds to /var/lib/regreet-backgrounds for regreet access";
+    symlinkBackgrounds = mkEnableOption "Symlink backgrounds to /var/lib/regreet-backgrounds for regreet access";
   };
 
   # Configuration that applies when this module is enabled
   config = mkIf cfg.enable {
     # Check if Hyprland is enabled, otherwise throw an error
-    assertions = [{
-      assertion = hyprland.enable;
-      message =
-        "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
-    }];
+    assertions = [
+      {
+        assertion = hyprland.enable;
+        message = "ReGreet is configured to use Hyprland, but Hyprland is not enabled. Please enable modules.display.hyprland.";
+      }
+    ];
 
     # Enable greetd service
     services.greetd.enable = true;
@@ -33,13 +39,22 @@ in {
       # Enable regreet
       enable = true;
 
-      cageArgs = [ "-m" "last" ];
+      cageArgs = [
+        "-m"
+        "last"
+      ];
 
       # Configuration with Canta theme and background
       settings = {
         commands = {
-          reboot = [ "systemctl" "reboot" ];
-          poweroff = [ "systemctl" "poweroff" ];
+          reboot = [
+            "systemctl"
+            "reboot"
+          ];
+          poweroff = [
+            "systemctl"
+            "poweroff"
+          ];
         };
         background = {
           path = "/var/lib/regreet-backgrounds/bg_28.jpg";
@@ -54,8 +69,9 @@ in {
     };
 
     # Only set up symlinks if symlinkBackgrounds is enabled
-    systemd.tmpfiles.rules = mkIf cfg.symlinkBackgrounds
-      [ "d /var/lib/regreet-backgrounds 0755 root root -" ];
+    systemd.tmpfiles.rules = mkIf cfg.symlinkBackgrounds [
+      "d /var/lib/regreet-backgrounds 0755 root root -"
+    ];
 
     # Symlink backgrounds to /var/lib/regreet-backgrounds so it's accessible to regreet
     system.activationScripts.regreetBackgrounds = mkIf cfg.symlinkBackgrounds ''

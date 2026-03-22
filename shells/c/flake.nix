@@ -6,7 +6,13 @@
     systems.url = "github:nix-systems/default";
   };
 
-  outputs = { self, systems, nixpkgs, ... }:
+  outputs =
+    {
+      self,
+      systems,
+      nixpkgs,
+      ...
+    }:
     let
       clangVersion = 19; # Change this to update the whole stack
       overlays = [
@@ -15,9 +21,8 @@
           clang = prev."clang_${toString clangVersion}";
         })
       ];
-      eachSystem = f:
-        nixpkgs.lib.genAttrs (import systems)
-          (system: f (import nixpkgs { inherit overlays system; }));
+      eachSystem =
+        f: nixpkgs.lib.genAttrs (import systems) (system: f (import nixpkgs { inherit overlays system; }));
     in
     {
       devShells = eachSystem (pkgs: {
@@ -33,39 +38,37 @@
               clang version: $(${pkgs.clang}/bin/clang --version | head -n 1)
             " | ${pkgs.lolcat}/bin/lolcat;
           '';
-          packages = with pkgs;
-            [
-              clang
-              # Build tools
-              # gnumake
-              # cmake
-              # bear
+          packages = with pkgs; [
+            clang
+            # Build tools
+            # gnumake
+            # cmake
+            # bear
 
-              # Debuggers
-              # llvm.lldb
-              # gdb
+            # Debuggers
+            # llvm.lldb
+            # gdb
 
-              # Fix headers not found
-              # clang-tools
+            # Fix headers not found
+            # clang-tools
 
-              # lsp and compiler
-              # llvm.libstdcxxClang
+            # lsp and compiler
+            # llvm.libstdcxxClang
 
-              # other tools
-              # cppcheck
-              # llvm.libllvm
-              # valgrind
+            # other tools
+            # cppcheck
+            # llvm.libllvm
+            # valgrind
 
-              # stdlib for cpp
-              # llvm.libcxx
+            # stdlib for cpp
+            # llvm.libcxx
 
-              # libs
-              # glm
-              # SDL2
-              # SDL2_gfx
-            ];
+            # libs
+            # glm
+            # SDL2
+            # SDL2_gfx
+          ];
         };
       });
     };
 }
-

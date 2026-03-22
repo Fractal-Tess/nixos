@@ -1,9 +1,16 @@
-{ config, lib, pkgs, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  ...
+}:
 
 with lib;
 
-let cfg = config.modules.services.auto_cpu;
-in {
+let
+  cfg = config.modules.services.auto_cpu;
+in
+{
   options.modules.services.auto_cpu = {
     enable = mkEnableOption "Auto CPU frequency";
     charger = {
