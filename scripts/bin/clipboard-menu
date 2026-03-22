@@ -1,0 +1,10 @@
+#!/usr/bin/env fish
+
+set -l cliphist_bin /run/current-system/sw/bin/cliphist
+
+pkill rofi
+
+set selection ($cliphist_bin list | rofi -dmenu -p "Clipboard:")
+test -z "$selection"; and exit 0
+
+echo $selection | $cliphist_bin decode | wl-copy

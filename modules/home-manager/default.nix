@@ -1,22 +1,11 @@
-{
-  pkgs,
-  config,
-  inputs,
-  ...
-}:
+{ ... }:
 {
   imports = [
     ./programs/direnv.nix
-    ./programs/zoxide.nix
-    ./programs/yt-dlp.nix
     ./programs/nextcloud.nix
     ./programs/git.nix
-    ./programs/neovim.nix
-    ./programs/eza.nix
     ./programs/fish.nix
     ./programs/bat.nix
-
-    ./programs/yazi.nix
     ./services/battery-check.nix
   ];
 }

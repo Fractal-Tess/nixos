@@ -29,11 +29,9 @@ in
     };
 
     # Hardware acceleration
-    # hardware.graphics = {
-    #   enable = true;
-    #   # 32-bit support
-    #   enable32Bit = true;
-    # };
+    hardware.graphics = {
+      enable = true;
+    };
 
     # Enable Hyprlock
     programs.hyprlock.enable = true;

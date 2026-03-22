@@ -114,8 +114,6 @@
     t3code # T3 Code desktop app
 
     # AI / LLM
-    # ollama-cuda # Run LLMs locally with NVIDIA GPU acceleration — re-enable after caches are trusted
-
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
@@ -240,7 +238,12 @@
     # microsoft-edge # Microsoft's web browser (temporarily disabled - version unavailable)
     tor-browser # Privacy-focused browser
 
+    # Media downloaders
+    yt-dlp # Video/audio downloader
+    aria2 # Multi-protocol download utility
+
     # Terminals
+    neovim # Terminal text editor
     warp-terminal # Modern terminal with AI features
     waveterm # Wave terminal for seamless workflows
 

@@ -131,6 +131,15 @@
                 "kiwi"
               ];
             };
+            "obsidian-university" = {
+              path = "/home/fractal-tess/Nextcloud/University/.obsidian";
+              id = "obsidian-university";
+              label = "Obsidian University Settings";
+              devices = [
+                "vd"
+                "kiwi"
+              ];
+            };
             "vivaldi-default" = {
               path = "/home/fractal-tess/.config/vivaldi/Default";
               id = "vivaldi-default";
