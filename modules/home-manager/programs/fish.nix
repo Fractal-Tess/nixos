@@ -75,8 +75,10 @@
       cv = "wl-paste --no-newline";
       diff = "batdiff";
       man = "batman";
-      ll = "eza -l";
-      ls = "eza";
+      vi = "nvim";
+      vim = "nvim";
+      ll = "eza -l --git --group-directories-first --header";
+      ls = "eza --git --group-directories-first";
       update = "~/nixos/scripts/nixos/update";
 
       # Nix develop shortcuts
@@ -120,6 +122,19 @@
     interactiveShellInit = ''
       # Disable greeting message
       set fish_greeting
+
+      # Zoxide shell integration
+      zoxide init fish | source
+
+      # Yazi wrapper — cd to chosen directory on exit
+      function y
+        set tmp (mktemp -t "yazi-cwd.XXXXXX")
+        yazi $argv --cwd-file="$tmp"
+        if set cwd (command cat -- "$tmp"); and [ -n "$cwd" ]; and [ "$cwd" != "$PWD" ]
+          builtin cd -- "$cwd"
+        end
+        rm -f -- "$tmp"
+      end
 
       # Load custom secrets (conditional)
       if test -f ~/.secrets.fish

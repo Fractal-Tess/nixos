@@ -176,6 +176,15 @@
                 "kiwi"
               ];
             };
+            "obsidian-university" = {
+              path = "/home/fractal-tess/Nextcloud/University/.obsidian";
+              id = "obsidian-university";
+              label = "Obsidian University Settings";
+              devices = [
+                "neo"
+                "kiwi"
+              ];
+            };
             "vivaldi-default" = {
               path = "/home/fractal-tess/.config/vivaldi/Default/Sessions";
               id = "vivaldi-default";
@@ -363,6 +372,22 @@
   #============================================================================
   # COMFYUI
   #============================================================================
+
+  # Ollama LLM service with CUDA
+  services.ollama = {
+    enable = true;
+    package = pkgs.ollama-vulkan;
+  };
+
+  # Open WebUI for Ollama
+  services.open-webui = {
+    enable = true;
+    port = 9090;
+    host = "127.0.0.1";
+    environment = {
+      OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
+    };
+  };
 
   # ComfyUI — temporarily disabled, re-enable after caches are trusted
   # services.comfyui = {

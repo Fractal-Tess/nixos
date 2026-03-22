@@ -37,6 +37,9 @@
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
 
+  # Laptop battery monitoring
+  modules.services.battery-check.enable = true;
+
   #============================================================================
   # SHELL CONFIGURATION
   #============================================================================
