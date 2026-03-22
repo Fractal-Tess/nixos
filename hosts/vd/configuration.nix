@@ -176,10 +176,10 @@
                 "kiwi"
               ];
             };
-            "obsidian-university" = {
-              path = "/home/fractal-tess/Nextcloud/University/.obsidian";
-              id = "obsidian-university";
-              label = "Obsidian University Settings";
+            "obsidian-vault" = {
+              path = "/home/fractal-tess/dev/obsidian";
+              id = "obsidian-vault";
+              label = "Obsidian Vault";
               devices = [
                 "neo"
                 "kiwi"
