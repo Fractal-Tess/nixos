@@ -67,7 +67,8 @@
 "cpu",
 "custom/gpu#amd",
 "memory",
-"custom/swap"
+"custom/swap",
+"custom/boost"
  ]
 },
 "group/idlevol": {
@@ -218,6 +219,14 @@
  "exec": "~/nixos/scripts/bin/lid-sleep-toggle",
  "on-click": "~/nixos/scripts/bin/lid-sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
  "signal": 9,
+},
+"custom/boost": {
+ "format": "{}",
+ "return-type": "json",
+ "interval": 5,
+ "exec": "~/nixos/scripts/bin/boost-toggle",
+ "on-click": "~/nixos/scripts/bin/boost-toggle toggle; pkill -SIGRTMIN+10 waybar",
+ "signal": 10,
 },
 "mpris": {
   "interval" : 1,
