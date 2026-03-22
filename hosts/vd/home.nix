@@ -7,7 +7,6 @@
 
   imports = [
     ../../modules/home-manager/default.nix
-    ../../modules/home-manager/configs
     ../../modules/home-manager/theming.nix
   ];
 
