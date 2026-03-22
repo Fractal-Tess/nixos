@@ -18,6 +18,7 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    inputs.nix-openclaw.nixosModules.openclaw-gateway
     # inputs.comfyui-nix.nixosModules.default # temporarily disabled — re-enable after caches are trusted
 
     # Custom NixOS modules
@@ -74,6 +75,14 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+    allowInsecurePredicate =
+      pkg:
+      builtins.elem (lib.getName pkg) [
+        "electron"
+        "libsoup"
+        "openclaw"
+        "ventoy"
+      ];
     permittedInsecurePackages = [
       "electron-27.3.11"
       "libsoup-2.74.3"
@@ -299,6 +308,18 @@
 
     # Bluetooth GUI services
     blueman.enable = true;
+
+    openclaw-gateway = {
+      enable = true;
+      environment = {
+        OPENCLAW_NIX_MODE = "1";
+      };
+      config = {
+        gateway = {
+          mode = "local";
+        };
+      };
+    };
   };
 
   # Bluetooth support

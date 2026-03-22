@@ -33,6 +33,11 @@
       url = "github:chrisportela/nixpkgs/cp/add-moltbot";
     };
 
+    nix-openclaw = {
+      url = "github:openclaw/nix-openclaw";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     t3code-nix = {
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
