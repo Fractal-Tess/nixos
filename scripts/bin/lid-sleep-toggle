@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+# Waybar custom module: toggle lid-close sleep inhibition
+# Usage:
+#   lid-sleep-toggle        → output JSON status for waybar
+#   lid-sleep-toggle toggle → toggle the inhibitor on/off
+
+LOCK_FILE="/tmp/lid-sleep-inhibit.lock"
+PID_FILE="/tmp/lid-sleep-inhibit.pid"
+
+is_active() {
+  [[ -f "$PID_FILE" ]] && kill -0 "$(cat "$PID_FILE")" 2>/dev/null
+}
+
+start_inhibit() {
+  if is_active; then return; fi
+  systemd-inhibit --what=handle-lid-switch --who="lid-sleep-toggle" \
+    --why="User toggled lid sleep inhibition" --mode=block \
+    sleep infinity &
+  echo $! > "$PID_FILE"
+}
+
+stop_inhibit() {
+  if [[ -f "$PID_FILE" ]]; then
+    kill "$(cat "$PID_FILE")" 2>/dev/null
+    rm -f "$PID_FILE"
+  fi
+}
+
+print_status() {
+  if is_active; then
+    echo '{"text": "󰛊", "tooltip": "Lid close: staying awake", "class": "active", "alt": "active"}'
+  else
+    echo '{"text": "󰍁", "tooltip": "Lid close: will sleep", "class": "inactive", "alt": "inactive"}'
+  fi
+}
+
+case "${1:-}" in
+  toggle)
+    if is_active; then
+      stop_inhibit
+      notify-send -t 2000 "Lid Sleep" "Lid close will suspend"
+    else
+      start_inhibit
+      notify-send -t 2000 "Lid Sleep" "Lid close will stay awake"
+    fi
+    ;;
+  *)
+    print_status
+    ;;
+esac
