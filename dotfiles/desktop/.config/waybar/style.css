@@ -211,7 +211,7 @@ tooltip label {
     font-weight: bold;
     color: @secondary;
 }
-#idle_inhibitor {
+#custom-lid-sleep {
     background-color: @surface_container;
     font-size: 0.78rem;
     padding-left: 0.72rem;
@@ -220,18 +220,18 @@ tooltip label {
     border-radius: 1rem;
     transition: 0.3s all ease;
 }
-#idle_inhibitor:hover { color: @primary; }
-#custom-notifications, #custom-notifications:hover, #idle_inhibitor, #idle_inhibitor:hover { font-size: 1rem }
+#custom-lid-sleep:hover { color: @primary; }
+#custom-notifications, #custom-notifications:hover, #custom-lid-sleep, #custom-lid-sleep:hover { font-size: 1rem }
 #bluetooth, #bluetooth:hover { font-size: 0.92rem }
 #custom-System { font-size: 1.5rem }
 
 /* GROUP OVERRIDES */
 
-#volume, #pulseaudio, #idle_inhibitor {
+#volume, #pulseaudio, #custom-lid-sleep {
     background: none;
 }
 #volume { padding-right: 0.5rem }
-#idle_inhibitor { padding-left: 0.5rem }
+#custom-lid-sleep { padding-left: 0.5rem }
 #battery {
     background: none;
     color: @secondary;
