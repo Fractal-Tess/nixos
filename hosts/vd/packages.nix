@@ -112,6 +112,7 @@
     opencode # AI coding assistant
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
+    gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
     t3code # T3 Code desktop app
 
     # AI / LLM
