@@ -36,6 +36,25 @@ with lib;
       pulse.enable = mkDefault true;
       # Enable JACK compatibility layer for professional audio
       jack.enable = mkDefault true;
+
+      # Disable hardware volume for Bluetooth devices (use software volume)
+      wireplumber.extraConfig."11-bluetooth-no-hw-volume" = {
+        "monitor.bluez.rules" = [
+          {
+            matches = [
+              { "device.name" = "~bluez_card.*"; }
+            ];
+            actions = {
+              update-props = {
+                "bluez5.hw-volume" = [
+                  "a2dp_sink"
+                  "a2dp_source"
+                ];
+              };
+            };
+          }
+        ];
+      };
     };
 
     # Disable the standalone PulseAudio service since PipeWire provides compatibility
