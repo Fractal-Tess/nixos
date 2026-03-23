@@ -46,10 +46,7 @@ with lib;
             ];
             actions = {
               update-props = {
-                "bluez5.hw-volume" = [
-                  "a2dp_sink"
-                  "a2dp_source"
-                ];
+                "bluez5.hw-volume" = [ ];
               };
             };
           }
