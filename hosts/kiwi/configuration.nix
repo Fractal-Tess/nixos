@@ -110,7 +110,7 @@
   hardware.bluetooth.settings = {
     Policy = {
       AutoEnable = true;
-      AvrcpAbsoluteVolume = false; # Prevent headphones from pushing volume=0 on connect
+      AvrcpAbsoluteVolume = true;
     };
   };
   services.blueman.enable = true;
