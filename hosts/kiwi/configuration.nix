@@ -301,7 +301,7 @@
 
   # Gaming configuration
   programs.steam = {
-    enable = true;
+    enable = false; # TODO: re-enable once repo.steampowered.com is reachable
     protontricks.enable = true; # Wine prefix management
     gamescopeSession.enable = true; # Better gaming performance
 
