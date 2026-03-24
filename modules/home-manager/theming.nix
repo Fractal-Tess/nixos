@@ -32,6 +32,7 @@ in
         name = theme.fonts.sans;
         size = 11;
       };
+      gtk4.theme = null;
     };
 
   qt = mkIf (osConfig.modules.display.hyprland.enable or false) {

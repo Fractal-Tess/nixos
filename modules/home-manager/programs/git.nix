@@ -5,6 +5,7 @@
     lfs = {
       enable = true;
     };
+    signing.format = null;
 
     settings = {
       init.defaultBranch = "main";
