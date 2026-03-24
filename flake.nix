@@ -77,6 +77,7 @@
                 (import ./overlays/handy.nix)
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
+                (import ./overlays/netbird-fix.nix)
                 inputs.t3code-nix.overlays.default
               ];
             }
