@@ -1,4 +1,11 @@
-{ pkgs, ... }:
+{ pkgs, inputs, ... }:
+let
+  pwndbg-pkg = inputs.pwndbg.packages.${pkgs.system}.default;
+  burpsuite-pkgs = import inputs.nixpkgs-burpsuite {
+    inherit (pkgs) system;
+    config.allowUnfree = true;
+  };
+in
 {
   #============================================================================
   # SYSTEM-WIDE PACKAGES
@@ -94,6 +101,75 @@
     whois # Whois client for domain/IP information
 
     #--------------------------------------------------------------------------
+    # PENTESTING & SECURITY TOOLS
+    #--------------------------------------------------------------------------
+
+    # Network Analysis & Scanning
+    masscan # Fast port scanner
+    tcpdump # Network packet analyzer
+    socat # Multipurpose relay for bidirectional data transfer
+    hping # Active network security tool
+    bind.dnsutils # DNS utilities (dig, nslookup, etc.)
+
+    # Web Application Testing
+    burpsuite-pkgs.burpsuite # Web vulnerability scanner
+    gobuster # Directory/file & DNS busting tool
+    dirb # Web content scanner
+    ffuf # Fast web fuzzer
+    wfuzz # Web application fuzzer
+    sqlmap # Automatic SQL injection tool
+    nikto # Web server scanner
+
+    # Password Attacks & Cracking
+    john # John the Ripper password cracker
+    wordlists # Common wordlists for security testing
+    seclists # Collection of security testing lists
+    hashcat # Advanced password recovery
+    hydra # Network logon cracker
+    crunch # Wordlist generator
+
+    # Wireless Testing
+    aircrack-ng # WiFi security auditing tools
+    kismet # Wireless network detector and sniffer
+
+    # Forensics & Data Recovery
+    sleuthkit # Digital forensics tools
+    binwalk # Firmware analysis tool
+    foremost # File recovery tool
+    exif # EXIF data reader
+    exiftool # Read/write meta information
+
+    # Steganography Tools
+    stegsolve # Steganography analysis tool
+    zsteg # PNG/BMP steganography detector
+    steghide # Steganography tool for hiding data
+    outguess # Steganographic tool
+
+    # Exploitation Frameworks
+    metasploit # Penetration testing framework
+
+    # Reverse Engineering & Binary Analysis
+    ghidra # Software reverse engineering framework
+    (cutter.withPlugins (ps: with ps; [ rz-ghidra ])) # RE platform with Ghidra decompiler
+    radare2 # Reverse engineering framework
+    rizin # UNIX-like reverse engineering framework
+    pwndbg-pkg # GDB plugin for exploit development
+    binutils-unwrapped # Binary tools (objdump, readelf, etc.)
+    xxd # Hex dump utility
+    ltrace # Library call tracer
+    strace # System call tracer
+    ropgadget # ROP gadget finder
+    hexedit # Hex editor
+
+    # Cryptography Tools
+    gnupg # GNU Privacy Guard
+    hashdeep # Hash computation tool
+
+    # Vulnerability Assessment
+    nuclei # Vulnerability scanner
+    nuclei-templates # Templates for nuclei scanner
+
+    #--------------------------------------------------------------------------
     # ELECTRONICS DESIGN TOOLS
     #--------------------------------------------------------------------------
 
@@ -131,6 +207,8 @@
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
     sqlite # SQLite database engine
+    rustc # Rust compiler
+    cargo # Rust package manager
 
     # Build tools
     gnumake # Build automation tool

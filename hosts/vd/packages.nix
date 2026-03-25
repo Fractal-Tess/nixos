@@ -124,6 +124,8 @@
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
     sqlite # SQLite database engine
+    rustc # Rust compiler
+    cargo # Rust package manager
     cudaPackages.cudatoolkit # CUDA Toolkit for GPU acceleration
     cudaPackages.cudnn # cuDNN for deep learning
 
