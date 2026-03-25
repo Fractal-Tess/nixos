@@ -307,7 +307,7 @@ in
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    # viber # Instant messaging (temporarily disabled - rate limited download)
+    # viber # Instant messaging (download unavailable)
     slack # Team collaboration platform
     thunderbird # Email client
 

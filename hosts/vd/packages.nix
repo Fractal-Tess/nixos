@@ -260,7 +260,7 @@
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber # Instant messaging
+    # viber # Instant messaging (download unavailable)
     slack # Team collaboration platform (temporarily disabled due to download failure)
     thunderbird # Email client
 
