@@ -29,6 +29,15 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Pentesting tools
+    pwndbg = {
+      url = "github:pwndbg/pwndbg/2024.08.29";
+    };
+
+    nixpkgs-burpsuite = {
+      url = "github:NixOS/nixpkgs/e6f23dc08d3624daab7094b701aa3954923c6bbb";
+    };
+
     nixpkgs-openclaw = {
       url = "github:chrisportela/nixpkgs/cp/add-moltbot";
     };
