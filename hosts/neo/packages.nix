@@ -96,6 +96,8 @@
     gcc # GNU Compiler Collection
     clang-tools # C/C++ compiler toolchain
     sqlite # SQLite database engine
+    rustc # Rust compiler
+    cargo # Rust package manager
 
     # Build tools
     gnumake # Build automation tool
