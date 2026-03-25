@@ -78,6 +78,7 @@
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
                 (import ./overlays/netbird-fix.nix)
+                (import ./overlays/tws.nix)
                 inputs.t3code-nix.overlays.default
               ];
             }
