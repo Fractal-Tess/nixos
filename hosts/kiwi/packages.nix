@@ -252,6 +252,7 @@
     vscode # Open soure editor
     responsively-app # Web development tool for responsive design
     tradingview # Trading platform desktop app
+    tws # Interactive Brokers Trader Workstation
     dbgate # Database manager
     postman # API development environment
     filezilla # FTP client
