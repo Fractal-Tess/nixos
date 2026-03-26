@@ -275,6 +275,7 @@ in
     sox # Dependency of claude code voice
     swaynotificationcenter # Notification daemon for Wayland
     libnotify # notify-send command for desktop notifications
+    brightnessctl # Brightness control for displays and keyboards
     # gource # Version control visualization (temporarily disabled - build failure)
 
     #--------------------------------------------------------------------------
