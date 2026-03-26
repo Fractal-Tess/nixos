@@ -284,7 +284,9 @@
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
 },
 "custom/brightness": {
-  "format": "{}",
+  "format": "{icon}",
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "rotate": 270,
   "return-type": "json",
   "interval": 2,
   "exec": "~/nixos/scripts/bin/screen-manager bright-json-subdued",
