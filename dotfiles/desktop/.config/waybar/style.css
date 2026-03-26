@@ -227,11 +227,17 @@ tooltip label {
 
 /* GROUP OVERRIDES */
 
-#volume, #pulseaudio, #custom-lid-sleep {
+#volume, #pulseaudio, #custom-lid-sleep, #custom-brightness {
     background: none;
 }
 #volume { padding-right: 0.5rem }
 #custom-lid-sleep { padding-left: 0.5rem }
+#custom-brightness {
+    color: @secondary;
+    padding: 0 0.5rem;
+    transition: 0.3s all ease;
+}
+#custom-brightness:hover { color: @primary; }
 #battery {
     background: none;
     color: @secondary;
