@@ -75,8 +75,8 @@
  "orientation": "horizontal",
  "modules": [
 "group/volume",
-"custom/brightness",
 "custom/lid-sleep",
+"custom/brightness",
 "battery"
  ]
 },
