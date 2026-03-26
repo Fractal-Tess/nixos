@@ -75,6 +75,7 @@
  "orientation": "horizontal",
  "modules": [
 "group/volume",
+"custom/brightness",
 "custom/lid-sleep",
 "battery"
  ]
@@ -281,6 +282,18 @@
   "format-charging": "󰂄 {capacity}%",
   "format-plugged": "󰂄 {capacity}%",
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+},
+"custom/brightness": {
+  "format": "{}",
+  "return-type": "json",
+  "interval": 2,
+  "exec": "~/nixos/scripts/bin/screen-manager bright-json-subdued",
+  "on-scroll-up": "~/nixos/scripts/bin/screen-manager bright-up",
+  "on-scroll-down": "~/nixos/scripts/bin/screen-manager bright-down",
+  "on-click": "~/nixos/scripts/bin/screen-manager off",
+  "on-click-right": "~/nixos/scripts/bin/screen-manager bright-set 100",
+  "tooltip": true,
+  "escape": true
 },
 "custom/pacman": {
     "format": "{} ",
