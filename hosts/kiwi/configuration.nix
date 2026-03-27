@@ -438,8 +438,7 @@
 
     # TLP - Power management for laptop
     tlp = {
-      # Temporarily disabled due to boot hang on newer generations
-      enable = false;
+      enable = true;
       settings = {
         # CPU driver operation mode
         CPU_DRIVER_OPMODE_ON_AC = "active";
@@ -458,14 +457,13 @@
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
         CPU_SCALING_MIN_FREQ_ON_AC = 2000000; # ~2GHz minimum for stability
-        CPU_SCALING_MAX_FREQ_ON_AC = 3800000; # 3.8GHz max on AC to reduce boost spikes
+        CPU_SCALING_MAX_FREQ_ON_AC = 3900000; # 3.9GHz max on AC
         CPU_SCALING_MIN_FREQ_ON_BAT = 1400000; # ~1.4GHz minimum on battery
         CPU_SCALING_MAX_FREQ_ON_BAT = 3400000; # 3.4GHz max on battery for efficiency
       };
     };
 
-    # Keep basic power profile support while TLP is disabled
-    power-profiles-daemon.enable = true;
+    power-profiles-daemon.enable = false;
   };
 
   #============================================================================
