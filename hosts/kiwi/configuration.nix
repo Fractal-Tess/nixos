@@ -549,9 +549,8 @@
     MOZ_USE_WAYLAND = 1; # Enable Wayland support in Firefox
     MOZ_USE_XINPUT2 = 1; # Enable XInput2 for better input handling
 
-    # Playwright/Browser testing configuration
-    PLAYWRIGHT_BROWSERS_PATH = "${pkgs.playwright-driver.browsers}";
-    PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
+    # Playwright config is set per-user in home.nix (needs a writable path,
+    # not the read-only Nix store). See home.activation.setupPlaywrightBrowsers.
     AGENT_BROWSER_EXECUTABLE_PATH = "/run/current-system/sw/bin/chromium";
   };
 }
