@@ -1,0 +1,17 @@
+# This is a generated file.  Do not edit!
+#
+# To make changes, edit the fileSystems and swapDevices NixOS options
+# in your /etc/nixos/configuration.nix file.
+#
+# <file system> <mount point>   <type>  <options>       <dump>  <pass>
+
+# Filesystems.
+/dev/disk/by-uuid/300cda89-b459-4b1e-abd4-41a62d402498 / ext4 x-initrd.mount 0 1
+/dev/disk/by-uuid/E220-3B80 /boot vfat fmask=0077,dmask=0077 0 2
+/dev/disk/by-uuid/f9afd82b-22de-4d54-ba51-c9c95969474d /mnt/vault ext4 defaults 0 2
+
+
+# Swap devices.
+/dev/disk/by-uuid/91550180-458a-427b-93d9-e1d6a93897d1 none swap defaults
+/swapfile none swap defaults
+
