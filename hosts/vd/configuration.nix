@@ -366,9 +366,9 @@
   # Ollama LLM service with CUDA
   services.ollama = {
     enable = true;
-    package = pkgs.ollama;
+    package = pkgs.ollama-cuda;
     environmentVariables = {
-      CUDA_VISIBLE_DEVICES = "1";
+      CUDA_VISIBLE_DEVICES = "GPU-4036ecf0-a093-e6d0-b63d-d795039e61de";
     };
   };
 
