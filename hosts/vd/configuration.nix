@@ -367,7 +367,12 @@
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cuda;
-    environmentVariables = { };
+    environmentVariables = {
+      OLLAMA_NUM_PARALLEL = "4";
+      OLLAMA_MAX_QUEUE = "128";
+      OLLAMA_MAX_LOADED_MODELS = "1";
+      OLLAMA_KEEP_ALIVE = "10m";
+    };
   };
 
   # Open WebUI for Ollama
