@@ -367,9 +367,7 @@
   services.ollama = {
     enable = true;
     package = pkgs.ollama-cuda;
-    environmentVariables = {
-      CUDA_VISIBLE_DEVICES = "GPU-4036ecf0-a093-e6d0-b63d-d795039e61de,GPU-2f96157b-9975-b579-aadc-a7eea1e77b67";
-    };
+    environmentVariables = { };
   };
 
   # Open WebUI for Ollama
