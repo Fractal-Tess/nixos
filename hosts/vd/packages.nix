@@ -116,6 +116,7 @@
     t3code # T3 Code desktop app
 
     # AI / LLM
+    vllm # High-throughput and memory-efficient inference engine for LLMs
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
