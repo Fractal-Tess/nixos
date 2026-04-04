@@ -366,7 +366,7 @@
   # Ollama LLM service with CUDA
   services.ollama = {
     enable = true;
-    package = pkgs.ollama-vulkan;
+    package = pkgs.ollama;
     environmentVariables = {
       CUDA_VISIBLE_DEVICES = "1";
     };
