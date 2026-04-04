@@ -4,6 +4,8 @@ final: prev: {
   vllm = prev.writeShellScriptBin "vllm" ''
     set -euo pipefail
 
+    export LD_LIBRARY_PATH="/run/opengl-driver/lib''${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+
     exec ${prev.uv}/bin/uv tool run --from "vllm==0.16.0" vllm "$@"
   '';
 }
