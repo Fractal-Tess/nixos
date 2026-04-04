@@ -110,7 +110,7 @@
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
     opencode # AI coding assistant
-    claude-code # Claude Code CLI
+    # claude-code # Claude Code CLI - disabled: version 2.1.88 removed from npm
     codex # OpenAI Codex CLI
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
     t3code # T3 Code desktop app
