@@ -8,7 +8,7 @@ const OPENROUTER_MODEL    = "openai/gpt-5-nano";
 const getNextCommitNumber = Effect.sync(() => {
   const lastMsg = run(["git", "log", "-1", "--pretty=format:%s"]).out;
   const match   = lastMsg.match(/^Update #(\d+)/);
-  if (match) return parseInt(match[1]) + 1;
+  if (match?.[1]) return parseInt(match[1]) + 1;
 
   const nums = run(["git", "log", "--pretty=format:%s"]).out
     .split("\n")

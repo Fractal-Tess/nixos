@@ -2,7 +2,6 @@ import { Effect } from "effect";
 import { run } from "../lib/shell";
 import { c, log } from "../lib/log";
 import { GitError } from "./errors";
-import { generateCommitMessage } from "./ai";
 
 export const checkGitConflicts = Effect.gen(function* () {
   log.step("Checking for remote changes...");
@@ -84,26 +83,6 @@ export const stageLocalChanges = Effect.sync(() => {
 
   run(["git", "add", "-A"]);
   log.success("All changes staged");
-});
-
-export const commitChanges = Effect.gen(function* () {
-  log.step("Committing changes...");
-
-  if (!run(["git", "diff", "--cached", "--name-only"]).out) {
-    log.info("No staged changes to commit");
-    return false;
-  }
-
-  log.info("Generating commit message via AI...");
-  const msg = yield* generateCommitMessage;
-
-  const committed = run(["git", "commit", "-m", msg]);
-  if (!committed.ok) {
-    yield* Effect.fail(new GitError({ operation: "commit" }));
-  }
-
-  log.success(`Committed: ${msg}`);
-  return true;
 });
 
 export const commitChangesWithMessage = (msg: string) => Effect.gen(function* () {

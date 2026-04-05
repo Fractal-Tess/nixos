@@ -81,7 +81,7 @@
 
     # AI assistants
     opencode # AI coding assistant
-    claude-code # Claude Code CLI
+    # claude-code # Claude Code CLI - disabled: version 2.1.88 removed from npm
     codex # OpenAI Codex CLI
     t3code # T3 Code desktop app
     amp-cli
