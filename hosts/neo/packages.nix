@@ -164,7 +164,7 @@
     choose # Human-friendly alternative to cut and awk
 
     matugen # Material You color palette generator for dynamic theming
-    swww # Animated wallpaper daemon for Wayland
+    awww # Animated wallpaper daemon for Wayland
     cava # Console-based audio visualizer
     rofi-calc # Calculator mode for rofi launcher
     cliphist # Clipboard history tool
