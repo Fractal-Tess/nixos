@@ -88,7 +88,7 @@ in
     # Network management
     networkmanagerapplet # Network manager system tray
     openvpn # Open-source VPN solution
-    protonvpn-gui
+    proton-vpn
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
     # globalprotect-openconnect
 
@@ -260,7 +260,7 @@ in
     # WAYLAND/HYPRLAND UTILITIES
     #--------------------------------------------------------------------------
 
-    swww # Animated wallpaper daemon for Wayland
+    awww # Animated wallpaper daemon for Wayland
     matugen # Material You color palette generator from wallpaper
     waypaper # Wallpaper manager for Wayland
     # linux-wallpaperengine # Wallpaper engine for Linux
