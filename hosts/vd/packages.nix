@@ -145,6 +145,7 @@
     # Version control
     gh # GitHub CLI
     glab # GitLab CLI
+    wrangler # Cloudflare CLI for Workers, DNS, and account resources
     tea # Gitea CLI tool
     lazygit # Simple terminal UI for git
     graphite-cli # CLI for creating stacked git changes
