@@ -29,15 +29,23 @@ const program = Effect.gen(function* () {
 
   yield* showBanner;
 
+  // Check for local changes BEFORE pulling remote, so we know if this host
+  // actually has new work to commit or if we're just applying remote changes.
+  const hadLocalChangesBefore = !SKIP_GIT && run(["git", "status", "--porcelain"]).out.length > 0;
+
   if (!SKIP_GIT) {
     yield* checkGitConflicts;
-    yield* stageLocalChanges;
+    if (hadLocalChangesBefore) {
+      yield* stageLocalChanges;
+    } else {
+      log.step("No local changes to stage");
+    }
   } else {
     log.info("Skipping git fetch/stage/commit because NIXOS_UPDATE_NO_GIT=1");
   }
 
-  // Check if there are local changes - this determines if we commit/push later
-  const hasLocalChanges = !SKIP_GIT && run(["git", "diff", "--cached", "--name-only"]).out.length > 0;
+  // Only consider committing if there were local changes before pulling
+  const hasLocalChanges = hadLocalChangesBefore && run(["git", "diff", "--cached", "--name-only"]).out.length > 0;
 
   // Start generating commit message in the background if there are changes
   let commitMessagePromise: Promise<string> | null = null;
