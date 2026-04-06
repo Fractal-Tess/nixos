@@ -37,6 +37,23 @@ with lib;
       # Enable JACK compatibility layer for professional audio
       jack.enable = mkDefault true;
 
+      # Disable session suspend to prevent audio ramp-up on playback start
+      wireplumber.extraConfig."10-disable-suspend" = {
+        "monitor.alsa.rules" = [
+          {
+            matches = [
+              { "node.name" = "~alsa_output.*"; }
+              { "node.name" = "~alsa_input.*"; }
+            ];
+            actions = {
+              update-props = {
+                "session.suspend-timeout-seconds" = 0;
+              };
+            };
+          }
+        ];
+      };
+
       # Disable hardware volume for Bluetooth devices (use software volume)
       wireplumber.extraConfig."11-bluetooth-no-hw-volume" = {
         "monitor.bluez.rules" = [
