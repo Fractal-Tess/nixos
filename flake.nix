@@ -90,6 +90,7 @@
                 (import ./overlays/kimi-cli)
                 (import ./overlays/netbird-fix.nix)
                 (import ./overlays/ollama.nix)
+                (import ./overlays/claude-code)
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
                 inputs.t3code-nix.overlays.default
