@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<channel name="thunar" version="1.0">
+  <property name="last-sort-column" type="string" value="THUNAR_COLUMN_DATE_MODIFIED"/>
+  <property name="last-sort-order" type="string" value="GTK_SORT_DESCENDING"/>
+  <property name="misc-directory-specific-settings" type="bool" value="false"/>
+</channel>
