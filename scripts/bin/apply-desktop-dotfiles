@@ -14,6 +14,7 @@ mkdir -p \
   "${target_home}/.config/colors" \
   "${target_home}/.config/RofiScripts/WallpaperChanger" \
   "${target_home}/.config/hypr/hyprconfigs" \
+  "${target_home}/.config/xfce4/xfconf/xfce-perchannel-xml" \
   "${target_home}/.config/cava/themes" \
   "${target_home}/.config/btop/themes" \
   "${target_home}/.config/qt5ct/colors" \
