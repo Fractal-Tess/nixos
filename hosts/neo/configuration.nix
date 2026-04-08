@@ -64,6 +64,15 @@
   # HARDWARE CONFIGURATION
   #============================================================================
 
+  # VA-API hardware acceleration for AMD GPU
+  hardware.graphics = {
+    enable = true;
+    extraPackages = with pkgs; [
+      mesa # Provides radeonsi VA-API driver for AMD HW encoding/decoding
+      libva-utils # vainfo tool for verifying VAAPI works
+    ];
+  };
+
   # Memory management
   zramSwap.enable = true;
   swapDevices = [
