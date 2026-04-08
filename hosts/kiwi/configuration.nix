@@ -297,6 +297,10 @@
   hardware.graphics = {
     enable = true;
     enable32Bit = true;
+    extraPackages = with pkgs; [
+      mesa # Provides radeonsi VA-API driver for AMD HW encoding/decoding
+      libva-utils # vainfo tool for verifying VAAPI works
+    ];
   };
 
   # Gaming configuration
