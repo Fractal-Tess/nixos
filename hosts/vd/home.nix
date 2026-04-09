@@ -29,6 +29,7 @@
       PLAYWRIGHT_BROWSERS_PATH = "$HOME/.local/share/playwright-browsers";
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome";
+      HF_HOME = "/mnt/vault/ai/huggingface";
     };
 
     activation.setupPlaywrightBrowsers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
