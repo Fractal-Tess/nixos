@@ -23,6 +23,7 @@ self: super: {
       mkdir -p $out/bin
       cat > $out/bin/handy <<EOF
       #!${super.stdenv.shell}
+      export WEBKIT_DISABLE_DMABUF_RENDERER=1
       exec ${super.appimage-run}/bin/appimage-run $out/opt/Handy.AppImage "$@"
       EOF
       chmod +x $out/bin/handy
