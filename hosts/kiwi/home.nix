@@ -58,7 +58,7 @@
   programs.home-manager.enable = true;
 
   # Laptop battery monitoring
-  modules.services.battery-check.enable = false;
+  modules.services.battery-check.enable = true;
 
   #============================================================================
   # SHELL CONFIGURATION
