@@ -286,6 +286,7 @@
     # DEVELOPMENT ENVIRONMENTS
     #--------------------------------------------------------------------------
 
+    vscode # Open source editor
     code-cursor # VS Code fork with AI features
     zed-editor # Zed editor
     antigravity # Development environment tool
