@@ -31,5 +31,15 @@
 ///////////////////////////
  "include": [
   "/home/fractal-tess/.config/waybar/modules.jsonc",
-],
-}
+ ],
+ "group/sysmon": {
+  "orientation": "horizontal",
+  "modules": [
+    "cpu",
+    "custom/gpu#nvidia",
+    "memory",
+    "custom/swap",
+    "custom/boost"
+  ]
+ },
+ }
