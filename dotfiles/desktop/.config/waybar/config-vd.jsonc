@@ -37,6 +37,7 @@
   "modules": [
     "cpu",
     "custom/gpu#nvidia",
+    "custom/gpu-mem#nvidia",
     "memory",
     "custom/swap",
     "custom/boost"
