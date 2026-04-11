@@ -274,10 +274,18 @@
 },
 "custom/gpu#nvidia": {
   "interval": 1,
-  "format": "{icon} {text}",
+  "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
   "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
+  "return-type": "json"
+},
+"custom/gpu-mem#nvidia": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "exec": "~/nixos/scripts/gpu-nvidia-mem-status.sh",
   "return-type": "json"
 },
 "battery": {
