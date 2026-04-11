@@ -257,7 +257,7 @@ tooltip label {
 #cpu,
 #memory,
 #custom-swap,
-#custom-gpu-nvidia,
+#custom-gpu,
 #custom-boost {
     background: none;
     color: @secondary;
@@ -265,10 +265,10 @@ tooltip label {
     margin: 0;
     transition: 0.3s all ease;
 }
-#cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu-nvidia:hover, #custom-boost:hover { color: @primary; }
+#cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu:hover, #custom-boost:hover { color: @primary; }
 #cpu { padding-left: 0.5rem }
 #custom-boost { padding-right: 0.5rem }
-#custom-swap, #custom-gpu-nvidia { padding-right: 0 }
+#custom-swap, #custom-gpu { padding-right: 0 }
 #sysmon {
     background: @surface_container;
     border-radius: 1.5rem;
