@@ -365,7 +365,6 @@ in
     # GAMING
     #--------------------------------------------------------------------------
 
-    polymc # Minecraft launcher
     bottles # Wine wrapper
     # heroic # Game launcher -- broken: electron-39 patch failure (upstream nixpkgs bug)
     mangohud # FPS counter overlay
