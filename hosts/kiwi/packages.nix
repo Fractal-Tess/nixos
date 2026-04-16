@@ -189,6 +189,7 @@ in
     opencode # AI coding assistant
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
+    shapeshifter-tui # Codex account manager TUI
     t3code # T3 Code desktop app
     aider-chat # AI pair programming in the terminal
     amp-cli
