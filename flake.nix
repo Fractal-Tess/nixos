@@ -57,6 +57,11 @@
       url = "github:utensils/comfyui-nix";
     };
 
+    shapeshifter = {
+      url = "github:Fractal-Tess/shapeshifter";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
@@ -94,6 +99,7 @@
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
                 inputs.t3code-nix.overlays.default
+                inputs.shapeshifter.overlays.default
               ];
             }
           ];
