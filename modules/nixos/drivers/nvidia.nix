@@ -42,10 +42,9 @@ in
       nvidiaSettings = mkDefault true;
 
       # Optionally, you may need to select the appropriate driver version for your specific GPU.
-      package = config.boot.kernelPackages.nvidiaPackages.latest;
-      # Use legacy_580 to support both Pascal (GTX 1060) and Ampere (RTX 3090).
-      # The stable/production 595.x+ drivers dropped support for Pascal ("legacy GPU").
-      # package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
+      # legacy_580 supports both Pascal (GTX 1060) and Ampere (RTX 3090).
+      # 595.x+ dropped Pascal support.
+      package = config.boot.kernelPackages.nvidiaPackages.legacy_580;
     };
   };
 }
