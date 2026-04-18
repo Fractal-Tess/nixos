@@ -1,0 +1,77 @@
+#!/usr/bin/env bash
+#
+# neo-blockade-mount
+# Mounts neo:/mnt/blockade → /mnt/blockade via sshfs
+#
+# Prerequisites:
+#   - sshfs installed (nixpkgs.sshfs)
+#   - SSH access to the host "neo" (configured in ~/.ssh/config)
+#   - /mnt/blockade mountpoint exists locally (created on first run)
+#   - /etc/fuse.conf has "user_allow_other" if running as non-root
+#     (or run with sudo)
+
+set -euo pipefail
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+BLUE='\033[0;34m'
+NC='\033[0m'
+
+log_info()  { echo -e "${GREEN}[INFO]${NC}  $1"; }
+log_warn()  { echo -e "${YELLOW}[WARN]${NC}  $1"; }
+log_error() { echo -e "${RED}[ERROR]${NC} $1"; }
+log_step()  { echo -e "${BLUE}[STEP]${NC}  $1"; }
+
+REMOTE_HOST="neo"
+REMOTE_PATH="/mnt/blockade"
+LOCAL_MOUNT="/mnt/blockade"
+
+# ── Dependency check ──────────────────────────────────────────────────────────
+
+if ! command -v sshfs &>/dev/null; then
+    log_error "sshfs not found. Add it to your NixOS configuration:"
+    log_error "  environment.systemPackages = [ pkgs.sshfs ];"
+    exit 1
+fi
+
+# ── Already mounted? ──────────────────────────────────────────────────────────
+
+if mountpoint -q "$LOCAL_MOUNT" 2>/dev/null; then
+    log_warn "$LOCAL_MOUNT is already mounted."
+    mount | grep "$LOCAL_MOUNT"
+    exit 0
+fi
+
+# ── Create local mountpoint if it doesn't exist ───────────────────────────────
+
+if [ ! -d "$LOCAL_MOUNT" ]; then
+    log_step "Creating local mountpoint $LOCAL_MOUNT ..."
+    if [ "$(id -u)" -ne 0 ]; then
+        log_warn "Need sudo to create $LOCAL_MOUNT"
+        sudo mkdir -p "$LOCAL_MOUNT"
+    else
+        mkdir -p "$LOCAL_MOUNT"
+    fi
+fi
+
+# ── Mount ─────────────────────────────────────────────────────────────────────
+
+log_step "Mounting ${REMOTE_HOST}:${REMOTE_PATH} → ${LOCAL_MOUNT} ..."
+
+sshfs \
+    "${REMOTE_HOST}:${REMOTE_PATH}" \
+    "${LOCAL_MOUNT}" \
+    -o reconnect \
+    -o ServerAliveInterval=15 \
+    -o ServerAliveCountMax=3 \
+    -o allow_other \
+    -o idmap=user \
+    -o follow_symlinks \
+    -o compression=no
+
+log_info "Mounted successfully."
+log_info "  Remote : ${REMOTE_HOST}:${REMOTE_PATH}"
+log_info "  Local  : ${LOCAL_MOUNT}"
+log_info ""
+log_info "To unmount: neo-blockade-umount"
