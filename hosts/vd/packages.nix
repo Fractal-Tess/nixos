@@ -22,6 +22,7 @@
     usbutils # USB device utilities
 
     # File system tools
+    sshfs # Mount remote filesystems over SSH
     gparted # Partition editor
     parted # Command-line partition tool
     bleachbit # System cleaner

@@ -5,3 +5,8 @@ run  = [
   "yank",
 ]
 desc = "Copy file content to system clipboard and yank"
+
+[[mgr.prepend_keymap]]
+on   = ["c", "z"]
+run  = "plugin zip"
+desc = "Zip hovered file/dir"

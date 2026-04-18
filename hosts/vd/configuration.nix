@@ -6,6 +6,36 @@
   ...
 }:
 
+let
+  llamaCppCuda =
+    (pkgs.llama-cpp.override {
+      cudaSupport = true;
+      cudaPackages = pkgs.cudaPackages;
+    }).overrideAttrs
+      (old: {
+        version = "8797";
+        src = pkgs.fetchFromGitHub {
+          owner = "ggml-org";
+          repo = "llama.cpp";
+          tag = "b8797";
+          hash = "sha256-2W8rW0rlQc/foE+fnw5O0a9cqaiNL0Ie2Oi915jqtSQ=";
+          leaveDotGit = true;
+          postFetch = ''
+            git -C "$out" rev-parse --short HEAD > "$out/COMMIT"
+            find "$out" -name .git -print0 | xargs -0 rm -rf
+          '';
+        };
+        npmDepsHash = "sha256-RAFtsbBGBjteCt5yXhrmHL39rIDJMCFBETgzId2eRRk=";
+        cmakeFlags =
+          let
+            keepFlag = flag: !(lib.hasInfix "CMAKE_CUDA_ARCHITECTURES" flag);
+          in
+          (builtins.filter keepFlag old.cmakeFlags)
+          ++ [ (lib.cmakeFeature "CMAKE_CUDA_ARCHITECTURES" "61;86") ];
+      });
+
+
+in
 {
   #============================================================================
   # IMPORTS
@@ -36,6 +66,8 @@
 
   services.libinput.enable = true;
   hardware.opentabletdriver.enable = true;
+
+  programs.fuse.userAllowOther = true;
 
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
@@ -245,6 +277,10 @@
     };
   };
 
+  systemd.tmpfiles.rules = [
+    "d /mnt/blockade 0755 fractal-tess fractal-tess -"
+  ];
+
   networking.firewall.allowedTCPPorts = [
     631
     8384
@@ -372,6 +408,7 @@
       OLLAMA_MAX_QUEUE = "128";
       OLLAMA_MAX_LOADED_MODELS = "1";
       OLLAMA_KEEP_ALIVE = "10m";
+      OLLAMA_KV_CACHE_TYPE = "q8_0";
     };
   };
 
@@ -384,6 +421,7 @@
       OLLAMA_API_BASE_URL = "http://127.0.0.1:11434";
     };
   };
+
 
   # ComfyUI — temporarily disabled, re-enable after caches are trusted
   # services.comfyui = {
