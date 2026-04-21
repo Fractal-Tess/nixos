@@ -1,0 +1,70 @@
+#!/usr/bin/env fish
+# workspace — Dynamic workspace switcher
+#
+# Swaps workspaces between active monitors via hyprctl.
+# When two or more monitors are active, swaps the workspaces
+# displayed on the first two.
+#
+# Dependencies: hyprctl, jq
+# Usage: workspace [swap|status|--help]
+
+function _workspace_help
+    echo "workspace — Dynamic workspace switcher"
+    echo ""
+    echo "Usage: workspace [COMMAND]"
+    echo ""
+    echo "Commands:"
+    echo "  swap      Swap workspaces between the two main active monitors (default)"
+    echo "  status    Show current monitor configuration"
+    echo "  --help    Show this help message"
+end
+
+function _get_active_monitors
+    hyprctl monitors -j | jq -r '.[] | select(.disabled == false) | .name'
+end
+
+function _swap_workspaces
+    set -l monitors (_get_active_monitors)
+    set -l count (count $monitors)
+
+    if test $count -ge 2
+        echo "Swapping workspaces between $monitors[1] and $monitors[2]"
+        hyprctl dispatch swapactiveworkspaces $monitors[1] $monitors[2]
+    else if test $count -eq 1
+        echo "Only one active monitor ($monitors[1]). Cannot swap."
+    else
+        echo "No active monitors found."
+    end
+end
+
+function _show_status
+    echo "=== Active Monitor Configuration ==="
+    set -l monitors_json (hyprctl monitors -j)
+
+    echo $monitors_json | jq -r '.[] | "\(.id): \(.name) (\(.width)x\(.height)) - Disabled: \(.disabled)"'
+
+    set -l active (echo $monitors_json | jq -r '[.[] | select(.disabled == false) | .name] | join(", ")')
+    set -l active_count (echo $monitors_json | jq '[.[] | select(.disabled == false)] | length')
+    echo ""
+    echo "Active: $active ($active_count total)"
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+set -l cmd $argv[1]
+if not set -q argv[1]
+    set cmd swap
+end
+
+switch $cmd
+    case swap
+        _swap_workspaces
+    case status
+        _show_status
+    case --help -h help
+        _workspace_help
+    case '*'
+        echo "Unknown command: $cmd" >&2
+        _workspace_help
+        exit 1
+end

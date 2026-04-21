@@ -1,0 +1,119 @@
+#!/usr/bin/env fish
+# dotfiles — Apply or inspect desktop dotfiles via GNU stow
+#
+# Rewrite of apply-desktop-dotfiles (bash). Applies host-specific
+# waybar and monitor configs, stows the desktop package, and fixes
+# the hypranimations.conf chained symlink.
+#
+# Dependencies: stow, hostname
+# Usage: dotfiles [apply|status] [--help|-h]
+
+set repo_dir (set -q REPO_DIR; and echo $REPO_DIR; or echo $HOME/nixos)
+set stow_dir $repo_dir/dotfiles
+set target_home $HOME
+set host_name (set -q HOSTNAME_VALUE; and echo $HOSTNAME_VALUE; or hostname)
+
+function show_help
+    echo "Usage: dotfiles <subcommand>"
+    echo ""
+    echo "Subcommands:"
+    echo "  apply   Apply desktop dotfiles using GNU stow"
+    echo "  status  Show what would be linked (stow dry-run)"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h  Show this help message"
+    echo ""
+    echo "Repo dir  : $repo_dir"
+    echo "Stow dir  : $stow_dir"
+    echo "Target    : $target_home"
+    echo "Hostname  : $host_name"
+end
+
+function ensure_dirs
+    mkdir -p \
+        $target_home/.config/hypr/conf.d \
+        $target_home/.config/waybar \
+        $target_home/.local/share/wallpapers/library \
+        $target_home/.config/colors \
+        $target_home/.config/RofiScripts/WallpaperChanger \
+        $target_home/.config/hypr/hyprconfigs \
+        $target_home/.config/xfce4/xfconf/xfce-perchannel-xml \
+        $target_home/.config/cava/themes \
+        $target_home/.config/btop/themes \
+        $target_home/.config/qt5ct/colors \
+        $target_home/.config/qt6ct/colors \
+        $target_home/.config/gtk-3.0 \
+        $target_home/.config/gtk-4.0
+end
+
+function resolve_host_configs
+    switch $host_name
+        case kiwi
+            set -g waybar_config config-kiwi.jsonc
+            set -g monitor_config monitors-kiwi.conf
+        case neo
+            set -g waybar_config config-neo.jsonc
+            set -g monitor_config monitors-neo.conf
+        case '*'
+            set -g waybar_config config-vd.jsonc
+            set -g monitor_config monitors-vd.conf
+    end
+end
+
+function clean_stale_monitor_links
+    # Remove stale files/symlinks that can make stow fail on host-specific monitor config.
+    rm -f $target_home/.config/hypr/conf.d/monitors.conf
+    for f in monitors-kiwi.conf monitors-neo.conf monitors-vd.conf
+        set p $target_home/.config/hypr/conf.d/$f
+        if test -e $p; and not test -L $p
+            rm -f $p
+        end
+    end
+end
+
+function cmd_apply
+    ensure_dirs
+    resolve_host_configs
+    clean_stale_monitor_links
+
+    stow --dir $stow_dir --target $target_home --restow desktop
+
+    # Keep these links relative so stow can manage the directory cleanly.
+    ln -sfn $waybar_config $target_home/.config/waybar/config.jsonc
+    ln -sfn $monitor_config $target_home/.config/hypr/conf.d/monitors.conf
+
+    # Fix hypranimations.conf — stow can't resolve the chained relative symlink,
+    # so replace it with a direct link to the RofiScripts animation config.
+    ln -sfn $target_home/.config/RofiScripts/Animations/Horizontal/hypranimations.conf \
+        $target_home/.config/hypr/hyprconfigs/hypranimations.conf
+
+    $repo_dir/scripts/wallpaper/sync-library.sh
+end
+
+function cmd_status
+    resolve_host_configs
+    echo "Host    : $host_name"
+    echo "Waybar  : $waybar_config"
+    echo "Monitor : $monitor_config"
+    echo ""
+    stow --dir $stow_dir --target $target_home --restow --no desktop
+end
+
+# Argument dispatch
+set subcommand $argv[1]
+
+switch $subcommand
+    case --help -h
+        show_help
+    case apply
+        cmd_apply
+    case status
+        cmd_status
+    case ''
+        show_help
+        exit 1
+    case '*'
+        echo "dotfiles: unknown subcommand '$subcommand'" >&2
+        echo "Run 'dotfiles --help' for usage." >&2
+        exit 1
+end

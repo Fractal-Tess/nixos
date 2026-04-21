@@ -34,8 +34,8 @@ end
 # AI TOOLS
 # ============================================================================
 
-abbr -a zai "~/nixos/scripts/claude-code/z-ai.sh"
-abbr -a minimax "~/nixos/scripts/claude-code/minimax.sh"
+abbr -a zai "~/nixos/scripts/ai/ai z-ai"
+abbr -a minimax "~/nixos/scripts/ai/ai minimax"
 abbr -a ca "cursor-agent"
 
 # ============================================================================

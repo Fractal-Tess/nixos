@@ -1,0 +1,74 @@
+#!/usr/bin/env fish
+# vpn — GlobalProtect VPN manager
+#
+# Merged from gpvpn-connect and gpvpn-disconnect. Handles connecting
+# to gpvpn.carrierx.com with proper Wayland/GTK environment variables.
+#
+# Dependencies: sudo, gpclient, pgrep, pkill, notify-send
+# Usage: vpn [connect|disconnect|status] [--help|-h]
+
+set VPN_HOST gpvpn.carrierx.com
+
+function show_help
+    echo "Usage: vpn <subcommand>"
+    echo ""
+    echo "Subcommands:"
+    echo "  connect     Connect to GlobalProtect VPN ($VPN_HOST)"
+    echo "  disconnect  Disconnect (kill gpclient)"
+    echo "  status      Check if connected"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h  Show this help message"
+end
+
+function cmd_connect
+    # Wayland environment variables needed for GTK authentication
+    set -x WAYLAND_DISPLAY wayland-1
+    set -x DISPLAY :0
+    set -x XDG_RUNTIME_DIR /run/user/(id -u)
+
+    # Run gpclient with the environment preserved
+    sudo -E \
+        WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
+        DISPLAY=$DISPLAY \
+        XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
+        gpclient connect $VPN_HOST
+end
+
+function cmd_disconnect
+    if pgrep -f "gpclient connect" >/dev/null
+        sudo pkill -f "gpclient connect"
+        echo "VPN disconnected"
+    else
+        echo "No active VPN connection found"
+    end
+end
+
+function cmd_status
+    if pgrep -f "gpclient connect" >/dev/null
+        echo "VPN connected (gpclient is running)"
+    else
+        echo "VPN disconnected (gpclient not running)"
+    end
+end
+
+# Argument dispatch
+set subcommand $argv[1]
+
+switch $subcommand
+    case --help -h
+        show_help
+    case connect
+        cmd_connect
+    case disconnect
+        cmd_disconnect
+    case status
+        cmd_status
+    case ''
+        show_help
+        exit 1
+    case '*'
+        echo "vpn: unknown subcommand '$subcommand'" >&2
+        echo "Run 'vpn --help' for usage." >&2
+        exit 1
+end

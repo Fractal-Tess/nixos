@@ -1,0 +1,120 @@
+#!/usr/bin/env fish
+# boost — CPU boost control and waybar JSON output
+#
+# Merged from boost (Bun/TypeScript) and boost-toggle (bash).
+# Controls /sys/devices/system/cpu/cpufreq/boost.
+#
+# Dependencies: sudo, tee, notify-send (optional)
+# Usage: boost [on|off|toggle|status|--waybar] [--help|-h]
+
+set BOOST_PATH /sys/devices/system/cpu/cpufreq/boost
+
+function show_help
+    echo "Usage: boost <subcommand>"
+    echo ""
+    echo "Subcommands:"
+    echo "  on        Enable CPU boost"
+    echo "  off       Disable CPU boost"
+    echo "  toggle    Toggle current boost state"
+    echo "  status    Show current state (human readable)"
+    echo "  --waybar  Output waybar JSON with icon, tooltip, and CSS class"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h  Show this help message"
+    echo ""
+    echo "Note: writing to $BOOST_PATH requires sudo or a udev rule."
+end
+
+function is_enabled
+    set val (cat $BOOST_PATH 2>/dev/null)
+    test "$val" = 1
+end
+
+function set_boost
+    set value $argv[1]
+    echo $value | sudo tee $BOOST_PATH >/dev/null
+    return $status
+end
+
+function cmd_on
+    if set_boost 1
+        echo "CPU boost enabled"
+    else
+        echo "Failed to enable CPU boost (requires sudo)" >&2
+        exit 1
+    end
+end
+
+function cmd_off
+    if set_boost 0
+        echo "CPU boost disabled"
+    else
+        echo "Failed to disable CPU boost (requires sudo)" >&2
+        exit 1
+    end
+end
+
+function cmd_toggle
+    if is_enabled
+        if set_boost 0
+            echo "CPU boost disabled"
+            if type -q notify-send
+                notify-send -t 2000 "CPU Boost" "Boost disabled"
+            end
+        else
+            echo "Failed to toggle CPU boost (requires sudo)" >&2
+            exit 1
+        end
+    else
+        if set_boost 1
+            echo "CPU boost enabled"
+            if type -q notify-send
+                notify-send -t 2000 "CPU Boost" "Boost enabled"
+            end
+        else
+            echo "Failed to toggle CPU boost (requires sudo)" >&2
+            exit 1
+        end
+    end
+end
+
+function cmd_status
+    if is_enabled
+        echo "CPU boost is enabled"
+    else
+        echo "CPU boost is disabled"
+    end
+end
+
+function cmd_waybar
+    if is_enabled
+        echo '{"text": "󰓅", "tooltip": "CPU boost: enabled", "class": "active", "alt": "active"}'
+    else
+        echo '{"text": "󰾅", "tooltip": "CPU boost: disabled", "class": "inactive", "alt": "inactive"}'
+    end
+end
+
+# Argument dispatch
+set subcommand $argv[1]
+
+switch $subcommand
+    case --help -h
+        show_help
+    case on
+        cmd_on
+    case off
+        cmd_off
+    case toggle
+        cmd_toggle
+    case status
+        cmd_status
+    case --waybar
+        cmd_waybar
+    case ''
+        show_help
+        exit 1
+    case '*'
+        echo "boost: unknown subcommand '$subcommand'" >&2
+        echo "Run 'boost --help' for usage." >&2
+        exit 1
+end

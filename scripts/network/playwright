@@ -1,0 +1,116 @@
+#!/usr/bin/env fish
+# playwright — Playwright Chrome DevTools Protocol Docker container manager
+#
+# Rewrite of playwright-cdp.sh (bash). Manages a headless Chromium container
+# with CDP exposed for browser automation via @playwright/mcp.
+#
+# Dependencies: docker
+# Usage: playwright [start|stop|restart|status|logs] [--help|-h]
+
+set CONTAINER_NAME playwright-cdp
+set PORT (set -q PLAYWRIGHT_CDP_PORT; and echo $PLAYWRIGHT_CDP_PORT; or echo 9223)
+set IMAGE zenika/alpine-chrome:with-node
+
+function show_help
+    echo "Usage: playwright <subcommand>"
+    echo ""
+    echo "Subcommands:"
+    echo "  start    Start the Playwright CDP container"
+    echo "  stop     Stop and remove the container"
+    echo "  restart  Stop then start the container"
+    echo "  status   Show container status and recent logs"
+    echo "  logs     Follow container logs"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h  Show this help message"
+    echo ""
+    echo "Environment variables:"
+    echo "  PLAYWRIGHT_CDP_PORT  Port to expose CDP on (default: 9223)"
+    echo ""
+    echo "MCP config for ~/.config/amp/settings.json:"
+    echo "  \"playwright\": {"
+    echo "    \"command\": \"npx\","
+    echo "    \"args\": [\"@playwright/mcp@latest\", \"--cdp-endpoint\", \"http://127.0.0.1:$PORT\"]"
+    echo "  }"
+end
+
+function cmd_start
+    if docker ps -q -f name=$CONTAINER_NAME | grep -q .
+        echo "Container '$CONTAINER_NAME' is already running on port $PORT"
+        exit 0
+    end
+
+    # Remove stopped container if it exists
+    docker rm -f $CONTAINER_NAME 2>/dev/null
+
+    echo "Starting Playwright CDP container on port $PORT..."
+    docker run -d \
+        --name $CONTAINER_NAME \
+        -p $PORT:9222 \
+        --init \
+        --ipc=host \
+        $IMAGE \
+        chromium-browser \
+            --no-sandbox \
+            --headless \
+            --remote-debugging-address=0.0.0.0 \
+            --remote-debugging-port=9222 \
+            --disable-gpu
+
+    echo "Playwright CDP available at http://127.0.0.1:$PORT"
+    echo ""
+    echo "MCP config for ~/.config/amp/settings.json:"
+    echo "  \"playwright\": {"
+    echo "    \"command\": \"npx\","
+    echo "    \"args\": [\"@playwright/mcp@latest\", \"--cdp-endpoint\", \"http://127.0.0.1:$PORT\"]"
+    echo "  }"
+end
+
+function cmd_stop
+    echo "Stopping Playwright CDP container..."
+    docker rm -f $CONTAINER_NAME 2>/dev/null
+    echo "Stopped"
+end
+
+function cmd_restart
+    cmd_stop
+    cmd_start
+end
+
+function cmd_status
+    if docker ps -q -f name=$CONTAINER_NAME | grep -q .
+        echo "Running on port $PORT"
+        docker logs --tail 5 $CONTAINER_NAME 2>&1
+    else
+        echo "Not running"
+    end
+end
+
+function cmd_logs
+    docker logs -f $CONTAINER_NAME
+end
+
+# Argument dispatch
+set subcommand $argv[1]
+
+switch $subcommand
+    case --help -h
+        show_help
+    case start
+        cmd_start
+    case stop
+        cmd_stop
+    case restart
+        cmd_restart
+    case status
+        cmd_status
+    case logs
+        cmd_logs
+    case ''
+        show_help
+        exit 1
+    case '*'
+        echo "playwright: unknown subcommand '$subcommand'" >&2
+        echo "Run 'playwright --help' for usage." >&2
+        exit 1
+end

@@ -1,0 +1,565 @@
+#!/usr/bin/env fish
+# screen — Unified screen, brightness, monitor, lid, and sleep management
+#
+# Merges screen-manager, monitor-control, lid-handler, and lid-sleep-toggle
+# into a single script. Handles DPMS, session lock, brightness (multi-backend),
+# per-monitor control, laptop lid events, and sleep inhibition.
+#
+# Dependencies: hyprctl, loginctl, brightnessctl (primary), light (fallback),
+#               xset (fallback), rofi, notify-send, systemd-inhibit, jq
+# Usage: screen <subcommand> [args]
+
+set -l BRIGHTNESS_CACHE /tmp/brightness-cache
+set -l BRIGHTNESS_STEP 5
+set -l LAPTOP_MONITOR eDP-1
+set -l LID_LOG /tmp/lid-close-handler.log
+set -l LID_PID_FILE /tmp/lid-sleep-inhibit.pid
+
+# ─── Help ────────────────────────────────────────────────────────────────────
+
+function _screen_help
+    echo "screen — Unified screen, brightness, monitor, lid, and sleep management"
+    echo ""
+    echo "Usage: screen <subcommand> [args]"
+    echo ""
+    echo "DPMS / Monitor Power:"
+    echo "  off              Turn all monitors off (dpms off)"
+    echo "  on               Turn all monitors on (dpms on)"
+    echo "  toggle           Toggle dpms state"
+    echo ""
+    echo "Session Lock:"
+    echo "  lock             Lock current session"
+    echo "  unlock           Unlock current session"
+    echo "  lock-toggle      Toggle lock state"
+    echo ""
+    echo "Brightness:"
+    echo "  bright-get                Print current brightness %"
+    echo "  bright-set <0-100>        Set brightness to value"
+    echo "  bright-up [amount]        Increase brightness (default: $BRIGHTNESS_STEP%)"
+    echo "  bright-down [amount]      Decrease brightness (default: $BRIGHTNESS_STEP%)"
+    echo "  bright-json               Output waybar JSON"
+    echo "  bright-json-subdued       Output subdued waybar JSON"
+    echo "  menu                      Rofi menu to pick brightness level"
+    echo ""
+    echo "Individual Monitor Control:"
+    echo "  monitor-off      Rofi menu: pick a monitor to turn off"
+    echo "  monitor-on       Rofi menu: pick a monitor to turn on"
+    echo ""
+    echo "Lid Handling (called from Hyprland lid switch binds):"
+    echo "  lid-close        Disable eDP-1; suspend if no external monitors"
+    echo "  lid-open         Re-enable eDP-1"
+    echo ""
+    echo "Sleep Inhibition:"
+    echo "  sleep-toggle     Toggle systemd-inhibit lid sleep inhibition, output waybar JSON"
+    echo ""
+    echo "General:"
+    echo "  status           Show brightness, dpms, and lock state"
+    echo "  --help / -h      Show this help"
+end
+
+# ─── Brightness backend detection ────────────────────────────────────────────
+
+function _has_brightnessctl
+    type -q brightnessctl; and test -d /sys/class/backlight
+end
+
+function _has_light
+    type -q light; and test -d /sys/class/backlight
+end
+
+# ─── Brightness cache ────────────────────────────────────────────────────────
+
+function _init_cache
+    test -f $BRIGHTNESS_CACHE; and return
+
+    set -l initial 50
+
+    if _has_brightnessctl
+        set -l cur (brightnessctl get 2>/dev/null)
+        set -l max (brightnessctl max 2>/dev/null)
+        if test -n "$cur" -a -n "$max" -a "$max" -gt 0
+            set initial (math "round($cur * 100 / $max)")
+        end
+    else if _has_light
+        set -l cur (light -G 2>/dev/null)
+        if test -n "$cur"
+            set initial (math "round($cur)")
+        end
+    end
+
+    echo $initial > $BRIGHTNESS_CACHE
+end
+
+function _clamp
+    set -l v $argv[1]
+    if test $v -lt 0
+        echo 0
+    else if test $v -gt 100
+        echo 100
+    else
+        echo $v
+    end
+end
+
+function _get_cached_brightness
+    _init_cache
+    set -l val (string trim < $BRIGHTNESS_CACHE 2>/dev/null)
+    if test -z "$val"
+        echo 50
+        return
+    end
+    # Validate it's a number 0-100
+    if string match -qr '^\d+$' -- $val; and test $val -ge 0 -a $val -le 100
+        echo $val
+    else
+        echo 50
+    end
+end
+
+function _set_brightness
+    set -l v (_clamp $argv[1])
+    echo $v > $BRIGHTNESS_CACHE
+
+    if _has_brightnessctl
+        brightnessctl set "$v%" > /dev/null 2>&1
+    else if _has_light
+        light -S $v > /dev/null 2>&1
+    else if type -q xset
+        # xset doesn't do percentage; best effort
+        xset dpms force on > /dev/null 2>&1
+    end
+end
+
+# ─── Brightness JSON (waybar) ─────────────────────────────────────────────────
+
+function _brightness_json
+    set -l subdued $argv[1]
+    set -l b (_get_cached_brightness)
+
+    set -l methods
+    if _has_brightnessctl
+        set methods $methods brightnessctl
+    else if _has_light
+        set methods $methods light
+    else if type -q xset
+        set methods $methods xset
+    end
+
+    set -l methods_str
+    if test (count $methods) -eq 0
+        set methods_str " (no control)"
+    else
+        set methods_str " ("(string join ", " $methods)")"
+    end
+
+    set -l tooltip "Brightness: $b%$methods_str\\nScroll: adjust brightness\\nLeft click: turn screens off\\nRight click: set to 100%"
+
+    if test "$subdued" = true
+        printf '{"percentage":%s,"text":"brightness: %s%%","tooltip":"%s","class":"brightness-subdued"}\n' \
+            $b $b $tooltip
+    else
+        printf '{"percentage":%s,"text":"☀ %s%%","tooltip":"%s","class":"brightness"}\n' \
+            $b $b $tooltip
+    end
+end
+
+# ─── DPMS ─────────────────────────────────────────────────────────────────────
+
+function _dpms
+    set -l state $argv[1]
+    hyprctl dispatch dpms $state > /dev/null 2>&1
+    return $status
+end
+
+function _screen_off
+    if not _dpms off
+        if _has_brightnessctl
+            brightnessctl set 0 > /dev/null 2>&1
+        else if _has_light
+            light -S 0 > /dev/null 2>&1
+        else if type -q xset
+            xset dpms force off > /dev/null 2>&1
+        end
+    end
+    notify-send "Screen" "Display off" -t 1500 > /dev/null 2>&1
+end
+
+function _screen_on
+    if not _dpms on
+        if _has_brightnessctl
+            brightnessctl set 100% > /dev/null 2>&1
+        else if _has_light
+            light -S 100 > /dev/null 2>&1
+        else if type -q xset
+            xset dpms force on > /dev/null 2>&1
+        end
+    end
+    notify-send "Screen" "Display on" -t 1500 > /dev/null 2>&1
+end
+
+# ─── Session ──────────────────────────────────────────────────────────────────
+
+function _get_active_session
+    loginctl list-sessions --no-legend 2>/dev/null \
+        | string match -r '^\s*(\S+)\s+\S+\s+\S+\s+seat0' \
+        | head -1 \
+        | string replace -r '^\s*(\S+)\s.*' '$1'
+end
+
+function _is_session_locked
+    set -l id $argv[1]
+    test -z "$id"; and return 1
+    set -l locked (loginctl show-session $id 2>/dev/null | string match -r '^LockedHint=(.+)' | string replace -r '^LockedHint=' '')
+    test "$locked" = yes
+end
+
+function _lock_session
+    set -l id (_get_active_session)
+    if test -z "$id"
+        echo "No active session found" >&2
+        return 1
+    end
+    loginctl lock-session $id
+end
+
+function _unlock_session
+    set -l id (_get_active_session)
+    if test -z "$id"
+        echo "No active session found" >&2
+        return 1
+    end
+    loginctl unlock-session $id
+end
+
+# ─── Monitor selection (rofi) ────────────────────────────────────────────────
+
+function _get_monitors_json
+    hyprctl monitors -j 2>/dev/null
+end
+
+function _monitor_menu
+    set -l prompt $argv[1]
+    set -l filter_expr $argv[2]
+
+    set -l monitors_json (_get_monitors_json)
+    if test -z "$monitors_json"
+        echo "No monitors found" >&2
+        return 1
+    end
+
+    # Build entries: "<status> <name>: <description> (<WxH>)"
+    set -l entries (echo $monitors_json | jq -r "$filter_expr")
+    if test -z "$entries"
+        echo "No matching monitors" >&2
+        return 1
+    end
+
+    set -l count (echo $entries | wc -l)
+
+    pkill rofi > /dev/null 2>&1
+
+    set -l selection (echo $entries | /run/current-system/sw/bin/rofi \
+        -plugin-path /run/current-system/sw/lib/rofi \
+        -dmenu \
+        -i \
+        -p "$prompt" \
+        -theme-str "window { width: 28em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: $count; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: \"Adwaita Sans 18\"; }")
+
+    test -z "$selection"; and return 1
+
+    # Extract monitor name: second token before the colon
+    echo $selection | string replace -r '^\S+\s+([^:]+):.*' '$1'
+end
+
+function _monitor_off
+    set -l name (_monitor_menu "Turn off monitor:" \
+        '.[] | select(.disabled == false) | (if .dpmsStatus then "🟢" else "🔴" end) + " " + .name + ": " + .description + " (" + (.width|tostring) + "x" + (.height|tostring) + ")" + if .focused then " [focused]" else "" end')
+    test -z "$name"; and return 0
+    hyprctl dispatch dpms off $name
+    notify-send "Monitor Off" "🔴 $name turned off" -h string:x-canonical-private-synchronous:monitor-status
+end
+
+function _monitor_on
+    # Prefer monitors that are currently off; fall back to all enabled
+    set -l monitors_json (_get_monitors_json)
+    set -l off_count (echo $monitors_json | jq '[.[] | select(.disabled == false and .dpmsStatus == false)] | length')
+
+    set -l filter_expr
+    if test "$off_count" -gt 0
+        set filter_expr '.[] | select(.disabled == false and .dpmsStatus == false) | "🔴 " + .name + ": " + .description + " (" + (.width|tostring) + "x" + (.height|tostring) + ")"'
+    else
+        set filter_expr '.[] | select(.disabled == false) | (if .dpmsStatus then "🟢" else "🔴" end) + " " + .name + ": " + .description + " (" + (.width|tostring) + "x" + (.height|tostring) + ")"'
+    end
+
+    set -l name (_monitor_menu "Turn on monitor:" $filter_expr)
+    test -z "$name"; and return 0
+    hyprctl dispatch dpms on $name
+    notify-send "Monitor On" "🟢 $name turned on" -h string:x-canonical-private-synchronous:monitor-status
+end
+
+# ─── Lid handling ─────────────────────────────────────────────────────────────
+
+function _lid_log
+    set -l ts (date '+%Y-%m-%d %H:%M:%S')
+    echo "[$ts] $argv" >> $LID_LOG 2>/dev/null
+end
+
+function _lid_close
+    set -l monitors_json (_get_monitors_json)
+    # External monitors: not starting with 'e' (eDP) and not disabled
+    set -l external (echo $monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length')
+    set -l laptop_enabled (echo $monitors_json | jq --arg name $LAPTOP_MONITOR \
+        '[.[] | select(.name == $name and .disabled == false)] | length > 0')
+
+    _lid_log "Lid close event. External monitors: $external, Laptop enabled: $laptop_enabled"
+
+    if test "$laptop_enabled" = true
+        _lid_log "Disabling $LAPTOP_MONITOR"
+        hyprctl keyword monitor "$LAPTOP_MONITOR, disable"
+        notify-send "Lid Closed" "Laptop screen disabled" -t 3000
+    end
+
+    if test "$external" -eq 0
+        _lid_log "No external monitors — locking and suspending"
+        # Brief pause, then lock
+        sleep 0.5
+        hyprlock &
+        disown
+        sleep 2
+        _lid_log "Suspending system"
+        loginctl suspend
+        if test $status -ne 0
+            _lid_log "Cannot suspend — insufficient privileges"
+            notify-send "Suspend Failed" "Cannot suspend — insufficient privileges" -t 3000
+        end
+    else
+        _lid_log "$external external monitor(s) — system remains unlocked"
+    end
+end
+
+function _lid_open
+    _lid_log "Lid open event"
+    hyprctl keyword monitor "$LAPTOP_MONITOR, preferred, auto, 1"
+    hyprctl reload
+    notify-send "Lid Opened" "Laptop screen enabled" -t 3000
+
+    set -l updated (_get_monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length' 2>/dev/null; or echo 0)
+    _lid_log "Lid opened with $updated external monitor(s)"
+end
+
+# ─── Sleep inhibition ─────────────────────────────────────────────────────────
+
+function _sleep_is_active
+    test -f $LID_PID_FILE; or return 1
+    set -l pid (string trim < $LID_PID_FILE)
+    kill -0 $pid 2>/dev/null
+end
+
+function _sleep_start_inhibit
+    _sleep_is_active; and return
+    systemd-inhibit --what=handle-lid-switch --who=screen \
+        --why="User toggled lid sleep inhibition" --mode=block \
+        sleep infinity &
+    echo $last_pid > $LID_PID_FILE
+end
+
+function _sleep_stop_inhibit
+    if test -f $LID_PID_FILE
+        set -l pid (string trim < $LID_PID_FILE)
+        kill $pid 2>/dev/null
+        rm -f $LID_PID_FILE
+    end
+end
+
+function _sleep_print_status
+    if _sleep_is_active
+        printf '{"text":"󰛊","tooltip":"Lid close: staying awake","class":"active","alt":"active"}\n'
+    else
+        printf '{"text":"󰍁","tooltip":"Lid close: will sleep","class":"inactive","alt":"inactive"}\n'
+    end
+end
+
+function _sleep_toggle
+    if _sleep_is_active
+        _sleep_stop_inhibit
+        notify-send -t 2000 "Lid Sleep" "Lid close will suspend"
+    else
+        _sleep_start_inhibit
+        notify-send -t 2000 "Lid Sleep" "Lid close will stay awake"
+    end
+    _sleep_print_status
+end
+
+# ─── Status ───────────────────────────────────────────────────────────────────
+
+function _show_status
+    set -l id (_get_active_session)
+    echo "=== Screen and Session Status ==="
+    if test -n "$id"
+        echo "Active Session ID: $id"
+        if _is_session_locked $id
+            echo "Session Locked:    Yes"
+        else
+            echo "Session Locked:    No"
+        end
+        set -l state (loginctl show-session $id 2>/dev/null \
+            | string match -r '^State=.+' \
+            | string replace 'State=' '')
+        echo "Session State:     $state"
+    else
+        echo "No active graphical session found"
+    end
+
+    set -l b (_get_cached_brightness)
+    set -l methods
+    if _has_brightnessctl
+        set methods $methods brightnessctl
+    else if _has_light
+        set methods $methods light
+    else if type -q xset
+        set methods $methods xset
+    else
+        set methods none
+    end
+    echo "Brightness:        $b% ("(string join ", " $methods)")"
+end
+
+# ─── Rofi brightness menu ────────────────────────────────────────────────────
+
+function _rofi_menu
+    set -l cur (_get_cached_brightness)
+    set -l entries "☀  Brightness 100%
+󰃝  Brightness 75%
+󰃞  Brightness 50%
+󰃜  Brightness 25%"
+
+    set -l result (echo $entries | /run/current-system/sw/bin/rofi \
+        -plugin-path /run/current-system/sw/lib/rofi \
+        -dmenu \
+        -i \
+        -p "Brightness ($cur%)" \
+        -theme-str 'window { width: 22em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: 4; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: "Adwaita Sans 18"; }')
+
+    test -z "$result"; and return 0
+
+    set -l val (echo $result | string match -r '(\d+)%' | tail -1)
+    if test -n "$val"
+        _set_brightness $val
+        echo "Brightness set to $val%"
+    end
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+if test (count $argv) -eq 0
+    _screen_help
+    exit 0
+end
+
+set -l cmd $argv[1]
+set -l arg2 $argv[2]
+
+switch $cmd
+    case off off-screen
+        _screen_off
+
+    case on on-screen
+        _screen_on
+
+    case toggle
+        set -l id (_get_active_session)
+        if _is_session_locked $id
+            _screen_on
+        else
+            _screen_off
+        end
+
+    case lock
+        _lock_session
+
+    case unlock
+        _unlock_session
+
+    case lock-toggle
+        set -l id (_get_active_session)
+        if _is_session_locked $id
+            _unlock_session
+        else
+            _lock_session
+        end
+
+    case bright-get
+        _get_cached_brightness
+
+    case bright-set
+        if test -z "$arg2"
+            echo "bright-set requires a value 0-100" >&2
+            exit 1
+        end
+        if not string match -qr '^\d+$' -- $arg2; or test $arg2 -lt 0 -o $arg2 -gt 100
+            echo "bright-set: value must be 0-100" >&2
+            exit 1
+        end
+        _set_brightness $arg2
+        echo "Brightness set to $arg2%"
+
+    case bright-up
+        set -l step $BRIGHTNESS_STEP
+        if test -n "$arg2"
+            set step $arg2
+        end
+        set -l cur (_get_cached_brightness)
+        set -l next (_clamp (math "$cur + $step"))
+        _set_brightness $next
+        echo "Brightness $cur% → $next%"
+
+    case bright-down
+        set -l step $BRIGHTNESS_STEP
+        if test -n "$arg2"
+            set step $arg2
+        end
+        set -l cur (_get_cached_brightness)
+        set -l next (_clamp (math "$cur - $step"))
+        _set_brightness $next
+        echo "Brightness $cur% → $next%"
+
+    case bright-json
+        _brightness_json false
+
+    case bright-json-subdued
+        _brightness_json true
+
+    case menu
+        _rofi_menu
+
+    case monitor-off
+        _monitor_off
+
+    case monitor-on
+        _monitor_on
+
+    case lid-close
+        _lid_close
+
+    case lid-open
+        _lid_open
+
+    case sleep-toggle
+        _sleep_toggle
+
+    case status
+        _show_status
+
+    case --help -h help
+        _screen_help
+
+    case '*'
+        # Accept bare numeric value as brightness set
+        if string match -qr '^\d+$' -- $cmd; and test $cmd -ge 0 -a $cmd -le 100
+            _set_brightness $cmd
+        else
+            echo "Unknown subcommand: $cmd" >&2
+            _screen_help
+            exit 1
+        end
+end

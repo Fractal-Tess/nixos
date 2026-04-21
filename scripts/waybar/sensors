@@ -1,0 +1,43 @@
+#!/usr/bin/env fish
+# sensors — Waybar CPU/GPU temperature status
+#
+# Reads CPU temperature via lm-sensors and optionally NVIDIA GPU
+# temperature via nvidia-smi. Outputs Waybar-compatible JSON.
+#
+# Dependencies: sensors (lm-sensors), nvidia-smi (optional)
+# Usage: sensors [--help|-h]
+
+if contains -- --help $argv; or contains -- -h $argv
+    printf "Usage: sensors\n\n"
+    printf "Outputs Waybar JSON for CPU and GPU temperatures.\n\n"
+    printf "Dependencies:\n"
+    printf "  sensors     — lm-sensors (required for CPU temp)\n"
+    printf "  nvidia-smi  — optional, for NVIDIA GPU temp\n\n"
+    printf "JSON fields: text, tooltip\n"
+    exit 0
+end
+
+# --- GPU temperature (NVIDIA) ---
+set gpu_temp ""
+if type -q nvidia-smi
+    set gpu_temp (nvidia-smi --query-gpu=temperature.gpu --format=csv,noheader,nounits 2>/dev/null | head -n1 | string trim)
+end
+
+# --- CPU temperature via sensors ---
+set cpu_temp ""
+if type -q sensors
+    # Try Intel first (Package id 0), then AMD (Tctl)
+    set cpu_temp (sensors 2>/dev/null | grep -m1 '^Package id 0:' | string match -rg '[+]?(\d+)\.\d+')
+    if test -z "$cpu_temp"
+        set cpu_temp (sensors 2>/dev/null | grep -m1 '^Tctl:' | string match -rg '[+]?(\d+)\.\d+')
+    end
+end
+
+# --- Build output ---
+set cpu_display (test -n "$cpu_temp"; and echo $cpu_temp; or echo "?")
+set gpu_display (test -n "$gpu_temp"; and echo $gpu_temp; or echo "?")
+
+set text " $cpu_display°C  $gpu_display°C"
+set tooltip "CPU Temp: $cpu_display°C\\nGPU Temp: $gpu_display°C"
+
+printf '{"text": "%s", "tooltip": "%s"}\n' "$text" "$tooltip"

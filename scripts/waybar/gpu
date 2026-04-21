@@ -1,0 +1,93 @@
+#!/usr/bin/env fish
+# gpu — NVIDIA GPU status for Waybar custom modules
+#
+# Queries one GPU by index and outputs waybar-compatible JSON.
+# Use --id=N to select between multiple GPUs (default: 0).
+#
+# Dependencies: nvidia-smi
+# Usage: gpu --nvidia [--id=N] | gpu --nvidia-mem [--id=N]
+
+function show_help
+    echo "Usage: gpu <mode> [--id=N]"
+    echo ""
+    echo "Modes:"
+    echo "  --nvidia       GPU usage + temperature + memory JSON"
+    echo "  --nvidia-mem   GPU memory usage JSON only"
+    echo ""
+    echo "Options:"
+    echo "  --id=N         GPU index (default: 0)"
+    echo "  -h, --help     Show this help"
+    echo ""
+    echo "Examples:"
+    echo "  gpu --nvidia --id=1"
+    echo "  gpu --nvidia-mem --id=0"
+end
+
+function gpu_class -a pct
+    if test $pct -lt 30
+        echo low
+    else if test $pct -lt 70
+        echo medium
+    else
+        echo high
+    end
+end
+
+# Parse --id=N from argv
+set gpu_id 0
+for arg in $argv
+    if string match -qr '^--id=' -- $arg
+        set gpu_id (string replace -- '--id=' '' $arg)
+    end
+end
+
+if contains -- --help $argv; or contains -- -h $argv
+    show_help; exit 0
+end
+
+if not type -q nvidia-smi
+    echo '{"percentage": 0, "text": "N/A", "tooltip": "nvidia-smi not found", "class": "low"}'
+    exit 1
+end
+
+if contains -- --nvidia $argv
+    set data (nvidia-smi --id=$gpu_id \
+        --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total \
+        --format=csv,noheader,nounits 2>/dev/null)
+
+    if test -z "$data"
+        echo '{"percentage": 0, "text": "N/A", "tooltip": "nvidia-smi failed", "class": "low"}'
+        exit 1
+    end
+
+    set fields (string split ', ' $data)
+    set usage  (string trim $fields[1])
+    set temp   (string trim $fields[2])
+    set mused  (string trim $fields[3])
+    set mtotal (string trim $fields[4])
+    set class  (gpu_class $usage)
+    set tip    "GPU Usage: $usage%\\nTemperature: $temp°C\\nMemory: $mused/$mtotal MB"
+
+    echo "{\"percentage\": $usage, \"text\": \"$usage% $mused/$mtotal MB\", \"tooltip\": \"$tip\", \"class\": \"$class\"}"
+
+else if contains -- --nvidia-mem $argv
+    set data (nvidia-smi --id=$gpu_id \
+        --query-gpu=memory.used,memory.total \
+        --format=csv,noheader,nounits 2>/dev/null)
+
+    if test -z "$data"
+        echo '{"percentage": 0, "text": "N/A", "tooltip": "nvidia-smi failed", "class": "low"}'
+        exit 1
+    end
+
+    set fields (string split ', ' $data)
+    set mused  (string trim $fields[1])
+    set mtotal (string trim $fields[2])
+    set pct    (math --scale=0 "$mused / $mtotal * 100")
+    set class  (gpu_class $pct)
+
+    echo "{\"percentage\": $pct, \"text\": \"$pct%\", \"tooltip\": \"GPU Memory: $mused/$mtotal MB ($pct%)\", \"class\": \"$class\"}"
+
+else
+    show_help; exit 1
+end

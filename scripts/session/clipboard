@@ -1,0 +1,38 @@
+#!/usr/bin/env fish
+# clipboard — Clipboard history picker
+#
+# Lists clipboard history with cliphist, lets the user pick an entry via
+# rofi dmenu, decodes it, and copies it back to the clipboard with wl-copy.
+#
+# Dependencies: cliphist, rofi, wl-copy
+# Usage: clipboard [--help]
+
+set -l CLIPHIST_BIN /run/current-system/sw/bin/cliphist
+
+function _clipboard_help
+    echo "clipboard — Clipboard history picker"
+    echo ""
+    echo "Usage: clipboard [--help]"
+    echo ""
+    echo "  Lists clipboard history, shows a rofi picker, and copies the selection"
+    echo "  back to the clipboard."
+    echo ""
+    echo "Options:"
+    echo "  --help / -h    Show this help message"
+    echo ""
+    echo "Dependencies: cliphist, rofi, wl-copy"
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+if contains -- --help $argv; or contains -- -h $argv
+    _clipboard_help
+    exit 0
+end
+
+pkill rofi > /dev/null 2>&1
+
+set -l selection ($CLIPHIST_BIN list | rofi -dmenu -p "Clipboard:")
+test -z "$selection"; and exit 0
+
+echo $selection | $CLIPHIST_BIN decode | wl-copy

@@ -96,9 +96,9 @@
       nas-unity = "nix develop ~/nixos/shells/unity";
 
       # AI tools
-      zai = "~/nixos/scripts/claude-code/z-ai.sh";
-      minimax = "~/nixos/scripts/claude-code/minimax.sh";
-      kimi = "~/nixos/scripts/claude-code/kimi.sh";
+      zai = "~/nixos/scripts/ai/ai z-ai";
+      minimax = "~/nixos/scripts/ai/ai minimax";
+      kimi = "~/nixos/scripts/ai/ai kimi";
       ca = "cursor-agent";
 
       # NixOS Create Shell shortcuts
@@ -115,7 +115,7 @@
       ncs-unity = "_ncs_setup unity";
 
       # Vibe-Kanban
-      vk = "~/nixos/scripts/launch-vibe-kanban-remote.sh";
+      vk = "~/nixos/scripts/dev/vibe-kanban";
     };
 
     # Interactive shell initialization
@@ -146,12 +146,17 @@
       # Add scripts to PATH
       if test -d ~/nixos/scripts
         fish_add_path ~/nixos/scripts
-        fish_add_path ~/nixos/scripts/bin
-        fish_add_path ~/nixos/scripts/hyprland
         fish_add_path ~/nixos/scripts/nixos
-        fish_add_path ~/nixos/scripts/wallpaper
         fish_add_path ~/nixos/scripts/waybar
-        fish_add_path ~/nixos/scripts/claude-code
+        fish_add_path ~/nixos/scripts/audio
+        fish_add_path ~/nixos/scripts/display
+        fish_add_path ~/nixos/scripts/session
+        fish_add_path ~/nixos/scripts/system
+        fish_add_path ~/nixos/scripts/network
+        fish_add_path ~/nixos/scripts/ai
+        fish_add_path ~/nixos/scripts/security
+        fish_add_path ~/nixos/scripts/dev
+        fish_add_path ~/nixos/scripts/volume-knob
       end
 
       # Auto-start Hyprland on TTY1 if no Wayland session
