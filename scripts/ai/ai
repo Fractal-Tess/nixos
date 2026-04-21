@@ -1,0 +1,184 @@
+#!/usr/bin/env fish
+# ai — Unified AI provider launcher for Claude Code
+#
+# Launches Claude Code (or Auto-Claude AppImage) with a chosen AI provider's
+# API endpoint and credentials pre-configured via environment variables.
+# Secrets are read from ~/.config/secrets/ at runtime.
+#
+# Dependencies: claude, appimage-run
+# Usage: ai <provider> [--auto-claude] [claude-args...]
+#
+# Providers:
+#   kimi        Kimi K2 via moonshot.ai Anthropic-compatible endpoint
+#   minimax     MiniMax M2.1 via minimax.io Anthropic-compatible endpoint
+#   z-ai        Z.AI GLM-4.7/4.5 via z.ai Anthropic-compatible endpoint
+#
+# Flags (provider-level, before extra args):
+#   --auto-claude   Launch Auto-Claude AppImage instead of claude CLI
+#                   (only supported for z-ai and minimax)
+#   --help, -h      Show this help message
+
+set -l APPIMAGE "$HOME/.local/bin/Auto-Claude-2.7.1-linux-x86_64.AppImage"
+
+function _ai_help
+    echo "Usage: ai <provider> [--auto-claude] [claude-args...]"
+    echo ""
+    echo "Providers:"
+    echo "  kimi        Kimi K2 via moonshot.ai (kimi-k2-thinking-turbo)"
+    echo "  minimax     MiniMax M2.1 via minimax.io"
+    echo "  z-ai        Z.AI GLM-4.7/4.5 models"
+    echo ""
+    echo "Flags (placed after provider):"
+    echo "  --auto-claude   Launch Auto-Claude AppImage instead of claude CLI"
+    echo "                  (supported for: z-ai, minimax)"
+    echo "  --help, -h      Show this help message"
+    echo ""
+    echo "All remaining arguments are forwarded to the underlying command."
+    echo ""
+    echo "Examples:"
+    echo "  ai kimi"
+    echo "  ai kimi --dangerously-skip-permissions"
+    echo "  ai minimax --auto-claude"
+    echo "  ai z-ai --auto-claude"
+    echo "  ai z-ai -p 'Hello'"
+end
+
+# No arguments — show help
+if test (count $argv) -eq 0
+    _ai_help
+    exit 0
+end
+
+# Top-level --help / -h
+if contains -- --help $argv; or contains -- -h $argv
+    _ai_help
+    exit 0
+end
+
+set -l provider $argv[1]
+set -l rest_args $argv[2..]
+
+# Check for --auto-claude in remaining args
+set -l use_appimage false
+set -l forward_args
+
+for arg in $rest_args
+    if test "$arg" = "--auto-claude"
+        set use_appimage true
+    else
+        set forward_args $forward_args $arg
+    end
+end
+
+# ── Helper: read secret file ─────────────────────────────────────────────────
+function _read_secret
+    set -l path $argv[1]
+    if not test -f "$path"
+        echo "Error: secret file not found: $path" >&2
+        exit 1
+    end
+    cat "$path"
+end
+
+# ── Provider dispatch ────────────────────────────────────────────────────────
+switch $provider
+
+    case kimi
+        set -l apikey (_read_secret "$HOME/.config/secrets/moonshot_ai")
+
+        # Clear conflicting vars
+        set -e ANTHROPIC_AUTH_TOKEN
+        set -e ANTHROPIC_BASE_URL
+
+        set -x ANTHROPIC_BASE_URL "https://api.moonshot.ai/anthropic"
+        set -x ANTHROPIC_AUTH_TOKEN (string trim $apikey)
+        set -x ANTHROPIC_MODEL "kimi-k2-thinking-turbo"
+        set -x ANTHROPIC_DEFAULT_OPUS_MODEL "kimi-k2-thinking-turbo"
+        set -x ANTHROPIC_DEFAULT_SONNET_MODEL "kimi-k2-thinking-turbo"
+        set -x ANTHROPIC_DEFAULT_HAIKU_MODEL "kimi-k2-thinking-turbo"
+        set -x CLAUDE_CODE_SUBAGENT_MODEL "kimi-k2-thinking-turbo"
+
+        echo "Configured Claude Code to use Kimi K2 Thinking Turbo via Anthropic-compatible API."
+
+        if test "$use_appimage" = true
+            echo "Warning: --auto-claude is not supported for kimi; launching claude CLI instead." >&2
+        end
+
+        if not type -q claude
+            echo "Error: claude not found in PATH" >&2
+            exit 1
+        end
+        exec claude --dangerously-skip-permissions $forward_args
+
+    case minimax
+        set -l apikey (_read_secret "$HOME/.config/secrets/minimax/apikey")
+
+        # Clear conflicting vars (per MiniMax docs)
+        set -e ANTHROPIC_AUTH_TOKEN
+        set -e ANTHROPIC_BASE_URL
+
+        set -x ANTHROPIC_BASE_URL "https://api.minimax.io/anthropic"
+        set -x ANTHROPIC_AUTH_TOKEN (string trim $apikey)
+        set -x ANTHROPIC_MODEL "MiniMax-M2.1"
+        set -x ANTHROPIC_SMALL_FAST_MODEL "MiniMax-M2.1"
+        set -x ANTHROPIC_DEFAULT_SONNET_MODEL "MiniMax-M2.1"
+        set -x ANTHROPIC_DEFAULT_OPUS_MODEL "MiniMax-M2.1"
+        set -x ANTHROPIC_DEFAULT_HAIKU_MODEL "MiniMax-M2.1"
+
+        echo "Configured Claude Code to use MiniMax-M2.1 via Anthropic-compatible API."
+
+        if test "$use_appimage" = true
+            set -x GRAPHITI_ENABLED true
+            if not type -q appimage-run
+                echo "Error: appimage-run not found in PATH" >&2
+                exit 1
+            end
+            if not test -f "$APPIMAGE"
+                echo "Error: Auto-Claude AppImage not found: $APPIMAGE" >&2
+                exit 1
+            end
+            exec appimage-run $APPIMAGE $forward_args
+        else
+            if not type -q claude
+                echo "Error: claude not found in PATH" >&2
+                exit 1
+            end
+            exec claude --dangerously-skip-permissions $forward_args
+        end
+
+    case z-ai
+        set -l apikey (_read_secret "$HOME/.config/secrets/z-ai/apikey")
+
+        set -x ANTHROPIC_BASE_URL "https://api.z.ai/api/anthropic"
+        set -x ANTHROPIC_AUTH_TOKEN (string trim $apikey)
+        set -x ANTHROPIC_DEFAULT_HAIKU_MODEL "glm-4.5-air"
+        set -x ANTHROPIC_DEFAULT_SONNET_MODEL "glm-4.7"
+        set -x ANTHROPIC_DEFAULT_OPUS_MODEL "glm-4.7"
+
+        echo "Configured Claude Code to use Z.AI GLM-4.7/4.5 models via Anthropic-compatible API."
+
+        if test "$use_appimage" = true
+            set -x GRAPHITI_ENABLED true
+            if not type -q appimage-run
+                echo "Error: appimage-run not found in PATH" >&2
+                exit 1
+            end
+            if not test -f "$APPIMAGE"
+                echo "Error: Auto-Claude AppImage not found: $APPIMAGE" >&2
+                exit 1
+            end
+            exec appimage-run $APPIMAGE $forward_args
+        else
+            if not type -q claude
+                echo "Error: claude not found in PATH" >&2
+                exit 1
+            end
+            exec claude --dangerously-skip-permissions $forward_args
+        end
+
+    case '*'
+        echo "Error: unknown provider '$provider'" >&2
+        echo "" >&2
+        _ai_help >&2
+        exit 1
+end

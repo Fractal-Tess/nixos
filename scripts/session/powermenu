@@ -1,0 +1,64 @@
+#!/usr/bin/env fish
+# powermenu — Rofi-based power menu
+#
+# Shows Lock, Reboot, Shutdown options via rofi dmenu.
+# Supports DRY_RUN and POWERMENU_CHOICE env vars for testing.
+#
+# Dependencies: rofi, hyprlock, systemctl
+# Usage: powermenu [--help|-h]
+
+set -l ROFI_BIN /run/current-system/sw/bin/rofi
+set -l PLUGIN_DIR /run/current-system/sw/lib/rofi
+
+if contains -- --help $argv; or contains -- -h $argv
+    echo "Usage: powermenu [--help]"
+    echo ""
+    echo "Shows a rofi power menu with Lock, Reboot, Shutdown."
+    echo ""
+    echo "Environment:"
+    echo "  POWERMENU_CHOICE    Pre-select: Lock, Reboot, or Shutdown"
+    echo "  POWERMENU_DRY_RUN   Print action name instead of executing"
+    exit 0
+end
+
+# Get selection via rofi or env override
+if set -q POWERMENU_CHOICE; and test -n "$POWERMENU_CHOICE"
+    set selection $POWERMENU_CHOICE
+else
+    set entries "󰌾  Lock\n󰜉  Reboot\n  Shutdown"
+    set selection (printf '%b' $entries | $ROFI_BIN \
+        -plugin-path $PLUGIN_DIR \
+        -modes "drun,run,window,calc" \
+        -dmenu \
+        -i \
+        -p "Power" \
+        -theme-str 'window { width: 22em; } inputbar { enabled: false; } mainbox { children: [ listview ]; } listview { lines: 3; columns: 1; spacing: 14px; } element { orientation: horizontal; spacing: 18px; padding: 22px 24px; children: [ element-text ]; } element-text { horizontal-align: 0.0; vertical-align: 0.5; font: "Adwaita Sans 18"; }')
+end
+
+# Strip icon prefix, whitespace, blank lines
+set selection (printf '%s' $selection | string replace -r '^[^[:alpha:]]*' '' | string trim)
+
+test -z "$selection"; and exit 0
+
+switch $selection
+    case Lock
+        if set -q POWERMENU_DRY_RUN
+            echo lock
+        else
+            hyprlock
+        end
+    case Reboot
+        if set -q POWERMENU_DRY_RUN
+            echo reboot
+        else
+            systemctl reboot
+        end
+    case Shutdown
+        if set -q POWERMENU_DRY_RUN
+            echo shutdown
+        else
+            systemctl poweroff
+        end
+    case '*'
+        exit 0
+end

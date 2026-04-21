@@ -1,0 +1,45 @@
+#!/usr/bin/env fish
+# screenshot — Region screenshot with annotation
+#
+# Prompts the user to select a screen region with slurp, captures it via grim
+# in PPM format (faster than PNG), then opens satty for annotation.
+# The annotated output is saved to ~/Pictures/Screenshots/.
+#
+# Dependencies: slurp, grim, satty
+# Usage: screenshot [--help]
+
+function _screenshot_help
+    echo "screenshot — Region screenshot with annotation"
+    echo ""
+    echo "Usage: screenshot [--help]"
+    echo ""
+    echo "  Prompts for a region selection, captures it, and opens satty for annotation."
+    echo "  Output saved to ~/Pictures/Screenshots/<timestamp>.png"
+    echo ""
+    echo "Options:"
+    echo "  --help / -h    Show this help message"
+    echo ""
+    echo "Dependencies: slurp, grim, satty"
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+if contains -- --help $argv; or contains -- -h $argv
+    _screenshot_help
+    exit 0
+end
+
+# Ensure output directory exists
+set -l outdir ~/Pictures/Screenshots
+mkdir -p $outdir
+
+# Select region; exit cleanly if user cancels
+set -l region (slurp 2>/dev/null)
+if test $status -ne 0; or test -z "$region"
+    exit 0
+end
+
+set -l outfile "$outdir/"(date '+%Y-%m-%d_%H-%M-%S')".png"
+
+# Capture to PPM stdout, pipe into satty for annotation
+grim -g $region -t ppm - | satty --filename - --output-filename $outfile

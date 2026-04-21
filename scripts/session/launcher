@@ -1,0 +1,55 @@
+#!/usr/bin/env fish
+# launcher — Rofi launcher wrapper
+#
+# Opens rofi in the specified mode. Called from waybar as `launcher drun`.
+# Modes: drun (app launcher), run (commands), window (window switcher), calc.
+#
+# Dependencies: rofi
+# Usage: launcher [drun|run|window|calc] [extra rofi args...]
+
+set -l ROFI_BIN /run/current-system/sw/bin/rofi
+set -l PLUGIN_DIR /run/current-system/sw/lib/rofi
+
+function _launcher_help
+    echo "launcher — Rofi launcher wrapper"
+    echo ""
+    echo "Usage: launcher [MODE] [rofi-args...]"
+    echo ""
+    echo "Modes:"
+    echo "  drun      Application launcher (default)"
+    echo "  run       Command launcher"
+    echo "  window    Window switcher"
+    echo "  calc      Calculator"
+    echo ""
+    echo "Options:"
+    echo "  --help / -h    Show this help message"
+    echo ""
+    echo "Examples:"
+    echo "  launcher           # Open app launcher (drun)"
+    echo "  launcher drun      # Open app launcher"
+    echo "  launcher window    # Open window switcher"
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+if contains -- --help $argv; or contains -- -h $argv
+    _launcher_help
+    exit 0
+end
+
+set -l mode drun
+if test (count $argv) -ge 1
+    switch $argv[1]
+        case drun run window calc
+            set mode $argv[1]
+            set -e argv[1]
+        case '*'
+            # Unknown first arg — pass everything through as extra args
+    end
+end
+
+exec $ROFI_BIN \
+    -plugin-path $PLUGIN_DIR \
+    -modes "drun,run,window,calc" \
+    -show $mode \
+    $argv

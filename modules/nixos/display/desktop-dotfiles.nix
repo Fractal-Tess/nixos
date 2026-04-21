@@ -37,7 +37,7 @@ in
         stow
       ];
       script = ''
-        ${repoDir}/scripts/bin/apply-desktop-dotfiles
+        ${repoDir}/scripts/system/dotfiles apply
       '';
     };
   };

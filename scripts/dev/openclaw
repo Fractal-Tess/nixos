@@ -1,0 +1,28 @@
+#!/usr/bin/env fish
+# openclaw — Launch the OpenClaw application
+#
+# Thin wrapper that runs the pre-built OpenClaw Node.js bundle at
+# /home/fractal-tess/openclaw/dist/index.js. All arguments are
+# forwarded directly to the underlying process.
+#
+# Dependencies: node
+# Usage: openclaw [args...]
+
+if contains -- --help $argv; or contains -- -h $argv
+    echo "Usage: openclaw [args...]"
+    echo ""
+    echo "Launches OpenClaw by running:"
+    echo "  node /home/fractal-tess/openclaw/dist/index.js [args...]"
+    echo ""
+    echo "All arguments are forwarded to the OpenClaw process."
+    echo ""
+    echo "Dependencies: node"
+    exit 0
+end
+
+if not type -q node
+    echo "Error: node not found in PATH" >&2
+    exit 1
+end
+
+exec node /home/fractal-tess/openclaw/dist/index.js $argv
