@@ -1,0 +1,91 @@
+#!/usr/bin/env fish
+# bluetooth — Interactive Bluetooth keyboard setup wizard
+#
+# Rewrite of bluetooth-keyboard-setup.sh (bash). Walks through
+# scanning for devices, listing them, and showing pairing instructions.
+#
+# Dependencies: bluetoothctl, systemctl
+# Usage: bluetooth [--help|-h]
+
+function show_help
+    echo "Usage: bluetooth [--help|-h]"
+    echo ""
+    echo "Interactive wizard for setting up a Bluetooth keyboard."
+    echo "Steps through service check, device scan, and pairing instructions."
+    echo ""
+    echo "Dependencies: bluetoothctl, systemctl"
+end
+
+if contains -- --help $argv; or contains -- -h $argv
+    show_help
+    exit 0
+end
+
+echo "Gaming Keyboard Bluetooth Setup"
+echo "=================================="
+echo ""
+
+# Check if Bluetooth service is running
+if not systemctl is-active --quiet bluetooth
+    echo "Bluetooth service is not running."
+    echo "Starting Bluetooth service..."
+    sudo systemctl start bluetooth
+    sudo systemctl enable bluetooth
+end
+
+echo "Bluetooth service is running"
+echo ""
+
+# Scan for devices
+echo "Scanning for Bluetooth devices..."
+echo "Make sure your keyboard is in pairing mode (usually Bluetooth mode + pairing button)"
+echo ""
+
+# Start scanning in background
+sudo bluetoothctl scan on &
+set scan_job $last_pid
+
+# Wait for devices to be discovered
+sleep 10
+
+# Stop scanning
+sudo bluetoothctl scan off
+wait $scan_job 2>/dev/null
+
+echo ""
+echo "Available Bluetooth devices:"
+echo ""
+
+# List discovered devices
+sudo bluetoothctl devices | while read -l line
+    echo "  $line"
+end
+
+echo ""
+echo "Pairing Instructions:"
+echo "1. Find your keyboard in the list above"
+echo "2. Copy the MAC address (e.g., XX:XX:XX:XX:XX:XX)"
+echo "3. Run: bluetoothctl connect XX:XX:XX:XX:XX:XX"
+echo "4. If prompted for a PIN, enter the code shown on your keyboard"
+echo ""
+echo "Quick Commands:"
+echo "  - List devices: bluetoothctl devices"
+echo "  - Connect: bluetoothctl connect <MAC_ADDRESS>"
+echo "  - Disconnect: bluetoothctl disconnect <MAC_ADDRESS>"
+echo "  - Remove device: bluetoothctl remove <MAC_ADDRESS>"
+echo "  - Trust device: bluetoothctl trust <MAC_ADDRESS>"
+echo ""
+echo "GUI Options:"
+echo "  - Use 'blueman' for graphical Bluetooth management"
+echo "  - Use 'bluetuith' for terminal-based Bluetooth management"
+echo ""
+echo "After connecting:"
+echo "1. Test your volume knob in Bluetooth mode"
+echo "2. Run 'wev' in terminal to see keyboard events"
+echo "3. If volume knob works, you're all set!"
+echo ""
+echo "If it still doesn't work, try these troubleshooting steps:"
+echo "1. Restart Bluetooth service: sudo systemctl restart bluetooth"
+echo "2. Remove and re-pair the device"
+echo "3. Check if keyboard supports HID profiles in Bluetooth mode"
+echo "4. Some keyboards need specific firmware updates for full Bluetooth functionality"

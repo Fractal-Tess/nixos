@@ -1,0 +1,147 @@
+#!/usr/bin/env fish
+# debug — Volume knob hardware debug and test tool
+#
+# Provides service management and live input monitoring for the
+# KBP7075W volume knob hardware (/dev/input/event259). Replaces
+# volume-knob-debug.sh, volume-knob-monitor.sh, volume-monitor.sh,
+# and test-volume-knob.sh.
+#
+# Dependencies: systemctl (service subcommands), evtest (evtest),
+#               libinput (libinput), wev (wev), hexdump (hex)
+# Usage: debug <subcommand> [--help|-h]
+
+set DEVICE /dev/input/event259
+set SERVICE volume-knob
+
+function show_help
+    printf "Usage: debug <subcommand>\n\n"
+    printf "Service management:\n"
+    printf "  service    Show status of the volume-knob user service\n"
+    printf "  start      Start the service\n"
+    printf "  stop       Stop the service\n"
+    printf "  restart    Restart the service\n\n"
+    printf "Live input tests (device: %s):\n" $DEVICE
+    printf "  evtest     Live event capture with evtest\n"
+    printf "  libinput   Live event capture with libinput-debug-events\n"
+    printf "  wev        Wayland event viewer with wev\n"
+    printf "  hex        Raw hexdump of device input\n\n"
+    printf "  --help, -h Show this help message\n"
+end
+
+# --- service subcommands ---
+
+function cmd_service
+    systemctl --user status $SERVICE
+end
+
+function cmd_start
+    systemctl --user start $SERVICE
+    and printf "Service '%s' started.\n" $SERVICE
+    or printf "Failed to start service '%s'.\n" $SERVICE >&2
+end
+
+function cmd_stop
+    systemctl --user stop $SERVICE
+    and printf "Service '%s' stopped.\n" $SERVICE
+    or printf "Failed to stop service '%s'.\n" $SERVICE >&2
+end
+
+function cmd_restart
+    systemctl --user restart $SERVICE
+    and printf "Service '%s' restarted.\n" $SERVICE
+    or printf "Failed to restart service '%s'.\n" $SERVICE >&2
+end
+
+# --- device check helper ---
+
+function _check_device
+    if not test -e $DEVICE
+        printf "Error: Device %s not found!\n" $DEVICE >&2
+        printf "Available input devices:\n" >&2
+        ls -la /dev/input/by-id/ 2>/dev/null | grep -i keyboard >&2
+        exit 1
+    end
+end
+
+# --- live test subcommands ---
+
+function cmd_evtest
+    _check_device
+    printf "Starting evtest on %s\n" $DEVICE
+    printf "Turn the volume knob to test. Press Ctrl+C to stop.\n\n"
+
+    if type -q evtest
+        evtest $DEVICE
+    else
+        printf "evtest not found in PATH — running via nix-shell...\n"
+        nix-shell -p evtest --run "evtest $DEVICE"
+    end
+end
+
+function cmd_libinput
+    _check_device
+    printf "Starting libinput-debug-events\n"
+    printf "Turn the volume knob to test. Press Ctrl+C to stop.\n\n"
+
+    if type -q libinput-debug-events
+        libinput-debug-events
+    else
+        printf "libinput-debug-events not found in PATH — running via nix-shell...\n"
+        nix-shell -p libinput --run "libinput-debug-events"
+    end
+end
+
+function cmd_wev
+    printf "Starting wev (Wayland event viewer)\n"
+    printf "Press keys or turn the volume knob. Press Ctrl+C to stop.\n\n"
+
+    if type -q wev
+        wev
+    else
+        printf "wev not found in PATH — running via nix-shell...\n"
+        nix-shell -p wev --run "wev"
+    end
+end
+
+function cmd_hex
+    _check_device
+    printf "Raw hexdump of %s\n" $DEVICE
+    printf "Turn the volume knob to see raw events. Press Ctrl+C to stop.\n\n"
+
+    hexdump -C $DEVICE
+end
+
+# --- main ---
+
+if contains -- --help $argv; or contains -- -h $argv
+    show_help
+    exit 0
+end
+
+if test (count $argv) -eq 0
+    show_help
+    exit 1
+end
+
+switch $argv[1]
+    case service
+        cmd_service
+    case start
+        cmd_start
+    case stop
+        cmd_stop
+    case restart
+        cmd_restart
+    case evtest
+        cmd_evtest
+    case libinput
+        cmd_libinput
+    case wev
+        cmd_wev
+    case hex
+        cmd_hex
+    case '*'
+        printf "Unknown subcommand: %s\n\n" $argv[1] >&2
+        show_help
+        exit 1
+end

@@ -1,0 +1,285 @@
+#!/usr/bin/env fish
+# ppwn — PWN/CTF binary analysis and setup tool
+#
+# Prepares a binary for CTF exploitation analysis. In normal mode, moves
+# the binary into ~/dev/ctfs/ppwn/<folder>/, fixes NixOS ELF compatibility,
+# runs a full analysis suite, and creates an exploit.py pwntools template.
+# In init mode, works in-place on the current directory's binary.
+#
+# Dependencies: file, checksec, strings, objdump, patchelf, python3
+# Usage: ppwn <binary> [--help|-h]
+#        ppwn init <binary>
+
+# ── Colors ───────────────────────────────────────────────────────────────────
+set -l RED    '\033[0;31m'
+set -l GREEN  '\033[0;32m'
+set -l YELLOW '\033[1;33m'
+set -l BLUE   '\033[0;34m'
+set -l CYAN   '\033[0;36m'
+set -l BOLD   '\033[1m'
+set -l DIM    '\033[2m'
+set -l NC     '\033[0m'
+
+function _ppwn_info
+    echo -e "$GREEN[INFO]$NC $argv"
+end
+
+function _ppwn_warn
+    echo -e "$YELLOW[WARN]$NC $argv"
+end
+
+function _ppwn_error
+    echo -e "$RED[ERROR]$NC $argv" >&2
+end
+
+function _ppwn_step
+    echo -e "$CYAN[STEP]$NC $BOLD$argv$NC"
+end
+
+function _ppwn_ok
+    echo -e "$GREEN[OK]$NC $argv"
+end
+
+function _ppwn_help
+    echo "Usage: ppwn <binary> [--help|-h]"
+    echo "       ppwn init <binary>"
+    echo ""
+    echo "Normal mode:"
+    echo "  Prompts for a folder name, moves the binary to"
+    echo "  ~/dev/ctfs/ppwn/<folder>/, fixes NixOS ELF compatibility,"
+    echo "  runs full analysis, and creates an exploit.py template."
+    echo ""
+    echo "Init mode:"
+    echo "  Works in-place (current directory) with the named binary."
+    echo "  Does not move files."
+    echo ""
+    echo "Analysis output (in <dir>/analysis/):"
+    echo "  file_info.txt, checksec.txt, strings.txt,"
+    echo "  objdump_full.txt, objdump_<section>.txt,"
+    echo "  vulnerability_scan.txt, exploitation_hints.txt"
+    echo ""
+    echo "Dependencies: file, checksec, strings, objdump, patchelf, python3"
+end
+
+# ── Argument parsing ─────────────────────────────────────────────────────────
+if contains -- --help $argv; or contains -- -h $argv
+    _ppwn_help
+    exit 0
+end
+
+set -l init_mode false
+set -l executable ""
+
+if test (count $argv) -eq 0
+    _ppwn_help
+    exit 1
+end
+
+if test "$argv[1]" = init
+    if test (count $argv) -lt 2
+        echo "Usage: ppwn init <binary>"
+        exit 1
+    end
+    set init_mode true
+    set executable $argv[2]
+else
+    set executable $argv[1]
+end
+
+# ── Validate binary ──────────────────────────────────────────────────────────
+if not test -f "$executable"
+    _ppwn_error "File '$executable' does not exist"
+    exit 1
+end
+
+if not test -x "$executable"
+    _ppwn_warn "File '$executable' is not executable, but proceeding anyway"
+end
+
+set -l executable_name (basename $executable)
+
+# ── Determine target directory ───────────────────────────────────────────────
+set -l target_dir ""
+
+if test "$init_mode" = true
+    set target_dir (pwd)
+    _ppwn_info "Initializing current directory for binary analysis..."
+    _ppwn_info "Working with executable: $executable_name"
+    _ppwn_info "Analysis directory: $target_dir"
+else
+    read --prompt-str "Enter folder name (default: $executable_name): " -l folder_name
+    if test -z "$folder_name"
+        set folder_name $executable_name
+    end
+    set target_dir "$HOME/dev/ctfs/ppwn/$folder_name"
+    mkdir -p "$target_dir"
+
+    mv "$executable" "$target_dir/"
+    _ppwn_info "Moved '$executable' to '$target_dir/$executable_name'"
+end
+
+# ── Make executable ──────────────────────────────────────────────────────────
+chmod +x "$target_dir/$executable_name"
+
+# ── NixOS ELF compatibility fix ──────────────────────────────────────────────
+_ppwn_step "Fixing binary for NixOS compatibility..."
+
+set -l file_type (file "$target_dir/$executable_name")
+
+if string match -q "*ELF*" $file_type
+    if type -q patchelf
+        set -l current_interpreter (patchelf --print-interpreter "$target_dir/$executable_name" 2>/dev/null)
+        if test $status -eq 0; and test -n "$current_interpreter"
+            set -l nixos_glibc (find /nix/store -name "ld-linux-x86-64.so.2" 2>/dev/null | head -1)
+            if test -n "$nixos_glibc"
+                set -l nixos_interpreter (dirname $nixos_glibc)/ld-linux-x86-64.so.2
+                patchelf --set-interpreter "$nixos_interpreter" "$target_dir/$executable_name"
+                _ppwn_ok "ELF binary interpreter fixed for NixOS"
+            else
+                _ppwn_warn "Could not find NixOS glibc, skipping ELF interpreter fix"
+            end
+        else
+            _ppwn_info "ELF binary does not need interpreter fixing"
+        end
+    else
+        _ppwn_warn "patchelf not found, skipping ELF binary compatibility fix"
+    end
+else if string match -q "*shell script*" $file_type
+    set -l shebang (head -1 "$target_dir/$executable_name")
+    if string match -q "#!/bin/bash" $shebang
+        sed -i "s|#!/bin/bash|#!/run/current-system/sw/bin/bash|" "$target_dir/$executable_name"
+        _ppwn_ok "Shell script shebang fixed for NixOS"
+    else if string match -q "#!/usr/bin/env bash" $shebang
+        _ppwn_ok "Shell script shebang already compatible with NixOS"
+    end
+else
+    _ppwn_info "Unknown file type, skipping compatibility fixes"
+end
+
+if test "$init_mode" = true
+    _ppwn_info "Current directory initialized for '$executable_name'"
+else
+    _ppwn_info "Successfully set up '$executable_name' in '$target_dir'"
+end
+
+# ── Create flag.txt ──────────────────────────────────────────────────────────
+_ppwn_step "Creating flag.txt..."
+echo "FT{EXAMPLE_FLAG}" > "$target_dir/flag.txt"
+_ppwn_info "flag.txt created: $target_dir/flag.txt"
+
+# ── Analysis directory ───────────────────────────────────────────────────────
+set -l analysis_dir "$target_dir/analysis"
+mkdir -p "$analysis_dir"
+
+_ppwn_step "Running security analysis..."
+
+# file
+_ppwn_info "Running file analysis..."
+file "$target_dir/$executable_name" > "$analysis_dir/file_info.txt" 2>&1
+_ppwn_info "file output saved to: $analysis_dir/file_info.txt"
+
+# checksec
+_ppwn_info "Running checksec..."
+if type -q checksec
+    checksec --file="$target_dir/$executable_name" > "$analysis_dir/checksec.txt" 2>&1
+    _ppwn_info "checksec output saved to: $analysis_dir/checksec.txt"
+else
+    _ppwn_warn "checksec not found, skipping"
+end
+
+# strings
+_ppwn_info "Running strings analysis..."
+strings "$target_dir/$executable_name" > "$analysis_dir/strings.txt" 2>&1
+_ppwn_info "strings output saved to: $analysis_dir/strings.txt"
+
+# objdump full disassembly
+_ppwn_info "Running objdump disassembly analysis..."
+objdump -D "$target_dir/$executable_name" > "$analysis_dir/objdump_full.txt" 2>&1
+_ppwn_info "objdump full disassembly saved to: $analysis_dir/objdump_full.txt"
+
+# objdump per-section
+for section in .text .data .bss .rodata .got .plt
+    set -l section_name (string replace -a '.' '' $section)
+    _ppwn_info "Disassembling section: $section"
+    objdump -j $section -d "$target_dir/$executable_name" > "$analysis_dir/objdump_{$section_name}.txt" 2>/dev/null
+    if test $status -eq 0
+        _ppwn_info "objdump $section section saved to: $analysis_dir/objdump_{$section_name}.txt"
+    end
+end
+
+# section headers
+objdump -h "$target_dir/$executable_name" > "$analysis_dir/objdump_sections.txt" 2>&1
+_ppwn_info "objdump section headers saved to: $analysis_dir/objdump_sections.txt"
+
+_ppwn_ok "objdump analysis completed."
+
+# vulnerability scan
+_ppwn_step "Running vulnerability quick scan..."
+python3 /home/fractal-tess/nixos/scripts/security/vuln_scan.py "$target_dir/$executable_name" "$analysis_dir"
+_ppwn_ok "Vulnerability scan completed."
+
+# ── exploit.py template ──────────────────────────────────────────────────────
+_ppwn_step "Creating exploit.py template..."
+
+set -l exploit_file "$target_dir/exploit.py"
+printf '#!/usr/bin/env python3\n' > "$exploit_file"
+printf 'from pwn import *\n' >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# ===== SETUP =====\n' >> "$exploit_file"
+printf "binary = './%s'        # Your binary here\n" $executable_name >> "$exploit_file"
+printf "host = '127.0.0.1'        # Remote host\n" >> "$exploit_file"
+printf "port = 1337               # Remote port\n" >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf 'context.binary = binary\n' >> "$exploit_file"
+printf "context.log_level = 'info'\n" >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# ===== CONNECTION =====\n' >> "$exploit_file"
+printf 'if args.REMOTE:\n' >> "$exploit_file"
+printf '    io = remote(host, port)\n' >> "$exploit_file"
+printf 'elif args.GDB:\n' >> "$exploit_file"
+printf "    io = gdb.debug(binary, '''\n" >> "$exploit_file"
+printf '        break main\n' >> "$exploit_file"
+printf '        continue\n' >> "$exploit_file"
+printf "    ''')\n" >> "$exploit_file"
+printf 'else:\n' >> "$exploit_file"
+printf '    io = process(binary)\n' >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# ===== EXPLOIT =====\n' >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# Receive data\n' >> "$exploit_file"
+printf "io.recvuntil(b'prompt: ')\n" >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# Send payload\n' >> "$exploit_file"
+printf "payload = b'A' * 100\n" >> "$exploit_file"
+printf 'io.sendline(payload)\n' >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# Get shell\n' >> "$exploit_file"
+printf 'io.interactive()\n' >> "$exploit_file"
+printf '\n' >> "$exploit_file"
+printf '# ===== RUN IT =====\n' >> "$exploit_file"
+printf '# python exploit.py          -> local\n' >> "$exploit_file"
+printf '# python exploit.py REMOTE   -> remote\n' >> "$exploit_file"
+printf '# python exploit.py GDB      -> debug\n' >> "$exploit_file"
+
+chmod +x "$exploit_file"
+_ppwn_info "exploit.py template created: $exploit_file"
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+echo ""
+echo -e "$GREEN$BOLD╔══════════════════════════════════════════════╗$NC"
+echo -e "$GREEN$BOLD║           Analysis Complete                  ║$NC"
+echo -e "$GREEN$BOLD╚══════════════════════════════════════════════╝$NC"
+echo ""
+echo -e "  $BOLD Binary:$NC    $target_dir/$executable_name"
+echo -e "  $BOLD Analysis:$NC  $analysis_dir/"
+echo -e "  $BOLD Exploit:$NC   $target_dir/exploit.py"
+echo ""
+echo -e "  $CYAN Files generated:$NC"
+for f in file_info.txt checksec.txt strings.txt objdump_full.txt objdump_sections.txt vulnerability_scan.txt exploitation_hints.txt
+    if test -f "$analysis_dir/$f"
+        echo -e "    $GREEN+$NC $f"
+    end
+end
+echo ""
+
+_ppwn_ok "Security analysis completed."

@@ -1,0 +1,292 @@
+#!/usr/bin/env fish
+# sink — Unified audio sink manager
+#
+# Toggle mute on the default sink, cycle to the next available sink,
+# or open an interactive rofi menu to select an output device.
+# Replaces audio-sink and audio-sink-selector bun scripts.
+#
+# Dependencies: wpctl, pactl, rofi (menu subcommand), notify-send
+# Usage: sink [toggle|next|menu] [--help|-h]
+
+function show_help
+    printf "Usage: sink [subcommand]\n\n"
+    printf "Subcommands:\n"
+    printf "  toggle (default)  Toggle mute on the default audio sink\n"
+    printf "  next              Switch to the next available sink\n"
+    printf "  menu              Open rofi menu to select a sink\n"
+    printf "  --help, -h        Show this help message\n"
+end
+
+# Returns the wpctl status output (cached in variable)
+function _get_status
+    wpctl status 2>/dev/null
+end
+
+# Extract just the Sinks: section (between "Sinks:" and "Sources:")
+function _get_sinks_section
+    set in_sinks 0
+    while read -l line
+        if string match -q '*Sinks:*' $line
+            set in_sinks 1
+            continue
+        end
+        if test $in_sinks -eq 1; and string match -q '*Sources:*' $line
+            break
+        end
+        if test $in_sinks -eq 1
+            printf "%s\n" $line
+        end
+    end
+end
+
+# Get current (default) sink id — the line with " * "
+function _current_sink_id
+    set status_out (_get_status)
+    set in_sinks 0
+    for line in (string split \n $status_out)
+        if string match -q '*Sinks:*' $line
+            set in_sinks 1
+            continue
+        end
+        if test $in_sinks -eq 1; and string match -q '*Sources:*' $line
+            break
+        end
+        if test $in_sinks -eq 1; and string match -q '* \* *' $line
+            string match -rg '\*\s*(\d+)\.' $line
+            return
+        end
+    end
+end
+
+# Get all sink ids from the Sinks section
+function _all_sink_ids
+    set status_out (_get_status)
+    set in_sinks 0
+    for line in (string split \n $status_out)
+        if string match -q '*Sinks:*' $line
+            set in_sinks 1
+            continue
+        end
+        if test $in_sinks -eq 1; and string match -q '*Sources:*' $line
+            break
+        end
+        if test $in_sinks -eq 1
+            set id (string match -rg '\s+(\d+)\.' $line)
+            if test -n "$id"
+                echo $id
+            end
+        end
+    end
+end
+
+# Check if default sink is muted
+function _is_muted
+    set status_out (_get_status)
+    set in_sinks 0
+    for line in (string split \n $status_out)
+        if string match -q '*Sinks:*' $line
+            set in_sinks 1
+            continue
+        end
+        if test $in_sinks -eq 1; and string match -q '*Sources:*' $line
+            break
+        end
+        if test $in_sinks -eq 1; and string match -q '* \* *' $line
+            if string match -q '*MUTED*' $line
+                return 0
+            else
+                return 1
+            end
+        end
+    end
+    return 1
+end
+
+# --- subcommand: toggle ---
+function cmd_toggle
+    set current (_current_sink_id)
+    if test -z "$current"
+        printf "No active sink found\n" >&2
+        exit 1
+    end
+
+    if _is_muted
+        wpctl set-mute $current 0
+        printf "Unmuted sink: %s\n" $current
+    else
+        wpctl set-mute $current 1
+        printf "Muted sink: %s\n" $current
+    end
+end
+
+# --- subcommand: next ---
+function cmd_next
+    set current (_current_sink_id)
+    set all_sinks (_all_sink_ids)
+    set count (count $all_sinks)
+
+    if test $count -le 1
+        printf "Only one sink available\n"
+        exit 1
+    end
+    if test -z "$current"
+        printf "No current sink found\n" >&2
+        exit 1
+    end
+
+    set idx 1
+    for i in (seq 1 $count)
+        if test "$all_sinks[$i]" = "$current"
+            set idx $i
+            break
+        end
+    end
+
+    set next_idx (math "($idx % $count) + 1")
+    set next $all_sinks[$next_idx]
+    wpctl set-default $next
+    printf "Switched to sink: %s\n" $next
+end
+
+# --- subcommand: menu ---
+function cmd_menu
+    # Build sink list from wpctl status
+    set status_out (_get_status)
+    set in_sinks 0
+    set sink_ids
+    set sink_descs
+    set sink_defaults
+
+    for line in (string split \n $status_out)
+        if string match -q '*Sinks:*' $line
+            set in_sinks 1
+            continue
+        end
+        if test $in_sinks -eq 1; and string match -q '*Sources:*' $line
+            break
+        end
+        if test $in_sinks -eq 1
+            # Match lines like: "    *  52. Sink description [vol: ...]"
+            set id (string match -rg '^\s*[│├└─]*\s*\*?\s*(\d+)\.' $line)
+            if test -n "$id"
+                set is_default 0
+                if string match -q '* \* *' $line; or string match -rg '^\s*\*' $line
+                    set is_default 1
+                end
+                # Extract description: after "ID. " up to optional " [vol:"
+                set desc (string match -rg '^\s*[│├└─]*\s*\*?\s*\d+\.\s+(.+?)(?:\s+\[vol:.*)?$' $line)
+                set desc (string trim $desc)
+
+                set sink_ids $sink_ids $id
+                set sink_descs $sink_descs $desc
+                set sink_defaults $sink_defaults $is_default
+            end
+        end
+    end
+
+    set total (count $sink_ids)
+
+    if test $total -eq 0
+        if type -q notify-send
+            notify-send "Audio Error" "No audio sinks found" -h "string:x-canonical-private-synchronous:audio-sink"
+        end
+        printf "No audio sinks found\n" >&2
+        exit 1
+    end
+
+    if test $total -eq 1
+        if type -q notify-send
+            notify-send "Audio" "Only one sink: $sink_descs[1]" -h "string:x-canonical-private-synchronous:audio-sink"
+        end
+        exit 0
+    end
+
+    # Check for available menu program
+    set menu_cmd ""
+    if type -q wofi
+        set menu_cmd wofi
+    else if type -q rofi
+        set menu_cmd rofi
+    else
+        if type -q notify-send
+            notify-send "Audio Error" "No menu app found (install wofi or rofi)" -h "string:x-canonical-private-synchronous:audio-sink"
+        end
+        printf "No menu app found (install wofi or rofi)\n" >&2
+        exit 1
+    end
+
+    # Build menu entries
+    set entries
+    for i in (seq 1 $total)
+        if test "$sink_defaults[$i]" = "1"
+            set entries $entries "🔊 $sink_descs[$i]"
+        else
+            set entries $entries "   $sink_descs[$i]"
+        end
+    end
+
+    # Show menu and capture selection
+    set selected ""
+    if test "$menu_cmd" = wofi
+        pkill wofi 2>/dev/null
+        set selected (printf '%s\n' $entries | wofi -dmenu -p "Select audio output:" --cache-file /dev/null 2>/dev/null)
+    else
+        set selected (printf '%s\n' $entries | rofi -dmenu -p "Select audio output:" 2>/dev/null)
+    end
+
+    if test -z "$selected"
+        printf "No sink selected\n" >&2
+        exit 0
+    end
+
+    # Strip leading indicator to get description
+    set selected_label (string replace -r '^🔊\s*' '' $selected | string replace -r '^\s+' '' | string trim)
+
+    # Match selection back to a sink id
+    set chosen_id ""
+    set chosen_desc ""
+    for i in (seq 1 $total)
+        if test "$sink_descs[$i]" = "$selected_label"
+            set chosen_id $sink_ids[$i]
+            set chosen_desc $sink_descs[$i]
+            break
+        end
+    end
+
+    if test -z "$chosen_id"
+        printf "No match found for selection\n" >&2
+        exit 1
+    end
+
+    wpctl set-default $chosen_id
+    if type -q notify-send
+        notify-send "Audio Output" "🔊 $chosen_desc" -h "string:x-canonical-private-synchronous:audio-sink"
+    end
+    printf "Switched to sink %s: %s\n" $chosen_id $chosen_desc
+end
+
+# --- main ---
+
+if contains -- --help $argv; or contains -- -h $argv
+    show_help
+    exit 0
+end
+
+if test (count $argv) -gt 0
+    set subcommand $argv[1]
+else
+    set subcommand toggle
+end
+
+switch $subcommand
+    case toggle
+        cmd_toggle
+    case next
+        cmd_next
+    case menu
+        cmd_menu
+    case '*'
+        printf "Unknown subcommand: %s\n\n" $subcommand >&2
+        show_help
+        exit 1
+end

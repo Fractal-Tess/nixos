@@ -2,12 +2,12 @@
 "custom/System": {
   "tooltip": false,
   "format" : "",
-  "on-click": "~/nixos/scripts/bin/rofi-launcher drun -show-icons"
+  "on-click": "~/nixos/scripts/session/launcher drun -show-icons"
                },
 "custom/powermenu": {
   "tooltip": false,
   "format" : "",
-  "on-click": "~/nixos/scripts/bin/powermenu"
+  "on-click": "~/nixos/scripts/session/powermenu"
                     },
 "custom/notifications": {
     "tooltip": true,
@@ -217,16 +217,16 @@
  "format": "{}",
  "return-type": "json",
  "interval": 5,
- "exec": "~/nixos/scripts/bin/lid-sleep-toggle",
- "on-click": "~/nixos/scripts/bin/lid-sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
+ "exec": "~/nixos/scripts/display/screen sleep-toggle",
+ "on-click": "~/nixos/scripts/display/screen sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
  "signal": 9,
 },
 "custom/boost": {
  "format": "{}",
  "return-type": "json",
  "interval": 5,
- "exec": "~/nixos/scripts/bin/boost-toggle",
- "on-click": "~/nixos/scripts/bin/boost-toggle toggle; pkill -SIGRTMIN+10 waybar",
+ "exec": "~/nixos/scripts/system/boost --waybar",
+ "on-click": "~/nixos/scripts/system/boost --waybar toggle; pkill -SIGRTMIN+10 waybar",
  "signal": 10,
 },
 "mpris": {
@@ -261,7 +261,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/swap-status.sh",
+  "exec": "~/nixos/scripts/waybar/swap",
   "return-type": "json"
 },
 "custom/gpu#amd": {
@@ -269,7 +269,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/gpu-amd-status.sh",
+  "exec": "~/nixos/scripts/waybar/gpu --amd",
   "return-type": "json"
 },
 "custom/gpu#nvidia": {
@@ -277,7 +277,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/gpu-nvidia-status.sh",
+  "exec": "~/nixos/scripts/waybar/gpu --nvidia --id=1",
   "return-type": "json"
 },
 "custom/gpu-mem#nvidia": {
@@ -285,7 +285,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/gpu-nvidia-mem-status.sh",
+  "exec": "~/nixos/scripts/waybar/gpu --nvidia-mem --id=1",
   "return-type": "json"
 },
 "battery": {
@@ -305,11 +305,11 @@
   "rotate": 270,
   "return-type": "json",
   "interval": 2,
-  "exec": "~/nixos/scripts/bin/screen-manager bright-json-subdued",
-  "on-scroll-up": "~/nixos/scripts/bin/screen-manager bright-up",
-  "on-scroll-down": "~/nixos/scripts/bin/screen-manager bright-down",
-  "on-click": "~/nixos/scripts/bin/screen-manager off",
-  "on-click-right": "~/nixos/scripts/bin/screen-manager bright-set 100",
+  "exec": "~/nixos/scripts/display/screen bright-json-subdued",
+  "on-scroll-up": "~/nixos/scripts/display/screen bright-up",
+  "on-scroll-down": "~/nixos/scripts/display/screen bright-down",
+  "on-click": "~/nixos/scripts/display/screen menu",
+  "on-click-right": "~/nixos/scripts/display/screen bright-set 100",
   "tooltip": true,
   "escape": true
 },

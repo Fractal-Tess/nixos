@@ -1,0 +1,49 @@
+#!/usr/bin/env fish
+# swap — Waybar swap usage status
+#
+# Reads /proc/meminfo directly and outputs Waybar-compatible JSON
+# with swap usage percentage, text, tooltip, and CSS class.
+#
+# Dependencies: /proc/meminfo (no external tools required)
+# Usage: swap [--help|-h]
+
+if contains -- --help $argv; or contains -- -h $argv
+    printf "Usage: swap\n\n"
+    printf "Outputs Waybar JSON for current swap usage.\n"
+    printf "Reads /proc/meminfo directly — no external dependencies.\n\n"
+    printf "JSON fields: percentage, text, tooltip, class (low/medium/high)\n"
+    exit 0
+end
+
+set swap_total 0
+set swap_free  0
+
+while read -l line
+    set fields (string split -n ' ' $line)
+    switch $fields[1]
+        case 'SwapTotal:'
+            set swap_total (string trim $fields[2])
+        case 'SwapFree:'
+            set swap_free (string trim $fields[2])
+    end
+end < /proc/meminfo
+
+if test $swap_total -gt 0
+    set used (math $swap_total - $swap_free)
+    set pct  (math --scale=0 "$used / $swap_total * 100")
+    set used_mb  (math --scale=0 "$used / 1024")
+    set total_mb (math --scale=0 "$swap_total / 1024")
+
+    if test $pct -lt 30
+        set class low
+    else if test $pct -lt 70
+        set class medium
+    else
+        set class high
+    end
+
+    printf '{"percentage": %d, "text": "%d%%", "tooltip": "Swap: %d/%d MB (%d%%)", "class": "%s"}\n' \
+        $pct $pct $used_mb $total_mb $pct $class
+else
+    printf '{"percentage": 0, "text": "N/A", "tooltip": "No swap available", "class": "low"}\n'
+end

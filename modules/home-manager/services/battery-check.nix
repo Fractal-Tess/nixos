@@ -1,4 +1,4 @@
-{ config, lib, ... }:
+{ config, lib, pkgs, ... }:
 
 {
   options.modules.services.battery-check.enable = lib.mkEnableOption "battery level check service";
@@ -12,7 +12,7 @@
       };
       Service = {
         Type = "oneshot";
-        ExecStart = "/home/%u/nixos/scripts/bin/battery-check";
+        ExecStart = "${pkgs.fish}/bin/fish /home/fractal-tess/nixos/scripts/system/battery check";
         Environment = [
           "PATH=/run/current-system/sw/bin:/run/wrappers/bin"
           "DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/%U/bus"

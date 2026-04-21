@@ -1,93 +1,485 @@
-#!/usr/bin/env bun
+#!/usr/bin/env fish
+# update — NixOS Flake Update Manager
+#
+# Rebuilds the NixOS configuration, stages local changes, generates an AI
+# commit message in the background, commits, and pushes to remote. Handles
+# remote divergence via stash+rebase. Displays a startup banner with system
+# and repository status.
+#
+# Environment:
+#   NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)
+#
+# Dependencies: git, sudo, nixos-rebuild, claude (for AI commit messages)
+# Usage: update [--help|-h]
 
-import { Effect, pipe } from "effect";
-import { existsSync } from "fs";
-import { run } from "../lib/shell";
-import { log } from "../lib/log";
-import { GitError, NixosBuildError } from "./errors";
-import { showBanner } from "./banner";
-import { checkGitConflicts, stageLocalChanges, commitChangesWithMessage, pushChanges } from "./git";
-import { rebuildNixos } from "./nixos";
-import { showSummary } from "./summary";
-import { generateCommitMessage } from "./ai";
+set -l NIXOS_DIR "/home/fractal-tess/nixos"
+set -l OPENROUTER_KEY_FILE "$HOME/.config/secrets/openrouter_api_key"
+set -l OPENROUTER_MODEL "openai/gpt-5-nano"
 
-const NIXOS_DIR = "/home/fractal-tess/nixos";
-const SKIP_GIT = process.env.NIXOS_UPDATE_NO_GIT === "1";
+# ── Colors (matching original TS log.ts) ─────────────────────────────────────
+set -l RED    "\033[0;31m"
+set -l GREEN  "\033[0;32m"
+set -l YELLOW "\033[1;33m"
+set -l BLUE   "\033[0;34m"
+set -l PURPLE "\033[0;35m"
+set -l CYAN   "\033[0;36m"
+set -l BOLD   "\033[1m"
+set -l DIM    "\033[2m"
+set -l NC     "\033[0m"
 
-const program = Effect.gen(function* () {
-  if (!existsSync(NIXOS_DIR)) {
-    log.error(`NixOS configuration directory not found: ${NIXOS_DIR}`);
-    process.exit(1);
-  }
+function _log_header
+    echo ""
+    printf "$PURPLE$BOLD══════════════════════════════════════════════════════════════$NC\n"
+    printf "$PURPLE$BOLD  %s$NC\n" "$argv"
+    printf "$PURPLE$BOLD══════════════════════════════════════════════════════════════$NC\n"
+    echo ""
+end
 
-  process.chdir(NIXOS_DIR);
+function _log_info
+    printf "$BLUE•$NC %s\n" "$argv"
+end
 
-  if (!run(["git", "rev-parse", "--git-dir"]).ok) {
-    log.error(`Not a git repository: ${NIXOS_DIR}`);
-    process.exit(1);
-  }
+function _log_success
+    printf "$GREEN✓$NC %s\n" "$argv"
+end
 
-  yield* showBanner;
+function _log_warning
+    printf "$YELLOW⚠$NC %s\n" "$argv"
+end
 
-  // Check for local changes BEFORE pulling remote, so we know if this host
-  // actually has new work to commit or if we're just applying remote changes.
-  const hadLocalChangesBefore = !SKIP_GIT && run(["git", "status", "--porcelain"]).out.length > 0;
+function _log_error
+    printf "$RED✗ ERROR:$NC %s\n" "$argv" >&2
+end
 
-  if (!SKIP_GIT) {
-    yield* checkGitConflicts;
-    if (hadLocalChangesBefore) {
-      yield* stageLocalChanges;
-    } else {
-      log.step("No local changes to stage");
-    }
-  } else {
-    log.info("Skipping git fetch/stage/commit because NIXOS_UPDATE_NO_GIT=1");
-  }
+function _log_step
+    echo ""
+    printf "$CYAN→$NC $BOLD%s$NC\n" "$argv"
+end
 
-  // Only consider committing if there were local changes before pulling
-  const hasLocalChanges = hadLocalChangesBefore && run(["git", "diff", "--cached", "--name-only"]).out.length > 0;
+function _log_dim
+    printf "$DIM%s$NC\n" "$argv"
+end
 
-  // Start generating commit message in the background if there are changes
-  let commitMessagePromise: Promise<string> | null = null;
-  if (hasLocalChanges) {
-    log.info("Starting AI commit message generation in background...");
-    commitMessagePromise = Effect.runPromise(generateCommitMessage);
-  }
+# ── Help ──────────────────────────────────────────────────────────────────────
+if contains -- --help $argv; or contains -- -h $argv
+    echo "Usage: update [--help|-h]"
+    echo ""
+    echo "NixOS Flake Update Manager"
+    echo ""
+    echo "Workflow:"
+    echo "  1. Display system/repo status banner"
+    echo "  2. Fetch remote, pull/rebase if behind (stash local changes if needed)"
+    echo "  3. Stage all local changes"
+    echo "  4. Generate AI commit message (background, via OpenRouter API)"
+    echo "  5. Run: sudo nixos-rebuild switch --flake ~/nixos"
+    echo "  6. Commit staged changes with AI message"
+    echo "  7. Push to remote"
+    echo "  8. Display success summary"
+    echo ""
+    echo "Environment:"
+    echo "  NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)"
+    echo ""
+    echo "Dependencies: git, sudo, nixos-rebuild, curl (for AI messages)"
+    exit 0
+end
 
-  // Always run rebuild (even if no changes - for idempotency)
-  yield* rebuildNixos;
+# ── SKIP_GIT flag ─────────────────────────────────────────────────────────────
+set -l SKIP_GIT false
+if test "$NIXOS_UPDATE_NO_GIT" = "1"
+    set SKIP_GIT true
+end
 
-  // Only commit/push if there were local changes
-  if (hasLocalChanges && commitMessagePromise) {
-    log.step("Finalizing commit...");
-    const commitMessage = yield* Effect.promise(() => commitMessagePromise);
+# ── Sanity checks ─────────────────────────────────────────────────────────────
+if not test -d "$NIXOS_DIR"
+    _log_error "NixOS configuration directory not found: $NIXOS_DIR"
+    exit 1
+end
 
-    const committed = yield* commitChangesWithMessage(commitMessage);
-    const pushed = committed
-      ? yield* pipe(pushChanges, Effect.map(() => true), Effect.catchAll(() => Effect.succeed(false)))
-      : false;
+cd "$NIXOS_DIR"
 
-    yield* showSummary(true, pushed);
-  } else {
-    log.step("No local changes to commit");
-    log.info("Configuration rebuilt successfully, no new commits needed");
-    yield* showSummary(false, false);
-  }
-});
+if not git rev-parse --git-dir >/dev/null 2>&1
+    _log_error "Not a git repository: $NIXOS_DIR"
+    exit 1
+end
 
-const handleError = (error: GitError | NixosBuildError) => Effect.sync(() => {
-  switch (error._tag) {
-    case "GitError":
-      log.error(`Git operation failed: ${error.operation}`);
-      if (error.detail) log.dim(`  ${error.detail}`);
-      break;
-    case "NixosBuildError":
-      log.error("NixOS rebuild failed! Check the output above and fix the issues.");
-      break;
-  }
-  process.exit(1);
-});
+# ── Banner ────────────────────────────────────────────────────────────────────
+function _show_banner
+    set -l hostname (hostname)
+    set -l kernel (uname -r)
+    set -l last_commit (git log -1 --pretty=format:"%h - %s (%cr)" 2>/dev/null; or echo "No commits")
+    set -l branch (git branch --show-current 2>/dev/null; or echo "unknown")
+    set -l total_commits (git rev-list --count HEAD 2>/dev/null; or echo "0")
+    set -l local_changes_count (git status --porcelain 2>/dev/null | grep -c . 2>/dev/null; or echo "0")
+    set -l current_gen (sudo nixos-rebuild list-generations 2>/dev/null | grep "True" | awk '{print $1}'; or echo "?")
 
-Effect.runPromise(
-  pipe(program, Effect.catchAll(handleError))
-);
+    # ASCII art banner (matches banner.ts exactly)
+    printf "\033[38;2;82;119;195m       ◢██◣\033[38;2;127;183;255m   ◥███◣  ◢██◣\n"
+    printf "\033[38;2;82;119;195m       ◥███◣\033[38;2;127;183;255m   ◥███◣◢███◤\n"
+    printf "\033[38;2;82;119;195m        ◥███◣\033[38;2;127;183;255m   ◥██████◤\n"
+    printf "\033[38;2;82;119;195m    ◢████████████\033[48;2;127;183;255m◣\033[0m\033[38;2;127;183;255m████◤\033[38;2;82;119;195m   ◢◣\n"
+    printf "\033[38;2;82;119;195m   ◢██████████████\033[48;2;127;183;255m◣\033[0m\033[38;2;127;183;255m███◣\033[38;2;82;119;195m  ◢██◣\n"
+    printf "\033[38;2;127;183;255m        ◢███◤      ◥███◣\033[38;2;82;119;195m◢███◤\n"
+    printf "\033[38;2;127;183;255m       ◢███◤        ◥██\033[48;2;82;119;195m◤\033[0m\033[38;2;82;119;195m███◤\n"
+    printf "\033[38;2;127;183;255m◢█████████◤          ◥\033[48;2;82;119;195m◤\033[0m\033[38;2;82;119;195m████████◣\n"
+    printf "\033[38;2;127;183;255m◥████████\033[48;2;82;119;195m◤\033[0m\033[38;2;82;119;195m◣          ◢█████████◤\n"
+    printf "\033[38;2;127;183;255m    ◢███\033[48;2;82;119;255m◤\033[0m\033[38;2;82;119;195m██◣        ◢███◤\n"
+    printf "\033[38;2;127;183;255m   ◢███◤\033[38;2;82;119;195m◥███◣      ◢███◤\n"
+    printf "\033[38;2;127;183;255m   ◥██◤  \033[38;2;82;119;195m◥███\033[48;2;127;183;255m◣\033[0m\033[38;2;127;183;255m██████████████◤\n"
+    printf "\033[38;2;127;183;255m    ◥◤   \033[38;2;82;119;195m◢████\033[48;2;127;183;255m◣\033[0m\033[38;2;127;183;255m████████████◤\n"
+    printf "\033[38;2;82;119;195m        ◢██████◣\033[38;2;127;183;255m   ◥███◣\n"
+    printf "\033[38;2;82;119;195m       ◢███◤◥███◣\033[38;2;127;183;255m   ◥███◣\n"
+    printf "\033[38;2;82;119;195m       ◥██◤  ◥███◣\033[38;2;127;183;255m   ◥██◤\n"
+    printf "\033[0m\n"
+
+    printf "$BOLD$CYAN             NixOS Flake Update Manager$NC\n\n"
+
+    # Info box
+    printf "$BOLD┌─────────────────────────────────────────────────────────────┐$NC\n"
+    printf "$BOLD│$NC  $CYAN%-18s$NC                                         $BOLD│$NC\n" "System Information"
+    printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
+    printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Hostname:" $hostname
+    printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Generation:" $current_gen
+    printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Kernel:" $kernel
+    printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
+    printf "$BOLD│$NC  $CYAN%-18s$NC                                          $BOLD│$NC\n" "Repository Status"
+    printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
+    printf "$BOLD│$NC  %-18s $YELLOW%-40s$NC$BOLD│$NC\n" "Branch:" $branch
+    printf "$BOLD│$NC  %-18s $YELLOW%-40s$NC$BOLD│$NC\n" "Total Commits:" $total_commits
+    printf "$BOLD│$NC  %-18s $YELLOW%-40s$NC$BOLD│$NC\n" "Local Changes:" "$local_changes_count file(s)"
+    printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
+    printf "$BOLD│$NC  $CYAN%-18s$NC                                                $BOLD│$NC\n" "Last Commit"
+    printf "$BOLD│$NC  $DIM%-57s$NC  $BOLD│$NC\n" (string sub -l 57 $last_commit)
+    printf "$BOLD└─────────────────────────────────────────────────────────────┘$NC\n"
+    echo ""
+end
+
+_show_banner
+
+# ── Record whether there are local changes BEFORE pulling ────────────────────
+set -l had_local_changes_before false
+if test "$SKIP_GIT" = false
+    set -l porcelain (git status --porcelain 2>/dev/null)
+    if test -n "$porcelain"
+        set had_local_changes_before true
+    end
+end
+
+# ── Git: check conflicts / fetch / pull ──────────────────────────────────────
+if test "$SKIP_GIT" = false
+
+    _log_step "Checking for remote changes..."
+
+    if not git fetch origin 2>/dev/null
+        _log_error "Git fetch failed. Check your network connection."
+        exit 1
+    end
+
+    set -l branch (git branch --show-current)
+    set -l behind_count (git rev-list --count "HEAD..origin/$branch" 2>/dev/null; or echo "0")
+
+    if test "$behind_count" -eq 0 2>/dev/null
+        _log_success "Already up to date with remote"
+    else
+        _log_info "Remote has $behind_count new commit(s)"
+
+        set -l is_dirty (git status --porcelain 2>/dev/null)
+        if test -n "$is_dirty"
+            _log_warning "You have local uncommitted changes"
+            _log_info "Stashing local changes..."
+
+            set -l stash_label "update-script-autostash-"(date +%s)
+            if not git stash push -m "$stash_label"
+                _log_error "Git stash failed. Please commit or stash your changes manually."
+                exit 1
+            end
+
+            if git pull --rebase origin $branch
+                _log_success "Pulled remote changes successfully"
+                if not git stash pop
+                    _log_error "Conflict restoring local changes. Run: git stash show -p, resolve, then git stash drop"
+                    exit 1
+                end
+                _log_success "Restored local changes"
+            else
+                git stash pop 2>/dev/null
+                _log_error "Conflicts detected. Resolve manually: git rebase origin/$branch"
+                exit 1
+            end
+        else
+            if not git pull --rebase origin $branch
+                _log_error "Git pull failed. Please resolve manually and run again."
+                exit 1
+            end
+            _log_success "Pulled $behind_count commit(s) from remote"
+        end
+    end
+
+    # Stage local changes
+    if test "$had_local_changes_before" = true
+        _log_step "Staging local changes..."
+
+        set -l status_lines (git status --porcelain 2>/dev/null)
+        if test -n "$status_lines"
+            _log_info "Files to be staged:"
+            for line in $status_lines
+                set -l st (string sub -l 2 $line)
+                set -l fname (string sub -s 4 $line)
+                switch $st
+                    case "??"
+                        printf "  $GREEN+ (new)$NC      %s\n" $fname
+                    case " M" "M " "MM"
+                        printf "  $YELLOW~ (modified)$NC %s\n" $fname
+                    case " D" "D "
+                        printf "  $RED- (deleted)$NC  %s\n" $fname
+                    case '*'
+                        printf "  $BLUE? (%s)$NC    %s\n" $st $fname
+                end
+            end
+            echo ""
+        end
+
+        git add -A
+        _log_success "All changes staged"
+    else
+        _log_step "No local changes to stage"
+    end
+
+else
+    _log_info "Skipping git fetch/stage/commit because NIXOS_UPDATE_NO_GIT=1"
+end
+
+# ── Determine if there's actually something staged to commit ─────────────────
+set -l has_local_changes false
+if test "$SKIP_GIT" = false; and test "$had_local_changes_before" = true
+    set -l staged (git diff --cached --name-only 2>/dev/null)
+    if test -n "$staged"
+        set has_local_changes true
+    end
+end
+
+# ── AI commit message: start background generation ───────────────────────────
+# We generate the commit message while nixos-rebuild runs to save time.
+# The result is written to a temp file; we read it after rebuild finishes.
+set -l commit_msg_file (mktemp /tmp/nixos-update-commitmsg-XXXXXX)
+set -l commit_msg_pid 0
+
+if test "$has_local_changes" = true
+    _log_info "Starting AI commit message generation in background..."
+
+    # Determine next commit number from git log
+    set -l last_msg (git log -1 --pretty=format:"%s" 2>/dev/null)
+    set -l next_num 1
+    if string match -qr '^Update #(\d+)' $last_msg
+        set next_num (math (string replace -r '^Update #(\d+).*' '$1' $last_msg) + 1)
+    else
+        set -l all_nums (git log --pretty=format:"%s" 2>/dev/null | string match -ar 'Update #(\d+)' | string replace -r 'Update #(\d+)' '$1')
+        if test (count $all_nums) -gt 0
+            set -l sorted_nums (printf "%s\n" $all_nums | sort -rn)
+            set next_num (math $sorted_nums[1] + 1)
+        end
+    end
+
+    set -l fallback_msg "Update #$next_num"
+
+    # Background job: call OpenRouter API and write message to temp file
+    begin
+        set -l diff_stat (git diff --cached --stat 2>/dev/null | head -20 | string join "\n")
+
+        if test -z "$diff_stat"
+            echo "$fallback_msg" > "$commit_msg_file"
+            exit 0
+        end
+
+        if not test -f "$OPENROUTER_KEY_FILE"
+            echo "$fallback_msg" > "$commit_msg_file"
+            exit 0
+        end
+
+        set -l api_key (string trim (cat "$OPENROUTER_KEY_FILE"))
+        if test -z "$api_key"
+            echo "$fallback_msg" > "$commit_msg_file"
+            exit 0
+        end
+
+        # Build JSON payload (escape diff_stat for JSON)
+        set -l prompt_text "Write a git commit message (max 72 chars, imperative mood, no quotes) for a NixOS config repo. Be brief. Changes:\n\n$diff_stat\n\nRespond with ONLY the commit message, no explanations."
+
+        set -l json_body (printf '{"model":"%s","stream":false,"max_tokens":2000,"messages":[{"role":"user","content":%s}]}' \
+            $OPENROUTER_MODEL \
+            (printf '"%s"' (string escape --style=json $prompt_text)))
+
+        set -l response (curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
+            -H "Authorization: Bearer $api_key" \
+            -H "Content-Type: application/json" \
+            -d $json_body 2>/dev/null)
+
+        if test $status -ne 0; or test -z "$response"
+            echo "$fallback_msg" > "$commit_msg_file"
+            exit 0
+        end
+
+        # Extract message from JSON using basic parsing
+        set -l extracted (echo $response | python3 -c "
+import sys, json
+try:
+    d = json.load(sys.stdin)
+    msg = d['choices'][0]['message']['content']
+    msg = msg.replace('\n','').replace('\"','').strip()[:72]
+    print(msg)
+except:
+    print('')
+" 2>/dev/null)
+
+        if test -n "$extracted"
+            echo "$extracted" > "$commit_msg_file"
+        else
+            echo "$fallback_msg" > "$commit_msg_file"
+        end
+    end &
+    set commit_msg_pid $last_pid
+end
+
+# ── NixOS rebuild ─────────────────────────────────────────────────────────────
+_log_step "Rebuilding NixOS configuration..."
+
+set -l hostname (hostname)
+_log_info "Host: $hostname"
+_log_info "Flake: $NIXOS_DIR#$hostname"
+echo ""
+printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
+
+sudo nixos-rebuild switch --flake "$NIXOS_DIR#$hostname" --impure
+set -l rebuild_status $status
+
+printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
+echo ""
+
+if test $rebuild_status -ne 0
+    # Unstage changes if rebuild failed and we had staged something
+    if test "$has_local_changes" = true
+        set -l cached (git diff --cached --name-only 2>/dev/null)
+        if test -n "$cached"
+            _log_warning "Unstaging changes due to build failure..."
+            git reset HEAD 2>/dev/null
+        end
+    end
+    # Kill background AI job if still running
+    if test $commit_msg_pid -ne 0
+        kill $commit_msg_pid 2>/dev/null
+    end
+    rm -f "$commit_msg_file"
+    _log_error "NixOS rebuild failed! Check the output above and fix the issues."
+    exit 1
+end
+
+_log_success "NixOS rebuild completed successfully"
+set -l new_gen (sudo nixos-rebuild list-generations 2>/dev/null | grep "True" | awk '{print $1}'; or echo "unknown")
+_log_info "Current generation: $new_gen"
+
+# ── Wait for AI commit message ────────────────────────────────────────────────
+set -l commit_message ""
+set -l committed false
+set -l pushed false
+
+if test "$has_local_changes" = true
+    _log_step "Finalizing commit..."
+
+    # Wait for background AI job
+    if test $commit_msg_pid -ne 0
+        wait $commit_msg_pid 2>/dev/null
+    end
+
+    if test -f "$commit_msg_file"
+        set commit_message (cat "$commit_msg_file")
+    end
+
+    if test -z "$commit_message"
+        # Determine next commit number as fallback
+        set -l last_msg (git log -1 --pretty=format:"%s" 2>/dev/null)
+        set -l next_num 1
+        if string match -qr '^Update #(\d+)' $last_msg
+            set next_num (math (string replace -r '^Update #(\d+).*' '$1' $last_msg) + 1)
+        end
+        set commit_message "Update #$next_num"
+    end
+
+    rm -f "$commit_msg_file"
+
+    # Commit if there are still staged changes
+    set -l still_staged (git diff --cached --name-only 2>/dev/null)
+    if test -n "$still_staged"
+        if git commit -m "$commit_message"
+            _log_success "Committed: $commit_message"
+            set committed true
+
+            # Push
+            _log_step "Pushing to remote..."
+            set -l push_branch (git branch --show-current)
+            if git push origin $push_branch
+                _log_success "Pushed to origin/$push_branch"
+                set pushed true
+            else
+                _log_error "Push failed. You may need to push manually: git push origin $push_branch"
+            end
+        else
+            _log_error "Git commit failed"
+            exit 1
+        end
+    else
+        _log_info "No staged changes to commit"
+    end
+else
+    rm -f "$commit_msg_file"
+    _log_step "No local changes to commit"
+    _log_info "Configuration rebuilt successfully, no new commits needed"
+end
+
+# ── Summary ───────────────────────────────────────────────────────────────────
+_log_header "Update Complete"
+
+set -l summary_gen (sudo nixos-rebuild list-generations 2>/dev/null | grep "True" | awk '{print $1}'; or echo "?")
+set -l last_commit_line (git log -1 --pretty=format:"%h - %s" 2>/dev/null; or echo "None")
+
+printf "$GREEN"
+printf "    ╔═══════════════════════════════════════════╗\n"
+printf "    ║                                           ║\n"
+printf "    ║   ✓ System successfully updated!          ║\n"
+printf "    ║                                           ║\n"
+printf "    ╚═══════════════════════════════════════════╝"
+printf "$NC\n\n"
+
+printf "  $BOLD Summary:$NC\n"
+printf "  • Generation: $GREEN%s$NC\n" $summary_gen
+printf "  • Last commit: $CYAN%s$NC\n" $last_commit_line
+
+if test "$has_local_changes" = true
+    if test "$pushed" = true
+        printf "  • Changes: $GREEN%s$NC\n" "Committed and pushed"
+    else if test "$committed" = true
+        printf "  • Changes: $YELLOW%s$NC\n" "Committed (push pending)"
+    else
+        printf "  • Changes: $YELLOW%s$NC\n" "Staged but not committed"
+    end
+else
+    printf "  • Changes: $DIM%s$NC\n" "No local changes"
+end
+echo ""
+
+printf "  $BOLD Recent Generations:$NC\n"
+printf "  $DIM  %-4s  %-19s  %s$NC\n" "Gen" "Built" "Commit"
+
+set -l gen_lines (sudo nixos-rebuild list-generations 2>/dev/null | tail -n +2 | grep -v '^$' | head -5)
+for line in $gen_lines
+    set -l parts (string split -n " " (string trim $line))
+    set -l gen $parts[1]
+    set -l build_date "$parts[2] $parts[3]"
+    set -l is_current $parts[-1]
+    set -l commit_msg_short (git log -1 --format="%s" --until="$build_date" 2>/dev/null | string sub -l 45)
+
+    if test "$is_current" = "True"
+        printf "  $GREEN→ %-4s  %-19s  %s$NC\n" $gen $build_date $commit_msg_short
+    else
+        printf "  $DIM  %-4s  %-19s  %s$NC\n" $gen $build_date $commit_msg_short
+    end
+end
+echo ""

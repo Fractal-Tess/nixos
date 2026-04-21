@@ -1,0 +1,118 @@
+#!/usr/bin/env fish
+# battery — Battery monitor, waybar JSON output, and status
+#
+# Merged from battery-check (systemd timer monitor) and charging.sh
+# (waybar JSON module). Reads /sys/class/power_supply/BAT0/.
+#
+# Dependencies: notify-send, systemctl
+# Usage: battery [check|json|status] [--help|-h]
+
+set BATTERY /sys/class/power_supply/BAT0
+
+function show_help
+    echo "Usage: battery <subcommand>"
+    echo ""
+    echo "Subcommands:"
+    echo "  check   Monitor mode: send warnings at <20%, shutdown at <10%"
+    echo "          (called by systemd timer every minute)"
+    echo "  json    Output waybar JSON for the battery/charging module"
+    echo "  status  Show human-readable current battery status"
+    echo ""
+    echo "Options:"
+    echo "  --help, -h  Show this help message"
+end
+
+function check_battery_dir
+    if not test -d $BATTERY
+        echo "No battery found at $BATTERY" >&2
+        exit 1
+    end
+end
+
+function cmd_check
+    check_battery_dir
+
+    set capacity (cat $BATTERY/capacity)
+    set status (cat $BATTERY/status)
+
+    # Only act when on battery (not charging or full)
+    if test "$status" = Charging; or test "$status" = Full
+        exit 0
+    end
+
+    if test $capacity -lt 10
+        notify-send -u critical -i battery-caution "Battery Critical" \
+            "Battery at $capacity%. Shutting down now." \
+            -h string:x-canonical-private-synchronous:battery-alert
+        sleep 5
+        systemctl poweroff
+    else if test $capacity -lt 20
+        notify-send -u critical -i battery-low "Battery Low" \
+            "Battery at $capacity%. Please plug in." \
+            -h string:x-canonical-private-synchronous:battery-alert
+    end
+end
+
+function cmd_json
+    check_battery_dir
+
+    set status (cat $BATTERY/status)
+    set capacity (cat $BATTERY/capacity)
+
+    if test "$status" = Charging
+        echo "{\"text\": \"󰂄 $capacity%\", \"tooltip\": \"Charging: $capacity%\", \"class\": \"charging\", \"alt\": \"charging\"}"
+    else if test "$status" = Full
+        echo "{\"text\": \"󰁹 $capacity%\", \"tooltip\": \"Full: $capacity%\", \"class\": \"full\", \"alt\": \"full\"}"
+    else if test "$status" = Discharging
+        if test $capacity -lt 10
+            echo "{\"text\": \"󰂎 $capacity%\", \"tooltip\": \"Critical: $capacity%\", \"class\": \"critical\", \"alt\": \"critical\"}"
+        else if test $capacity -lt 20
+            echo "{\"text\": \"󰁺 $capacity%\", \"tooltip\": \"Low: $capacity%\", \"class\": \"low\", \"alt\": \"low\"}"
+        else
+            echo "{\"text\": \"󰁼 $capacity%\", \"tooltip\": \"Discharging: $capacity%\", \"class\": \"discharging\", \"alt\": \"discharging\"}"
+        end
+    else
+        echo "{\"text\": \"󰂑 $capacity%\", \"tooltip\": \"$status: $capacity%\", \"class\": \"unknown\", \"alt\": \"unknown\"}"
+    end
+end
+
+function cmd_status
+    check_battery_dir
+
+    set status (cat $BATTERY/status)
+    set capacity (cat $BATTERY/capacity)
+
+    echo "Battery Status: $status"
+    echo "Battery Level: $capacity%"
+
+    if test "$status" = Charging
+        echo "Laptop is currently charging"
+    else if test "$status" = Full
+        echo "Battery is fully charged"
+    else if test "$status" = Discharging
+        echo "Laptop is running on battery power"
+    else
+        echo "Unknown battery state: $status"
+    end
+end
+
+# Argument dispatch
+set subcommand $argv[1]
+
+switch $subcommand
+    case --help -h
+        show_help
+    case check
+        cmd_check
+    case json
+        cmd_json
+    case status
+        cmd_status
+    case ''
+        show_help
+        exit 1
+    case '*'
+        echo "battery: unknown subcommand '$subcommand'" >&2
+        echo "Run 'battery --help' for usage." >&2
+        exit 1
+end
