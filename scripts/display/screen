@@ -9,11 +9,11 @@
 #               xset (fallback), rofi, notify-send, systemd-inhibit, jq
 # Usage: screen <subcommand> [args]
 
-set -l BRIGHTNESS_CACHE /tmp/brightness-cache
-set -l BRIGHTNESS_STEP 5
-set -l LAPTOP_MONITOR eDP-1
-set -l LID_LOG /tmp/lid-close-handler.log
-set -l LID_PID_FILE /tmp/lid-sleep-inhibit.pid
+set -g BRIGHTNESS_CACHE /tmp/brightness-cache
+set -g BRIGHTNESS_STEP 5
+set -g LAPTOP_MONITOR eDP-1
+set -g LID_LOG /tmp/lid-close-handler.log
+set -g LID_PID_FILE /tmp/lid-sleep-inhibit.pid
 
 # ─── Help ────────────────────────────────────────────────────────────────────
 
@@ -50,7 +50,8 @@ function _screen_help
     echo "  lid-open         Re-enable eDP-1"
     echo ""
     echo "Sleep Inhibition:"
-    echo "  sleep-toggle     Toggle systemd-inhibit lid sleep inhibition, output waybar JSON"
+    echo "  sleep-toggle              Output waybar JSON for lid sleep inhibition"
+    echo "  sleep-toggle toggle       Toggle lid sleep inhibition, then output waybar JSON"
     echo ""
     echo "General:"
     echo "  status           Show brightness, dpms, and lock state"
@@ -351,7 +352,8 @@ end
 
 function _sleep_is_active
     test -f $LID_PID_FILE; or return 1
-    set -l pid (string trim < $LID_PID_FILE)
+    set -l pid (cat $LID_PID_FILE 2>/dev/null | string trim)
+    test -n "$pid"; or return 1
     kill -0 $pid 2>/dev/null
 end
 
@@ -365,8 +367,8 @@ end
 
 function _sleep_stop_inhibit
     if test -f $LID_PID_FILE
-        set -l pid (string trim < $LID_PID_FILE)
-        kill $pid 2>/dev/null
+        set -l pid (cat $LID_PID_FILE 2>/dev/null | string trim)
+        test -n "$pid"; and kill $pid 2>/dev/null
         rm -f $LID_PID_FILE
     end
 end
@@ -545,7 +547,11 @@ switch $cmd
         _lid_open
 
     case sleep-toggle
-        _sleep_toggle
+        if test "$arg2" = toggle
+            _sleep_toggle
+        else
+            _sleep_print_status
+        end
 
     case status
         _show_status

@@ -96,6 +96,13 @@ end
 
 # Argument dispatch
 set subcommand $argv[1]
+set action $argv[2]
+
+if test "$subcommand" = --waybar; and test "$action" = toggle
+    cmd_toggle >/dev/null
+    cmd_waybar
+    exit 0
+end
 
 switch $subcommand
     case --help -h
