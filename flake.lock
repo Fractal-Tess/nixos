@@ -560,11 +560,11 @@
         "systems": "systems_5"
       },
       "locked": {
-        "lastModified": 1776338142,
-        "narHash": "sha256-hdFO2MBsn60KZnR+yW48uJnGRNqFmcRQ2BkeNfAqqtg=",
+        "lastModified": 1776339964,
+        "narHash": "sha256-D/Yd7sYxeU8JAndV7Evpd1+mfBrzeZ8ySCNl9kdFoBg=",
         "owner": "Fractal-Tess",
         "repo": "shapeshifter",
-        "rev": "0503a2a017a41749088aaf7cf96c5cb8d50bad7f",
+        "rev": "b0c5c6ee7a8484732a610b6a85709e53b528749d",
         "type": "github"
       },
       "original": {

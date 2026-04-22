@@ -1,0 +1,11 @@
+[2026-04-22T00:58:55.934Z] [TokenTracker] Please check your ~/.config/opencode/ttrack.json configuration
+[2026-04-22T00:58:55.933Z] [TokenTracker] InfluxDB connection failed on startup - Error: ECONNREFUSED
+    at <anonymous> (node:_http_client:251:28)
+    at processTicksAndRejections (native:7:39)
+[2026-04-22T01:02:12.195Z] [TokenTracker] Please check your ~/.config/opencode/ttrack.json configuration
+[2026-04-22T01:02:12.195Z] [TokenTracker] InfluxDB connection failed on startup - Error: ECONNREFUSED
+    at <anonymous> (node:_http_client:251:28)
+    at processTicksAndRejections (native:7:39)
+[2026-04-22T01:02:41.069Z] [TokenTracker] Track error: - Error: ECONNREFUSED
+    at <anonymous> (node:_http_client:251:28)
+    at processTicksAndRejections (native:7:39)
