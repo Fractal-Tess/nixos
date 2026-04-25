@@ -249,7 +249,7 @@ function _monitor_menu
     end
 
     # Build entries: "<status> <name>: <description> (<WxH>)"
-    set -l entries_str (echo $monitors_json | jq -r "$filter_expr")
+    set -l entries_str (echo $monitors_json | jq -r "$filter_expr" | string collect)
     if test -z "$entries_str"
         echo "No matching monitors" >&2
         return 1
