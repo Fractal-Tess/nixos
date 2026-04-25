@@ -1,0 +1,240 @@
+#!/usr/bin/env fish
+# gpu-power — NVIDIA GPU power limit helper
+#
+# Dependencies: nvidia-smi, sudo for changing limits
+# Usage: gpu-power [list|status|set|inc|dec|reset|tui] [args] [--id=N]
+
+set SCRIPT_NAME gpu-power
+
+function show_help
+    echo "Usage: $SCRIPT_NAME <subcommand> [args] [--id=N]"
+    echo ""
+    echo "Subcommands:"
+    echo "  list                 List GPUs and current/default/min/max power limits"
+    echo "  status               Show power status for one GPU"
+    echo "  set <watts|preset>   Set one GPU's power limit"
+    echo "  inc <watts>          Increase current power limit"
+    echo "  dec <watts>          Decrease current power limit"
+    echo "  reset                Restore the default power limit"
+    echo "  tui                  Prompt for a power limit interactively"
+    echo ""
+    echo "Presets for set:"
+    echo "  min, eco             Minimum supported limit"
+    echo "  balanced             Halfway between min and max"
+    echo "  default              GPU default limit"
+    echo "  max, performance     Maximum supported limit"
+    echo ""
+    echo "Options:"
+    echo "  --id=N               GPU index (default: 0)"
+    echo "  -h, --help           Show this help"
+    echo ""
+    echo "Examples:"
+    echo "  $SCRIPT_NAME list"
+    echo "  $SCRIPT_NAME status --id=0"
+    echo "  $SCRIPT_NAME set 260 --id=0"
+    echo "  $SCRIPT_NAME set eco"
+    echo "  $SCRIPT_NAME dec 40"
+    echo "  $SCRIPT_NAME reset"
+    echo ""
+    echo "Note: NVIDIA power limits usually reset after reboot."
+end
+
+function die
+    echo "$SCRIPT_NAME: $argv" >&2
+    exit 1
+end
+
+function require_nvidia_smi
+    if not type -q nvidia-smi
+        die "nvidia-smi not found"
+    end
+end
+
+function is_number -a value
+    string match -qr '^[0-9]+([.][0-9]+)?$' -- "$value"
+end
+
+function parse_gpu_id
+    set -g gpu_id 0
+
+    for arg in $argv
+        if string match -qr '^--id=[0-9]+$' -- $arg
+            set gpu_id (string replace -- '--id=' '' $arg)
+        end
+    end
+end
+
+function query_limits
+    require_nvidia_smi
+
+    set -l data (nvidia-smi -i $gpu_id \
+        --query-gpu=power.limit,power.default_limit,power.min_limit,power.max_limit \
+        --format=csv,noheader,nounits 2>/dev/null)
+
+    if test $status -ne 0; or test -z "$data"
+        die "could not query GPU $gpu_id power limits; is the NVIDIA driver running?"
+    end
+
+    set -l fields (string split ', ' $data)
+    if test (count $fields) -lt 4
+        die "unexpected nvidia-smi power output: $data"
+    end
+
+    set -g current_w (string trim $fields[1])
+    set -g default_w (string trim $fields[2])
+    set -g min_w (string trim $fields[3])
+    set -g max_w (string trim $fields[4])
+
+    for value in $current_w $default_w $min_w $max_w
+        if not is_number $value
+            die "GPU $gpu_id does not expose adjustable power limits: $data"
+        end
+    end
+end
+
+function clamp_watts -a watts
+    if test (math --scale=3 "$watts") -lt (math --scale=3 "$min_w")
+        echo $min_w
+    else if test (math --scale=3 "$watts") -gt (math --scale=3 "$max_w")
+        echo $max_w
+    else
+        echo $watts
+    end
+end
+
+function normalize_watts -a value
+    query_limits
+
+    switch (string lower -- "$value")
+        case min eco
+            echo $min_w
+        case balanced
+            math --scale=0 "($min_w + $max_w) / 2"
+        case default
+            echo $default_w
+        case max performance
+            echo $max_w
+        case '*'
+            if not is_number "$value"
+                die "power limit must be watts or one of: min, eco, balanced, default, max, performance"
+            end
+
+            clamp_watts $value
+    end
+end
+
+function apply_limit -a watts
+    set -l target (math --scale=0 "$watts")
+
+    if sudo nvidia-smi -i $gpu_id -pl $target >/dev/null
+        echo "GPU $gpu_id power limit set to $target W"
+    else
+        die "failed to set GPU $gpu_id power limit to $target W"
+    end
+end
+
+function cmd_list
+    require_nvidia_smi
+
+    nvidia-smi \
+        --query-gpu=index,name,power.draw,power.limit,power.default_limit,power.min_limit,power.max_limit \
+        --format=csv
+end
+
+function cmd_status
+    query_limits
+
+    set -l name (nvidia-smi -i $gpu_id --query-gpu=name --format=csv,noheader 2>/dev/null)
+    set -l draw (nvidia-smi -i $gpu_id --query-gpu=power.draw --format=csv,noheader 2>/dev/null)
+
+    echo "GPU:     $gpu_id - $name"
+    echo "Draw:    $draw"
+    echo "Limit:   $current_w W"
+    echo "Default: $default_w W"
+    echo "Range:   $min_w-$max_w W"
+end
+
+function cmd_set -a value
+    if test -z "$value"
+        die "missing power limit; run '$SCRIPT_NAME --help'"
+    end
+
+    set -l watts (normalize_watts $value)
+    apply_limit $watts
+end
+
+function cmd_inc -a step
+    if test -z "$step"
+        die "missing increment in watts"
+    end
+    if not is_number "$step"
+        die "increment must be a number"
+    end
+
+    query_limits
+    apply_limit (clamp_watts (math "$current_w + $step"))
+end
+
+function cmd_dec -a step
+    if test -z "$step"
+        die "missing decrement in watts"
+    end
+    if not is_number "$step"
+        die "decrement must be a number"
+    end
+
+    query_limits
+    apply_limit (clamp_watts (math "$current_w - $step"))
+end
+
+function cmd_reset
+    set -l watts (normalize_watts default)
+    apply_limit $watts
+end
+
+function cmd_tui
+    query_limits
+
+    echo "GPU $gpu_id power limit: $current_w W (default $default_w W, range $min_w-$max_w W)"
+    echo -n "New limit in watts, or preset [eco/balanced/default/performance]: "
+    read -l value
+
+    if test -z "$value"
+        die "no power limit entered"
+    end
+
+    set -l watts (normalize_watts $value)
+    apply_limit $watts
+end
+
+parse_gpu_id $argv
+
+if contains -- --help $argv; or contains -- -h $argv
+    show_help
+    exit 0
+end
+
+set subcommand $argv[1]
+set value $argv[2]
+
+switch $subcommand
+    case list
+        cmd_list
+    case status
+        cmd_status
+    case set
+        cmd_set $value
+    case inc
+        cmd_inc $value
+    case dec
+        cmd_dec $value
+    case reset
+        cmd_reset
+    case tui
+        cmd_tui
+    case ''
+        show_help
+        exit 1
+    case '*'
+        die "unknown subcommand '$subcommand'; run '$SCRIPT_NAME --help'"
+end

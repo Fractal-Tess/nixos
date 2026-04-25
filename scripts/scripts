@@ -1,0 +1,200 @@
+#!/usr/bin/env fish
+# scripts - List available helpers in ~/nixos/scripts
+#
+# Prints the scripts tree with one-line descriptions pulled from each file's
+# header comment, docstring, or unit Description= line where available.
+#
+# Usage: scripts
+
+set -g script_root (cd (dirname (status filename)); and pwd)
+
+function usage
+    echo "Usage: scripts"
+    echo ""
+    echo "Print the ~/nixos/scripts command tree with short descriptions."
+end
+
+function extract_comment_description -a file
+    set -l header_line (awk '
+        NR <= 16 && /^# / {
+            print
+            exit
+        }
+    ' "$file")
+
+    if test -n "$header_line"
+        set -l desc (string replace -r '^#\s*' '' -- "$header_line")
+        set -l name (basename "$file")
+        set -l escaped_name (string escape --style=regex "$name")
+        set -l prefix_regex "^"$escaped_name"[[:space:]]*[^[:alnum:][:space:]]+[[:space:]]*"
+        set desc (string replace -r "$prefix_regex" '' -- "$desc")
+        echo $desc
+        return 0
+    end
+
+    return 1
+end
+
+function extract_docstring_description -a file
+    set -l desc (awk '
+        NR <= 20 {
+            if ($0 ~ /^"""/) {
+                if (in_docstring) {
+                    exit
+                }
+                in_docstring = 1
+                next
+            }
+
+            if (in_docstring && $0 ~ /[^[:space:]]/) {
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", $0)
+                print
+                exit
+            }
+        }
+    ' "$file")
+
+    if test -n "$desc"
+        echo $desc
+        return 0
+    end
+
+    return 1
+end
+
+function extract_python_function_docstring -a file
+    set -l desc (awk '
+        NR <= 80 {
+            if ($0 ~ /^[[:space:]]*def /) {
+                in_function = 1
+                next
+            }
+
+            if (in_function && $0 ~ /^[[:space:]]*"""[^"]+"""[[:space:]]*$/) {
+                gsub(/^[[:space:]]*"""/, "", $0)
+                gsub(/"""[[:space:]]*$/, "", $0)
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", $0)
+                print
+                exit
+            }
+
+            if (in_function && $0 ~ /^[[:space:]]*"""/) {
+                if (in_docstring) {
+                    exit
+                }
+                in_docstring = 1
+                next
+            }
+
+            if (in_docstring && $0 ~ /[^[:space:]]/) {
+                gsub(/^[[:space:]]+|[[:space:]]+$/, "", $0)
+                print
+                exit
+            }
+        }
+    ' "$file")
+
+    if test -n "$desc"
+        echo $desc
+        return 0
+    end
+
+    return 1
+end
+
+function extract_unit_description -a file
+    set -l desc (awk -F= '
+        /^Description=/ {
+            print $2
+            exit
+        }
+    ' "$file")
+
+    if test -n "$desc"
+        echo $desc
+        return 0
+    end
+
+    return 1
+end
+
+function detect_role -a relpath
+    if string match -q 'lib/*' -- "$relpath"
+        echo "library"
+        return
+    end
+
+    if string match -q '*.service' -- "$relpath"
+        echo "systemd unit"
+        return
+    end
+
+    if string match -q '*.py' -- "$relpath"
+        echo "python helper"
+        return
+    end
+
+    echo "command"
+end
+
+function describe_file -a file
+    set -l relpath (string replace "$script_root/" '' -- "$file")
+    set -l desc
+
+    set desc (extract_comment_description "$file")
+    or set desc (extract_docstring_description "$file")
+    or set desc (extract_python_function_docstring "$file")
+    or set desc (extract_unit_description "$file")
+
+    if test -z "$desc"
+        set desc "No description available"
+    end
+
+    set -l role (detect_role "$relpath")
+    if test "$role" != "command"
+        set desc "$desc [$role]"
+    end
+
+    echo $desc
+end
+
+function print_group -a group
+    set -l files (find "$script_root/$group" -maxdepth 1 -type f | sort)
+
+    if test (count $files) -eq 0
+        return
+    end
+
+    echo "$group/"
+    for file in $files
+        set -l name (basename "$file")
+        set -l desc (describe_file "$file")
+        printf "  %-24s %s\n" "$name" "$desc"
+    end
+    echo ""
+end
+
+if test (count $argv) -ne 0
+    usage >&2
+    exit 1
+end
+
+set -l groups (find "$script_root" -mindepth 1 -maxdepth 1 -type d -printf '%f\n' | sort)
+set -l root_files (find "$script_root" -mindepth 1 -maxdepth 1 -type f | sort)
+
+echo "Available scripts in $script_root"
+echo ""
+
+if test (count $root_files) -gt 0
+    echo "root/"
+    for file in $root_files
+        set -l name (basename "$file")
+        set -l desc (describe_file "$file")
+        printf "  %-24s %s\n" "$name" "$desc"
+    end
+    echo ""
+end
+
+for group in $groups
+    print_group "$group"
+end
