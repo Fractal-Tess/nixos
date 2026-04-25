@@ -249,17 +249,17 @@ function _monitor_menu
     end
 
     # Build entries: "<status> <name>: <description> (<WxH>)"
-    set -l entries (echo $monitors_json | jq -r "$filter_expr")
-    if test -z "$entries"
+    set -l entries_str (echo $monitors_json | jq -r "$filter_expr")
+    if test -z "$entries_str"
         echo "No matching monitors" >&2
         return 1
     end
 
-    set -l count (echo $entries | wc -l)
+    set -l count (echo "$entries_str" | wc -l)
 
     pkill rofi > /dev/null 2>&1
 
-    set -l selection (echo $entries | /run/current-system/sw/bin/rofi \
+    set -l selection (echo "$entries_str" | /run/current-system/sw/bin/rofi \
         -plugin-path /run/current-system/sw/lib/rofi \
         -dmenu \
         -i \
