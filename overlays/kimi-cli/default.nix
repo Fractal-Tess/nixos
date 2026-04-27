@@ -42,6 +42,11 @@ in
         dontUsePytestCheck = true;
       });
 
+      # aioboto3 - disable tests that fail in sandbox due to network issues
+      aioboto3 = pyprev.aioboto3.overridePythonAttrs (oldAttrs: {
+        doCheck = false;
+      });
+
       # Streaming JSON parser
       streamingjson = pyfinal.buildPythonPackage rec {
         pname = "streamingjson";

@@ -303,7 +303,6 @@
     #--------------------------------------------------------------------------
 
     polymc # Minecraft launcher
-    bottles # Wine wrapper
     heroic # Game launcher
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
