@@ -86,6 +86,8 @@
     openvpn # Open-source VPN solution
     proton-vpn # Proton VPN client
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
+    gst_all_1.gst-plugins-base # GStreamer base plugins (appsink, needed by gpclient)
+    gst_all_1.gst-plugins-good # GStreamer good plugins
     wakeonlan # Wake devices using Wake-on-LAN
 
     # Network testing and analysis
