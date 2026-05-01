@@ -38,8 +38,6 @@
   "orientation": "horizontal",
   "modules": [
     "cpu",
-    "custom/gpu#nvidia",
-    "custom/gpu-mem#nvidia",
     "memory",
     "custom/swap"
   ]
@@ -47,6 +45,8 @@
  "group/gpumon": {
   "orientation": "horizontal",
   "modules": [
+    "custom/gpu#nvidia",
+    "custom/gpu-mem#nvidia",
     "custom/gpu#nvidia2",
     "custom/gpu-mem#nvidia2"
   ]
