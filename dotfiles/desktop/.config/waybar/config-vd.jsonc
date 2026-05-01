@@ -24,6 +24,7 @@
   "disk#backup",
    "group/idlevol",
    "group/sysmon",
+   "group/gpumon",
    "group/netblue",
    "group/datetime",
    "custom/notifications",
@@ -41,6 +42,13 @@
     "custom/gpu-mem#nvidia",
     "memory",
     "custom/swap"
+  ]
+ },
+ "group/gpumon": {
+  "orientation": "horizontal",
+  "modules": [
+    "custom/gpu#nvidia2",
+    "custom/gpu-mem#nvidia2"
   ]
  },
  }
