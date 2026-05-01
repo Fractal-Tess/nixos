@@ -288,6 +288,22 @@
   "exec": "~/nixos/scripts/waybar/gpu --nvidia-mem --id=0",
   "return-type": "json"
 },
+"custom/gpu#nvidia2": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "exec": "~/nixos/scripts/waybar/gpu --nvidia --id=1",
+  "return-type": "json"
+},
+"custom/gpu-mem#nvidia2": {
+  "interval": 1,
+  "format": "{icon}",
+  "rotate": 270,
+  "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
+  "exec": "~/nixos/scripts/waybar/gpu --nvidia-mem --id=1",
+  "return-type": "json"
+},
 "battery": {
   "states": {
     "good": 95,
