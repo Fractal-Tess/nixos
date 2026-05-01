@@ -258,6 +258,7 @@ tooltip label {
 #memory,
 #custom-swap,
 #custom-gpu,
+#custom-gpu-mem,
 #custom-boost {
     background: none;
     color: @secondary;
@@ -265,15 +266,22 @@ tooltip label {
     margin: 0;
     transition: 0.3s all ease;
 }
-#cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu:hover, #custom-boost:hover { color: @primary; }
+#cpu:hover, #memory:hover, #custom-swap:hover, #custom-gpu:hover, #custom-gpu-mem:hover, #custom-boost:hover { color: @primary; }
 #cpu { padding-left: 0.5rem }
 #custom-boost { padding-right: 0.5rem }
-#custom-swap, #custom-gpu { padding-right: 0 }
+#custom-swap, #custom-gpu, #custom-gpu-mem { padding-right: 0 }
 #sysmon {
     background: @surface_container;
     border-radius: 1.5rem;
     margin: 0.5rem 0.2rem;
 }
+#gpumon {
+    background: @surface_container;
+    border-radius: 1.5rem;
+    margin: 0.5rem 0.2rem;
+}
+#gpumon #custom-gpu { padding-left: 0.5rem }
+#gpumon #custom-gpu-mem:last-child { padding-right: 0.5rem }
 #datetime {
     background: @surface_container;
     border-radius: 1.5rem;
