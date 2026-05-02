@@ -9,11 +9,11 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1777763225,
-        "narHash": "sha256-6lxcJP2yLhBQKeoMMvMhAGjMv7zEasn/YeaBqoaUEHw=",
+        "lastModified": 1777763379,
+        "narHash": "sha256-nkcpKYRCiwfJfYHzKOcbVfJIV3aZTcOVTRnpovA1/s8=",
         "owner": "Fractal-Tess",
         "repo": "asterveil",
-        "rev": "f1d782df1799f6bfc26255ffed98fb59c4d9f294",
+        "rev": "1da1733d3e126acdfe4be5586cae02e7c7fb3ebd",
         "type": "github"
       },
       "original": {
