@@ -9,14 +9,17 @@
         "systems": "systems"
       },
       "locked": {
-        "lastModified": 1777751899,
-        "narHash": "sha256-CiiSiIe71fYCnoSBlLwLzX5FfveVU07Lxg9+ByLF0bw=",
-        "path": "/home/fractal-tess/dev/asterveil",
-        "type": "path"
+        "lastModified": 1777763225,
+        "narHash": "sha256-6lxcJP2yLhBQKeoMMvMhAGjMv7zEasn/YeaBqoaUEHw=",
+        "owner": "Fractal-Tess",
+        "repo": "asterveil",
+        "rev": "f1d782df1799f6bfc26255ffed98fb59c4d9f294",
+        "type": "github"
       },
       "original": {
-        "path": "/home/fractal-tess/dev/asterveil",
-        "type": "path"
+        "owner": "Fractal-Tess",
+        "repo": "asterveil",
+        "type": "github"
       }
     },
     "comfyui-nix": {
@@ -574,11 +577,11 @@
         "nixpkgs": "nixpkgs"
       },
       "locked": {
-        "lastModified": 1762483116,
-        "narHash": "sha256-Z8EVsTH10BjCdFyPxbUu5jBV+HGL39rh9+beQcnNRm0=",
+        "lastModified": 1777691680,
+        "narHash": "sha256-sdCAzrPAaKu+yo7L2pWddy5PN6U9bO++WEWc1zcr7aQ=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "9de55b59b6aaadbd9dbf223765a835239b767ee5",
+        "rev": "4757db4358c77c1cbe878fa5990e6ea88d82f6b5",
         "type": "github"
       },
       "original": {
