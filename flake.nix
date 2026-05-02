@@ -47,6 +47,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    asterveil = {
+      url = "path:/home/fractal-tess/dev/asterveil";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     t3code-nix = {
       url = "github:Sawrz/t3code-nix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -99,6 +104,7 @@
                 (import ./overlays/llama-cpp.nix)
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
+                inputs.asterveil.overlays.default
               ];
             }
           ];

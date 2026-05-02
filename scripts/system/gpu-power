@@ -1,42 +1,47 @@
 #!/usr/bin/env fish
-# gpu-power — NVIDIA GPU power limit helper
+# gpu-power — NVIDIA GPU power and fan control helper
 #
-# Dependencies: nvidia-smi, sudo for changing limits
-# Usage: gpu-power [list|status|set|inc|dec|reset|tui] [args] [--id=N]
+# Dependencies: nvidia-smi, nvidia-settings, sudo
+# Usage: gpu-power [list|status|set|inc|dec|reset|fan|tui] [args] [--id=N] [--all]
 
 set SCRIPT_NAME gpu-power
+set NVIDIA_X_DISPLAY :0
 
 function show_help
-    echo "Usage: $SCRIPT_NAME <subcommand> [args] [--id=N]"
+    echo "Usage: $SCRIPT_NAME <subcommand> [args] [--id=N] [--all]"
     echo ""
-    echo "Subcommands:"
+    echo "Power subcommands:"
     echo "  list                 List GPUs and current/default/min/max power limits"
     echo "  status               Show power status for one GPU"
     echo "  set <watts|preset>   Set one GPU's power limit"
     echo "  inc <watts>          Increase current power limit"
     echo "  dec <watts>          Decrease current power limit"
     echo "  reset                Restore the default power limit"
-    echo "  tui                  Prompt for a power limit interactively"
     echo ""
-    echo "Presets for set:"
-    echo "  min, eco             Minimum supported limit"
-    echo "  balanced             Halfway between min and max"
-    echo "  default              GPU default limit"
-    echo "  max, performance     Maximum supported limit"
+    echo "Fan subcommands:"
+    echo "  fan list             List NVIDIA GPU and fan targets"
+    echo "  fan status           Show fan control state and target speed"
+    echo "  fan set <percent>    Enable manual fan control and set all fans"
+    echo "  fan reset            Disable manual fan control for all GPUs"
+    echo ""
+    echo "Interactive:"
+    echo "  tui                  Open a small menu for power and fan control"
     echo ""
     echo "Options:"
     echo "  --id=N               GPU index (default: 0)"
+    echo "  --all                Apply power commands to every GPU"
     echo "  -h, --help           Show this help"
     echo ""
     echo "Examples:"
     echo "  $SCRIPT_NAME list"
     echo "  $SCRIPT_NAME status --id=0"
-    echo "  $SCRIPT_NAME set 260 --id=0"
-    echo "  $SCRIPT_NAME set eco"
-    echo "  $SCRIPT_NAME dec 40"
-    echo "  $SCRIPT_NAME reset"
+    echo "  $SCRIPT_NAME set 260 --all"
+    echo "  $SCRIPT_NAME dec 40 --id=1"
+    echo "  $SCRIPT_NAME fan set 100"
+    echo "  $SCRIPT_NAME fan reset"
+    echo "  $SCRIPT_NAME tui"
     echo ""
-    echo "Note: NVIDIA power limits usually reset after reboot."
+    echo "Note: NVIDIA fan control usually resets after reboot."
 end
 
 function die
@@ -50,26 +55,55 @@ function require_nvidia_smi
     end
 end
 
+function require_nvidia_settings
+    if not type -q nvidia-settings
+        die "nvidia-settings not found"
+    end
+end
+
+function nvs
+    sudo nvidia-settings -c $NVIDIA_X_DISPLAY $argv
+end
+
 function is_number -a value
     string match -qr '^[0-9]+([.][0-9]+)?$' -- "$value"
 end
 
-function parse_gpu_id
-    set -g gpu_id 0
-
-    for arg in $argv
-        if string match -qr '^--id=[0-9]+$' -- $arg
-            set gpu_id (string replace -- '--id=' '' $arg)
-        end
-    end
+function query_gpu_ids
+    require_nvidia_smi
+    nvidia-smi --query-gpu=index --format=csv,noheader,nounits 2>/dev/null
 end
 
-function query_limits
+function query_fan_ids
+    require_nvidia_settings
+
+    set -l ids
+    for line in (nvs -q fans 2>/dev/null)
+        if string match -qr '^\s+\[[0-9]+\] \[fan:[0-9]+\]' -- $line
+            set -a ids (string replace -r '^\s+\[([0-9]+)\].*$' '$1' -- $line)
+        end
+    end
+
+    printf '%s\n' $ids
+end
+
+function resolve_gpu_ids
+    if set -q gpu_all
+        if test $gpu_all -eq 1
+            query_gpu_ids
+            return
+        end
+    end
+
+    echo $gpu_id
+end
+
+function query_limits -a gpu_id
     require_nvidia_smi
 
-    set -l data (nvidia-smi -i $gpu_id \
+    set -l data (sudo nvidia-smi -i $gpu_id \
         --query-gpu=power.limit,power.default_limit,power.min_limit,power.max_limit \
-        --format=csv,noheader,nounits 2>/dev/null)
+        --format=csv,noheader,nounits)
 
     if test $status -ne 0; or test -z "$data"
         die "could not query GPU $gpu_id power limits; is the NVIDIA driver running?"
@@ -103,8 +137,6 @@ function clamp_watts -a watts
 end
 
 function normalize_watts -a value
-    query_limits
-
     switch (string lower -- "$value")
         case min eco
             echo $min_w
@@ -123,7 +155,7 @@ function normalize_watts -a value
     end
 end
 
-function apply_limit -a watts
+function apply_limit -a gpu_id watts
     set -l target (math --scale=0 "$watts")
 
     if sudo nvidia-smi -i $gpu_id -pl $target >/dev/null
@@ -131,6 +163,10 @@ function apply_limit -a watts
     else
         die "failed to set GPU $gpu_id power limit to $target W"
     end
+end
+
+function query_gpu_name -a gpu_id
+    sudo nvidia-smi -i $gpu_id --query-gpu=name --format=csv,noheader | string trim
 end
 
 function cmd_list
@@ -142,16 +178,28 @@ function cmd_list
 end
 
 function cmd_status
-    query_limits
+    set -l gpu_ids (resolve_gpu_ids)
 
-    set -l name (nvidia-smi -i $gpu_id --query-gpu=name --format=csv,noheader 2>/dev/null)
-    set -l draw (nvidia-smi -i $gpu_id --query-gpu=power.draw --format=csv,noheader 2>/dev/null)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
 
-    echo "GPU:     $gpu_id - $name"
-    echo "Draw:    $draw"
-    echo "Limit:   $current_w W"
-    echo "Default: $default_w W"
-    echo "Range:   $min_w-$max_w W"
+    for gpu_id in $gpu_ids
+        query_limits $gpu_id
+
+        set -l name (query_gpu_name $gpu_id)
+        set -l draw (sudo nvidia-smi -i $gpu_id --query-gpu=power.draw --format=csv,noheader | string trim)
+
+        echo "GPU:     $gpu_id - $name"
+        echo "Draw:    $draw"
+        echo "Limit:   $current_w W"
+        echo "Default: $default_w W"
+        echo "Range:   $min_w-$max_w W"
+
+        if test (count $gpu_ids) -gt 1
+            echo ""
+        end
+    end
 end
 
 function cmd_set -a value
@@ -159,8 +207,16 @@ function cmd_set -a value
         die "missing power limit; run '$SCRIPT_NAME --help'"
     end
 
-    set -l watts (normalize_watts $value)
-    apply_limit $watts
+    set -l gpu_ids (resolve_gpu_ids)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+
+    for gpu_id in $gpu_ids
+        query_limits $gpu_id
+        set -l watts (normalize_watts $value)
+        apply_limit $gpu_id $watts
+    end
 end
 
 function cmd_inc -a step
@@ -171,8 +227,15 @@ function cmd_inc -a step
         die "increment must be a number"
     end
 
-    query_limits
-    apply_limit (clamp_watts (math "$current_w + $step"))
+    set -l gpu_ids (resolve_gpu_ids)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+
+    for gpu_id in $gpu_ids
+        query_limits $gpu_id
+        apply_limit $gpu_id (clamp_watts (math "$current_w + $step"))
+    end
 end
 
 function cmd_dec -a step
@@ -183,31 +246,293 @@ function cmd_dec -a step
         die "decrement must be a number"
     end
 
-    query_limits
-    apply_limit (clamp_watts (math "$current_w - $step"))
+    set -l gpu_ids (resolve_gpu_ids)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+
+    for gpu_id in $gpu_ids
+        query_limits $gpu_id
+        apply_limit $gpu_id (clamp_watts (math "$current_w - $step"))
+    end
 end
 
 function cmd_reset
-    set -l watts (normalize_watts default)
-    apply_limit $watts
+    set -l gpu_ids (resolve_gpu_ids)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+
+    for gpu_id in $gpu_ids
+        query_limits $gpu_id
+        apply_limit $gpu_id $default_w
+    end
+end
+
+function show_fan_targets
+    require_nvidia_settings
+    sudo -v
+
+    nvs -q gpus -q fans 2>/dev/null
+end
+
+function set_gpu_fan_control_state -a state
+    set -l gpu_ids (query_gpu_ids)
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+
+    set -l args
+    for gpu_id in $gpu_ids
+        set -a args -a "[gpu:$gpu_id]/GPUFanControlState=$state"
+    end
+
+    if nvs $args >/dev/null
+        if test $state -eq 1
+            echo "Enabled manual fan control for all GPUs"
+        else
+            echo "Disabled manual fan control for all GPUs"
+        end
+    else
+        die "failed to update GPU fan control state"
+    end
+end
+
+function set_all_fan_speeds -a speed
+    if not is_number "$speed"
+        die "fan speed must be a number"
+    end
+
+    set -l target (math --scale=0 "$speed")
+    if test $target -lt 30
+        set target 30
+    else if test $target -gt 100
+        set target 100
+    end
+
+    set -l fan_ids (query_fan_ids)
+    if test (count $fan_ids) -eq 0
+        die "no NVIDIA fans found"
+    end
+
+    set -l args
+    for fan_id in $fan_ids
+        set -a args -a "[fan:$fan_id]/GPUTargetFanSpeed=$target"
+    end
+
+    if nvs $args >/dev/null
+        echo "Set all fan targets to $target%"
+    else
+        die "failed to set NVIDIA fan speed"
+    end
+end
+
+function cmd_fan_status
+    sudo -v
+
+    set -l gpu_ids (query_gpu_ids)
+    set -l fan_ids (query_fan_ids)
+
+    if test (count $gpu_ids) -eq 0
+        die "no NVIDIA GPUs found"
+    end
+    if test (count $fan_ids) -eq 0
+        die "no NVIDIA fans found"
+    end
+
+    echo "GPUs"
+    for gpu_id in $gpu_ids
+        set -l name (query_gpu_name $gpu_id)
+        set -l state (nvs -q "[gpu:$gpu_id]/GPUFanControlState" -t 2>/dev/null | string trim)
+        echo "  GPU $gpu_id - $name"
+        echo "    manual control: $state"
+    end
+
+    echo ""
+    echo "Fans"
+    for fan_id in $fan_ids
+        set -l speed (nvs -q "[fan:$fan_id]/GPUTargetFanSpeed" -t 2>/dev/null | string trim)
+        echo "  Fan $fan_id: $speed%"
+    end
+end
+
+function cmd_fan_set -a speed
+    if test -z "$speed"
+        die "missing fan speed; run '$SCRIPT_NAME --help'"
+    end
+
+    sudo -v
+    set_gpu_fan_control_state 1
+    set_all_fan_speeds $speed
+end
+
+function cmd_fan_reset
+    sudo -v
+    set_gpu_fan_control_state 0
+end
+
+function prompt_choice -a title
+    set -l choices $argv[2..-1]
+
+    if type -q fzf
+        set -l selected (printf '%s\n' $choices | fzf --prompt="$title> " --height=40% --border)
+        if test $status -ne 0
+            return 1
+        end
+
+        echo $selected
+        return 0
+    end
+
+    echo $title
+    for idx in (seq (count $choices))
+        printf '  %d) %s\n' $idx $choices[$idx]
+    end
+
+    while true
+        read -P '> ' choice
+        if string match -qr '^[0-9]+$' -- $choice
+            if test $choice -ge 1; and test $choice -le (count $choices)
+                echo $choices[$choice]
+                return 0
+            end
+        end
+
+        echo "Invalid choice"
+    end
+end
+
+function prompt_value -a title
+    set -l default_value $argv[2]
+
+    if test -n "$default_value"
+        read -P "$title [$default_value]: " value
+        if test -z "$value"
+            echo $default_value
+        else
+            echo $value
+        end
+    else
+        read -P "$title: " value
+        echo $value
+    end
 end
 
 function cmd_tui
-    query_limits
+    sudo -v
 
-    echo "GPU $gpu_id power limit: $current_w W (default $default_w W, range $min_w-$max_w W)"
-    echo -n "New limit in watts, or preset [eco/balanced/default/performance]: "
-    read -l value
+    while true
+        if type -q clear
+            clear
+        end
 
-    if test -z "$value"
-        die "no power limit entered"
+        set -l saved_gpu_all $gpu_all
+        set -l saved_gpu_id $gpu_id
+        set -g gpu_all 1
+        echo "Current power status"
+        cmd_status
+        set -g gpu_all $saved_gpu_all
+        set -g gpu_id $saved_gpu_id
+
+        echo ""
+        echo "Current fan status"
+        cmd_fan_status
+        echo ""
+
+        set -l action (prompt_choice "Action" \
+            "Power: set" \
+            "Power: increase" \
+            "Power: decrease" \
+            "Power: reset" \
+            "Fan: set" \
+            "Fan: reset" \
+            "Fan: status" \
+            "Quit")
+
+        switch $action
+            case "Power: set"
+                set -l scope (prompt_choice "Target" "GPU 0" "GPU 1" "All GPUs")
+                set -l value (prompt_value "Power limit in watts or preset" "balanced")
+                switch $scope
+                    case "All GPUs"
+                        set -g gpu_all 1
+                    case "GPU 0"
+                        set -g gpu_all 0
+                        set -g gpu_id 0
+                    case "GPU 1"
+                        set -g gpu_all 0
+                        set -g gpu_id 1
+                end
+                cmd_set $value
+            case "Power: increase"
+                set -l scope (prompt_choice "Target" "GPU 0" "GPU 1" "All GPUs")
+                set -l value (prompt_value "Increase by watts" "20")
+                switch $scope
+                    case "All GPUs"
+                        set -g gpu_all 1
+                    case "GPU 0"
+                        set -g gpu_all 0
+                        set -g gpu_id 0
+                    case "GPU 1"
+                        set -g gpu_all 0
+                        set -g gpu_id 1
+                end
+                cmd_inc $value
+            case "Power: decrease"
+                set -l scope (prompt_choice "Target" "GPU 0" "GPU 1" "All GPUs")
+                set -l value (prompt_value "Decrease by watts" "20")
+                switch $scope
+                    case "All GPUs"
+                        set -g gpu_all 1
+                    case "GPU 0"
+                        set -g gpu_all 0
+                        set -g gpu_id 0
+                    case "GPU 1"
+                        set -g gpu_all 0
+                        set -g gpu_id 1
+                end
+                cmd_dec $value
+            case "Power: reset"
+                set -l scope (prompt_choice "Target" "GPU 0" "GPU 1" "All GPUs")
+                switch $scope
+                    case "All GPUs"
+                        set -g gpu_all 1
+                    case "GPU 0"
+                        set -g gpu_all 0
+                        set -g gpu_id 0
+                    case "GPU 1"
+                        set -g gpu_all 0
+                        set -g gpu_id 1
+                end
+                cmd_reset
+            case "Fan: set"
+                set -l speed (prompt_value "Fan speed percent" "100")
+                cmd_fan_set $speed
+            case "Fan: reset"
+                cmd_fan_reset
+            case "Fan: status"
+                cmd_fan_status
+                echo ""
+                read -P "Press enter to continue" _
+            case "Quit"
+                exit 0
+        end
+
+        echo ""
+        read -P "Press enter to continue" _
     end
-
-    set -l watts (normalize_watts $value)
-    apply_limit $watts
 end
 
-parse_gpu_id $argv
+set -g gpu_id 0
+set -g gpu_all 0
+
+for arg in $argv
+    if string match -qr '^--id=[0-9]+$' -- $arg
+        set -g gpu_id (string replace -- '--id=' '' $arg)
+    else if test $arg = --all
+        set -g gpu_all 1
+    end
+end
 
 if contains -- --help $argv; or contains -- -h $argv
     show_help
@@ -216,6 +541,8 @@ end
 
 set subcommand $argv[1]
 set value $argv[2]
+set fan_subcommand $argv[2]
+set fan_value $argv[3]
 
 switch $subcommand
     case list
@@ -230,6 +557,21 @@ switch $subcommand
         cmd_dec $value
     case reset
         cmd_reset
+    case fan
+        switch $fan_subcommand
+            case list
+                show_fan_targets
+            case status
+                cmd_fan_status
+            case set
+                cmd_fan_set $fan_value
+            case reset
+                cmd_fan_reset
+            case ''
+                die "missing fan subcommand; run '$SCRIPT_NAME --help'"
+            case '*'
+                die "unknown fan subcommand '$fan_subcommand'; run '$SCRIPT_NAME --help'"
+        end
     case tui
         cmd_tui
     case ''

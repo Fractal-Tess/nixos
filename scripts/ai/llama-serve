@@ -1,0 +1,422 @@
+#!/usr/bin/env fish
+
+set -g SCRIPT_NAME (path basename (status filename))
+set -g DEFAULT_MODEL_DIR /mnt/vault/ai/models/llms
+set -g DEFAULT_CTX 65536
+set -g DEFAULT_DEVICES CUDA0,CUDA1
+set -g DEFAULT_HOST 0.0.0.0
+set -g DEFAULT_PORT 8080
+set -g DEFAULT_SPLIT_MODE layer
+set -g DEFAULT_TENSOR_SPLIT 1,1
+set -g DEFAULT_GPU_LAYERS 999
+set -g DEFAULT_PARALLEL 8
+set -g DEFAULT_HTTP_THREADS 16
+set -g DEFAULT_BATCH_SIZE 2048
+set -g DEFAULT_UBATCH_SIZE 512
+set -g LLAMA_SERVER_BIN /run/current-system/sw/bin/llama-server
+
+function show_help
+    echo "Usage: $SCRIPT_NAME [options] [-- extra llama-server args]"
+    echo
+    echo "Start llama.cpp's HTTP server with a selected GGUF model."
+    echo
+    echo "Options:"
+    echo "  --model PATH|NAME       Model path or basename fragment"
+    echo "  --model-dir PATH        Model search directory (default: $DEFAULT_MODEL_DIR)"
+    echo "  --ctx N                 Context size (default: $DEFAULT_CTX)"
+    echo "  --ctx-per-slot N        Per-slot context target; total ctx becomes N * --parallel"
+    echo "  --device LIST           Devices, e.g. CUDA0 or CUDA0,CUDA1"
+    echo "  --host ADDR             Bind host (default: $DEFAULT_HOST)"
+    echo "  --port N                Port (default: $DEFAULT_PORT)"
+    echo "  --parallel N            Concurrent server slots (default: $DEFAULT_PARALLEL)"
+    echo "  --threads-http N        HTTP worker threads (default: $DEFAULT_HTTP_THREADS)"
+    echo "  --batch-size N          Logical batch size (default: $DEFAULT_BATCH_SIZE)"
+    echo "  --ubatch-size N         Physical batch size (default: $DEFAULT_UBATCH_SIZE)"
+    echo "  --split-mode MODE       none|layer|row|tensor (default: $DEFAULT_SPLIT_MODE)"
+    echo "  --tensor-split A,B      Tensor split across GPUs (default: $DEFAULT_TENSOR_SPLIT)"
+    echo "  --gpu-layers N          GPU layers to offload (default: $DEFAULT_GPU_LAYERS)"
+    echo "  --cont-batching on|off  Continuous batching (default: on)"
+    echo "  --flash-attn on|off     Flash attention (default: on)"
+    echo "  --warmup on|off         Warmup pass (default: off)"
+    echo "  --list                  List available GGUF models and exit"
+    echo "  --dry-run               Print command without starting the server"
+    echo "  --help                  Show this help"
+    echo
+    echo "Examples:"
+    echo "  $SCRIPT_NAME --model qwen3.6-27b-opusdistil --ctx 65536"
+    echo "  $SCRIPT_NAME --model qwen3.6-27b-opusdistil --ctx-per-slot 65536 --parallel 4"
+    echo "  $SCRIPT_NAME --model /mnt/vault/ai/models/llms/phi-4-Q6_K.gguf --device CUDA1"
+    echo "  $SCRIPT_NAME --model gemma --port 8081 --parallel 12 -- --jinja"
+end
+
+function die -a message
+    echo "$SCRIPT_NAME: $message" >&2
+    exit 1
+end
+
+function current_ctx_per_slot
+    if test -n "$ctx_per_slot"
+        echo $ctx_per_slot
+    else
+        math "$ctx / $parallel"
+    end
+end
+
+function current_model_label
+    if test -n "$model_selector"
+        echo "$model_selector"
+    else
+        echo "<select on launch>"
+    end
+end
+
+function prompt_value -a label current
+    read -P "$label [$current]: " value
+    if test -n "$value"
+        echo "$value"
+    else
+        echo "$current"
+    end
+end
+
+function choose_option -a label current
+    set -l options $argv[3..-1]
+
+    echo "$label"
+    for i in (seq (count $options))
+        set -l marker " "
+        if test "$options[$i]" = "$current"
+            set marker "*"
+        end
+        echo "  $i) $options[$i] $marker"
+    end
+
+    read -P "Choice [$current]: " choice
+    if test -z "$choice"
+        echo "$current"
+        return 0
+    end
+
+    if string match -qr '^[0-9]+$' -- "$choice"
+        set -l idx $choice
+        if test $idx -ge 1 -a $idx -le (count $options)
+            echo $options[$idx]
+            return 0
+        end
+    end
+
+    for option in $options
+        if test "$option" = "$choice"
+            echo "$option"
+            return 0
+        end
+    end
+
+    echo "$current"
+end
+
+function interactive_menu
+    while true
+        echo
+        echo "llama-serve"
+        echo "  1) model:          "(current_model_label)
+        echo "  2) model dir:      $model_dir"
+        echo "  3) total ctx:      $ctx (default $DEFAULT_CTX)"
+        if test -n "$ctx_per_slot"
+            echo "  4) ctx per slot:   $ctx_per_slot"
+        else
+            echo "  4) ctx per slot:   off"
+        end
+        echo "  5) devices:        $device (default $DEFAULT_DEVICES)"
+        echo "  6) host:           $host (default $DEFAULT_HOST)"
+        echo "  7) port:           $port (default $DEFAULT_PORT)"
+        echo "  8) slots:          $parallel (default $DEFAULT_PARALLEL)"
+        echo "  9) threads-http:   $threads_http (default $DEFAULT_HTTP_THREADS)"
+        echo " 10) batch size:     $batch_size (default $DEFAULT_BATCH_SIZE)"
+        echo " 11) ubatch size:    $ubatch_size (default $DEFAULT_UBATCH_SIZE)"
+        echo " 12) split mode:     $split_mode (default $DEFAULT_SPLIT_MODE)"
+        echo " 13) tensor split:   $tensor_split (default $DEFAULT_TENSOR_SPLIT)"
+        echo " 14) gpu layers:     $gpu_layers (default $DEFAULT_GPU_LAYERS)"
+        echo " 15) cont batching:  $cont_batching"
+        echo " 16) flash attn:     $flash_attn"
+        echo " 17) warmup:         $warmup"
+        echo " 18) dry run:        $dry_run"
+        echo "  -- estimated ctx per slot: "(current_ctx_per_slot)
+        echo
+        echo "  l) launch"
+        echo "  q) quit"
+
+        read -P "Select option: " choice
+
+        switch $choice
+            case 1
+                set -l selected (resolve_model "$model_selector" "$model_dir")
+                test -n "$selected"; and set -g model_selector "$selected"
+            case 2
+                set -g model_dir (prompt_value "Model directory" "$model_dir")
+            case 3
+                set -g ctx (prompt_value "Total context" "$ctx")
+                set -g ctx_per_slot
+            case 4
+                set -l current_per_slot off
+                if test -n "$ctx_per_slot"
+                    set current_per_slot $ctx_per_slot
+                end
+                read -P "Per-slot context [current: $current_per_slot, 0 to disable]: " value
+                if test -n "$value"
+                    if test "$value" = 0
+                        set -g ctx_per_slot
+                    else
+                        set -g ctx_per_slot "$value"
+                        set -g ctx (math "$ctx_per_slot * $parallel")
+                    end
+                end
+            case 5
+                set -g device (prompt_value "Devices" "$device")
+            case 6
+                set -g host (prompt_value "Host" "$host")
+            case 7
+                set -g port (prompt_value "Port" "$port")
+            case 8
+                set -g parallel (prompt_value "Slots" "$parallel")
+                if test -n "$ctx_per_slot"
+                    set -g ctx (math "$ctx_per_slot * $parallel")
+                end
+            case 9
+                set -g threads_http (prompt_value "HTTP threads" "$threads_http")
+            case 10
+                set -g batch_size (prompt_value "Batch size" "$batch_size")
+            case 11
+                set -g ubatch_size (prompt_value "Ubatch size" "$ubatch_size")
+            case 12
+                set -g split_mode (choose_option "Split mode" "$split_mode" none layer row tensor)
+            case 13
+                set -g tensor_split (prompt_value "Tensor split" "$tensor_split")
+            case 14
+                set -g gpu_layers (prompt_value "GPU layers" "$gpu_layers")
+            case 15
+                set -g cont_batching (choose_option "Continuous batching" "$cont_batching" on off)
+            case 16
+                set -g flash_attn (choose_option "Flash attention" "$flash_attn" on off auto)
+            case 17
+                set -g warmup (choose_option "Warmup" "$warmup" on off)
+            case 18
+                if test "$dry_run" = 1
+                    set -g dry_run 0
+                else
+                    set -g dry_run 1
+                end
+            case l L
+                return 0
+            case q Q
+                exit 0
+        end
+    end
+end
+
+function resolve_model -a selector model_dir
+    if test -n "$selector"
+        if test -f "$selector"
+            realpath "$selector"
+            return 0
+        end
+
+        set -l matches (find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort | rg -i --fixed-strings "$selector")
+        set -l count (count $matches)
+
+        if test $count -eq 1
+            echo $matches[1]
+            return 0
+        else if test $count -gt 1
+            printf '%s\n' $matches | fzf --prompt="Select model > " --height=40% --reverse
+            return $status
+        end
+
+        return 1
+    end
+
+    find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort | fzf --prompt="Select model > " --height=40% --reverse
+end
+
+set -g model_dir $DEFAULT_MODEL_DIR
+set -g model_selector
+set -g ctx $DEFAULT_CTX
+set -g ctx_per_slot
+set -g device $DEFAULT_DEVICES
+set -g host $DEFAULT_HOST
+set -g port $DEFAULT_PORT
+set -g split_mode $DEFAULT_SPLIT_MODE
+set -g tensor_split $DEFAULT_TENSOR_SPLIT
+set -g gpu_layers $DEFAULT_GPU_LAYERS
+set -g parallel $DEFAULT_PARALLEL
+set -g threads_http $DEFAULT_HTTP_THREADS
+set -g batch_size $DEFAULT_BATCH_SIZE
+set -g ubatch_size $DEFAULT_UBATCH_SIZE
+set -g cont_batching on
+set -g flash_attn on
+set -g warmup off
+set -g dry_run 0
+set -g list_only 0
+set -g show_menu 0
+set -g passthrough
+set -g initial_argc (count $argv)
+
+while test (count $argv) -gt 0
+    switch $argv[1]
+        case --help -h
+            show_help
+            exit 0
+        case --menu
+            set show_menu 1
+            set -e argv[1]
+        case --model
+            test (count $argv) -ge 2; or die "missing value for --model"
+            set model_selector $argv[2]
+            set -e argv[1..2]
+        case --model-dir
+            test (count $argv) -ge 2; or die "missing value for --model-dir"
+            set model_dir $argv[2]
+            set -e argv[1..2]
+        case --ctx
+            test (count $argv) -ge 2; or die "missing value for --ctx"
+            set ctx $argv[2]
+            set -e argv[1..2]
+        case --ctx-per-slot
+            test (count $argv) -ge 2; or die "missing value for --ctx-per-slot"
+            set ctx_per_slot $argv[2]
+            set -e argv[1..2]
+        case --device
+            test (count $argv) -ge 2; or die "missing value for --device"
+            set device $argv[2]
+            set -e argv[1..2]
+        case --host
+            test (count $argv) -ge 2; or die "missing value for --host"
+            set host $argv[2]
+            set -e argv[1..2]
+        case --port
+            test (count $argv) -ge 2; or die "missing value for --port"
+            set port $argv[2]
+            set -e argv[1..2]
+        case --parallel
+            test (count $argv) -ge 2; or die "missing value for --parallel"
+            set parallel $argv[2]
+            set -e argv[1..2]
+        case --threads-http
+            test (count $argv) -ge 2; or die "missing value for --threads-http"
+            set threads_http $argv[2]
+            set -e argv[1..2]
+        case --batch-size
+            test (count $argv) -ge 2; or die "missing value for --batch-size"
+            set batch_size $argv[2]
+            set -e argv[1..2]
+        case --ubatch-size
+            test (count $argv) -ge 2; or die "missing value for --ubatch-size"
+            set ubatch_size $argv[2]
+            set -e argv[1..2]
+        case --split-mode
+            test (count $argv) -ge 2; or die "missing value for --split-mode"
+            set split_mode $argv[2]
+            set -e argv[1..2]
+        case --tensor-split
+            test (count $argv) -ge 2; or die "missing value for --tensor-split"
+            set tensor_split $argv[2]
+            set -e argv[1..2]
+        case --gpu-layers
+            test (count $argv) -ge 2; or die "missing value for --gpu-layers"
+            set gpu_layers $argv[2]
+            set -e argv[1..2]
+        case --cont-batching
+            test (count $argv) -ge 2; or die "missing value for --cont-batching"
+            set cont_batching $argv[2]
+            set -e argv[1..2]
+        case --flash-attn
+            test (count $argv) -ge 2; or die "missing value for --flash-attn"
+            set flash_attn $argv[2]
+            set -e argv[1..2]
+        case --warmup
+            test (count $argv) -ge 2; or die "missing value for --warmup"
+            set warmup $argv[2]
+            set -e argv[1..2]
+        case --list
+            set list_only 1
+            set -e argv[1]
+        case --dry-run
+            set dry_run 1
+            set -e argv[1]
+        case --
+            set passthrough $argv[2..-1]
+            break
+        case '*'
+            die "unknown option: $argv[1]"
+    end
+end
+
+test -d "$model_dir"; or die "model directory not found: $model_dir"
+test -x "$LLAMA_SERVER_BIN"; or die "llama-server binary not found: $LLAMA_SERVER_BIN"
+
+if test $show_menu -eq 1 -o $initial_argc -eq 0
+    interactive_menu
+end
+
+if test $list_only -eq 1
+    find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort
+    exit 0
+end
+
+set -l model_path (resolve_model "$model_selector" "$model_dir")
+test -n "$model_path"; or die "could not resolve model selection"
+test -f "$model_path"; or die "model not found: $model_path"
+
+if test -n "$ctx_per_slot"
+    set ctx (math "$ctx_per_slot * $parallel")
+end
+
+set -l flash_flag --flash-attn "$flash_attn"
+
+set -l warmup_flag --no-warmup
+if test "$warmup" = on
+    set warmup_flag --warmup
+end
+
+set -l cont_batching_flag --cont-batching
+if test "$cont_batching" = off
+    set cont_batching_flag --no-cont-batching
+end
+
+set -l cmd \
+    "$LLAMA_SERVER_BIN" \
+    -m "$model_path" \
+    --host "$host" \
+    --port "$port" \
+    --ctx-size "$ctx" \
+    --parallel "$parallel" \
+    --threads-http "$threads_http" \
+    --batch-size "$batch_size" \
+    --ubatch-size "$ubatch_size" \
+    --device "$device" \
+    --split-mode "$split_mode" \
+    --tensor-split "$tensor_split" \
+    --gpu-layers "$gpu_layers" \
+    $cont_batching_flag \
+    $flash_flag \
+    $warmup_flag \
+    $passthrough
+
+echo "Model: $model_path"
+echo "Host:  $host:$port"
+echo "CTX:   $ctx"
+echo "GPU:   $device"
+echo "Slots: $parallel"
+if test -n "$ctx_per_slot"
+    echo "Per-slot CTX target: $ctx_per_slot"
+    echo "Estimated CTX per slot: $ctx_per_slot"
+else
+    echo "Estimated CTX per slot: "(math "$ctx / $parallel")
+end
+
+if test $dry_run -eq 1
+    string join " " -- $cmd
+    exit 0
+end
+
+exec $cmd
