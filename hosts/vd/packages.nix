@@ -120,6 +120,7 @@
 
     # AI / LLM
     vllm # High-throughput and memory-efficient inference engine for LLMs
+    llama-cpp-cuda # llama.cpp with CUDA support for local GGUF inference
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime
     pnpm # Fast, disk space efficient package manager
