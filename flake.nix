@@ -48,7 +48,7 @@
     };
 
     asterveil = {
-      url = "path:/home/fractal-tess/dev/asterveil";
+      url = "github:Fractal-Tess/asterveil";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
