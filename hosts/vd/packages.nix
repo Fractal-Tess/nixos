@@ -18,6 +18,7 @@
     lm_sensors # Hardware monitoring tools
     btop-cuda # A btop application with nvidia support
     nvtopPackages.nvidia # NVIDIA GPU monitoring
+    asterveil # GPU power and fan control TUI
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
 
