@@ -104,7 +104,7 @@ end
 
 # ── Banner ────────────────────────────────────────────────────────────────────
 function _show_banner
-    set -l hostname (hostname)
+    set -l host_name (hostname)
     set -l kernel (uname -r)
     set -l last_commit (git log -1 --pretty=format:"%h - %s (%cr)" 2>/dev/null; or echo "No commits")
     set -l branch (git branch --show-current 2>/dev/null; or echo "unknown")
@@ -137,7 +137,7 @@ function _show_banner
     printf "$BOLD┌─────────────────────────────────────────────────────────────┐$NC\n"
     printf "$BOLD│$NC  $CYAN%-18s$NC                                         $BOLD│$NC\n" "System Information"
     printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
-    printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Hostname:" $hostname
+    printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Hostname:" $host_name
     printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Generation:" $current_gen
     printf "$BOLD│$NC  %-18s $GREEN%-40s$NC$BOLD│$NC\n" "Kernel:" $kernel
     printf "$BOLD├─────────────────────────────────────────────────────────────┤$NC\n"
@@ -304,9 +304,15 @@ if test "$has_local_changes" = true
         # Build JSON payload (escape diff_stat for JSON)
         set -l prompt_text "Write a git commit message (max 72 chars, imperative mood, no quotes) for a NixOS config repo. Be brief. Changes:\n\n$diff_stat\n\nRespond with ONLY the commit message, no explanations."
 
+        set -l escaped_prompt (
+            printf '%s' "$prompt_text" | python3 -c '
+import json, sys
+print(json.dumps(sys.stdin.read()))
+'
+        )
         set -l json_body (printf '{"model":"%s","stream":false,"max_tokens":2000,"messages":[{"role":"user","content":%s}]}' \
             $OPENROUTER_MODEL \
-            (printf '"%s"' (string escape --style=json $prompt_text)))
+            $escaped_prompt)
 
         set -l response (curl -s -X POST "https://openrouter.ai/api/v1/chat/completions" \
             -H "Authorization: Bearer $api_key" \
@@ -342,13 +348,13 @@ end
 # ── NixOS rebuild ─────────────────────────────────────────────────────────────
 _log_step "Rebuilding NixOS configuration..."
 
-set -l hostname (hostname)
-_log_info "Host: $hostname"
-_log_info "Flake: $NIXOS_DIR#$hostname"
+set -l host_name (hostname)
+_log_info "Host: $host_name"
+_log_info "Flake: $NIXOS_DIR#$host_name"
 echo ""
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
 
-sudo nixos-rebuild switch --flake "$NIXOS_DIR#$hostname" --impure
+sudo nixos-rebuild switch --flake "$NIXOS_DIR#$host_name" --impure
 set -l rebuild_status $status
 
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
@@ -364,7 +370,7 @@ if test $rebuild_status -ne 0
         end
     end
     # Kill background AI job if still running
-    if test $commit_msg_pid -ne 0
+    if test -n "$commit_msg_pid"; and test "$commit_msg_pid" -ne 0
         kill $commit_msg_pid 2>/dev/null
     end
     rm -f "$commit_msg_file"
@@ -385,7 +391,7 @@ if test "$has_local_changes" = true
     _log_step "Finalizing commit..."
 
     # Wait for background AI job
-    if test $commit_msg_pid -ne 0
+    if test -n "$commit_msg_pid"; and test "$commit_msg_pid" -ne 0
         wait $commit_msg_pid 2>/dev/null
     end
 
