@@ -21,56 +21,57 @@ final: prev: {
       exec "$TWS_HOME/tws" "$@"
     '';
 
-    targetPkgs = pkgs: with pkgs; [
-      # Java / JVM
-      zulu17
+    targetPkgs =
+      pkgs: with pkgs; [
+        # Java / JVM
+        zulu17
 
-      # X11 / GUI
-      xorg.libX11
-      xorg.libXext
-      xorg.libXrender
-      xorg.libXtst
-      xorg.libXi
-      xorg.libXrandr
-      xorg.libXcursor
-      xorg.libXfixes
-      xorg.libXinerama
-      xorg.libXcomposite
-      xorg.libXdamage
-      xorg.libXScrnSaver
-      xorg.libxcb
+        # X11 / GUI
+        xorg.libX11
+        xorg.libXext
+        xorg.libXrender
+        xorg.libXtst
+        xorg.libXi
+        xorg.libXrandr
+        xorg.libXcursor
+        xorg.libXfixes
+        xorg.libXinerama
+        xorg.libXcomposite
+        xorg.libXdamage
+        xorg.libXScrnSaver
+        xorg.libxcb
 
-      # GTK / Desktop integration
-      gtk3
-      glib
-      gdk-pixbuf
-      pango
-      cairo
-      atk
-      dbus
-      at-spi2-atk
+        # GTK / Desktop integration
+        gtk3
+        glib
+        gdk-pixbuf
+        pango
+        cairo
+        atk
+        dbus
+        at-spi2-atk
 
-      # System libs
-      glibc
-      zlib
-      freetype
-      fontconfig
-      alsa-lib
-      libGL
-      libGLU
-      mesa
-      libpulseaudio
-      nss
-      nspr
-      cups
-      expat
-      udev
-      libdrm
+        # System libs
+        glibc
+        zlib
+        freetype
+        fontconfig
+        alsa-lib
+        libGL
+        libGLU
+        mesa
+        libpulseaudio
+        nss
+        nspr
+        cups
+        expat
+        udev
+        libdrm
 
-      # Networking
-      curl
-      openssl
-    ];
+        # Networking
+        curl
+        openssl
+      ];
 
     profile = ''
       export _JAVA_AWT_WM_NONREPARENTING=1

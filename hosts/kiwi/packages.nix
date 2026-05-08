@@ -125,7 +125,7 @@ in
     wordlists # Common wordlists for security testing
     seclists # Collection of security testing lists
     hashcat # Advanced password recovery
-    hydra # Network logon cracker
+    # hydra # Network logon cracker - broken: test suite fails upstream
     crunch # Wordlist generator
 
     # Wireless Testing
@@ -150,7 +150,7 @@ in
 
     # Reverse Engineering & Binary Analysis
     ghidra # Software reverse engineering framework
-    (cutter.withPlugins (ps: with ps; [ rz-ghidra ])) # RE platform with Ghidra decompiler
+    # (cutter.withPlugins (ps: with ps; [ rz-ghidra ])) # RE platform with Ghidra decompiler - broken with Qt 6.11
     radare2 # Reverse engineering framework
     rizin # UNIX-like reverse engineering framework
     pwndbg-pkg # GDB plugin for exploit development

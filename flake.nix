@@ -98,6 +98,15 @@
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
                 (import ./overlays/netbird-fix.nix)
+                (
+                  final: prev: {
+                    # openldap's syncrepl test is flaky on this pinned nixpkgs revision
+                    # and blocks transitive consumers like bottles during local builds.
+                    openldap = prev.openldap.overrideAttrs (_: {
+                      doCheck = false;
+                    });
+                  }
+                )
                 (import ./overlays/claude-code)
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
