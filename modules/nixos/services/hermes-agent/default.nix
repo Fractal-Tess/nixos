@@ -43,6 +43,8 @@ in
   # CONFIG
   #============================================================================
   config = mkIf cfg.enable {
+    users.groups.hermes.members = [ username ];
+
     services.hermes-agent = {
       enable = true;
       addToSystemPackages = true;
@@ -86,8 +88,8 @@ in
     };
 
     systemd.tmpfiles.rules = [
-      "z /var/lib/hermes 0750 hermes hermes -"
-      "Z /var/lib/hermes/.hermes 0750 hermes hermes -"
+      "z /var/lib/hermes 0770 hermes hermes -"
+      "Z /var/lib/hermes/.hermes 0770 hermes hermes -"
     ];
   };
 }
