@@ -261,6 +261,13 @@
         workDir = "/home/fractal-tess";
         openFirewall = true;
       };
+
+      # Hermes Agent
+      hermes-agent = {
+        enable = true;
+        baseUrl = "http://127.0.0.1:8080/v1";
+        model = "hermes-local";
+      };
     };
   };
 
