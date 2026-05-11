@@ -13,6 +13,7 @@ set -g DEFAULT_PARALLEL 8
 set -g DEFAULT_HTTP_THREADS 16
 set -g DEFAULT_BATCH_SIZE 2048
 set -g DEFAULT_UBATCH_SIZE 512
+set -g DEFAULT_ALIAS hermes-local
 set -g LLAMA_SERVER_BIN /run/current-system/sw/bin/llama-server
 
 function show_help
@@ -32,6 +33,7 @@ function show_help
     echo "  --threads-http N        HTTP worker threads (default: $DEFAULT_HTTP_THREADS)"
     echo "  --batch-size N          Logical batch size (default: $DEFAULT_BATCH_SIZE)"
     echo "  --ubatch-size N         Physical batch size (default: $DEFAULT_UBATCH_SIZE)"
+    echo "  --alias NAME            Model alias exposed by the OpenAI API (default: $DEFAULT_ALIAS)"
     echo "  --split-mode MODE       none|layer|row|tensor (default: $DEFAULT_SPLIT_MODE)"
     echo "  --tensor-split A,B      Tensor split across GPUs (default: $DEFAULT_TENSOR_SPLIT)"
     echo "  --gpu-layers N          GPU layers to offload (default: $DEFAULT_GPU_LAYERS)"
@@ -43,7 +45,7 @@ function show_help
     echo "  --help                  Show this help"
     echo
     echo "Examples:"
-    echo "  $SCRIPT_NAME --model qwen3.6-27b-opusdistil --ctx 65536"
+    echo "  $SCRIPT_NAME --model qwen3.6-35b --ctx 65536"
     echo "  $SCRIPT_NAME --model qwen3.6-27b-opusdistil --ctx-per-slot 65536 --parallel 4"
     echo "  $SCRIPT_NAME --model /mnt/vault/ai/models/llms/phi-4-Q6_K.gguf --device CUDA1"
     echo "  $SCRIPT_NAME --model gemma --port 8081 --parallel 12 -- --jinja"
@@ -134,13 +136,14 @@ function interactive_menu
         echo "  9) threads-http:   $threads_http (default $DEFAULT_HTTP_THREADS)"
         echo " 10) batch size:     $batch_size (default $DEFAULT_BATCH_SIZE)"
         echo " 11) ubatch size:    $ubatch_size (default $DEFAULT_UBATCH_SIZE)"
-        echo " 12) split mode:     $split_mode (default $DEFAULT_SPLIT_MODE)"
-        echo " 13) tensor split:   $tensor_split (default $DEFAULT_TENSOR_SPLIT)"
-        echo " 14) gpu layers:     $gpu_layers (default $DEFAULT_GPU_LAYERS)"
-        echo " 15) cont batching:  $cont_batching"
-        echo " 16) flash attn:     $flash_attn"
-        echo " 17) warmup:         $warmup"
-        echo " 18) dry run:        $dry_run"
+        echo " 12) alias:          $alias (default $DEFAULT_ALIAS)"
+        echo " 13) split mode:     $split_mode (default $DEFAULT_SPLIT_MODE)"
+        echo " 14) tensor split:   $tensor_split (default $DEFAULT_TENSOR_SPLIT)"
+        echo " 15) gpu layers:     $gpu_layers (default $DEFAULT_GPU_LAYERS)"
+        echo " 16) cont batching:  $cont_batching"
+        echo " 17) flash attn:     $flash_attn"
+        echo " 18) warmup:         $warmup"
+        echo " 19) dry run:        $dry_run"
         echo "  -- estimated ctx per slot: "(current_ctx_per_slot)
         echo
         echo "  l) launch"
@@ -189,18 +192,20 @@ function interactive_menu
             case 11
                 set -g ubatch_size (prompt_value "Ubatch size" "$ubatch_size")
             case 12
-                set -g split_mode (choose_option "Split mode" "$split_mode" none layer row tensor)
+                set -g alias (prompt_value "Model alias" "$alias")
             case 13
-                set -g tensor_split (prompt_value "Tensor split" "$tensor_split")
+                set -g split_mode (choose_option "Split mode" "$split_mode" none layer row tensor)
             case 14
-                set -g gpu_layers (prompt_value "GPU layers" "$gpu_layers")
+                set -g tensor_split (prompt_value "Tensor split" "$tensor_split")
             case 15
-                set -g cont_batching (choose_option "Continuous batching" "$cont_batching" on off)
+                set -g gpu_layers (prompt_value "GPU layers" "$gpu_layers")
             case 16
-                set -g flash_attn (choose_option "Flash attention" "$flash_attn" on off auto)
+                set -g cont_batching (choose_option "Continuous batching" "$cont_batching" on off)
             case 17
-                set -g warmup (choose_option "Warmup" "$warmup" on off)
+                set -g flash_attn (choose_option "Flash attention" "$flash_attn" on off auto)
             case 18
+                set -g warmup (choose_option "Warmup" "$warmup" on off)
+            case 19
                 if test "$dry_run" = 1
                     set -g dry_run 0
                 else
@@ -252,6 +257,7 @@ set -g parallel $DEFAULT_PARALLEL
 set -g threads_http $DEFAULT_HTTP_THREADS
 set -g batch_size $DEFAULT_BATCH_SIZE
 set -g ubatch_size $DEFAULT_UBATCH_SIZE
+set -g alias $DEFAULT_ALIAS
 set -g cont_batching on
 set -g flash_attn on
 set -g warmup off
@@ -312,6 +318,10 @@ while test (count $argv) -gt 0
         case --ubatch-size
             test (count $argv) -ge 2; or die "missing value for --ubatch-size"
             set ubatch_size $argv[2]
+            set -e argv[1..2]
+        case --alias
+            test (count $argv) -ge 2; or die "missing value for --alias"
+            set alias $argv[2]
             set -e argv[1..2]
         case --split-mode
             test (count $argv) -ge 2; or die "missing value for --split-mode"
@@ -393,6 +403,7 @@ set -l cmd \
     --threads-http "$threads_http" \
     --batch-size "$batch_size" \
     --ubatch-size "$ubatch_size" \
+    --alias "$alias" \
     --device "$device" \
     --split-mode "$split_mode" \
     --tensor-split "$tensor_split" \
@@ -404,6 +415,7 @@ set -l cmd \
 
 echo "Model: $model_path"
 echo "Host:  $host:$port"
+echo "Alias: $alias"
 echo "CTX:   $ctx"
 echo "GPU:   $device"
 echo "Slots: $parallel"
