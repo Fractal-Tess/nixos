@@ -37,6 +37,12 @@ in
       default = "hermes-local";
       description = "Default model name for Hermes Agent.";
     };
+
+    contextLength = mkOption {
+      type = types.int;
+      default = 65536;
+      description = "Context length advertised to Hermes for the default model.";
+    };
   };
 
   #============================================================================
@@ -52,6 +58,7 @@ in
       settings = {
         model = {
           base_url = cfg.baseUrl;
+          context_length = cfg.contextLength;
           default = cfg.model;
         };
         toolsets = [ "all" ];
