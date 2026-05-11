@@ -13,6 +13,7 @@ in
 {
 
   imports = [
+    ./hermes-agent.nix
     ./ssh.nix
     ./z-ai.nix
     ./minimax.nix

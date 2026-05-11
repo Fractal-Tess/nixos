@@ -84,5 +84,10 @@ in
         nodejs
       ];
     };
+
+    systemd.tmpfiles.rules = [
+      "z /var/lib/hermes 0750 hermes hermes -"
+      "Z /var/lib/hermes/.hermes 0750 hermes hermes -"
+    ];
   };
 }
