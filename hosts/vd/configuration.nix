@@ -264,6 +264,8 @@
       };
 
       # Hermes Agent
+      firecrawl.enable = true;
+
       hermes-agent = {
         enable = true;
         baseUrl = "http://127.0.0.1:8080/v1";

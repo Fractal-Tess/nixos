@@ -75,6 +75,12 @@ in
           memory_enabled = true;
           user_profile_enabled = true;
         };
+      }
+      // optionalAttrs config.modules.services.firecrawl.enable {
+        web = {
+          search_backend = "firecrawl";
+          extract_backend = "firecrawl";
+        };
       };
 
       environment.OPENAI_API_KEY = "local";
