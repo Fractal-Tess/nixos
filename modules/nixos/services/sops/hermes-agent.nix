@@ -38,6 +38,7 @@ in
       mode = "0600";
       content = ''
         OPENAI_API_KEY=local
+        FIRECRAWL_API_URL=http://127.0.0.1:${toString config.modules.services.firecrawl.port}
         TELEGRAM_BOT_TOKEN=${config.sops.placeholder.hermes_telegram_bot_token}
         TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.hermes_telegram_allowed_users}
       '';
