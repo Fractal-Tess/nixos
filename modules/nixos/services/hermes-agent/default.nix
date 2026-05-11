@@ -54,6 +54,10 @@ in
     services.hermes-agent = {
       enable = true;
       addToSystemPackages = true;
+      createUser = false;
+      group = username;
+      user = username;
+      workingDirectory = "/home/${username}";
 
       settings = {
         model = {
@@ -64,6 +68,7 @@ in
         toolsets = [ "all" ];
         terminal = {
           backend = "local";
+          cwd = "/home/${username}";
           timeout = 180;
         };
         memory = {
@@ -95,8 +100,9 @@ in
     };
 
     systemd.tmpfiles.rules = [
-      "z /var/lib/hermes 0770 hermes hermes -"
-      "Z /var/lib/hermes/.hermes 0770 hermes hermes -"
+      "z /var/lib/hermes 0770 ${username} ${username} -"
+      "Z /var/lib/hermes/.hermes 0770 ${username} ${username} -"
+      "L+ /var/lib/hermes/dev - - - - /home/${username}/dev"
     ];
   };
 }

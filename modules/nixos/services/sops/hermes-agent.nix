@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  username,
   ...
 }:
 
@@ -17,23 +18,23 @@ in
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {
     sops.secrets = {
       hermes_telegram_bot_token = {
-        owner = "hermes";
-        group = "hermes";
+        owner = username;
+        group = username;
         sopsFile = ../../../../secrets/hermes-agent.yaml;
         format = "yaml";
       };
 
       hermes_telegram_allowed_users = {
-        owner = "hermes";
-        group = "hermes";
+        owner = username;
+        group = username;
         sopsFile = ../../../../secrets/hermes-agent.yaml;
         format = "yaml";
       };
     };
 
     sops.templates."hermes-agent.env" = {
-      owner = "hermes";
-      group = "hermes";
+      owner = username;
+      group = username;
       mode = "0600";
       content = ''
         OPENAI_API_KEY=local
