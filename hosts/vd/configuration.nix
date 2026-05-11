@@ -220,6 +220,7 @@
         z_ai.enable = true;
         minimax.enable = true;
         syncthing.enable = true;
+        hermes-agent.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
       };
 
