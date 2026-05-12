@@ -268,10 +268,10 @@
 
       hermes-agent = {
         enable = true;
-        baseUrl = "http://127.0.0.1:8080/v1";
+        provider = "openrouter";
         container.enable = false;
         contextLength = 65536;
-        model = "hermes-local";
+        openrouter.model = "deepseek/deepseek-v4-flash";
       };
     };
   };

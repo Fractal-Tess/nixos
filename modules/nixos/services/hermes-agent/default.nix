@@ -24,6 +24,26 @@ in
       description = "OpenAI-compatible inference endpoint used by Hermes Agent.";
     };
 
+    provider = mkOption {
+      type = types.enum [ "local" "openrouter" ];
+      default = "local";
+      description = "Preset used for Hermes Agent's OpenAI-compatible backend.";
+    };
+
+    openrouter = {
+      baseUrl = mkOption {
+        type = types.str;
+        default = "https://openrouter.ai/api/v1";
+        description = "OpenRouter OpenAI-compatible endpoint used by Hermes Agent.";
+      };
+
+      model = mkOption {
+        type = types.str;
+        default = "openai/gpt-5-nano";
+        description = "Default OpenRouter model name for Hermes Agent.";
+      };
+    };
+
     container = {
       enable = mkOption {
         type = types.bool;
@@ -61,9 +81,9 @@ in
 
       settings = {
         model = {
-          base_url = cfg.baseUrl;
+          base_url = if cfg.provider == "openrouter" then cfg.openrouter.baseUrl else cfg.baseUrl;
           context_length = cfg.contextLength;
-          default = cfg.model;
+          default = if cfg.provider == "openrouter" then cfg.openrouter.model else cfg.model;
         };
         toolsets = [ "all" ];
         terminal = {
@@ -82,8 +102,6 @@ in
           extract_backend = "firecrawl";
         };
       };
-
-      environment.OPENAI_API_KEY = "local";
 
       container = {
         enable = cfg.container.enable;
