@@ -102,6 +102,7 @@ in
         curl
         jq
         nodejs
+        github-mcp-server
       ];
     };
 
