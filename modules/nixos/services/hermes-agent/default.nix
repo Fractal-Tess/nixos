@@ -24,26 +24,6 @@ in
       description = "OpenAI-compatible inference endpoint used by Hermes Agent.";
     };
 
-    provider = mkOption {
-      type = types.enum [ "local" "openrouter" ];
-      default = "local";
-      description = "Preset used for Hermes Agent's OpenAI-compatible backend.";
-    };
-
-    openrouter = {
-      baseUrl = mkOption {
-        type = types.str;
-        default = "https://openrouter.ai/api/v1";
-        description = "OpenRouter OpenAI-compatible endpoint used by Hermes Agent.";
-      };
-
-      model = mkOption {
-        type = types.str;
-        default = "openai/gpt-5-nano";
-        description = "Default OpenRouter model name for Hermes Agent.";
-      };
-    };
-
     container = {
       enable = mkOption {
         type = types.bool;
@@ -59,9 +39,9 @@ in
     };
 
     contextLength = mkOption {
-      type = types.int;
-      default = 65536;
-      description = "Context length advertised to Hermes for the default model.";
+      type = types.nullOr types.int;
+      default = null;
+      description = "Optional context length advertised to Hermes for the default model.";
     };
   };
 
@@ -80,11 +60,14 @@ in
       workingDirectory = "/home/${username}";
 
       settings = {
-        model = {
-          base_url = if cfg.provider == "openrouter" then cfg.openrouter.baseUrl else cfg.baseUrl;
-          context_length = cfg.contextLength;
-          default = if cfg.provider == "openrouter" then cfg.openrouter.model else cfg.model;
-        };
+        model =
+          {
+            base_url = cfg.baseUrl;
+            default = cfg.model;
+          }
+          // optionalAttrs (cfg.contextLength != null) {
+            context_length = cfg.contextLength;
+          };
         toolsets = [ "all" ];
         terminal = {
           backend = "local";
