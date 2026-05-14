@@ -13,7 +13,7 @@
 
     # Hardware monitoring and control
     lm_sensors # Hardware monitoring tools
-    btop # Resource monitor with CPU, memory, disk, network
+    btop-rocm # Resource monitor with CPU, memory, disk, network (ROCm build for AMD GPU/APU)
     nvtopPackages.amd # AMD GPU monitoring
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
