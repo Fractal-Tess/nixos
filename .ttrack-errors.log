@@ -1,3 +1,14 @@
 [2026-04-22T00:58:55.931Z] InfluxDB write error: ECONNREFUSED
 [2026-04-22T01:02:12.195Z] InfluxDB write error: ECONNREFUSED
 [2026-04-22T01:02:41.061Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:48:56.624Z] InfluxDB write error: Request timed out
+[2026-05-13T13:50:25.538Z] InfluxDB write error: Request timed out
+[2026-05-13T13:51:04.602Z] InfluxDB write error: Request timed out
+[2026-05-13T13:52:35.410Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:52:35.530Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:52:35.568Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:52:35.568Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:53:31.810Z] InfluxDB write error: Request timed out
+[2026-05-13T13:53:52.318Z] InfluxDB write error: ECONNREFUSED
+[2026-05-13T13:54:02.299Z] InfluxDB write error: Request timed out
+[2026-05-13T13:54:02.320Z] InfluxDB write error: Request timed out
