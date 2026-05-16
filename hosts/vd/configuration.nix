@@ -269,6 +269,7 @@
       hermes-agent = {
         enable = true;
         baseUrl = "https://opencode.ai/zen/go/v1";
+        provider = "opencode-go";
         container.enable = false;
         model = "deepseek-v4-flash";
       };
