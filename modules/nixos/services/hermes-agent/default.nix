@@ -38,6 +38,12 @@ in
       description = "Default model name for Hermes Agent.";
     };
 
+    provider = mkOption {
+      type = types.str;
+      default = "openrouter";
+      description = "Provider name for Hermes Agent (e.g., openrouter, opencode-go, opencode-zen).";
+    };
+
     contextLength = mkOption {
       type = types.nullOr types.int;
       default = null;
@@ -59,15 +65,16 @@ in
       user = username;
       workingDirectory = "/home/${username}";
 
-      settings = {
-        model =
-          {
-            base_url = cfg.baseUrl;
-            default = cfg.model;
-          }
-          // optionalAttrs (cfg.contextLength != null) {
-            context_length = cfg.contextLength;
-          };
+       settings = {
+         model =
+           {
+             base_url = cfg.baseUrl;
+             default = cfg.model;
+             provider = cfg.provider;
+           }
+           // optionalAttrs (cfg.contextLength != null) {
+             context_length = cfg.contextLength;
+           };
         toolsets = [ "all" ];
         terminal = {
           backend = "local";
