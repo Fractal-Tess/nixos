@@ -96,11 +96,18 @@
             {
               nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
+                (final: prev: {
+                  qt6Packages = prev.qt6Packages.overrideScope (
+                    _final: _prev: {
+                      extra-cmake-modules = final.kdePackages.extra-cmake-modules;
+                    }
+                  );
+                })
                 polymc.overlay
                 nix-matlab.overlay
                 (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
-                (import ./overlays/handy.nix)
+                (import ./overlays/terax.nix)
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
                 (import ./overlays/netbird-fix.nix)

@@ -187,6 +187,7 @@ in
 
     # AI assistants
     opencode # AI coding assistant
+    opencode-desktop # Desktop GUI for OpenCode
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     shapeshifter-tui # Codex account manager TUI
@@ -272,7 +273,7 @@ in
     hyprpicker # Color picker for Hyprland
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)
-    handy # Speech-to-text application (offline)
+    terax # AI-native terminal emulator
     sox # Dependency of claude code voice
     swaynotificationcenter # Notification daemon for Wayland
     libnotify # notify-send command for desktop notifications
@@ -317,7 +318,7 @@ in
     # OFFICE & PRODUCTIVITY
     #--------------------------------------------------------------------------
 
-    libreoffice # Office suite
+    # libreoffice # Office suite -- TEMPORARILY DISABLED (binary cache miss, source build too slow)
     obsidian # Knowledge base and note-taking
     # bitwarden-desktop # Password manager -- broken: electron-39 patch failure (upstream nixpkgs bug)
     zathura # Document viewer
@@ -377,6 +378,7 @@ in
     #--------------------------------------------------------------------------
 
     # Terminal multiplexers
+    tmux # Terminal multiplexer
     zellij # Terminal multiplexer with layouts and session management
 
     # System information and utilities

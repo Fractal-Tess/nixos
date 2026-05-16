@@ -114,6 +114,7 @@
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
     opencode # AI coding assistant
+    opencode-desktop # Desktop GUI for OpenCode
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
@@ -239,7 +240,7 @@
     # Application launchers
     rofi # Launcher used by the Hyprland desktop config
     rofi-calc # Calculator mode for rofi launcher
-    handy # Speech-to-text application (offline)
+    terax # AI-native terminal emulator
 
     # Web browsers
     firefox # Open-source web browser
@@ -283,7 +284,7 @@
     # OFFICE & PRODUCTIVITY
     #--------------------------------------------------------------------------
 
-    libreoffice # Office suite
+    # libreoffice # Office suite -- TEMPORARILY DISABLED (binary cache miss, source build too slow)
     obsidian # Knowledge base and note-taking
     bitwarden-desktop # Password manager
 
@@ -317,6 +318,7 @@
     #--------------------------------------------------------------------------
 
     # Terminal multiplexers
+    tmux # Terminal multiplexer
     zellij # Terminal multiplexer with layouts and session management
 
     # System information and utilities
