@@ -112,6 +112,8 @@ in
         nodejs
         github-mcp-server
       ];
+
+      extraDependencyGroups = [ "messaging" ];
     };
 
     systemd.tmpfiles.rules = [
