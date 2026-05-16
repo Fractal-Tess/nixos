@@ -146,6 +146,8 @@
     #--------------------------------------------------------------------------
 
     # Terminal multiplexers
+    terax # AI-native terminal emulator
+    tmux # Terminal multiplexer
     zellij # Terminal multiplexer with layouts and session management
 
     # System information and utilities
