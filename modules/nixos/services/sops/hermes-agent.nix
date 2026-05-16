@@ -37,6 +37,13 @@ in
         sopsFile = ../../../../secrets/hermes-agent.yaml;
         format = "yaml";
       };
+
+      hermes_exa_api_key = {
+        owner = username;
+        group = username;
+        sopsFile = ../../../../secrets/hermes-agent.yaml;
+        format = "yaml";
+      };
     };
 
     sops.templates."hermes-agent.env" = {
@@ -45,10 +52,10 @@ in
       mode = "0600";
       content = ''
         OPENAI_API_KEY=local
-        FIRECRAWL_API_URL=http://127.0.0.1:${toString config.modules.services.firecrawl.port}
         TELEGRAM_BOT_TOKEN=${config.sops.placeholder.hermes_telegram_bot_token}
         TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.hermes_telegram_allowed_users}
         OPENCODE_GO_API_KEY=${config.sops.placeholder.hermes_opencode_go_api_key}
+        EXA_API_KEY=${config.sops.placeholder.hermes_exa_api_key}
       '';
     };
 

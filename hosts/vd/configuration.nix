@@ -264,8 +264,6 @@
       };
 
       # Hermes Agent
-      firecrawl.enable = true;
-
       hermes-agent = {
         enable = true;
         baseUrl = "https://opencode.ai/zen/go/v1";
