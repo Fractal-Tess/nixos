@@ -268,9 +268,9 @@
 
       hermes-agent = {
         enable = true;
-        baseUrl = "http://127.0.0.1:8080/v1";
+        baseUrl = "https://opencode.ai/zen/go/v1";
         container.enable = false;
-        model = "hermes-local";
+        model = "deepseek-v4-flash";
       };
     };
   };
