@@ -8,3 +8,6 @@ nixos-switch.log
 # Embedded repositories
 Handy/
 k8s/
+
+# Sisyphus state
+.sisyphus/
