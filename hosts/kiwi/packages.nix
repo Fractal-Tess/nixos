@@ -192,7 +192,6 @@ in
     codex # OpenAI Codex CLI
     shapeshifter-tui # Codex account manager TUI
     t3code # T3 Code desktop app
-    aider-chat # AI pair programming in the terminal
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini

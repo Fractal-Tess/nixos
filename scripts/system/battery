@@ -9,11 +9,28 @@
 
 set BATTERY /sys/class/power_supply/BAT0
 
+# ── State file for once-per-discharge-cycle notification thresholds ──────────
+set -l STATE_DIR "$HOME/.local/state/battery-check"
+set -l STATE_FILE "$STATE_DIR/notified"
+
+function is_plugged_in
+    for supply in /sys/class/power_supply/*
+        if test -f $supply/type; and test -f $supply/online
+            set type (cat $supply/type)
+            if test "$type" = Mains; and test (cat $supply/online) -eq 1
+                return 0
+            end
+        end
+    end
+
+    return 1
+end
+
 function show_help
     echo "Usage: battery <subcommand>"
     echo ""
     echo "Subcommands:"
-    echo "  check   Monitor mode: send warnings at <20%, shutdown at <10%"
+    echo "  check   Monitor mode: notify once at 25/20/15/10%, shutdown at 8%"
     echo "          (called by systemd timer every minute)"
     echo "  json    Output waybar JSON for the battery/charging module"
     echo "  status  Show human-readable current battery status"
@@ -33,37 +50,107 @@ function cmd_check
     check_battery_dir
 
     set capacity (cat $BATTERY/capacity)
-    set status (cat $BATTERY/status)
+    set battery_status (cat $BATTERY/status)
 
-    # Only act when on battery (not charging or full)
-    if test "$status" = Charging; or test "$status" = Full
+    # ── Step 1: Reset state when on AC (end of discharge cycle) ────────────
+    if is_plugged_in; or test "$battery_status" = Charging; or test "$battery_status" = Full
+        # Clear state so thresholds re-arm for next discharge cycle
+        if test -f "$STATE_FILE"
+            rm -f "$STATE_FILE"
+        end
         exit 0
     end
 
-    if test $capacity -lt 10
+    # ── Step 2: Ensure state directory exists ──────────────────────────────
+    if not test -d "$STATE_DIR"
+        mkdir -p "$STATE_DIR"
+    end
+
+    # ── Step 3: Build set of already-notified thresholds ───────────────────
+    set -l notified
+    if test -f "$STATE_FILE"
+        set notified (cat "$STATE_FILE")
+    end
+
+    # Helper: check if a threshold has already been notified
+    function _already_notified
+        for n in $notified
+            if test "$n" = "$argv[1]"
+                return 0
+            end
+        end
+        return 1
+    end
+
+    # ── Step 4: Notify once per threshold (highest first) ──────────────────
+    # Only the highest unmet threshold fires to avoid spam on fast drops.
+    set -l THRESHOLDS 25 20 15 10
+    set -l did_notify false
+
+    for threshold in $THRESHOLDS
+        if test $capacity -le $threshold
+            if not _already_notified "$threshold"
+                # Determine urgency and icon based on threshold
+                switch $threshold
+                    case 10
+                        set urgency critical
+                        set icon battery-caution
+                        set msg "Battery at $capacity%. Shutting down soon."
+                    case 15
+                        set urgency critical
+                        set icon battery-low
+                        set msg "Battery at $capacity%. Please plug in."
+                    case 20
+                        set urgency normal
+                        set icon battery-low
+                        set msg "Battery at $capacity%. Consider plugging in."
+                    case 25
+                        set urgency normal
+                        set icon battery-low
+                        set msg "Battery at $capacity%. Unplugged from charger."
+                end
+
+                notify-send -u "$urgency" -i "$icon" "Battery $threshold%" "$msg" \
+                    -h string:x-canonical-private-synchronous:battery-alert
+
+                # Persist this threshold
+                echo "$threshold" >> "$STATE_FILE"
+                set did_notify true
+            end
+
+            # Stop after firing a new notification so only one fires per minute,
+            # even on fast drops. Already-notified thresholds are skipped
+            # (no break), letting lower thresholds still fire on future runs.
+            if test "$did_notify" = true
+                break
+            end
+        end
+    end
+
+    # ── Step 5: Shutdown at critical level ─────────────────────────────────
+    if test $capacity -le 8
         notify-send -u critical -i battery-caution "Battery Critical" \
             "Battery at $capacity%. Shutting down now." \
             -h string:x-canonical-private-synchronous:battery-alert
         sleep 5
         systemctl poweroff
-    else if test $capacity -lt 20
-        notify-send -u critical -i battery-low "Battery Low" \
-            "Battery at $capacity%. Please plug in." \
-            -h string:x-canonical-private-synchronous:battery-alert
     end
+
+    # Clean up helper function
+    functions -e _already_notified
 end
 
 function cmd_json
     check_battery_dir
 
-    set status (cat $BATTERY/status)
+    set battery_status (cat $BATTERY/status)
     set capacity (cat $BATTERY/capacity)
 
-    if test "$status" = Charging
+    if test "$battery_status" = Charging
         echo "{\"text\": \"󰂄 $capacity%\", \"tooltip\": \"Charging: $capacity%\", \"class\": \"charging\", \"alt\": \"charging\"}"
-    else if test "$status" = Full
+    else if test "$battery_status" = Full
         echo "{\"text\": \"󰁹 $capacity%\", \"tooltip\": \"Full: $capacity%\", \"class\": \"full\", \"alt\": \"full\"}"
-    else if test "$status" = Discharging
+    else if test "$battery_status" = Discharging
         if test $capacity -lt 10
             echo "{\"text\": \"󰂎 $capacity%\", \"tooltip\": \"Critical: $capacity%\", \"class\": \"critical\", \"alt\": \"critical\"}"
         else if test $capacity -lt 20
@@ -72,27 +159,27 @@ function cmd_json
             echo "{\"text\": \"󰁼 $capacity%\", \"tooltip\": \"Discharging: $capacity%\", \"class\": \"discharging\", \"alt\": \"discharging\"}"
         end
     else
-        echo "{\"text\": \"󰂑 $capacity%\", \"tooltip\": \"$status: $capacity%\", \"class\": \"unknown\", \"alt\": \"unknown\"}"
+        echo "{\"text\": \"󰂑 $capacity%\", \"tooltip\": \"$battery_status: $capacity%\", \"class\": \"unknown\", \"alt\": \"unknown\"}"
     end
 end
 
 function cmd_status
     check_battery_dir
 
-    set status (cat $BATTERY/status)
+    set battery_status (cat $BATTERY/status)
     set capacity (cat $BATTERY/capacity)
 
-    echo "Battery Status: $status"
+    echo "Battery Status: $battery_status"
     echo "Battery Level: $capacity%"
 
-    if test "$status" = Charging
+    if test "$battery_status" = Charging
         echo "Laptop is currently charging"
-    else if test "$status" = Full
+    else if test "$battery_status" = Full
         echo "Battery is fully charged"
-    else if test "$status" = Discharging
+    else if test "$battery_status" = Discharging
         echo "Laptop is running on battery power"
     else
-        echo "Unknown battery state: $status"
+        echo "Unknown battery state: $battery_status"
     end
 end
 

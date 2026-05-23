@@ -65,16 +65,15 @@ in
       user = username;
       workingDirectory = "/home/${username}";
 
-       settings = {
-         model =
-           {
-             base_url = cfg.baseUrl;
-             default = cfg.model;
-             provider = cfg.provider;
-           }
-           // optionalAttrs (cfg.contextLength != null) {
-             context_length = cfg.contextLength;
-           };
+      settings = {
+        model = {
+          base_url = cfg.baseUrl;
+          default = cfg.model;
+          provider = cfg.provider;
+        }
+        // optionalAttrs (cfg.contextLength != null) {
+          context_length = cfg.contextLength;
+        };
         toolsets = [ "all" ];
         terminal = {
           backend = "local";
