@@ -21,6 +21,7 @@ in
             find "$out" -name .git -print0 | xargs -0 rm -rf
           '';
         };
+        npmRoot = "tools/server/webui";
         npmDepsHash = "sha256-RAFtsbBGBjteCt5yXhrmHL39rIDJMCFBETgzId2eRRk=";
         cmakeFlags =
           let
