@@ -141,6 +141,7 @@
     gnumake # Build automation tool
 
     # Development utilities
+    devenv # Fast, declarative, reproducible dev environments
     # flyctl # Command-line tool for fly.io
     hyperfine # Command-line benchmarking tool
     tokei # Count code statistics by language
