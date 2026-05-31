@@ -57,6 +57,10 @@
         "flakes"
       ];
       auto-optimise-store = true;
+      trusted-users = [
+        "root"
+        "fractal-tess"
+      ];
     };
 
     gc = {
