@@ -143,6 +143,11 @@
         source ~/.secrets.fish
       end
 
+      # Devenv auto-activation hook
+      if command -q devenv
+        devenv hook fish | source
+      end
+
       # Add scripts to PATH
       if test -d ~/nixos/scripts
         fish_add_path ~/nixos/scripts
