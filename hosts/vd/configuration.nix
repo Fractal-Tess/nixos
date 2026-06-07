@@ -263,6 +263,14 @@
         openFirewall = true;
       };
 
+      # OpenCode Remote Server
+      opencode-server = {
+        enable = true;
+        host = "100.91.0.2";
+        port = 4096;
+        extraArgs = [ "--print-logs" ];
+      };
+
       # Hermes Agent
       hermes-agent = {
         enable = true;
