@@ -39,8 +39,9 @@ function show_help
     echo "  --gpu-layers N          GPU layers to offload (default: $DEFAULT_GPU_LAYERS)"
     echo "  --cont-batching on|off  Continuous batching (default: on)"
     echo "  --flash-attn on|off     Flash attention (default: on)"
-    echo "  --warmup on|off         Warmup pass (default: off)"
-    echo "  --list                  List available GGUF models and exit"
+echo "  --warmup on|off         Warmup pass (default: off)"
+	echo "  --reasoning on|off|auto  Enable reasoning/thinking (default: auto)"
+	echo "  --list                  List available GGUF models and exit"
     echo "  --dry-run               Print command without starting the server"
     echo "  --help                  Show this help"
     echo
@@ -84,13 +85,13 @@ end
 function choose_option -a label current
     set -l options $argv[3..-1]
 
-    echo "$label"
+    echo "$label" >&2
     for i in (seq (count $options))
         set -l marker " "
         if test "$options[$i]" = "$current"
             set marker "*"
         end
-        echo "  $i) $options[$i] $marker"
+        echo "  $i) $options[$i] $marker" >&2
     end
 
     read -P "Choice [$current]: " choice
@@ -143,7 +144,8 @@ function interactive_menu
         echo " 16) cont batching:  $cont_batching"
         echo " 17) flash attn:     $flash_attn"
         echo " 18) warmup:         $warmup"
-        echo " 19) dry run:        $dry_run"
+        echo " 19) reasoning:      $reasoning"
+        echo " 20) dry run:        $dry_run"
         echo "  -- estimated ctx per slot: "(current_ctx_per_slot)
         echo
         echo "  l) launch"
@@ -206,6 +208,8 @@ function interactive_menu
             case 18
                 set -g warmup (choose_option "Warmup" "$warmup" on off)
             case 19
+                set -g reasoning (choose_option "Reasoning" "$reasoning" on off auto)
+            case 20
                 if test "$dry_run" = 1
                     set -g dry_run 0
                 else
@@ -261,6 +265,7 @@ set -g alias $DEFAULT_ALIAS
 set -g cont_batching on
 set -g flash_attn on
 set -g warmup off
+set -g reasoning auto
 set -g dry_run 0
 set -g list_only 0
 set -g show_menu 0
@@ -347,6 +352,10 @@ while test (count $argv) -gt 0
             test (count $argv) -ge 2; or die "missing value for --warmup"
             set warmup $argv[2]
             set -e argv[1..2]
+        case --reasoning
+            test (count $argv) -ge 2; or die "missing value for --reasoning"
+            set reasoning $argv[2]
+            set -e argv[1..2]
         case --list
             set list_only 1
             set -e argv[1]
@@ -393,6 +402,8 @@ if test "$cont_batching" = off
     set cont_batching_flag --no-cont-batching
 end
 
+set -l reasoning_flag --reasoning "$reasoning"
+
 set -l cmd \
     "$LLAMA_SERVER_BIN" \
     -m "$model_path" \
@@ -411,6 +422,7 @@ set -l cmd \
     $cont_batching_flag \
     $flash_flag \
     $warmup_flag \
+    $reasoning_flag \
     $passthrough
 
 echo "Model: $model_path"

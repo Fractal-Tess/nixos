@@ -22,27 +22,10 @@ function show_help
 end
 
 function cmd_connect
-    # The webkit2gtk auth window renders blank on NixOS/Wayland when run
-    # under sudo (sandbox + DMABUF + Wayland-as-root issues). Force XWayland
-    # and disable the WebKit sandbox so the SAML page actually paints.
-    set -x WAYLAND_DISPLAY wayland-1
-    set -x DISPLAY :0
-    set -x XDG_RUNTIME_DIR /run/user/(id -u)
-    set -x GDK_BACKEND x11
-    set -x WEBKIT_DISABLE_DMABUF_RENDERER 1
-    set -x WEBKIT_DISABLE_COMPOSITING_MODE 1
-    set -x WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS 1
-
-    sudo -E \
-        WAYLAND_DISPLAY=$WAYLAND_DISPLAY \
-        DISPLAY=$DISPLAY \
-        XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR \
-        GDK_BACKEND=$GDK_BACKEND \
-        WEBKIT_DISABLE_DMABUF_RENDERER=$WEBKIT_DISABLE_DMABUF_RENDERER \
-        WEBKIT_DISABLE_COMPOSITING_MODE=$WEBKIT_DISABLE_COMPOSITING_MODE \
-        WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS=$WEBKIT_DISABLE_SANDBOX_THIS_IS_DANGEROUS \
-        XAUTHORITY=$XAUTHORITY \
-        gpclient connect $VPN_HOST
+    # Use the default browser instead of the embedded webkit2gtk window.
+    # The embedded browser requires GTK3 init which panics on NixOS
+    # (tao crate → gtk::init() fails). --default-browser bypasses it entirely.
+    gpclient connect $VPN_HOST --default-browser
 end
 
 function cmd_disconnect
