@@ -1,6 +1,6 @@
 final: prev:
 let
-  version = "8797";
+  version = "9724";
 in
 {
   llama-cpp-cuda =
@@ -14,15 +14,14 @@ in
           owner = "ggml-org";
           repo = "llama.cpp";
           tag = "b${version}";
-          hash = "sha256-2W8rW0rlQc/foE+fnw5O0a9cqaiNL0Ie2Oi915jqtSQ=";
+          hash = "sha256-zCNInCBwXlbu9MT+aEHaL/WPMGM+3ftxjTXNJVCc8xo=";
           leaveDotGit = true;
           postFetch = ''
             git -C "$out" rev-parse --short HEAD > "$out/COMMIT"
             find "$out" -name .git -print0 | xargs -0 rm -rf
           '';
         };
-        npmRoot = "tools/server/webui";
-        npmDepsHash = "sha256-RAFtsbBGBjteCt5yXhrmHL39rIDJMCFBETgzId2eRRk=";
+        npmDepsHash = "sha256-0dctM/apI3ysMIEVBaBXO9hZMWskpJpNpOws1gwiOYc=";
         cmakeFlags =
           let
             keepFlag = flag: !(final.lib.hasInfix "CMAKE_CUDA_ARCHITECTURES" flag);
