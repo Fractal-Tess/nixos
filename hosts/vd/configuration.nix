@@ -241,7 +241,7 @@
       remote-desktop = {
         enable = true;
         sunshine = {
-          enable = false; # Temporarily disabled - build failure
+          enable = true;
           autoStart = true;
           capSysAdmin = true; # Required for Wayland/KMS capture
           openFirewall = true;
