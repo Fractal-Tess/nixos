@@ -43,6 +43,9 @@ in
           CursorTheme = "Bibata-Modern-Ice";
           CursorSize = 24;
         };
+        Users = {
+          RememberLastSession = false;
+        };
       };
       extraPackages = with pkgs; [ custom-sddm-astronaut ];
     };
@@ -52,7 +55,9 @@ in
       # kdePackages.qtmultimedia
     ];
 
-    # Use Hyprland session
-    services.displayManager.defaultSession = "hyprland";
+    # Use Hyprland session via UWSM (User-space Wayland Session Manager)
+    # UWSM properly manages the Hyprland lifecycle across suspend/resume,
+    # preventing config reset after S3 sleep on AMD GPU laptops.
+    services.displayManager.defaultSession = "hyprland-uwsm";
   };
 }

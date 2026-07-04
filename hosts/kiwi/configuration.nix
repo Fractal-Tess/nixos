@@ -455,9 +455,9 @@
         # CPU frequency limits (in kHz) - Aggressively limited for efficiency
         # Limiting max frequency to reduce heat and power consumption
         CPU_SCALING_MIN_FREQ_ON_AC = 2000000; # ~2GHz minimum for stability
-        CPU_SCALING_MAX_FREQ_ON_AC = 3900000; # 3.9GHz max on AC
+        CPU_SCALING_MAX_FREQ_ON_AC = 3700000; # 3.7GHz max on AC (-200MHz)
         CPU_SCALING_MIN_FREQ_ON_BAT = 1400000; # ~1.4GHz minimum on battery
-        CPU_SCALING_MAX_FREQ_ON_BAT = 3400000; # 3.4GHz max on battery for efficiency
+        CPU_SCALING_MAX_FREQ_ON_BAT = 3200000; # 3.2GHz max on battery for efficiency (-200MHz)
       };
     };
 
