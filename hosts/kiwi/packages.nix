@@ -381,6 +381,9 @@ in
     tmux # Terminal multiplexer
     zellij # Terminal multiplexer with layouts and session management
 
+    # Shell
+    fish # Interactive shell (fish scripts used by waybar custom modules)
+
     # System information and utilities
     nitch # Lightweight system information fetch
     fastfetch # Fast system information tool

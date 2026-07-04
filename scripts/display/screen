@@ -88,7 +88,7 @@ function _init_cache
         end
     end
 
-    echo $initial > $BRIGHTNESS_CACHE
+    echo $initial >$BRIGHTNESS_CACHE
 end
 
 function _clamp
@@ -119,15 +119,15 @@ end
 
 function _set_brightness
     set -l v (_clamp $argv[1])
-    echo $v > $BRIGHTNESS_CACHE
+    echo $v >$BRIGHTNESS_CACHE
 
     if _has_brightnessctl
-        brightnessctl set "$v%" > /dev/null 2>&1
+        brightnessctl set "$v%" >/dev/null 2>&1
     else if _has_light
-        light -S $v > /dev/null 2>&1
+        light -S $v >/dev/null 2>&1
     else if type -q xset
         # xset doesn't do percentage; best effort
-        xset dpms force on > /dev/null 2>&1
+        xset dpms force on >/dev/null 2>&1
     end
 end
 
@@ -168,34 +168,34 @@ end
 
 function _dpms
     set -l state $argv[1]
-    hyprctl dispatch dpms $state > /dev/null 2>&1
+    hyprctl dispatch dpms $state >/dev/null 2>&1
     return $status
 end
 
 function _screen_off
     if not _dpms off
         if _has_brightnessctl
-            brightnessctl set 0 > /dev/null 2>&1
+            brightnessctl set 0 >/dev/null 2>&1
         else if _has_light
-            light -S 0 > /dev/null 2>&1
+            light -S 0 >/dev/null 2>&1
         else if type -q xset
-            xset dpms force off > /dev/null 2>&1
+            xset dpms force off >/dev/null 2>&1
         end
     end
-    notify-send "Screen" "Display off" -t 1500 > /dev/null 2>&1
+    notify-send Screen "Display off" -t 1500 >/dev/null 2>&1
 end
 
 function _screen_on
     if not _dpms on
         if _has_brightnessctl
-            brightnessctl set 100% > /dev/null 2>&1
+            brightnessctl set 100% >/dev/null 2>&1
         else if _has_light
-            light -S 100 > /dev/null 2>&1
+            light -S 100 >/dev/null 2>&1
         else if type -q xset
-            xset dpms force on > /dev/null 2>&1
+            xset dpms force on >/dev/null 2>&1
         end
     end
-    notify-send "Screen" "Display on" -t 1500 > /dev/null 2>&1
+    notify-send Screen "Display on" -t 1500 >/dev/null 2>&1
 end
 
 # ─── Session ──────────────────────────────────────────────────────────────────
@@ -257,7 +257,7 @@ function _monitor_menu
 
     set -l count (echo "$entries_str" | wc -l)
 
-    pkill rofi > /dev/null 2>&1
+    pkill rofi >/dev/null 2>&1
 
     set -l selection (echo "$entries_str" | /run/current-system/sw/bin/rofi \
         -plugin-path /run/current-system/sw/lib/rofi \
@@ -302,50 +302,32 @@ end
 
 function _lid_log
     set -l ts (date '+%Y-%m-%d %H:%M:%S')
-    echo "[$ts] $argv" >> $LID_LOG 2>/dev/null
+    echo "[$ts] $argv" >>$LID_LOG 2>/dev/null
 end
 
 function _lid_close
     set -l monitors_json (_get_monitors_json)
     # External monitors: not starting with 'e' (eDP) and not disabled
     set -l external (echo $monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length')
-    set -l laptop_enabled (echo $monitors_json | jq --arg name $LAPTOP_MONITOR \
-        '[.[] | select(.name == $name and .disabled == false)] | length > 0')
 
-    _lid_log "Lid close event. External monitors: $external, Laptop enabled: $laptop_enabled"
-
-    if test "$laptop_enabled" = true
-        _lid_log "Disabling $LAPTOP_MONITOR"
-        hyprctl keyword monitor "$LAPTOP_MONITOR, disable"
-        notify-send "Lid Closed" "Laptop screen disabled" -t 3000
-    end
+    _lid_log "Lid close event. External monitors: $external"
 
     if test "$external" -eq 0
-        _lid_log "No external monitors — locking and suspending"
-        # Brief pause, then lock
-        sleep 0.5
-        hyprlock &
-        disown
-        sleep 2
-        _lid_log "Suspending system"
-        loginctl suspend
-        if test $status -ne 0
-            _lid_log "Cannot suspend — insufficient privileges"
-            notify-send "Suspend Failed" "Cannot suspend — insufficient privileges" -t 3000
-        end
+        _lid_log "No external monitors — locking; logind handles suspend"
+        _lock_session
     else
-        _lid_log "$external external monitor(s) — system remains unlocked"
+        hyprctl keyword monitor "$LAPTOP_MONITOR, disable" >/dev/null 2>&1
+        _lid_log "$external external monitor(s) — disabled $LAPTOP_MONITOR"
     end
 end
 
 function _lid_open
     _lid_log "Lid open event"
-    hyprctl keyword monitor "$LAPTOP_MONITOR, preferred, auto, 1"
-    hyprctl reload
-    notify-send "Lid Opened" "Laptop screen enabled" -t 3000
+
+    hyprctl keyword monitor "$LAPTOP_MONITOR, preferred, auto, 1" >/dev/null 2>&1
 
     set -l updated (_get_monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length' 2>/dev/null; or echo 0)
-    _lid_log "Lid opened with $updated external monitor(s)"
+    _lid_log "Lid opened with $updated external monitor(s); enabled $LAPTOP_MONITOR"
 end
 
 # ─── Sleep inhibition ─────────────────────────────────────────────────────────
@@ -362,7 +344,7 @@ function _sleep_start_inhibit
     systemd-inhibit --what=handle-lid-switch --who=screen \
         --why="User toggled lid sleep inhibition" --mode=block \
         sleep infinity &
-    echo $last_pid > $LID_PID_FILE
+    echo $last_pid >$LID_PID_FILE
 end
 
 function _sleep_stop_inhibit

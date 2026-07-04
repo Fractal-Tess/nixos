@@ -29,5 +29,9 @@ in
       enable = true;
       package = waybarPackage;
     };
+
+    # Add fish to waybar's PATH so custom exec scripts (brightness, gpu, swap, etc.)
+    # can find the fish interpreter (they use #!/usr/bin/env fish)
+    systemd.user.services.waybar.path = [ pkgs.fish ];
   };
 }

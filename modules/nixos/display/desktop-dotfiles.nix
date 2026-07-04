@@ -33,6 +33,7 @@ in
       path = with pkgs; [
         bash
         coreutils
+        fish
         python3
         stow
       ];
