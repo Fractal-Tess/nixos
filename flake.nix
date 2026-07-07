@@ -123,6 +123,7 @@
                 (import ./overlays/vllm.nix)
                 (import ./overlays/llama-cpp.nix)
                 (import ./overlays/uefi-firmware-parser.nix)
+                (import ./overlays/viber.nix)
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default
