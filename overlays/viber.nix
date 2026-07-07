@@ -50,10 +50,10 @@ final: prev: {
         [ (builtins.toString final.libxml2-viber-compat.out) ]
         old.libPath;
 
-    # Add missing libraries to wrapper (libxshmfence, libxcb-cursor)
+    # Add missing libraries to wrapper (libxshmfence, libxcb-cursor, libxcb-util)
     postInstall = (old.postInstall or "") + ''
       wrapProgram $out/bin/viber \
-        --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib
+        --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib:${final.xcbutil}/lib
     '';
   });
 }
