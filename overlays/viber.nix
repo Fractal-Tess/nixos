@@ -53,7 +53,9 @@ final: prev: {
     # Add missing libraries to wrapper (libxshmfence, libxcb-cursor, libxcb-util)
     postInstall = (old.postInstall or "") + ''
       wrapProgram $out/bin/viber \
-        --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib:${final.xcbutil}/lib
+        --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib:${final.xcbutil}/lib \
+        --set SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt \
+        --set QTWEBENGINE_CHROMIUM_FLAGS "--no-sandbox --disable-gpu"
     '';
   });
 }
