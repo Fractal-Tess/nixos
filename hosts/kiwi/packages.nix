@@ -190,6 +190,7 @@ in
     opencode-desktop # Desktop GUI for OpenCode
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
+    cliproxyapi # Proxy for using AI CLI subscriptions as APIs
     shapeshifter-tui # Codex account manager TUI
     t3code # T3 Code desktop app
     amp-cli
@@ -310,7 +311,7 @@ in
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    viber # Instant messaging
+    # viber # Instant messaging -- temporarily disabled: viber.deb download fails (archive.org unreachable)
     slack # Team collaboration platform
     thunderbird # Email client
 
@@ -367,7 +368,7 @@ in
     # GAMING
     #--------------------------------------------------------------------------
 
-    bottles # Wine wrapper
+    # bottles # Wine wrapper -- temporarily disabled: dep patool test failures on Python 3.14
     # heroic # Game launcher -- broken: electron-39 patch failure (upstream nixpkgs bug)
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
@@ -403,7 +404,6 @@ in
     # THEMING & CUSTOMIZATION
     #--------------------------------------------------------------------------
 
-    nordic # Nordic theme
     font-manager # Font management tool
     cliphist # Clipboard history tool
 

@@ -538,8 +538,8 @@
     QT_QPA_PLATFORM = "xcb";
 
     # GTK theme and cursor settings
-    GTK_THEME = "Nordic"; # Dark bluish GTK theme
-    XCURSOR_THEME = "Nordzy-cursors"; # Matching cursor theme
+    GTK_THEME = "Adwaita:dark"; # Dark GTK theme
+    XCURSOR_THEME = "Bibata-Modern-Ice"; # Matching cursor theme
     XCURSOR_SIZE = "24"; # Default cursor size
 
     # Wayland support

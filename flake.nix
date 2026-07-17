@@ -124,6 +124,8 @@
                 (import ./overlays/llama-cpp.nix)
                 (import ./overlays/uefi-firmware-parser.nix)
                 (import ./overlays/viber.nix)
+                (import ./overlays/wfuzz-fix.nix)
+                (import ./overlays/cliproxyapi.nix)
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default

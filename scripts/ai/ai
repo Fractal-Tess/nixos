@@ -12,6 +12,7 @@
 #   kimi        Kimi K2 via moonshot.ai Anthropic-compatible endpoint
 #   minimax     MiniMax M2.1 via minimax.io Anthropic-compatible endpoint
 #   z-ai        Z.AI GLM-4.7/4.5 via z.ai Anthropic-compatible endpoint
+#   codex       GPT 5.6 Sol via CLIProxyAPI (requires codex OAuth login)
 #
 # Flags (provider-level, before extra args):
 #   --auto-claude   Launch Auto-Claude AppImage instead of claude CLI
@@ -27,6 +28,7 @@ function _ai_help
     echo "  kimi        Kimi K2 via moonshot.ai (kimi-k2-thinking-turbo)"
     echo "  minimax     MiniMax M2.1 via minimax.io"
     echo "  z-ai        Z.AI GLM-4.7/4.5 models"
+    echo "  codex       GPT 5.6 Sol via CLIProxyAPI (requires: cliproxyapi -codex-login)"
     echo ""
     echo "Flags (placed after provider):"
     echo "  --auto-claude   Launch Auto-Claude AppImage instead of claude CLI"
@@ -41,6 +43,7 @@ function _ai_help
     echo "  ai minimax --auto-claude"
     echo "  ai z-ai --auto-claude"
     echo "  ai z-ai -p 'Hello'"
+    echo "  ai codex"
 end
 
 # No arguments — show help
@@ -175,6 +178,43 @@ switch $provider
             end
             exec claude --dangerously-skip-permissions $forward_args
         end
+
+    case codex
+        # GPT 5.6 Sol via CLIProxyAPI (Codex OAuth subscription)
+        # Requires one-time login: cliproxyapi -codex-login
+        if not type -q cliproxyapi
+            echo "Error: cliproxyapi not found in PATH (install via nixos-rebuild)" >&2
+            exit 1
+        end
+
+        # Start CLIProxyAPI in the background if not already running
+        if not pgrep -x cliproxyapi >/dev/null 2>&1
+            echo "Starting CLIProxyAPI proxy..."
+            cliproxyapi &
+            disown
+            sleep 2
+        end
+
+        # Clear conflicting vars
+        set -e ANTHROPIC_AUTH_TOKEN
+        set -e ANTHROPIC_BASE_URL
+
+        set -x CLAUDE_CODE_SUBAGENT_MODEL gpt-5.6-sol
+        set -x CLAUDE_CODE_ALWAYS_ENABLE_EFFORT 1
+        set -x CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY 3
+        set -x ENABLE_TOOL_SEARCH false
+
+        echo "Configured Claude Code to use GPT 5.6 Sol via CLIProxyAPI (Codex subscription)."
+
+        if test "$use_appimage" = true
+            echo "Warning: --auto-claude is not supported for codex; launching claude CLI instead." >&2
+        end
+
+        if not type -q claude
+            echo "Error: claude not found in PATH" >&2
+            exit 1
+        end
+        exec claude --model gpt-5.6-sol --dangerously-skip-permissions $forward_args
 
     case '*'
         echo "Error: unknown provider '$provider'" >&2

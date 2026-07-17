@@ -342,7 +342,6 @@
     # THEMING & CUSTOMIZATION
     #--------------------------------------------------------------------------
 
-    nordic # Nordic theme
     font-manager # Font management tool
     cliphist # Clipboard history tool
 
