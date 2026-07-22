@@ -181,28 +181,85 @@ switch $provider
 
     case codex
         # GPT 5.6 Sol via CLIProxyAPI (Codex OAuth subscription)
-        # Requires one-time login: cliproxyapi -codex-login
         if not type -q cliproxyapi
             echo "Error: cliproxyapi not found in PATH (install via nixos-rebuild)" >&2
             exit 1
         end
 
-        # Start CLIProxyAPI in the background if not already running
-        if not pgrep -x cliproxyapi >/dev/null 2>&1
-            echo "Starting CLIProxyAPI proxy..."
-            cliproxyapi &
-            disown
-            sleep 2
+        set -l config_dir "$HOME/.config/cliproxyapi"
+        set -l config_file "$config_dir/config.yaml"
+        set -l auth_dir "$HOME/.cli-proxy-api"
+        set -l state_dir "$HOME/.local/state/cliproxyapi"
+        set -l log_file "$state_dir/cliproxyapi.log"
+        set -l proxy_url "http://127.0.0.1:8317"
+        set -l proxy_key "local-claude-codex-9f4c2a7e6b1d"
+
+        mkdir -p "$config_dir" "$auth_dir" "$state_dir"; or begin
+            echo "Error: could not create CLIProxyAPI directories" >&2
+            exit 1
+        end
+        chmod 700 "$config_dir" "$auth_dir" "$state_dir"; or begin
+            echo "Error: could not secure CLIProxyAPI directories" >&2
+            exit 1
+        end
+        printf '%s\n' \
+            'host: 127.0.0.1' \
+            'port: 8317' \
+            'auth-dir: "~/.cli-proxy-api"' \
+            'api-keys:' \
+            "  - $proxy_key" \
+            >"$config_file"; or begin
+            echo "Error: could not write CLIProxyAPI config: $config_file" >&2
+            exit 1
+        end
+        chmod 600 "$config_file"; or begin
+            echo "Error: could not secure CLIProxyAPI config: $config_file" >&2
+            exit 1
         end
 
-        # Clear conflicting vars
-        set -e ANTHROPIC_AUTH_TOKEN
-        set -e ANTHROPIC_BASE_URL
+        function _cliproxy_models --no-scope-shadowing
+            curl --fail --silent --show-error \
+                -H "Authorization: Bearer $proxy_key" \
+                "$proxy_url/v1/models"
+        end
 
+        set -l models (_cliproxy_models)
+        if test $status -ne 0
+            echo "Starting CLIProxyAPI proxy..."
+            nohup cliproxyapi -config "$config_file" </dev/null >>"$log_file" 2>&1 &
+            disown
+
+            set -l proxy_ready false
+            for attempt in (seq 1 20)
+                set models (_cliproxy_models)
+                if test $status -eq 0
+                    set proxy_ready true
+                    break
+                end
+                sleep 0.25
+            end
+
+            if test "$proxy_ready" != true
+                echo "Error: CLIProxyAPI did not become healthy after 20 attempts." >&2
+                echo "See daemon log: $log_file" >&2
+                exit 1
+            end
+        end
+
+        set -x ANTHROPIC_BASE_URL "$proxy_url"
+        set -x ANTHROPIC_AUTH_TOKEN "$proxy_key"
+        set -x CLAUDE_CODE_ENABLE_GATEWAY_MODEL_DISCOVERY 1
         set -x CLAUDE_CODE_SUBAGENT_MODEL gpt-5.6-sol
         set -x CLAUDE_CODE_ALWAYS_ENABLE_EFFORT 1
         set -x CLAUDE_CODE_MAX_TOOL_USE_CONCURRENCY 3
         set -x ENABLE_TOOL_SEARCH false
+
+        if not string match -q -r '"id"[[:space:]]*:[[:space:]]*"gpt-5\.6-sol"' -- (string join \n -- $models)
+            echo "Error: CLIProxyAPI does not expose gpt-5.6-sol; Codex OAuth credentials may be unavailable." >&2
+            echo "Run this one-time login command:" >&2
+            echo "cliproxyapi -config $config_file -codex-login" >&2
+            exit 1
+        end
 
         echo "Configured Claude Code to use GPT 5.6 Sol via CLIProxyAPI (Codex subscription)."
 
