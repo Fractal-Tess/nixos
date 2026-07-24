@@ -13,7 +13,6 @@
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/theming.nix
-    ../../modules/home-manager/services/open-design.nix
   ];
 
   #============================================================================
