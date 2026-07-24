@@ -71,6 +71,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    open-design = {
+      url = "github:nexu-io/open-design/open-design-v0.16.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
   };
 
   outputs =
