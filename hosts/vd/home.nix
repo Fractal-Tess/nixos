@@ -1,7 +1,6 @@
 {
   pkgs,
   username,
-  inputs,
   lib,
   ...
 }:
@@ -14,7 +13,7 @@
   imports = [
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/theming.nix
-    inputs.open-design.homeManagerModules.default
+    ../../modules/home-manager/services/open-design.nix
   ];
 
   #============================================================================
@@ -53,10 +52,4 @@
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
 
-  # Open Design local daemon and web workspace
-  services.open-design = {
-    enable = true;
-    autoStart = true;
-    webFrontend.enable = true;
-  };
 }
