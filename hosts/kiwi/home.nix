@@ -16,6 +16,7 @@
     ../../modules/home-manager/configs
     ../../modules/home-manager/theming.nix
     inputs.nix4nvchad.homeManagerModule
+    inputs.open-design.homeManagerModules.default
   ];
 
   #============================================================================
@@ -56,6 +57,13 @@
 
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
+
+  # Open Design local daemon and web workspace
+  services.open-design = {
+    enable = true;
+    autoStart = true;
+    webFrontend.enable = true;
+  };
 
   # Laptop battery monitoring
   modules.services.battery-check.enable = true;

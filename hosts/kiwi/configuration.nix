@@ -154,6 +154,7 @@
     # Services
     services = {
       sshd.enable = true;
+      nessus.enable = true;
       automount.enable = true;
       syncthing = {
         enable = true;
