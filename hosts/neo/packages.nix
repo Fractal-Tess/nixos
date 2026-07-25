@@ -83,6 +83,7 @@
     opencode # AI coding assistant
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
+    pi-coding-agent # Minimal terminal coding agent harness
     t3code # T3 Code desktop app
     amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
