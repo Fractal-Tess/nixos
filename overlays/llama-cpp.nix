@@ -27,6 +27,6 @@ in
             keepFlag = flag: !(final.lib.hasInfix "CMAKE_CUDA_ARCHITECTURES" flag);
           in
           (builtins.filter keepFlag old.cmakeFlags)
-          ++ [ (final.lib.cmakeFeature "CMAKE_CUDA_ARCHITECTURES" "61;86") ];
+          ++ [ (final.lib.cmakeFeature "CMAKE_CUDA_ARCHITECTURES" "86") ];
       });
 }

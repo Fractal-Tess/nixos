@@ -76,6 +76,7 @@
 
   nixpkgs.config = {
     allowUnfree = true;
+    cudaCapabilities = [ "8.6" ];
     allowInsecurePredicate =
       pkg:
       builtins.elem (lib.getName pkg) [

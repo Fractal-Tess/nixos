@@ -128,6 +128,7 @@
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
                 (import ./overlays/llama-cpp.nix)
+                (import ./overlays/ollama.nix)
                 (import ./overlays/uefi-firmware-parser.nix)
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
