@@ -194,6 +194,15 @@
                 "kiwi"
               ];
             };
+            "agent-skills" = {
+              path = "/home/fractal-tess/.agents/skills";
+              id = "agent-skills";
+              label = "Agent Skills";
+              devices = [
+                "neo"
+                "kiwi"
+              ];
+            };
             "pi-agent-config" = {
               path = "/home/fractal-tess/.pi/agent";
               id = "pi-agent-config";
