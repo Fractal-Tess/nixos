@@ -249,6 +249,7 @@
 
     users.${username} = {
       isNormalUser = true;
+      linger = true;
       description = "default user";
       password = "password";
       extraGroups = [
