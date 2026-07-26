@@ -924,11 +924,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1785079753,
-        "narHash": "sha256-K3u6PvPyp0RkeYZV7Yz6WsrsHqaL2L3Xhqrc03LQQcA=",
+        "lastModified": 1785081966,
+        "narHash": "sha256-h9ep4wza7OC0/v+aerX672rKinyfAVfazop/CJIX2M0=",
         "owner": "Fractal-Tess",
         "repo": "shadoword",
-        "rev": "9daa0eb2f73976fbc4d8ed6e29214373396dbff2",
+        "rev": "6517c851f483b1b18a70718b9fd3a0d354e43af7",
         "type": "github"
       },
       "original": {
