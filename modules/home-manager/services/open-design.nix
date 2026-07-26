@@ -10,8 +10,8 @@
 let
   cfg = config.services.open-design;
   hostName = osConfig.networking.hostName;
+  mcpAddress = "127.0.0.1";
   mcpPort = 7458;
-  netbirdAddress = "100.91.0.3";
   netbirdOrigin = "http://${hostName}.netbird.cloud:${toString cfg.webFrontend.port}";
 
   mcpProxySupervisor = pkgs.writeShellScript "open-design-mcp-supervisor" ''
@@ -29,7 +29,7 @@ let
     trap cleanup EXIT
     trap 'exit 0' INT TERM
 
-    ${lib.getExe pkgs.mcp-proxy} --host ${netbirdAddress} --port ${toString mcpPort} -- \
+    ${lib.getExe pkgs.mcp-proxy} --host ${mcpAddress} --port ${toString mcpPort} -- \
       ${lib.getExe cfg.package} mcp --daemon-url http://127.0.0.1:${toString cfg.port} &
     proxyPid=$!
 
@@ -65,7 +65,7 @@ let
   mcpProxyKeepalive = pkgs.writeShellScript "open-design-mcp-keepalive" ''
     set -u
 
-    endpoint="http://${netbirdAddress}:${toString mcpPort}/mcp"
+    endpoint="http://${mcpAddress}:${toString mcpPort}/mcp"
     headers=$(${pkgs.coreutils}/bin/mktemp)
     response=$(${pkgs.coreutils}/bin/mktemp)
     session=""
@@ -178,8 +178,9 @@ in
   systemd.user.services.open-design-web.Service.ExecStart =
     lib.mkForce "${lib.getExe pkgs.caddy} run --config ${caddyfile} --adapter caddyfile";
 
-  # Expose Open Design's stdio-only MCP server as Streamable HTTP over NetBird.
-  # Keep the daemon itself on loopback and bind the proxy only to Neo's VPN IP.
+  # Expose Open Design's stdio-only MCP server as Streamable HTTP to local
+  # clients. Each workstation runs its own daemon so launched agents can access
+  # that workstation's files.
   systemd.user.services.open-design-mcp = {
     Unit = {
       Description = "Open Design Streamable HTTP MCP proxy";
