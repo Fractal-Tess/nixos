@@ -382,6 +382,16 @@ _log_success "NixOS rebuild completed successfully"
 set -l new_gen (sudo nixos-rebuild list-generations 2>/dev/null | grep "True" | awk '{print $1}'; or echo "unknown")
 _log_info "Current generation: $new_gen"
 
+# Reloading Hyprland's monitor config can re-enable an internal display while
+# the laptop lid is already closed. Reapply the kernel-reported lid state
+# because Hyprland will not emit another switch event until the lid moves.
+if test -d /proc/acpi/button/lid; and test -x "$NIXOS_DIR/scripts/display/screen"
+    _log_info "Synchronizing laptop lid state..."
+    if not "$NIXOS_DIR/scripts/display/screen" lid-sync
+        _log_warning "Could not synchronize the laptop lid state"
+    end
+end
+
 # ── Wait for AI commit message ────────────────────────────────────────────────
 set -l commit_message ""
 set -l committed false

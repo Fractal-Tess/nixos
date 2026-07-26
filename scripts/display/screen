@@ -48,6 +48,7 @@ function _screen_help
     echo "Lid Handling (called from Hyprland lid switch binds):"
     echo "  lid-close        Disable eDP-1; suspend if no external monitors"
     echo "  lid-open         Re-enable eDP-1"
+    echo "  lid-sync         Reapply the current hardware lid state"
     echo ""
     echo "Sleep Inhibition:"
     echo "  sleep-toggle              Output waybar JSON for lid sleep inhibition"
@@ -330,6 +331,23 @@ function _lid_open
     _lid_log "Lid opened with $updated external monitor(s); enabled $LAPTOP_MONITOR"
 end
 
+function _lid_sync
+    # A Hyprland config reload reapplies the configured eDP monitor even when
+    # the lid is already closed. No switch event fires in that case, so read
+    # the kernel's current state and reapply the matching monitor action.
+    set -l state_file (find /proc/acpi/button/lid -mindepth 2 -maxdepth 2 -name state -print -quit 2>/dev/null)
+    test -n "$state_file"; or return 0
+
+    set -l state (string lower (string collect <"$state_file" 2>/dev/null))
+    if string match -q '*closed*' -- "$state"
+        _lid_log "Synchronizing closed lid state after display reload"
+        _lid_close
+    else if string match -q '*open*' -- "$state"
+        _lid_log "Synchronizing open lid state after display reload"
+        _lid_open
+    end
+end
+
 # ─── Sleep inhibition ─────────────────────────────────────────────────────────
 
 function _sleep_is_active
@@ -527,6 +545,9 @@ switch $cmd
 
     case lid-open
         _lid_open
+
+    case lid-sync
+        _lid_sync
 
     case sleep-toggle
         if test "$arg2" = toggle

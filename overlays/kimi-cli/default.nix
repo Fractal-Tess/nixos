@@ -98,7 +98,7 @@ in
       # Kosong - LLM abstraction layer (from kimi-cli repo)
       kosong = pyfinal.buildPythonPackage {
         pname = "kosong";
-        inherit version;
+        version = "0.43.0";
         pyproject = true;
         src = src + "/packages/kosong";
         build-system = [
@@ -132,8 +132,10 @@ in
 
       # Kaos - OS abstraction layer (from kimi-cli repo)
       kaos = pyfinal.buildPythonPackage {
-        pname = "kaos";
-        inherit version;
+        # The distribution is named pykaos even though it imports as kaos.
+        # Keep pname aligned so nixpkgs' metadata check finds the wheel.
+        pname = "pykaos";
+        version = "0.7.0";
         pyproject = true;
         src = src + "/packages/kaos";
         build-system = [
