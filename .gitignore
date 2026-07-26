@@ -1,13 +1,35 @@
+# Editor and development artifacts
 Session.vim
-node_modules
+node_modules/
+.direnv/
+__pycache__/
+*.py[cod]
+*.bak
 
+# Build outputs and logs
+/result
+/result-*
 nixos-switch.log
-.direnv
-.crush
+*.log
+
+# Local application data
+/pb_data/
+
+# Agent and tool state
+/.claude-flow/
+/.codex
+/.codex/
+/.crush/
+/.firecrawl/
+/.omo/
+/.opencode/
+/.sisyphus/
+/.swarm/
+/.debug-journal.md
+
+# Accidental generated hardware dump
+/\!
 
 # Embedded repositories
 Handy/
 k8s/
-
-# Sisyphus state
-.sisyphus/
