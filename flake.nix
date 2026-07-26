@@ -76,6 +76,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    shadoword.url = "github:Fractal-Tess/shadoword";
   };
 
   outputs =

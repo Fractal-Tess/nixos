@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   username,
@@ -136,6 +137,53 @@
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
+
+  sops.secrets.shadoword_api_token = {
+    sopsFile = ../../secrets/secrets.json;
+    format = "json";
+    owner = username;
+    group = "users";
+    mode = "0400";
+  };
+
+  sops.templates."shadoword-desktop.json" = {
+    owner = username;
+    group = "users";
+    mode = "0600";
+    path = "/home/${username}/.config/shadoword/desktop.json";
+    content = builtins.toJSON {
+      mode = "remote";
+      preload_on_startup = false;
+      recording = {
+        transcription_mode = "streaming";
+        english_only = true;
+      };
+      output = {
+        copy_to_clipboard = true;
+        paste_method = "direct";
+        paste_delay_ms = 120;
+      };
+      remote = {
+        endpoint = "http://vd.netbird.cloud:47813";
+        api_token = config.sops.placeholder.shadoword_api_token;
+      };
+      hotkey = {
+        shortcut = "f2";
+        mode = "push_to_talk";
+      };
+      close_to_tray = true;
+    };
+  };
+
+  systemd.tmpfiles.rules = [
+    "d /home/${username}/.config/shadoword 0700 ${username} users -"
+  ];
+
+  environment.systemPackages = [
+    inputs.shadoword.packages.${pkgs.system}.shadoword-egui
+    pkgs.wtype
+    pkgs.xdotool
+  ];
 
   modules = {
     # Hardware drivers

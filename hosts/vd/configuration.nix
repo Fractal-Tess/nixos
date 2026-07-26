@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   username,
@@ -120,6 +121,15 @@
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
+
+  sops.secrets.shadoword_api_token = {
+    sopsFile = ../../secrets/secrets.json;
+    format = "json";
+    owner = "shadoword";
+    group = "shadoword";
+    mode = "0600";
+  };
+
   # virtualisation.libvirtd = {
   #   enable = true;
   #   qemu = {
@@ -278,6 +288,12 @@
         host = "100.91.0.2";
         port = 4096;
         extraArgs = [ "--print-logs" ];
+      };
+
+      shadoword-api = {
+        enable = true;
+        listenAddress = "100.91.0.2";
+        tokenFile = config.sops.secrets.shadoword_api_token.path;
       };
 
       # Hermes Agent
