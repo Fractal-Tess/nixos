@@ -52,13 +52,7 @@ in
     modelId = mkOption {
       type = types.str;
       default = "turbo";
-      description = "Catalog model downloaded before startup.";
-    };
-
-    modelFile = mkOption {
-      type = types.str;
-      default = "ggml-large-v3-turbo.bin";
-      description = "Filename of the selected model in the persistent model directory.";
+      description = "Catalog model ensured on disk before startup; the active model remains API-managed.";
     };
   };
 
@@ -104,16 +98,12 @@ in
           "${cfg.package}/bin/shadoword-api"
           "--listen"
           (escapeShellArg listenEndpoint)
-          "--model"
-          (escapeShellArg "/var/lib/shadoword/models/${cfg.modelFile}")
           "--download-model"
           (escapeShellArg cfg.modelId)
           "--download-dir"
           (escapeShellArg "/var/lib/shadoword/models")
           "--token-file"
           (escapeShellArg cfg.tokenFile)
-          "--preload"
-          "true"
         ];
         Restart = "on-failure";
         RestartSec = "5s";
