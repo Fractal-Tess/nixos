@@ -92,6 +92,7 @@ let
 
     ${lib.getExe pkgs.curl} --silent --show-error --fail-with-body \
       --connect-timeout 3 --max-time 10 \
+      --retry 10 --retry-connrefused --retry-delay 1 \
       --dump-header "$headers" --output "$response" \
       --header "Accept: application/json, text/event-stream" \
       --header "Content-Type: application/json" \
@@ -210,7 +211,7 @@ in
     Unit = {
       Description = "Open Design MCP keepalive and health check";
       After = [ "open-design-mcp.service" ];
-      Requires = [ "open-design-mcp.service" ];
+      Wants = [ "open-design-mcp.service" ];
     };
 
     Service = {
