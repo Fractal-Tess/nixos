@@ -15,148 +15,159 @@ let
   playwrightImage = "ghcr.io/firecrawl/playwright-service@sha256:8c50add7293201e575110e6c7489fa383a9dfc46f168936526a458e06ffc5c28";
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
   redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
+  codexProxyImage = "eceasy/cli-proxy-api@sha256:2d402a3edfbfa0612d7694345f7a05008fe8ce1915fde00ec9adb82afeb370c9";
+
+  codexProxyConfig = pkgs.writeText "firecrawl-codex-proxy.yaml" ''
+    host: 0.0.0.0
+    port: 8317
+    auth-dir: /root/.cli-proxy-api
+  '';
 
   composeFile = pkgs.writeText "firecrawl-compose.yaml" ''
-    name: firecrawl
+        name: firecrawl
 
-    x-common-env: &common-env
-      REDIS_URL: redis://redis:6379
-      REDIS_RATE_LIMIT_URL: redis://redis:6379
-      PLAYWRIGHT_MICROSERVICE_URL: http://playwright-service:3000/scrape
-      NUQ_DATABASE_URL: postgresql://postgres:postgres@nuq-postgres:5432/postgres
-      NUQ_DATABASE_URL_LISTEN: postgresql://postgres:postgres@nuq-postgres:5432/postgres
-      NUQ_WAIT_MODE: listen
-      USE_DB_AUTHENTICATION: "false"
-      ENV: local
-      LOGGING_LEVEL: info
-      NUM_WORKERS_PER_QUEUE: "1"
-      CRAWL_CONCURRENT_REQUESTS: "3"
-      MAX_CONCURRENT_JOBS: "2"
-      BROWSER_POOL_SIZE: "2"
+        x-common-env: &common-env
+          REDIS_URL: redis://redis:6379
+          REDIS_RATE_LIMIT_URL: redis://redis:6379
+          PLAYWRIGHT_MICROSERVICE_URL: http://playwright-service:3000/scrape
+          NUQ_DATABASE_URL: postgresql://postgres:postgres@nuq-postgres:5432/postgres
+          NUQ_DATABASE_URL_LISTEN: postgresql://postgres:postgres@nuq-postgres:5432/postgres
+          NUQ_WAIT_MODE: listen
+          USE_DB_AUTHENTICATION: "false"
+          ENV: local
+          LOGGING_LEVEL: info
+          NUM_WORKERS_PER_QUEUE: "1"
+          CRAWL_CONCURRENT_REQUESTS: "3"
+          MAX_CONCURRENT_JOBS: "2"
+          BROWSER_POOL_SIZE: "2"
+    ${optionalString cfg.llm.enable "      OPENAI_BASE_URL: http://codex-proxy:8317/v1\n      OPENAI_API_KEY: local-firecrawl\n      MODEL_NAME: ${cfg.llm.model}"}
 
-    x-default-logging: &default-logging
-      driver: json-file
-      options:
-        max-size: 10m
-        max-file: "3"
-        compress: "true"
+        x-default-logging: &default-logging
+          driver: json-file
+          options:
+            max-size: 10m
+            max-file: "3"
+            compress: "true"
 
-    x-firecrawl-service: &firecrawl-service
-      image: ${firecrawlImage}
-      networks:
-        - backend
-      environment:
-        <<: *common-env
-      depends_on:
-        redis:
-          condition: service_healthy
-        nuq-postgres:
-          condition: service_healthy
-        playwright-service:
-          condition: service_started
-      restart: unless-stopped
-      logging: *default-logging
+        x-firecrawl-service: &firecrawl-service
+          image: ${firecrawlImage}
+          networks:
+            - backend
+          environment:
+            <<: *common-env
+          depends_on:
+            redis:
+              condition: service_healthy
+            nuq-postgres:
+              condition: service_healthy
+            playwright-service:
+              condition: service_started
+    ${optionalString cfg.llm.enable "        codex-proxy:\n          condition: service_started"}
+          restart: unless-stopped
+          logging: *default-logging
 
-    services:
-      playwright-service:
-        image: ${playwrightImage}
-        environment:
-          PORT: 3000
-          MAX_CONCURRENT_PAGES: "3"
+        services:
+    ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
+
+          playwright-service:
+            image: ${playwrightImage}
+            environment:
+              PORT: 3000
+              MAX_CONCURRENT_PAGES: "3"
+            networks:
+              - backend
+            restart: unless-stopped
+            logging: *default-logging
+            tmpfs:
+              - /tmp/.cache:noexec,nosuid,size=1g
+
+          api:
+            <<: *firecrawl-service
+            environment:
+              <<: *common-env
+              HOST: 0.0.0.0
+              PORT: 3002
+            ports:
+              - "${cfg.listenAddress}:${toString cfg.port}:3002"
+            command: node dist/src/index.js
+            healthcheck:
+              test:
+                - CMD
+                - curl
+                - --fail
+                - --silent
+                - http://127.0.0.1:3002/
+              interval: 15s
+              timeout: 5s
+              retries: 12
+              start_period: 20s
+
+          queue-worker:
+            <<: *firecrawl-service
+            environment:
+              <<: *common-env
+              WORKER_PORT: 3005
+              NUQ_POD_NAME: queue-worker
+            command: node dist/src/services/queue-worker.js
+
+          nuq-worker:
+            <<: *firecrawl-service
+            environment:
+              <<: *common-env
+              NUQ_WORKER_PORT: 3006
+              NUQ_POD_NAME: nuq-worker-0
+            command: node dist/src/services/worker/nuq-worker.js
+
+          nuq-reconciler:
+            <<: *firecrawl-service
+            environment:
+              <<: *common-env
+              NUQ_RECONCILER_WORKER_PORT: 3012
+              NUQ_POD_NAME: nuq-reconciler-0
+            command: node dist/src/services/worker/nuq-reconciler-worker.js
+
+          redis:
+            image: ${redisImage}
+            networks:
+              - backend
+            command: redis-server --save "" --appendonly no
+            healthcheck:
+              test:
+                - CMD
+                - redis-cli
+                - ping
+              interval: 5s
+              timeout: 3s
+              retries: 12
+            restart: unless-stopped
+            logging: *default-logging
+
+          nuq-postgres:
+            image: ${postgresImage}
+            environment:
+              POSTGRES_USER: postgres
+              POSTGRES_PASSWORD: postgres
+              POSTGRES_DB: postgres
+            networks:
+              - backend
+            volumes:
+              - nuq-postgres-data:/var/lib/postgresql/data
+            healthcheck:
+              test:
+                - CMD-SHELL
+                - pg_isready -U postgres -d postgres
+              interval: 5s
+              timeout: 3s
+              retries: 24
+              start_period: 10s
+            restart: unless-stopped
+            logging: *default-logging
+
         networks:
-          - backend
-        restart: unless-stopped
-        logging: *default-logging
-        tmpfs:
-          - /tmp/.cache:noexec,nosuid,size=1g
+          backend:
 
-      api:
-        <<: *firecrawl-service
-        environment:
-          <<: *common-env
-          HOST: 0.0.0.0
-          PORT: 3002
-        ports:
-          - "${cfg.listenAddress}:${toString cfg.port}:3002"
-        command: node dist/src/index.js
-        healthcheck:
-          test:
-            - CMD
-            - curl
-            - --fail
-            - --silent
-            - http://127.0.0.1:3002/
-          interval: 15s
-          timeout: 5s
-          retries: 12
-          start_period: 20s
-
-      queue-worker:
-        <<: *firecrawl-service
-        environment:
-          <<: *common-env
-          WORKER_PORT: 3005
-          NUQ_POD_NAME: queue-worker
-        command: node dist/src/services/queue-worker.js
-
-      nuq-worker:
-        <<: *firecrawl-service
-        environment:
-          <<: *common-env
-          NUQ_WORKER_PORT: 3006
-          NUQ_POD_NAME: nuq-worker-0
-        command: node dist/src/services/worker/nuq-worker.js
-
-      nuq-reconciler:
-        <<: *firecrawl-service
-        environment:
-          <<: *common-env
-          NUQ_RECONCILER_WORKER_PORT: 3012
-          NUQ_POD_NAME: nuq-reconciler-0
-        command: node dist/src/services/worker/nuq-reconciler-worker.js
-
-      redis:
-        image: ${redisImage}
-        networks:
-          - backend
-        command: redis-server --save "" --appendonly no
-        healthcheck:
-          test:
-            - CMD
-            - redis-cli
-            - ping
-          interval: 5s
-          timeout: 3s
-          retries: 12
-        restart: unless-stopped
-        logging: *default-logging
-
-      nuq-postgres:
-        image: ${postgresImage}
-        environment:
-          POSTGRES_USER: postgres
-          POSTGRES_PASSWORD: postgres
-          POSTGRES_DB: postgres
-        networks:
-          - backend
         volumes:
-          - nuq-postgres-data:/var/lib/postgresql/data
-        healthcheck:
-          test:
-            - CMD-SHELL
-            - pg_isready -U postgres -d postgres
-          interval: 5s
-          timeout: 3s
-          retries: 24
-          start_period: 10s
-        restart: unless-stopped
-        logging: *default-logging
-
-    networks:
-      backend:
-
-    volumes:
-      nuq-postgres-data:
+          nuq-postgres-data:
   '';
 in
 {
@@ -177,6 +188,16 @@ in
       default = 38473;
       description = "Port on which the Firecrawl API is exposed.";
     };
+
+    llm = {
+      enable = mkEnableOption "Codex-subscription-backed Firecrawl JSON and summary extraction";
+
+      model = mkOption {
+        type = types.str;
+        default = "gpt-5.4-mini";
+        description = "Codex model exposed through the internal OpenAI-compatible proxy.";
+      };
+    };
   };
 
   #============================================================================
@@ -189,6 +210,7 @@ in
 
     systemd.tmpfiles.rules = [
       "d /var/lib/firecrawl 0750 root root -"
+      "d /var/lib/firecrawl/codex-auth 0700 root root -"
     ];
 
     systemd.services.firecrawl = {

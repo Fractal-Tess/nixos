@@ -311,6 +311,10 @@
         enable = true;
         listenAddress = "100.91.0.2";
         port = 38473;
+        llm = {
+          enable = true;
+          model = "gpt-5.4-mini";
+        };
       };
 
       # Hermes Agent
