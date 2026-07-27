@@ -22,6 +22,11 @@ let
   camofoxVersion = pkgs.writeText "camoufox-version.json" ''
     {"version":"152.0.4","release":"beta.28"}
   '';
+  camofoxBundle = pkgs.runCommand "camoufox-152.0.4-beta.28" { } ''
+    mkdir -p "$out"
+    cp -a ${camofoxRelease}/. "$out/"
+    cp ${camofoxVersion} "$out/version.json"
+  '';
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
   redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
   codexProxyImage = "eceasy/cli-proxy-api@sha256:2d402a3edfbfa0612d7694345f7a05008fe8ce1915fde00ec9adb82afeb370c9";
@@ -53,8 +58,7 @@ let
         CAMOUFOX_EXECUTABLE: /opt/camoufox/camoufox-bin
       volumes:
         - ${./camofox-scrape.mjs}:/app/firecrawl-scrape.mjs:ro
-        - ${camofoxRelease}:/opt/camoufox:ro
-        - ${camofoxVersion}:/opt/camoufox/version.json:ro
+        - ${camofoxBundle}:/opt/camoufox:ro
       networks:
         - backend
       healthcheck:
