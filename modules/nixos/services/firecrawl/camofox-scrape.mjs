@@ -18,6 +18,18 @@ const maxQueuedPages = Math.max(
   maxConcurrentPages,
   Number.parseInt(process.env.MAX_QUEUED_PAGES ?? "6", 10) || 6,
 );
+const virtualDisplayResolution = "1280x720x24";
+
+class DefaultVirtualDisplay extends VirtualDisplay {
+  get xvfb_args() {
+    const args = [...super.xvfb_args];
+    const screenIndex = args.indexOf("0");
+    if (screenIndex > 0 && args[screenIndex - 1] === "-screen") {
+      args[screenIndex + 1] = virtualDisplayResolution;
+    }
+    return args;
+  }
+}
 
 class AdmissionError extends Error {}
 
@@ -91,11 +103,69 @@ class BoundedSemaphore {
 
 const semaphore = new BoundedSemaphore(maxConcurrentPages);
 const activeContexts = new Set();
+const contextClosures = new WeakMap();
 let browser;
 let browserStart;
 let virtualDisplay;
 let virtualDisplayName;
 let shuttingDown = false;
+
+function abortError(signal) {
+  return signal.reason instanceof Error ? signal.reason : new Error("Operation aborted");
+}
+
+async function raceWithSignal(promise, signal, timeoutMs, timeoutMessage) {
+  if (signal?.aborted) throw abortError(signal);
+
+  let timeout;
+  let onAbort;
+  const competitors = [promise];
+
+  if (signal) {
+    competitors.push(
+      new Promise((_, reject) => {
+        onAbort = () => reject(abortError(signal));
+        signal.addEventListener("abort", onAbort, { once: true });
+      }),
+    );
+  }
+
+  if (timeoutMs) {
+    competitors.push(
+      new Promise((_, reject) => {
+        timeout = setTimeout(() => reject(new Error(timeoutMessage)), timeoutMs);
+      }),
+    );
+  }
+
+  try {
+    return await Promise.race(competitors);
+  } finally {
+    if (timeout) clearTimeout(timeout);
+    if (onAbort) signal.removeEventListener("abort", onAbort);
+  }
+}
+
+function createOperationSignal(clientSignal, timeoutMs) {
+  const controller = new AbortController();
+  const forwardAbort = () => controller.abort(abortError(clientSignal));
+  clientSignal.addEventListener("abort", forwardAbort, { once: true });
+  const timeout = setTimeout(
+    () => controller.abort(new Error(`Scrape exceeded its ${timeoutMs}ms deadline`)),
+    timeoutMs,
+  );
+
+  return {
+    signal: controller.signal,
+    abort(reason) {
+      if (!controller.signal.aborted) controller.abort(reason);
+    },
+    dispose() {
+      clearTimeout(timeout);
+      clientSignal.removeEventListener("abort", forwardAbort);
+    },
+  };
+}
 
 function isPublicAddress(address) {
   try {
@@ -109,7 +179,7 @@ function isPublicAddress(address) {
   }
 }
 
-async function resolvePublicHost(hostname) {
+async function resolvePublicHost(hostname, signal) {
   const normalizedHostname = hostname.toLowerCase().replace(/\.$/, "");
   const host =
     normalizedHostname.startsWith("[") && normalizedHostname.endsWith("]")
@@ -136,8 +206,15 @@ async function resolvePublicHost(hostname) {
 
   let addresses;
   try {
-    addresses = await dns.lookup(host, { all: true, verbatim: true });
-  } catch {
+    addresses = await raceWithSignal(
+      dns.lookup(host, { all: true, verbatim: true }),
+      signal,
+      10000,
+      `DNS lookup timed out: ${hostname}`,
+    );
+  } catch (error) {
+    if (signal?.aborted) throw abortError(signal);
+    if (error.message?.includes("timed out")) throw error;
     throw new Error(`Blocked unresolvable hostname: ${hostname}`);
   }
 
@@ -163,9 +240,9 @@ function parseTargetUrl(value) {
   return parsed;
 }
 
-async function assertPublicUrl(value) {
+async function assertPublicUrl(value, signal) {
   const parsed = parseTargetUrl(value);
-  await resolvePublicHost(parsed.hostname);
+  await resolvePublicHost(parsed.hostname, signal);
   return parsed;
 }
 
@@ -209,24 +286,65 @@ function filteredProxyHeaders(headers, host) {
   return result;
 }
 
-async function createFilteringProxy() {
+function filteredResponseHeaders(headers) {
+  const blockedHeaders = new Set([
+    "connection",
+    "keep-alive",
+    "proxy-authenticate",
+    "proxy-authorization",
+    "proxy-connection",
+    "te",
+    "trailer",
+    "transfer-encoding",
+    "upgrade",
+  ]);
+  return Object.fromEntries(
+    Object.entries(headers).filter(([name]) => !blockedHeaders.has(name.toLowerCase())),
+  );
+}
+
+async function createFilteringProxy(signal) {
   const sockets = new Set();
+  const upstreamRequests = new Set();
   const blockedTargets = [];
+  const maxProxyOperations = 128;
+  let pendingOperations = 0;
+  let closed = false;
+
+  const acquireOperation = () => {
+    if (pendingOperations >= maxProxyOperations) {
+      throw new Error("Proxy operation limit exceeded");
+    }
+    pendingOperations += 1;
+    let released = false;
+    return () => {
+      if (released) return;
+      released = true;
+      pendingOperations -= 1;
+    };
+  };
 
   const markBlocked = (target, error) => {
-    blockedTargets.push({ target, message: error.message });
+    if (blockedTargets.length < 20) {
+      blockedTargets.push({ target, message: error.message });
+    }
   };
 
   const server = http.createServer(async (request, response) => {
-    let target;
+    let upstream;
+    let releaseOperation;
+    let operationTransferred = false;
     try {
-      target = parseTargetUrl(request.url);
+      releaseOperation = acquireOperation();
+      const target = parseTargetUrl(request.url);
       if (target.protocol !== "http:") {
         throw new Error(`Unexpected proxy protocol: ${target.protocol}`);
       }
-      const resolved = await resolvePublicHost(target.hostname);
+      const resolved = await resolvePublicHost(target.hostname, signal);
+      if (closed || signal.aborted || response.destroyed) return;
+
       const targetPort = Number.parseInt(target.port || "80", 10);
-      const upstream = http.request({
+      upstream = http.request({
         host: resolved.address,
         family: resolved.family,
         port: targetPort,
@@ -234,51 +352,98 @@ async function createFilteringProxy() {
         path: `${target.pathname}${target.search}`,
         headers: filteredProxyHeaders(request.headers, target.host),
       });
+      upstreamRequests.add(upstream);
+      upstream.once("close", () => {
+        upstreamRequests.delete(upstream);
+        releaseOperation();
+      });
+      operationTransferred = true;
+      upstream.once("socket", socket => {
+        sockets.add(socket);
+        socket.once("close", () => sockets.delete(socket));
+      });
+      upstream.setTimeout(30000, () => upstream.destroy(new Error("Upstream timed out")));
 
       upstream.on("response", upstreamResponse => {
-        response.writeHead(upstreamResponse.statusCode ?? 502, upstreamResponse.headers);
+        upstreamResponse.once("error", error => {
+          if (!response.destroyed) response.destroy(error);
+        });
+        if (response.destroyed) {
+          upstreamResponse.destroy();
+          return;
+        }
+        response.writeHead(
+          upstreamResponse.statusCode ?? 502,
+          filteredResponseHeaders(upstreamResponse.headers),
+        );
         upstreamResponse.pipe(response);
       });
       upstream.on("error", error => {
+        if (response.destroyed) return;
         if (!response.headersSent) response.writeHead(502);
         response.end(error.message);
       });
+      request.once("aborted", () => upstream.destroy(new Error("Proxy client aborted")));
+      response.once("close", () => {
+        if (!response.writableEnded) upstream.destroy(new Error("Proxy client disconnected"));
+      });
       request.pipe(upstream);
     } catch (error) {
+      upstream?.destroy();
+      if (closed || signal.aborted || response.destroyed) return;
       markBlocked(request.url, error);
       response.writeHead(403, { "content-type": "text/plain; charset=utf-8" });
       response.end(error.message);
+    } finally {
+      if (!operationTransferred) releaseOperation?.();
     }
   });
 
   server.on("connect", async (request, clientSocket, head) => {
+    clientSocket.on("error", () => {});
+    let releaseOperation;
+    let operationTransferred = false;
     try {
+      releaseOperation = acquireOperation();
       const target = parseConnectAuthority(request.url);
-      const resolved = await resolvePublicHost(target.hostname);
+      const resolved = await resolvePublicHost(target.hostname, signal);
+      if (closed || signal.aborted || clientSocket.destroyed) return;
+
       const upstreamSocket = net.connect({
         host: resolved.address,
         family: resolved.family,
         port: target.port,
       });
       sockets.add(upstreamSocket);
+      upstreamSocket.once("close", () => releaseOperation());
+      operationTransferred = true;
+      upstreamSocket.setTimeout(30000, () =>
+        upstreamSocket.destroy(new Error("Upstream CONNECT timed out")),
+      );
       upstreamSocket.once("close", () => sockets.delete(upstreamSocket));
       upstreamSocket.once("connect", () => {
+        upstreamSocket.setTimeout(0);
+        if (closed || signal.aborted || clientSocket.destroyed) {
+          upstreamSocket.destroy();
+          return;
+        }
         clientSocket.write("HTTP/1.1 200 Connection Established\r\n\r\n");
         if (head.length > 0) upstreamSocket.write(head);
         upstreamSocket.pipe(clientSocket);
         clientSocket.pipe(upstreamSocket);
       });
-      upstreamSocket.once("error", error => {
+      upstreamSocket.once("error", () => {
         if (!clientSocket.destroyed) {
           clientSocket.end("HTTP/1.1 502 Bad Gateway\r\n\r\n");
         }
-        markBlocked(request.url, error);
       });
+      clientSocket.once("close", () => upstreamSocket.destroy());
     } catch (error) {
+      if (closed || signal.aborted || clientSocket.destroyed) return;
       markBlocked(request.url, error);
-      if (!clientSocket.destroyed) {
-        clientSocket.end("HTTP/1.1 403 Forbidden\r\n\r\n");
-      }
+      clientSocket.end("HTTP/1.1 403 Forbidden\r\n\r\n");
+    } finally {
+      if (!operationTransferred) releaseOperation?.();
     }
   });
 
@@ -286,28 +451,50 @@ async function createFilteringProxy() {
     socket.end("HTTP/1.1 403 Forbidden\r\n\r\n");
   });
   server.on("connection", socket => {
+    if (sockets.size >= 512) {
+      socket.destroy();
+      return;
+    }
     sockets.add(socket);
+    socket.on("error", () => {});
     socket.once("close", () => sockets.delete(socket));
   });
 
-  await new Promise((resolve, reject) => {
-    server.once("error", reject);
-    server.listen(0, "127.0.0.1", resolve);
-  });
+  const close = async () => {
+    if (closed) return;
+    closed = true;
+    signal.removeEventListener("abort", abortProxy);
+    for (const request of upstreamRequests) request.destroy(new Error("Proxy closed"));
+    for (const socket of sockets) socket.destroy();
+    if (!server.listening) return;
+    await Promise.race([
+      new Promise(resolve => server.close(resolve)),
+      new Promise(resolve => setTimeout(resolve, 2000)),
+    ]);
+  };
+  const abortProxy = () => void close();
+  signal.addEventListener("abort", abortProxy, { once: true });
+
+  await raceWithSignal(
+    new Promise((resolve, reject) => {
+      server.once("error", reject);
+      server.listen(0, "127.0.0.1", resolve);
+    }),
+    signal,
+    5000,
+    "Filtering proxy startup timed out",
+  );
 
   const address = server.address();
   if (!address || typeof address === "string") {
+    await close();
     throw new Error("Failed to start filtering proxy");
   }
 
   return {
     url: `http://127.0.0.1:${address.port}`,
     blockedTargets,
-    async close() {
-      for (const socket of sockets) socket.destroy();
-      if (!server.listening) return;
-      await new Promise(resolve => server.close(resolve));
-    },
+    close,
   };
 }
 
@@ -319,7 +506,7 @@ async function ensureBrowser() {
   browserStart = (async () => {
     if (!virtualDisplay) {
       try {
-        virtualDisplay = new VirtualDisplay();
+        virtualDisplay = new DefaultVirtualDisplay();
         virtualDisplayName = await virtualDisplay.get();
       } catch (error) {
         console.warn("Xvfb unavailable; using headless Camoufox", error);
@@ -332,10 +519,20 @@ async function ensureBrowser() {
       executable_path: process.env.CAMOUFOX_EXECUTABLE || undefined,
       headless: !virtualDisplayName,
       os: "linux",
+      ff_version: 152,
       humanize: true,
+      block_webrtc: true,
       enable_cache: true,
+      exclude_addons: ["UBO"],
       virtual_display: virtualDisplayName,
     });
+    options.firefoxUserPrefs = {
+      ...(options.firefoxUserPrefs ?? {}),
+      "media.navigator.enabled": false,
+      "media.peerconnection.enabled": false,
+      "media.peerconnection.ice.no_host": true,
+      "media.peerconnection.ice.proxy_only": true,
+    };
     options.handleSIGINT = false;
     options.handleSIGTERM = false;
     options.handleSIGHUP = false;
@@ -413,10 +610,25 @@ async function applyRequestHeaders(context, page, url, headers) {
     "user-agent",
   ]);
   const forwarded = Object.fromEntries(
-    Object.entries(headers).filter(([name]) => !blocked.has(name.toLowerCase())),
+    Object.entries(headers)
+      .filter(([name]) => !blocked.has(name.toLowerCase()))
+      .map(([name, value]) => [name.toLowerCase(), value]),
   );
   if (Object.keys(forwarded).length > 0) {
-    await page.setExtraHTTPHeaders(forwarded);
+    const intendedOrigin = new URL(url).origin;
+    await page.route("**/*", async (route, browserRequest) => {
+      let sameOrigin = false;
+      try {
+        sameOrigin = new URL(browserRequest.url()).origin === intendedOrigin;
+      } catch {
+        sameOrigin = false;
+      }
+      await route.continue({
+        headers: sameOrigin
+          ? { ...browserRequest.headers(), ...forwarded }
+          : browserRequest.headers(),
+      });
+    });
   }
 }
 
@@ -476,12 +688,26 @@ function getPageError(statusCode) {
 }
 
 async function closeContext(context) {
-  if (!context) return;
-  activeContexts.delete(context);
-  await Promise.race([
-    context.close().catch(() => {}),
-    new Promise(resolve => setTimeout(resolve, 5000)),
-  ]);
+  if (!context || !activeContexts.has(context)) return;
+  const existingClose = contextClosures.get(context);
+  if (existingClose) return existingClose;
+
+  const closing = (async () => {
+    const closed = await Promise.race([
+      context
+        .close()
+        .then(() => true)
+        .catch(() => false),
+      new Promise(resolve => setTimeout(() => resolve(false), 5000)),
+    ]);
+    activeContexts.delete(context);
+    if (!closed) {
+      console.error("Browser context failed to close; exiting for a clean container restart");
+      process.exit(1);
+    }
+  })().finally(() => contextClosures.delete(context));
+  contextClosures.set(context, closing);
+  return closing;
 }
 
 const app = express();
@@ -489,9 +715,13 @@ app.use(express.json({ limit: "1mb" }));
 
 app.get("/health", async (_request, response) => {
   try {
-    const currentBrowser = await ensureBrowser();
-    const context = await currentBrowser.newContext();
-    await context.close();
+    const currentBrowser = await raceWithSignal(
+      ensureBrowser(),
+      undefined,
+      10000,
+      "Browser health check timed out",
+    );
+    if (!currentBrowser.isConnected()) throw new Error("Browser is disconnected");
     response.json({
       status: "healthy",
       engine: "camoufox",
@@ -505,10 +735,13 @@ app.get("/health", async (_request, response) => {
 });
 
 app.post("/scrape", async (request, response) => {
-  const signal = requestAbortSignal(request, response);
+  const clientSignal = requestAbortSignal(request, response);
+  let signal = clientSignal;
+  let operation;
   let release;
   let filteringProxy;
   let context;
+  let abortWork;
 
   try {
     const {
@@ -523,10 +756,37 @@ app.post("/scrape", async (request, response) => {
     if (typeof url !== "string" || url.length === 0) {
       return response.status(400).json({ error: "URL is required" });
     }
+    try {
+      parseTargetUrl(url);
+    } catch (error) {
+      return response.status(400).json({ error: error.message });
+    }
+
+    const requestedWaitNumber = Number(requestedWait);
+    const waitAfterLoad = Number.isFinite(requestedWaitNumber)
+      ? Math.min(60000, Math.max(0, requestedWaitNumber))
+      : 0;
+    const requestedTimeoutNumber = Number(requestedTimeout);
+    const timeout = Number.isFinite(requestedTimeoutNumber)
+      ? Math.min(180000, Math.max(1000, requestedTimeoutNumber))
+      : 15000;
+    const headers = normalizeHeaders(requestedHeaders);
+
+    operation = createOperationSignal(
+      clientSignal,
+      Math.min(250000, timeout + waitAfterLoad + 10000),
+    );
+    signal = operation.signal;
+    abortWork = () => {
+      void filteringProxy?.close().catch(() => {});
+      void closeContext(context);
+    };
+    signal.addEventListener("abort", abortWork, { once: true });
 
     try {
-      await assertPublicUrl(url);
+      await assertPublicUrl(url, signal);
     } catch (error) {
+      if (signal.aborted) throw error;
       return response.json({
         content: "",
         pageStatusCode: 403,
@@ -534,24 +794,42 @@ app.post("/scrape", async (request, response) => {
       });
     }
 
-    const waitAfterLoad = Math.max(0, Number(requestedWait) || 0);
-    const timeout = Math.min(300000, Math.max(1000, Number(requestedTimeout) || 15000));
-    const headers = normalizeHeaders(requestedHeaders);
-
     release = await semaphore.acquire(signal);
-    filteringProxy = await createFilteringProxy();
+    filteringProxy = await createFilteringProxy(signal);
     signal.throwIfAborted();
 
-    const currentBrowser = await ensureBrowser();
+    const currentBrowser = await raceWithSignal(
+      ensureBrowser(),
+      signal,
+      60000,
+      "Camoufox browser startup timed out",
+    );
     const userAgent = findHeader(headers, "user-agent");
-    context = await currentBrowser.newContext({
+    const contextPromise = currentBrowser.newContext({
       viewport: null,
       ignoreHTTPSErrors: Boolean(skipTlsVerification),
       serviceWorkers: "block",
       proxy: { server: filteringProxy.url },
       ...(userAgent ? { userAgent } : {}),
     });
+    void contextPromise
+      .then(createdContext => {
+        if (signal.aborted) void createdContext.close().catch(() => {});
+      })
+      .catch(() => {});
+    try {
+      context = await raceWithSignal(
+        contextPromise,
+        signal,
+        15000,
+        "Browser context creation timed out",
+      );
+    } catch (error) {
+      operation.abort(error);
+      throw error;
+    }
     activeContexts.add(context);
+    signal.throwIfAborted();
 
     const page = await context.newPage();
     await applyRequestHeaders(context, page, url, headers);
@@ -560,7 +838,7 @@ app.post("/scrape", async (request, response) => {
     try {
       navigationResponse = await page.goto(url, { waitUntil: "load", timeout });
     } catch (error) {
-      if (filteringProxy.blockedTargets.length > 0) {
+      if (!signal.aborted && filteringProxy.blockedTargets.length > 0) {
         return response.json({
           content: "",
           pageStatusCode: 403,
@@ -573,6 +851,7 @@ app.post("/scrape", async (request, response) => {
     signal.throwIfAborted();
     if (waitAfterLoad > 0) await page.waitForTimeout(waitAfterLoad);
     if (checkSelector) await page.waitForSelector(String(checkSelector), { timeout });
+    signal.throwIfAborted();
 
     const statusCode = navigationResponse?.status() ?? 200;
     const responseHeaders = navigationResponse ? await navigationResponse.allHeaders() : {};
@@ -590,23 +869,28 @@ app.post("/scrape", async (request, response) => {
       content = (await navigationResponse.body()).toString("utf8");
     }
 
+    const pageError = getPageError(statusCode);
     response.json({
       content,
       pageStatusCode: statusCode,
       ...(contentType ? { contentType } : {}),
-      ...(getPageError(statusCode) ? { pageError: getPageError(statusCode) } : {}),
+      ...(pageError ? { pageError } : {}),
     });
   } catch (error) {
     if (error instanceof AdmissionError) {
       if (!response.headersSent) response.status(503).json({ error: error.message });
+    } else if (signal.aborted && !clientSignal.aborted && !response.headersSent) {
+      response.status(504).json({ error: abortError(signal).message });
     } else if (!signal.aborted && !response.headersSent) {
       console.error("Scrape failed", error);
       response.status(500).json({ error: "An error occurred while fetching the page." });
     }
   } finally {
+    if (abortWork) signal.removeEventListener("abort", abortWork);
     await closeContext(context);
     await filteringProxy?.close().catch(() => {});
     release?.();
+    operation?.dispose();
   }
 });
 

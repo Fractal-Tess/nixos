@@ -42,12 +42,39 @@ let
     indentation: text:
     concatStringsSep "\n" (map (line: "${indentation}${line}") (splitString "\n" text));
 
+  playwrightService = ''
+    playwright-service:
+      image: ${playwrightImage}
+      environment:
+        PORT: 3000
+        MAX_CONCURRENT_PAGES: "3"
+      networks:
+        - backend
+      restart: unless-stopped
+      logging: *default-logging
+      tmpfs:
+        - /tmp/.cache:noexec,nosuid,size=1g
+  '';
+
   camofoxService = ''
-    # Private Firecrawl-compatible Camoufox browser backend. The original
-    # Playwright service remains available for immediate rollback.
+    # Private Firecrawl-compatible Camoufox browser backend. Set
+    # modules.services.firecrawl.camofox.enable=false to roll back to Playwright.
     camofox-scrape:
       image: ${camofoxImage}
       init: true
+      user: "1000:1000"
+      read_only: true
+      cap_drop:
+        - ALL
+      security_opt:
+        - no-new-privileges:true
+      cpus: "2.0"
+      mem_limit: 3g
+      pids_limit: 256
+      ulimits:
+        nofile:
+          soft: 4096
+          hard: 4096
       command:
         - node
         - /app/firecrawl-scrape.mjs
@@ -56,6 +83,8 @@ let
         MAX_CONCURRENT_PAGES: "3"
         MAX_QUEUED_PAGES: "6"
         NODE_OPTIONS: --max-old-space-size=256
+        HOME: /tmp/home
+        XDG_CACHE_HOME: /tmp/home/.cache
         CAMOUFOX_EXECUTABLE: /opt/camoufox/camoufox-bin
       volumes:
         - ${./camofox-scrape.mjs}:/app/firecrawl-scrape.mjs:ro
@@ -75,7 +104,7 @@ let
         start_period: 45s
       shm_size: 2gb
       tmpfs:
-        - /tmp:nosuid,size=1g
+        - /tmp:rw,nosuid,nodev,mode=1777,size=1g
       restart: unless-stopped
       logging: *default-logging
   '';
@@ -122,9 +151,12 @@ let
               condition: service_healthy
             nuq-postgres:
               condition: service_healthy
-            playwright-service:
-              condition: service_started
-    ${optionalString cfg.camofox.enable "        camofox-scrape:\n          condition: service_healthy"}
+    ${
+      if cfg.camofox.enable then
+        "        camofox-scrape:\n          condition: service_healthy"
+      else
+        "        playwright-service:\n          condition: service_started"
+    }
     ${optionalString cfg.llm.enable "        codex-proxy:\n          condition: service_started"}
           restart: unless-stopped
           logging: *default-logging
@@ -132,19 +164,7 @@ let
         services:
     ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
 
-          playwright-service:
-            image: ${playwrightImage}
-            environment:
-              PORT: 3000
-              MAX_CONCURRENT_PAGES: "3"
-            networks:
-              - backend
-            restart: unless-stopped
-            logging: *default-logging
-            tmpfs:
-              - /tmp/.cache:noexec,nosuid,size=1g
-
-    ${optionalString cfg.camofox.enable (indentYaml "      " camofoxService)}
+    ${indentYaml "      " (if cfg.camofox.enable then camofoxService else playwrightService)}
 
           api:
             <<: *firecrawl-service
