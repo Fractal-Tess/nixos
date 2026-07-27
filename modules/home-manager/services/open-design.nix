@@ -161,7 +161,10 @@ in
     inputs.open-design.homeManagerModules.default
   ];
 
-  home.packages = [ pkgs.mcp-proxy ];
+  home = {
+    packages = [ pkgs.mcp-proxy ];
+    sessionVariables.OD_DAEMON_URL = "http://127.0.0.1:${toString webPort}";
+  };
 
   services.open-design = {
     enable = true;
@@ -170,7 +173,11 @@ in
       enable = true;
       host = "0.0.0.0";
       port = webPort;
-      allowedOrigins = [ netbirdOrigin ];
+      allowedOrigins = [
+        netbirdOrigin
+        "http://localhost:${toString webPort}"
+        "http://127.0.0.1:${toString webPort}"
+      ];
     };
   };
 
