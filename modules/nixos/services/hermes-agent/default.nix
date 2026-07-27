@@ -24,6 +24,12 @@ in
       description = "Optional Firecrawl API base URL exported via env for Hermes web tools.";
     };
 
+    camofoxUrl = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Optional Camofox browser server URL exported via env (CAMOFOX_URL).";
+    };
+
     baseUrl = mkOption {
       type = types.str;
       default = "http://127.0.0.1:8080/v1";

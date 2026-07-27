@@ -325,6 +325,7 @@
         container.enable = false;
         model = "gpt-5.3-codex-spark";
         firecrawlApiUrl = "http://100.91.0.2:38473";
+        camofoxUrl = "http://100.91.0.2:9377";
         web = {
           search_backend = "firecrawl";
           extract_backend = "firecrawl";

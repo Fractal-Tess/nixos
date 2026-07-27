@@ -50,6 +50,8 @@ in
         EXA_API_KEY=${config.sops.placeholder.hermes_exa_api_key}
         ${optionalString (config.modules.services.hermes-agent.firecrawlApiUrl != null)
           "FIRECRAWL_API_URL=${config.modules.services.hermes-agent.firecrawlApiUrl}"}
+        ${optionalString (config.modules.services.hermes-agent.camofoxUrl != null)
+          "CAMOFOX_URL=${config.modules.services.hermes-agent.camofoxUrl}"}
       '';
     };
 
