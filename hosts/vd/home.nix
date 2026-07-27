@@ -31,6 +31,7 @@
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome";
       HF_HOME = "/mnt/vault/ai/huggingface";
+      FIRECRAWL_API_URL = "http://127.0.0.1:38473";
     };
 
     activation.setupPlaywrightBrowsers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
