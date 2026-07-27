@@ -180,7 +180,7 @@
   ];
 
   environment.systemPackages = [
-    inputs.shadoword.packages.${pkgs.system}.shadoword-egui
+    inputs.shadoword.packages.${pkgs.system}.shadoword-egui-client
     pkgs.wtype
     pkgs.xdotool
   ];

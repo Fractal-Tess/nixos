@@ -92,7 +92,7 @@
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-egui}/bin/shadoword-egui";
+      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-egui-client}/bin/shadoword-egui";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [
