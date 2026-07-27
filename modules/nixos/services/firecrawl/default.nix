@@ -9,100 +9,130 @@ with lib;
 
 let
   cfg = config.modules.services.firecrawl;
-  composeFile = pkgs.writeText "firecrawl-docker-compose.yaml" ''
+
+  # Pinned multi-architecture image indexes from 2026-07-27.
+  firecrawlImage = "ghcr.io/firecrawl/firecrawl@sha256:d2fe554a1a723d95f3af3ceb4146db5765efaba7fb1b1850f8fd2713b11da7f6";
+  playwrightImage = "ghcr.io/firecrawl/playwright-service@sha256:8c50add7293201e575110e6c7489fa383a9dfc46f168936526a458e06ffc5c28";
+  postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
+  redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
+
+  composeFile = pkgs.writeText "firecrawl-compose.yaml" ''
     name: firecrawl
 
     x-common-env: &common-env
       REDIS_URL: redis://redis:6379
       REDIS_RATE_LIMIT_URL: redis://redis:6379
       PLAYWRIGHT_MICROSERVICE_URL: http://playwright-service:3000/scrape
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: postgres
-      POSTGRES_HOST: nuq-postgres
-      POSTGRES_PORT: 5432
+      NUQ_DATABASE_URL: postgresql://postgres:postgres@nuq-postgres:5432/postgres
+      NUQ_DATABASE_URL_LISTEN: postgresql://postgres:postgres@nuq-postgres:5432/postgres
+      NUQ_WAIT_MODE: listen
       USE_DB_AUTHENTICATION: "false"
-      NUM_WORKERS_PER_QUEUE: "4"
-      CRAWL_CONCURRENT_REQUESTS: "6"
-      MAX_CONCURRENT_JOBS: "3"
-      BROWSER_POOL_SIZE: "3"
-      OPENAI_API_KEY: local
-      OPENAI_BASE_URL: ${cfg.openaiBaseUrl}
-      MODEL_NAME: ${cfg.model}
-      BULL_AUTH_KEY: local
+      ENV: local
       LOGGING_LEVEL: info
+      NUM_WORKERS_PER_QUEUE: "1"
+      CRAWL_CONCURRENT_REQUESTS: "3"
+      MAX_CONCURRENT_JOBS: "2"
+      BROWSER_POOL_SIZE: "2"
+
+    x-default-logging: &default-logging
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+        compress: "true"
+
+    x-firecrawl-service: &firecrawl-service
+      image: ${firecrawlImage}
+      networks:
+        - backend
+      environment:
+        <<: *common-env
+      depends_on:
+        redis:
+          condition: service_healthy
+        nuq-postgres:
+          condition: service_healthy
+        playwright-service:
+          condition: service_started
+      restart: unless-stopped
+      logging: *default-logging
 
     services:
       playwright-service:
-        image: ghcr.io/firecrawl/playwright-service:latest
+        image: ${playwrightImage}
         environment:
           PORT: 3000
-          MAX_CONCURRENT_PAGES: "6"
+          MAX_CONCURRENT_PAGES: "3"
         networks:
           - backend
         restart: unless-stopped
+        logging: *default-logging
         tmpfs:
           - /tmp/.cache:noexec,nosuid,size=1g
 
       api:
-        image: ghcr.io/firecrawl/firecrawl:latest
-        ulimits:
-          nofile:
-            soft: 65535
-            hard: 65535
-        networks:
-          - backend
-        extra_hosts:
-          - "host.docker.internal:host-gateway"
+        <<: *firecrawl-service
         environment:
           <<: *common-env
-          HOST: "0.0.0.0"
+          HOST: 0.0.0.0
           PORT: 3002
-          EXTRACT_WORKER_PORT: 3004
-          WORKER_PORT: 3005
-          NUQ_RABBITMQ_URL: amqp://rabbitmq:5672
-          HARNESS_STARTUP_TIMEOUT_MS: "60000"
-          ENV: local
-        depends_on:
-          redis:
-            condition: service_started
-          playwright-service:
-            condition: service_started
-          rabbitmq:
-            condition: service_healthy
-          nuq-postgres:
-            condition: service_started
         ports:
-          - "127.0.0.1:${toString cfg.port}:3002"
-        command: node dist/src/harness.js --start-docker
-        restart: unless-stopped
-
-      redis:
-        image: redis:alpine
-        networks:
-          - backend
-        command: redis-server --bind 0.0.0.0
-        restart: unless-stopped
-
-      rabbitmq:
-        image: rabbitmq:3-management
-        networks:
-          - backend
-        command: rabbitmq-server
+          - "${cfg.listenAddress}:${toString cfg.port}:3002"
+        command: node dist/src/index.js
         healthcheck:
           test:
             - CMD
-            - rabbitmq-diagnostics
-            - -q
-            - check_running
-          interval: 5s
+            - curl
+            - --fail
+            - --silent
+            - http://127.0.0.1:3002/
+          interval: 15s
           timeout: 5s
-          retries: 3
-          start_period: 5s
+          retries: 12
+          start_period: 20s
+
+      queue-worker:
+        <<: *firecrawl-service
+        environment:
+          <<: *common-env
+          WORKER_PORT: 3005
+          NUQ_POD_NAME: queue-worker
+        command: node dist/src/services/queue-worker.js
+
+      nuq-worker:
+        <<: *firecrawl-service
+        environment:
+          <<: *common-env
+          NUQ_WORKER_PORT: 3006
+          NUQ_POD_NAME: nuq-worker-0
+        command: node dist/src/services/worker/nuq-worker.js
+
+      nuq-reconciler:
+        <<: *firecrawl-service
+        environment:
+          <<: *common-env
+          NUQ_RECONCILER_WORKER_PORT: 3012
+          NUQ_POD_NAME: nuq-reconciler-0
+        command: node dist/src/services/worker/nuq-reconciler-worker.js
+
+      redis:
+        image: ${redisImage}
+        networks:
+          - backend
+        command: redis-server --save "" --appendonly no
+        healthcheck:
+          test:
+            - CMD
+            - redis-cli
+            - ping
+          interval: 5s
+          timeout: 3s
+          retries: 12
         restart: unless-stopped
+        logging: *default-logging
 
       nuq-postgres:
-        image: ghcr.io/firecrawl/nuq-postgres:latest
+        image: ${postgresImage}
         environment:
           POSTGRES_USER: postgres
           POSTGRES_PASSWORD: postgres
@@ -111,11 +141,19 @@ let
           - backend
         volumes:
           - nuq-postgres-data:/var/lib/postgresql/data
+        healthcheck:
+          test:
+            - CMD-SHELL
+            - pg_isready -U postgres -d postgres
+          interval: 5s
+          timeout: 3s
+          retries: 24
+          start_period: 10s
         restart: unless-stopped
+        logging: *default-logging
 
     networks:
       backend:
-        driver: bridge
 
     volumes:
       nuq-postgres-data:
@@ -126,50 +164,18 @@ in
   # OPTIONS
   #============================================================================
   options.modules.services.firecrawl = {
-    enable = mkEnableOption "local Firecrawl web search and extraction service";
+    enable = mkEnableOption "self-hosted Firecrawl search and extraction service";
+
+    listenAddress = mkOption {
+      type = types.str;
+      default = "127.0.0.1";
+      description = "Address on which the Firecrawl API is exposed.";
+    };
 
     port = mkOption {
       type = types.port;
-      default = 4312;
-      description = "Localhost port for the Firecrawl API.";
-    };
-
-    model = mkOption {
-      type = types.str;
-      default = config.modules.services.hermes-agent.model or "hermes-local";
-      description = "OpenAI-compatible model name used by Firecrawl AI features.";
-    };
-
-    openaiBaseUrl = mkOption {
-      type = types.str;
-      default = "http://host.docker.internal:18080/v1";
-      description = "OpenAI-compatible endpoint Firecrawl uses for AI extraction.";
-    };
-
-    llamaCppProxy = {
-      enable = mkOption {
-        type = types.bool;
-        default = true;
-        description = "Expose host-local llama.cpp to Firecrawl containers through the Docker bridge.";
-      };
-
-      bindAddress = mkOption {
-        type = types.str;
-        default = "172.20.0.1";
-        description = "Docker bridge address used for the llama.cpp forwarding proxy.";
-      };
-
-      port = mkOption {
-        type = types.port;
-        default = 18080;
-        description = "Docker-bridge port that forwards to the host-local llama.cpp server.";
-      };
-
-      target = mkOption {
-        type = types.str;
-        default = "127.0.0.1:8080";
-        description = "Host-local llama.cpp target address.";
-      };
+      default = 38473;
+      description = "Port on which the Firecrawl API is exposed.";
     };
   };
 
@@ -185,32 +191,14 @@ in
       "d /var/lib/firecrawl 0750 root root -"
     ];
 
-    systemd.services.firecrawl-llamacpp-proxy = mkIf cfg.llamaCppProxy.enable {
-      description = "Firecrawl llama.cpp bridge proxy";
-      after = [ "docker.service" ];
-      requires = [ "docker.service" ];
-      wantedBy = [ "firecrawl.service" ];
-
-      serviceConfig = {
-        ExecStart = ''
-          ${pkgs.socat}/bin/socat TCP-LISTEN:${toString cfg.llamaCppProxy.port},bind=${cfg.llamaCppProxy.bindAddress},reuseaddr,fork TCP:${cfg.llamaCppProxy.target}
-        '';
-        Restart = "always";
-        RestartSec = "2s";
-      };
-    };
-
     systemd.services.firecrawl = {
-      description = "Local Firecrawl stack";
+      description = "Self-hosted Firecrawl stack";
       after = [
         "docker.service"
         "network-online.target"
-      ]
-      ++ optional cfg.llamaCppProxy.enable "firecrawl-llamacpp-proxy.service";
-      requires = [
-        "docker.service"
-      ]
-      ++ optional cfg.llamaCppProxy.enable "firecrawl-llamacpp-proxy.service";
+      ];
+      requires = [ "docker.service" ];
+      wants = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
 
       path = [
@@ -223,9 +211,9 @@ in
         WorkingDirectory = "/var/lib/firecrawl";
         ExecStart = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} up --remove-orphans";
         ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} down";
-        Restart = "always";
+        Restart = "on-failure";
         RestartSec = "10s";
-        TimeoutStartSec = "10min";
+        TimeoutStartSec = "15min";
         TimeoutStopSec = "2min";
       };
     };

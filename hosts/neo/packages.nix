@@ -85,8 +85,8 @@
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
     t3code # T3 Code desktop app
-    amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
+    firecrawl-cli # Search and scrape through the shared self-hosted Firecrawl API
 
     # Programming languages and runtimes
     nodejs_22 # JavaScript runtime

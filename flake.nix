@@ -133,6 +133,7 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
                 (import ./overlays/cliproxyapi.nix)
+                (import ./overlays/firecrawl-cli.nix)
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default

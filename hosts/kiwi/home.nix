@@ -36,6 +36,7 @@
       PLAYWRIGHT_BROWSERS_PATH = "$HOME/.local/share/playwright-browsers";
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       AGENT_BROWSER_EXECUTABLE_PATH = "/run/current-system/sw/bin/chromium";
+      FIRECRAWL_API_URL = "http://vd.netbird.cloud:38473";
     };
 
     activation.setupPlaywrightBrowsers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''

@@ -194,9 +194,9 @@ in
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
     shapeshifter-tui # Codex account manager TUI
     t3code # T3 Code desktop app
-    amp-cli
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
+    firecrawl-cli # Search and scrape through the shared self-hosted Firecrawl API
 
     # Testing/Automation
     playwright-driver.browsers # Playwright browsers for e2e testing and agent-browser

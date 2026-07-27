@@ -306,6 +306,13 @@
         tokenFile = config.sops.secrets.shadoword_api_token.path;
       };
 
+      # Shared self-hosted web search and scraping API
+      firecrawl = {
+        enable = true;
+        listenAddress = "100.91.0.2";
+        port = 38473;
+      };
+
       # Hermes Agent
       hermes-agent = {
         enable = true;
@@ -321,10 +328,13 @@
     "d /mnt/blockade 0755 fractal-tess fractal-tess -"
   ];
 
-  networking.firewall.allowedTCPPorts = [
-    631
-    8384
-  ];
+  networking.firewall = {
+    allowedTCPPorts = [
+      631
+      8384
+    ];
+    interfaces.wt0.allowedTCPPorts = [ 38473 ];
+  };
 
   #============================================================================
   # SYSTEM PACKAGES & PROGRAMS
