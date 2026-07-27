@@ -78,7 +78,7 @@ let
       command:
         - /bin/sh
         - -c
-        - mkdir -p "$HOME/.cache" && ln -s /opt/camoufox "$HOME/.cache/camoufox" && exec node /app/firecrawl-scrape.mjs
+        - mkdir -p /tmp/home/.cache && ln -s /opt/camoufox /tmp/home/.cache/camoufox && exec node /app/firecrawl-scrape.mjs
       environment:
         PORT: "3000"
         MAX_CONCURRENT_PAGES: "3"
