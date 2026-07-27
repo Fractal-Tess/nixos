@@ -76,8 +76,9 @@ let
           soft: 4096
           hard: 4096
       command:
-        - node
-        - /app/firecrawl-scrape.mjs
+        - /bin/sh
+        - -c
+        - mkdir -p "$HOME/.cache" && ln -s /opt/camoufox "$HOME/.cache/camoufox" && exec node /app/firecrawl-scrape.mjs
       environment:
         PORT: "3000"
         MAX_CONCURRENT_PAGES: "3"

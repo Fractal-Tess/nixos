@@ -1,4 +1,5 @@
 import dns from "node:dns/promises";
+import { setMaxListeners } from "node:events";
 import http from "node:http";
 import net from "node:net";
 import process from "node:process";
@@ -519,7 +520,6 @@ async function ensureBrowser() {
       executable_path: process.env.CAMOUFOX_EXECUTABLE || undefined,
       headless: !virtualDisplayName,
       os: "linux",
-      ff_version: 152,
       humanize: true,
       block_webrtc: true,
       enable_cache: true,
@@ -777,6 +777,7 @@ app.post("/scrape", async (request, response) => {
       Math.min(250000, timeout + waitAfterLoad + 10000),
     );
     signal = operation.signal;
+    setMaxListeners(256, signal);
     abortWork = () => {
       void filteringProxy?.close().catch(() => {});
       void closeContext(context);
