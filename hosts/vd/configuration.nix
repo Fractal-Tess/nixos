@@ -316,10 +316,10 @@
       # Hermes Agent
       hermes-agent = {
         enable = true;
-        baseUrl = "https://opencode.ai/zen/go/v1";
-        provider = "opencode-go";
+        baseUrl = "https://chatgpt.com/backend-api/codex";
+        provider = "openai-codex";
         container.enable = false;
-        model = "deepseek-v4-flash";
+        model = "gpt-5.3-codex-spark";
       };
     };
   };
