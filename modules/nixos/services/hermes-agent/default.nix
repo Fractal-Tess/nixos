@@ -18,6 +18,12 @@ in
   options.modules.services.hermes-agent = {
     enable = mkEnableOption "Hermes Agent";
 
+    firecrawlApiUrl = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Optional Firecrawl API base URL exported via env for Hermes web tools.";
+    };
+
     baseUrl = mkOption {
       type = types.str;
       default = "http://127.0.0.1:8080/v1";
@@ -48,6 +54,18 @@ in
       type = types.nullOr types.int;
       default = null;
       description = "Optional context length advertised to Hermes for the default model.";
+    };
+
+    web = mkOption {
+      type = types.attrsOf types.str;
+      default = { };
+      description = "Optional Hermes web tool config, e.g. { search_backend = \"firecrawl\"; extract_backend = \"firecrawl\"; }.";
+    };
+
+    extraDependencyGroups = mkOption {
+      type = types.listOf types.str;
+      default = [ "messaging" ];
+      description = "Optional Hermes extra dependency groups (for optional Python extras, e.g. `firecrawl`).";
     };
   };
 
@@ -80,6 +98,7 @@ in
           cwd = "/home/${username}";
           timeout = 180;
         };
+        web = cfg.web;
         memory = {
           memory_enabled = true;
           user_profile_enabled = true;
@@ -106,7 +125,7 @@ in
         github-mcp-server
       ];
 
-      extraDependencyGroups = [ "messaging" ];
+      extraDependencyGroups = cfg.extraDependencyGroups;
     };
 
     systemd.tmpfiles.rules = [

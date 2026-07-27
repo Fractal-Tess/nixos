@@ -48,6 +48,8 @@ in
         TELEGRAM_BOT_TOKEN=${config.sops.placeholder.hermes_telegram_bot_token}
         TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.hermes_telegram_allowed_users}
         EXA_API_KEY=${config.sops.placeholder.hermes_exa_api_key}
+        ${optionalString (config.modules.services.hermes-agent.firecrawlApiUrl != null)
+          "FIRECRAWL_API_URL=${config.modules.services.hermes-agent.firecrawlApiUrl}"}
       '';
     };
 
