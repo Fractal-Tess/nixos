@@ -25,6 +25,7 @@ let
   camofoxBundle = pkgs.runCommand "camoufox-152.0.4-beta.28" { } ''
     mkdir -p "$out"
     cp -a ${camofoxRelease}/. "$out/"
+    chmod u+w "$out"
     cp ${camofoxVersion} "$out/version.json"
   '';
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
