@@ -10,8 +10,9 @@
 let
   cfg = config.services.open-design;
   hostName = osConfig.networking.hostName;
+  webPort = 38471;
   mcpAddress = "127.0.0.1";
-  mcpPort = 7458;
+  mcpPort = webPort + 1;
   netbirdOrigin = "http://${hostName}.netbird.cloud:${toString cfg.webFrontend.port}";
 
   mcpProxySupervisor = pkgs.writeShellScript "open-design-mcp-supervisor" ''
@@ -168,7 +169,7 @@ in
     webFrontend = {
       enable = true;
       host = "0.0.0.0";
-      port = 38471;
+      port = webPort;
       allowedOrigins = [ netbirdOrigin ];
     };
   };
