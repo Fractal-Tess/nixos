@@ -13,6 +13,15 @@ let
   # Pinned multi-architecture image indexes from 2026-07-27.
   firecrawlImage = "ghcr.io/firecrawl/firecrawl@sha256:d2fe554a1a723d95f3af3ceb4146db5765efaba7fb1b1850f8fd2713b11da7f6";
   playwrightImage = "ghcr.io/firecrawl/playwright-service@sha256:8c50add7293201e575110e6c7489fa383a9dfc46f168936526a458e06ffc5c28";
+  camofoxImage = "ghcr.io/jo-inc/camofox-browser@sha256:64b30ffdbbc4ae0e28200a66dfbd6f55ac4188229eb34ef769afcf7be40faa6e";
+  camofoxRelease = pkgs.fetchzip {
+    url = "https://github.com/daijro/camoufox/releases/download/v152.0.4-beta.28/camoufox-152.0.4-beta.28-lin.x86_64.zip";
+    hash = "sha256-lWKkapB9Dwg/VL6McP/4eYxc4jmwBXDHXxTnvqbYHsA=";
+    stripRoot = false;
+  };
+  camofoxVersion = pkgs.writeText "camoufox-version.json" ''
+    {"version":"152.0.4","release":"beta.28"}
+  '';
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
   redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
   codexProxyImage = "eceasy/cli-proxy-api@sha256:2d402a3edfbfa0612d7694345f7a05008fe8ce1915fde00ec9adb82afeb370c9";
@@ -23,13 +32,61 @@ let
     auth-dir: /root/.cli-proxy-api
   '';
 
+  indentYaml =
+    indentation: text:
+    concatStringsSep "\n" (map (line: "${indentation}${line}") (splitString "\n" text));
+
+  camofoxService = ''
+    # Private Firecrawl-compatible Camoufox browser backend. The original
+    # Playwright service remains available for immediate rollback.
+    camofox-scrape:
+      image: ${camofoxImage}
+      init: true
+      command:
+        - node
+        - /app/firecrawl-scrape.mjs
+      environment:
+        PORT: "3000"
+        MAX_CONCURRENT_PAGES: "3"
+        MAX_QUEUED_PAGES: "6"
+        NODE_OPTIONS: --max-old-space-size=256
+        CAMOUFOX_EXECUTABLE: /opt/camoufox/camoufox-bin
+      volumes:
+        - ${./camofox-scrape.mjs}:/app/firecrawl-scrape.mjs:ro
+        - ${camofoxRelease}:/opt/camoufox:ro
+        - ${camofoxVersion}:/opt/camoufox/version.json:ro
+      networks:
+        - backend
+      healthcheck:
+        test:
+          - CMD
+          - curl
+          - --fail
+          - --silent
+          - http://127.0.0.1:3000/health
+        interval: 15s
+        timeout: 5s
+        retries: 12
+        start_period: 45s
+      shm_size: 2gb
+      tmpfs:
+        - /tmp:nosuid,size=1g
+      restart: unless-stopped
+      logging: *default-logging
+  '';
+
   composeFile = pkgs.writeText "firecrawl-compose.yaml" ''
         name: firecrawl
 
         x-common-env: &common-env
           REDIS_URL: redis://redis:6379
           REDIS_RATE_LIMIT_URL: redis://redis:6379
-          PLAYWRIGHT_MICROSERVICE_URL: http://playwright-service:3000/scrape
+          PLAYWRIGHT_MICROSERVICE_URL: ${
+            if cfg.camofox.enable then
+              "http://camofox-scrape:3000/scrape"
+            else
+              "http://playwright-service:3000/scrape"
+          }
           NUQ_DATABASE_URL: postgresql://postgres:postgres@nuq-postgres:5432/postgres
           NUQ_DATABASE_URL_LISTEN: postgresql://postgres:postgres@nuq-postgres:5432/postgres
           NUQ_WAIT_MODE: listen
@@ -62,6 +119,7 @@ let
               condition: service_healthy
             playwright-service:
               condition: service_started
+    ${optionalString cfg.camofox.enable "        camofox-scrape:\n          condition: service_healthy"}
     ${optionalString cfg.llm.enable "        codex-proxy:\n          condition: service_started"}
           restart: unless-stopped
           logging: *default-logging
@@ -80,6 +138,8 @@ let
             logging: *default-logging
             tmpfs:
               - /tmp/.cache:noexec,nosuid,size=1g
+
+    ${optionalString cfg.camofox.enable (indentYaml "      " camofoxService)}
 
           api:
             <<: *firecrawl-service
@@ -198,12 +258,21 @@ in
         description = "Codex model exposed through the internal OpenAI-compatible proxy.";
       };
     };
+
+    camofox.enable = mkEnableOption "Camoufox anti-detection browser backend with Playwright retained for rollback";
   };
 
   #============================================================================
   # CONFIG
   #============================================================================
   config = mkIf cfg.enable {
+    assertions = [
+      {
+        assertion = !cfg.camofox.enable || pkgs.stdenv.hostPlatform.isx86_64;
+        message = "The pinned Firecrawl Camoufox browser bundle currently supports only x86_64-linux.";
+      }
+    ];
+
     virtualisation.oci-containers.backend = mkDefault "docker";
 
     environment.systemPackages = [ pkgs.docker-compose ];

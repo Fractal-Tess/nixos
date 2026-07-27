@@ -315,6 +315,7 @@
           enable = true;
           model = "gpt-5.4-mini";
         };
+        camofox.enable = true;
       };
 
       # Hermes Agent
