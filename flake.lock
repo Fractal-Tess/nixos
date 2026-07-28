@@ -22,6 +22,26 @@
         "type": "github"
       }
     },
+    "clip-sync": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785278586,
+        "narHash": "sha256-u7dBIYItgyYSFW5VHlj1j8Iul1gGFA39TH5N4uDmGwo=",
+        "ref": "refs/heads/main",
+        "rev": "74f1f01c85aeb39c4745195dd87fdacabf069be8",
+        "revCount": 37,
+        "type": "git",
+        "url": "file:///home/fractal-tess/dev/clip-sync"
+      },
+      "original": {
+        "type": "git",
+        "url": "file:///home/fractal-tess/dev/clip-sync"
+      }
+    },
     "comfyui-nix": {
       "inputs": {
         "flake-parts": "flake-parts",
@@ -865,6 +885,7 @@
     "root": {
       "inputs": {
         "asterveil": "asterveil",
+        "clip-sync": "clip-sync",
         "comfyui-nix": "comfyui-nix",
         "hermes-agent": "hermes-agent",
         "home-manager": "home-manager",

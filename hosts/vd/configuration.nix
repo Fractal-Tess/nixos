@@ -18,6 +18,7 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    inputs.clip-sync.nixosModules.default
     # inputs.comfyui-nix.nixosModules.default # temporarily disabled — re-enable after caches are trusted
 
     # Custom NixOS modules
@@ -130,6 +131,16 @@
     group = "shadoword";
     mode = "0600";
   };
+
+  sops.secrets.clip_sync_mesh_key = {
+    sopsFile = ../../secrets/secrets.json;
+    format = "json";
+    owner = username;
+    group = "users";
+    mode = "0400";
+  };
+
+  services.clip-sync.enable = true;
 
   # virtualisation.libvirtd = {
   #   enable = true;

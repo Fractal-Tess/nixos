@@ -406,7 +406,6 @@ in
     #--------------------------------------------------------------------------
 
     font-manager # Font management tool
-    cliphist # Clipboard history tool
 
     #--------------------------------------------------------------------------
     # PRINTING & SCANNING (from existing configuration.nix)

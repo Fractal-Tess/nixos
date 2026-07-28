@@ -77,6 +77,11 @@
     };
 
     shadoword.url = "github:Fractal-Tess/shadoword";
+
+    clip-sync = {
+      url = "git+file:///home/fractal-tess/dev/clip-sync";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

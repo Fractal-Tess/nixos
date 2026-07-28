@@ -18,6 +18,7 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    inputs.clip-sync.nixosModules.default
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
@@ -145,6 +146,16 @@
     group = "users";
     mode = "0400";
   };
+
+  sops.secrets.clip_sync_mesh_key = {
+    sopsFile = ../../secrets/secrets.json;
+    format = "json";
+    owner = username;
+    group = "users";
+    mode = "0400";
+  };
+
+  services.clip-sync.enable = true;
 
   sops.templates."shadoword-desktop.json" = {
     owner = username;
