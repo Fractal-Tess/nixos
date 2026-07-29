@@ -1,7 +1,7 @@
 [shared]
 mesh_quota_bytes = 1073741824
 capture_threshold_bytes = 20971520
-revision = ""
+revision = "5f69ed2c7114bfb54da93dc707e18a7a1cd50e1d248a4e6f34b485ec26c5f729"
 
 [local]
 mesh_key_file = "/run/secrets/clip_sync_mesh_key"

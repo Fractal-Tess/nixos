@@ -1,11 +1,14 @@
 #!/usr/bin/env fish
 # clipboard — Open the clip-sync keyboard-first history switcher.
 #
-# Rollback during the initial soak:
-#   systemctl --user stop clip-sync
-#   git restore dotfiles/desktop/.config/hypr/hyprconfigs/hyprautostart.conf \
+# Rollback during the initial soak (cliphist remains installed for this):
+#   cd ~/nixos
+#   systemctl --user stop clip-sync clip-sync-tray
+#   git restore --source=e8ebc69^ -- \
+#     dotfiles/desktop/.config/hypr/hyprconfigs/hyprautostart.conf \
 #     scripts/session/clipboard
 #   ~/nixos/scripts/system/dotfiles apply
+#   wl-paste --watch cliphist store &
 
 function _clipboard_help
     echo "clipboard — clip-sync history switcher"

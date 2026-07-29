@@ -273,6 +273,7 @@ in
     slurp # Region selector for Wayland (required by satty)
     satty # Screenshot annotation tool for Wayland
     hyprpicker # Color picker for Hyprland
+    cliphist # Temporary rollback path during the clip-sync soak
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)
     terax # AI-native terminal emulator

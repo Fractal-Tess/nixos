@@ -226,6 +226,7 @@
     matugen # Material You color palette generator from wallpaper
     waypaper # Wallpaper manager for Wayland
     wl-clipboard # Clipboard utilities for Wayland
+    cliphist # Temporary rollback path during the clip-sync soak
     wtype # Text input simulation for Wayland (required for Handy app)
     libayatana-appindicator # System tray support for apps (required for Handy)
     grim # Screenshot utility for Wayland (required by satty)
