@@ -327,7 +327,10 @@
           enable = true;
           model = "gpt-5.4-mini";
         };
-        agent.enable = true;
+        agent = {
+          enable = true;
+          maxConcurrentJobs = 4;
+        };
         search.imageSearch.enable = true;
         pdfOcr.enable = true;
         camofox.enable = true;

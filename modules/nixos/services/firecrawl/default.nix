@@ -202,9 +202,9 @@ let
         - ALL
       security_opt:
         - no-new-privileges:true
-      cpus: "2.0"
-      mem_limit: 3g
-      pids_limit: 256
+      cpus: "${toString (if cfg.agent.maxConcurrentJobs < 2 then 2 else cfg.agent.maxConcurrentJobs)}.0"
+      mem_limit: ${toString (2 + cfg.agent.maxConcurrentJobs)}g
+      pids_limit: ${toString (128 + cfg.agent.maxConcurrentJobs * 128)}
       command:
         - node
         - /app/server.mjs
@@ -217,8 +217,8 @@ let
         OPENAI_BASE_URL: http://codex-proxy:8317/v1
         OPENAI_API_KEY: local-firecrawl
         MODEL_NAME: ${cfg.llm.model}
-        MAX_CONCURRENT_AGENT_JOBS: "1"
-        MAX_QUEUED_AGENT_JOBS: "8"
+        MAX_CONCURRENT_AGENT_JOBS: "${toString cfg.agent.maxConcurrentJobs}"
+        MAX_QUEUED_AGENT_JOBS: "${toString cfg.agent.maxQueuedJobs}"
         MAX_AGENT_STEPS: "24"
         AGENT_TIMEOUT_MS: "300000"
         MAX_IMAGE_BYTES: "8388608"
@@ -486,7 +486,21 @@ in
       };
     };
 
-    agent.enable = mkEnableOption "local autonomous Firecrawl web agent and image-understanding service";
+    agent = {
+      enable = mkEnableOption "local autonomous Firecrawl web agent and image-understanding service";
+
+      maxConcurrentJobs = mkOption {
+        type = types.ints.between 1 4;
+        default = 1;
+        description = "Maximum number of autonomous agent jobs executing concurrently.";
+      };
+
+      maxQueuedJobs = mkOption {
+        type = types.ints.between 1 64;
+        default = 8;
+        description = "Maximum number of autonomous agent jobs waiting for an execution slot.";
+      };
+    };
 
     search.imageSearch.enable = mkEnableOption "SearXNG-backed web, news, and image search";
 
