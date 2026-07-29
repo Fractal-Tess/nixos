@@ -19,6 +19,29 @@ const maxQueuedPages = Math.max(
   maxConcurrentPages,
   Number.parseInt(process.env.MAX_QUEUED_PAGES ?? "6", 10) || 6,
 );
+const maxScreenshotBytes = Math.max(
+  1024 * 1024,
+  Number.parseInt(process.env.MAX_SCREENSHOT_BYTES ?? `${8 * 1024 * 1024}`, 10) ||
+    8 * 1024 * 1024,
+);
+const maxActionOutputBytes = Math.max(
+  maxScreenshotBytes,
+  Number.parseInt(
+    process.env.MAX_ACTION_OUTPUT_BYTES ?? `${24 * 1024 * 1024}`,
+    10,
+  ) || 24 * 1024 * 1024,
+);
+const maxScreenshotPixels = Math.max(
+  1280 * 720,
+  Number.parseInt(process.env.MAX_SCREENSHOT_PIXELS ?? "40000000", 10) || 40000000,
+);
+const maxJavascriptResultBytes = Math.max(
+  64 * 1024,
+  Number.parseInt(
+    process.env.MAX_JAVASCRIPT_RESULT_BYTES ?? `${1024 * 1024}`,
+    10,
+  ) || 1024 * 1024,
+);
 const virtualDisplayResolution = "1280x720x24";
 
 class DefaultVirtualDisplay extends VirtualDisplay {
@@ -33,6 +56,23 @@ class DefaultVirtualDisplay extends VirtualDisplay {
 }
 
 class AdmissionError extends Error {}
+
+class OutputBudget {
+  #used = 0;
+
+  add(value, label) {
+    const size = Buffer.byteLength(
+      typeof value === "string" ? value : JSON.stringify(value),
+      "utf8",
+    );
+    if (this.#used + size > maxActionOutputBytes) {
+      throw new Error(
+        `${label} exceeds the ${maxActionOutputBytes}-byte aggregate action output limit`,
+      );
+    }
+    this.#used += size;
+  }
+}
 
 class BoundedSemaphore {
   #available;
@@ -632,6 +672,276 @@ async function applyRequestHeaders(context, page, url, headers) {
   }
 }
 
+function normalizeActions(actions) {
+  if (actions === undefined) return [];
+  if (!Array.isArray(actions)) throw new Error("actions must be an array");
+  if (actions.length > 50) throw new Error("actions cannot contain more than 50 entries");
+  const outputActionCount = actions.filter(action =>
+    ["screenshot", "scrape", "executeJavascript"].includes(action?.type),
+  ).length;
+  if (outputActionCount > 8) {
+    throw new Error("actions cannot contain more than 8 output-producing entries");
+  }
+  for (const [index, action] of actions.entries()) {
+    if (!action || typeof action !== "object" || Array.isArray(action)) {
+      throw new Error(`action ${index} must be an object`);
+    }
+    if (typeof action.type !== "string") {
+      throw new Error(`action ${index} must have a type`);
+    }
+  }
+  return actions;
+}
+
+function normalizeScreenshotOptions(options) {
+  if (options === undefined) return undefined;
+  if (!options || typeof options !== "object" || Array.isArray(options)) {
+    throw new Error("screenshot must be an object");
+  }
+
+  const viewport = options.viewport;
+  if (viewport !== undefined) {
+    if (
+      !viewport ||
+      typeof viewport !== "object" ||
+      !Number.isInteger(viewport.width) ||
+      !Number.isInteger(viewport.height) ||
+      viewport.width < 1 ||
+      viewport.height < 1 ||
+      viewport.width > 7680 ||
+      viewport.height > 4320
+    ) {
+      throw new Error("screenshot viewport must be between 1x1 and 7680x4320");
+    }
+  }
+
+  const quality = options.quality;
+  if (
+    quality !== undefined &&
+    (!Number.isFinite(quality) || quality < 1 || quality > 100)
+  ) {
+    throw new Error("screenshot quality must be between 1 and 100");
+  }
+
+  return {
+    fullPage: Boolean(options.fullPage),
+    quality: quality === undefined ? undefined : Math.round(quality),
+    viewport,
+  };
+}
+
+function actionBudget(actions) {
+  return actions.reduce((total, action) => {
+    if (action.type === "wait") return total + (Number(action.milliseconds) || 1000);
+    return total + 2000;
+  }, 0);
+}
+
+async function captureScreenshot(page, options = {}, outputBudget) {
+  const normalized = normalizeScreenshotOptions(options) ?? {
+    fullPage: false,
+    quality: undefined,
+    viewport: undefined,
+  };
+  if (normalized.viewport) await page.setViewportSize(normalized.viewport);
+
+  const dimensions = normalized.fullPage
+    ? await page.evaluate(() => ({
+        width: Math.max(
+          document.documentElement.scrollWidth,
+          document.body?.scrollWidth ?? 0,
+          window.innerWidth,
+        ),
+        height: Math.max(
+          document.documentElement.scrollHeight,
+          document.body?.scrollHeight ?? 0,
+          window.innerHeight,
+        ),
+      }))
+    : normalized.viewport ?? page.viewportSize() ?? { width: 1280, height: 720 };
+  if (dimensions.width * dimensions.height > maxScreenshotPixels) {
+    throw new Error(
+      `Screenshot dimensions ${dimensions.width}x${dimensions.height} exceed the ${maxScreenshotPixels}-pixel limit`,
+    );
+  }
+
+  const type = normalized.quality === undefined ? "png" : "jpeg";
+  const screenshot = await page.screenshot({
+    type,
+    fullPage: normalized.fullPage,
+    animations: "disabled",
+    ...(normalized.quality === undefined ? {} : { quality: normalized.quality }),
+  });
+  if (screenshot.byteLength > maxScreenshotBytes) {
+    throw new Error(
+      `Screenshot exceeds the ${maxScreenshotBytes}-byte response limit`,
+    );
+  }
+  const result = `data:image/${type};base64,${screenshot.toString("base64")}`;
+  outputBudget?.add(result, "Screenshot output");
+  return result;
+}
+
+async function executeActions(page, actions, signal, outputBudget) {
+  const results = {
+    screenshots: [],
+    scrapes: [],
+    javascriptReturns: [],
+    pdfs: [],
+  };
+
+  for (const [index, action] of actions.entries()) {
+    signal.throwIfAborted();
+    try {
+      switch (action.type) {
+        case "wait":
+          if (action.selector !== undefined) {
+            await page.waitForSelector(String(action.selector));
+          } else {
+            const milliseconds = Number(action.milliseconds);
+            if (!Number.isFinite(milliseconds) || milliseconds < 1 || milliseconds > 60000) {
+              throw new Error("wait milliseconds must be between 1 and 60000");
+            }
+            await page.waitForTimeout(milliseconds);
+          }
+          break;
+        case "click": {
+          if (typeof action.selector !== "string" || action.selector.length === 0) {
+            throw new Error("click requires a selector");
+          }
+          const locator = page.locator(action.selector);
+          if (action.all) {
+            const handles = await locator.elementHandles();
+            if (handles.length === 0) {
+              throw new Error("click selector matched no elements");
+            }
+            for (const handle of handles) await handle.click();
+          } else {
+            await locator.first().click();
+          }
+          break;
+        }
+        case "write":
+          if (typeof action.text !== "string") throw new Error("write requires text");
+          await page.keyboard.type(action.text);
+          break;
+        case "press":
+          if (typeof action.key !== "string" || action.key.length === 0) {
+            throw new Error("press requires a key");
+          }
+          await page.keyboard.press(action.key);
+          break;
+        case "scroll": {
+          const direction = action.direction === "up" ? "up" : "down";
+          if (action.selector) {
+            const locator = page.locator(String(action.selector)).first();
+            await locator.scrollIntoViewIfNeeded();
+            await locator.evaluate((element, scrollDirection) => {
+              const amount = Math.max(element.clientHeight * 0.8, 400);
+              element.scrollBy({
+                top: scrollDirection === "up" ? -amount : amount,
+                behavior: "auto",
+              });
+            }, direction);
+          } else {
+            await page.evaluate(scrollDirection => {
+              const amount = Math.max(window.innerHeight * 0.8, 400);
+              window.scrollBy({
+                top: scrollDirection === "up" ? -amount : amount,
+                behavior: "auto",
+              });
+            }, direction);
+          }
+          break;
+        }
+        case "screenshot":
+          results.screenshots.push(
+            await captureScreenshot(page, action, outputBudget),
+          );
+          break;
+        case "scrape": {
+          const scrape = { url: page.url(), html: await page.content() };
+          outputBudget.add(scrape, "Scrape action output");
+          results.scrapes.push(scrape);
+          break;
+        }
+        case "executeJavascript": {
+          if (typeof action.script !== "string") {
+            throw new Error("executeJavascript requires a script");
+          }
+          const serializedResult = await page.evaluate(
+            async ({ script, maxBytes }) => {
+              const value = await (0, eval)(script);
+              const seen = new WeakSet();
+              let nodes = 0;
+
+              const normalize = (input, depth = 0) => {
+                nodes += 1;
+                if (nodes > 10000) throw new Error("result has too many values");
+                if (depth > 20) throw new Error("result is nested too deeply");
+                if (input === undefined) return null;
+                if (input === null) return null;
+                if (typeof input === "bigint") return input.toString();
+                if (typeof input === "number" && !Number.isFinite(input)) {
+                  return String(input);
+                }
+                if (typeof input === "function" || typeof input === "symbol") {
+                  return String(input);
+                }
+                if (typeof input !== "object") return input;
+                if (seen.has(input)) return "[Circular]";
+                seen.add(input);
+                if (input instanceof Date) return input.toISOString();
+                if (input instanceof Error) {
+                  return { name: input.name, message: input.message };
+                }
+                if (Array.isArray(input)) {
+                  return input.map(item => normalize(item, depth + 1));
+                }
+                const output = Object.create(null);
+                for (const [key, item] of Object.entries(input)) {
+                  output[key] = normalize(item, depth + 1);
+                }
+                return output;
+              };
+
+              const type =
+                value === undefined
+                  ? "undefined"
+                  : value === null
+                    ? "null"
+                    : Array.isArray(value)
+                      ? "array"
+                      : typeof value;
+              const result = { type, value: normalize(value) };
+              const serialized = JSON.stringify(result);
+              if (new TextEncoder().encode(serialized).byteLength > maxBytes) {
+                throw new Error("result is too large");
+              }
+              return serialized;
+            },
+            { script: action.script, maxBytes: maxJavascriptResultBytes },
+          );
+          const result = JSON.parse(serializedResult);
+          outputBudget.add(result, "JavaScript action output");
+          results.javascriptReturns.push(result);
+          break;
+        }
+        case "pdf":
+          throw new Error("PDF actions are unavailable with the Camoufox engine");
+        default:
+          throw new Error(`Unsupported action type: ${action.type}`);
+      }
+    } catch (error) {
+      throw new Error(
+        `Action ${index} (${action.type}) failed: ${error instanceof Error ? error.message : String(error)}`,
+      );
+    }
+  }
+
+  return results;
+}
+
 function getPageError(statusCode) {
   if (statusCode < 300) return undefined;
   const messages = {
@@ -751,6 +1061,8 @@ app.post("/scrape", async (request, response) => {
       headers: requestedHeaders,
       check_selector: checkSelector,
       skip_tls_verification: skipTlsVerification = false,
+      actions: requestedActions,
+      screenshot: requestedScreenshot,
     } = request.body ?? {};
 
     if (typeof url !== "string" || url.length === 0) {
@@ -771,10 +1083,16 @@ app.post("/scrape", async (request, response) => {
       ? Math.min(180000, Math.max(1000, requestedTimeoutNumber))
       : 15000;
     const headers = normalizeHeaders(requestedHeaders);
+    const actions = normalizeActions(requestedActions);
+    const screenshotOptions = normalizeScreenshotOptions(requestedScreenshot);
+    const outputBudget = new OutputBudget();
 
     operation = createOperationSignal(
       clientSignal,
-      Math.min(250000, timeout + waitAfterLoad + 10000),
+      Math.min(
+        250000,
+        timeout + waitAfterLoad + actionBudget(actions) + 30000,
+      ),
     );
     signal = operation.signal;
     setMaxListeners(256, signal);
@@ -808,6 +1126,7 @@ app.post("/scrape", async (request, response) => {
     const userAgent = findHeader(headers, "user-agent");
     const contextPromise = currentBrowser.newContext({
       viewport: null,
+      bypassCSP: true,
       ignoreHTTPSErrors: Boolean(skipTlsVerification),
       serviceWorkers: "block",
       proxy: { server: filteringProxy.url },
@@ -836,8 +1155,17 @@ app.post("/scrape", async (request, response) => {
     await applyRequestHeaders(context, page, url, headers);
 
     let navigationResponse;
+    page.on("response", candidate => {
+      if (
+        candidate.request().isNavigationRequest() &&
+        candidate.frame() === page.mainFrame()
+      ) {
+        navigationResponse = candidate;
+      }
+    });
     try {
-      navigationResponse = await page.goto(url, { waitUntil: "load", timeout });
+      const initialResponse = await page.goto(url, { waitUntil: "load", timeout });
+      if (initialResponse && !navigationResponse) navigationResponse = initialResponse;
     } catch (error) {
       if (!signal.aborted && filteringProxy.blockedTargets.length > 0) {
         return response.json({
@@ -852,6 +1180,17 @@ app.post("/scrape", async (request, response) => {
     signal.throwIfAborted();
     if (waitAfterLoad > 0) await page.waitForTimeout(waitAfterLoad);
     if (checkSelector) await page.waitForSelector(String(checkSelector), { timeout });
+    signal.throwIfAborted();
+
+    const actionResults = await executeActions(
+      page,
+      actions,
+      signal,
+      outputBudget,
+    );
+    const screenshot = screenshotOptions
+      ? await captureScreenshot(page, screenshotOptions, outputBudget)
+      : undefined;
     signal.throwIfAborted();
 
     const statusCode = navigationResponse?.status() ?? 200;
@@ -872,10 +1211,13 @@ app.post("/scrape", async (request, response) => {
 
     const pageError = getPageError(statusCode);
     response.json({
+      url: page.url(),
       content,
       pageStatusCode: statusCode,
       ...(contentType ? { contentType } : {}),
       ...(pageError ? { pageError } : {}),
+      ...(screenshot ? { screenshot } : {}),
+      ...(actions.length > 0 ? { actions: actionResults } : {}),
     });
   } catch (error) {
     if (error instanceof AdmissionError) {

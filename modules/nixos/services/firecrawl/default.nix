@@ -31,11 +31,62 @@ let
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
   redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
   codexProxyImage = "eceasy/cli-proxy-api@sha256:2d402a3edfbfa0612d7694345f7a05008fe8ce1915fde00ec9adb82afeb370c9";
+  nodeImage = "node@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3";
+  searxngImage = "searxng/searxng@sha256:5d6d903ab82afa56ee32792d477f36bc63d3e5ca04fcb6947e28a5cfd987fad3";
+  agentInteropSecret = "firecrawl-local-agent-v1";
 
   codexProxyConfig = pkgs.writeText "firecrawl-codex-proxy.yaml" ''
     host: 0.0.0.0
     port: 8317
     auth-dir: /root/.cli-proxy-api
+  '';
+  firecrawlRuntimePatch = ./firecrawl-runtime-patch.mjs;
+  firecrawlRuntimePatches = pkgs.runCommand "firecrawl-runtime-patches" { } ''
+    mkdir -p "$out"
+    cp ${./runtime-patches/agent-cancel.js} "$out/agent-cancel.js"
+    cp ${./runtime-patches/agent-status.js} "$out/agent-status.js"
+    cp ${./runtime-patches/image-analyze.js} "$out/image-analyze.js"
+    cp ${./runtime-patches/routes-v2.js} "$out/routes-v2.js"
+    cp ${./runtime-patches/search-v2-index.js} "$out/search-v2-index.js"
+    cp ${./runtime-patches/search-v2-searxng.js} "$out/search-v2-searxng.js"
+  '';
+  firecrawlAgent = import ./firecrawl-agent-package.nix {
+    inherit pkgs;
+    serverSource = ./firecrawl-agent-server.ts;
+  };
+  searxngSettings = pkgs.writeText "firecrawl-searxng-settings.yml" ''
+    use_default_settings: true
+    server:
+      secret_key: "firecrawl-internal-searxng"
+      bind_address: "0.0.0.0"
+      port: 8080
+      limiter: false
+      image_proxy: false
+    search:
+      safe_search: 0
+      autocomplete: ""
+      default_lang: "en"
+      formats:
+        - html
+        - json
+    outgoing:
+      request_timeout: 10.0
+      max_request_timeout: 15.0
+    engines:
+      - name: lucide
+        disabled: true
+      - name: devicons
+        disabled: true
+  '';
+  pdfOcrImage = import ./pdf-ocr-image.nix {
+    inherit pkgs;
+    serverSource = ./pdf-ocr-server.py;
+  };
+  firecrawlPatchedEntrypoint = pkgs.writeText "firecrawl-patched-entrypoint.sh" ''
+    #!/bin/sh
+    set -eu
+    node /opt/firecrawl/runtime-patch.mjs
+    exec docker-entrypoint.sh "$@"
   '';
 
   indentYaml =
@@ -83,6 +134,10 @@ let
         PORT: "3000"
         MAX_CONCURRENT_PAGES: "3"
         MAX_QUEUED_PAGES: "6"
+        MAX_SCREENSHOT_BYTES: "8388608"
+        MAX_SCREENSHOT_PIXELS: "40000000"
+        MAX_ACTION_OUTPUT_BYTES: "25165824"
+        MAX_JAVASCRIPT_RESULT_BYTES: "1048576"
         NODE_OPTIONS: --max-old-space-size=256
         HOME: /tmp/home
         XDG_CACHE_HOME: /tmp/home/.cache
@@ -104,6 +159,131 @@ let
         retries: 12
         start_period: 45s
       shm_size: 2gb
+      tmpfs:
+        - /tmp:rw,nosuid,nodev,mode=1777,size=1g
+      restart: unless-stopped
+      logging: *default-logging
+  '';
+
+  searxngService = ''
+    searxng:
+      image: ${searxngImage}
+      networks:
+        - backend
+      volumes:
+        - ${searxngSettings}:/etc/searxng/settings.yml:ro
+      cpus: "1.0"
+      mem_limit: 1g
+      pids_limit: 128
+      tmpfs:
+        - /tmp:rw,nosuid,nodev,mode=1777,size=256m
+      healthcheck:
+        test:
+          - CMD
+          - wget
+          - --quiet
+          - --spider
+          - http://127.0.0.1:8080/healthz
+        interval: 15s
+        timeout: 5s
+        retries: 12
+        start_period: 30s
+      restart: unless-stopped
+      logging: *default-logging
+  '';
+
+  agentService = ''
+    agent:
+      image: ${nodeImage}
+      init: true
+      user: "1000:1000"
+      read_only: true
+      cap_drop:
+        - ALL
+      security_opt:
+        - no-new-privileges:true
+      cpus: "2.0"
+      mem_limit: 3g
+      pids_limit: 256
+      command:
+        - node
+        - /app/server.mjs
+      environment:
+        PORT: "3000"
+        AGENT_INTEROP_SECRET: ${agentInteropSecret}
+        AGENT_JOB_DIR: /data/jobs
+        FIRECRAWL_API_URL: http://api:3002
+        FIRECRAWL_API_KEY: fc-local-firecrawl
+        OPENAI_BASE_URL: http://codex-proxy:8317/v1
+        OPENAI_API_KEY: local-firecrawl
+        MODEL_NAME: ${cfg.llm.model}
+        MAX_CONCURRENT_AGENT_JOBS: "1"
+        MAX_QUEUED_AGENT_JOBS: "8"
+        MAX_AGENT_STEPS: "24"
+        AGENT_TIMEOUT_MS: "300000"
+        MAX_IMAGE_BYTES: "8388608"
+        MAX_IMAGES_PER_REQUEST: "4"
+        IMAGE_ANALYSIS_TIMEOUT_MS: "120000"
+        NODE_OPTIONS: --max-old-space-size=1024
+      volumes:
+        - ${firecrawlAgent}/app:/app:ro
+        - /var/lib/firecrawl/agent:/data
+      networks:
+        - backend
+      depends_on:
+        api:
+          condition: service_healthy
+        codex-proxy:
+          condition: service_started
+      healthcheck:
+        test:
+          - CMD
+          - node
+          - -e
+          - fetch('http://127.0.0.1:3000/health').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))
+        interval: 15s
+        timeout: 5s
+        retries: 12
+        start_period: 30s
+      tmpfs:
+        - /tmp:rw,nosuid,nodev,mode=1777,size=512m
+      restart: unless-stopped
+      logging: *default-logging
+  '';
+
+  pdfOcrService = ''
+    pdf-ocr:
+      image: firecrawl-pdf-ocr:local
+      init: true
+      user: "65532:65532"
+      read_only: true
+      cap_drop:
+        - ALL
+      security_opt:
+        - no-new-privileges:true
+      cpus: "2.0"
+      mem_limit: 2g
+      pids_limit: 128
+      environment:
+        PORT: "8080"
+        MAX_CONCURRENT: "1"
+        MAX_PAGES: "50"
+        MAX_PDF_BYTES: "31457280"
+        DEFAULT_DEADLINE_SECONDS: "300"
+        OCR_DPI: "250"
+        OCR_LANGUAGE: eng
+      networks:
+        - pdf-backend
+      healthcheck:
+        test:
+          - CMD
+          - ${pkgs.python3}/bin/python3
+          - -c
+          - "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8080/health', timeout=3)"
+        interval: 15s
+        timeout: 5s
+        retries: 12
+        start_period: 20s
       tmpfs:
         - /tmp:rw,nosuid,nodev,mode=1777,size=1g
       restart: unless-stopped
@@ -132,6 +312,9 @@ let
           CRAWL_CONCURRENT_REQUESTS: "3"
           MAX_CONCURRENT_JOBS: "2"
           BROWSER_POOL_SIZE: "2"
+    ${optionalString cfg.search.imageSearch.enable "      SEARXNG_ENDPOINT: http://searxng:8080"}
+    ${optionalString cfg.agent.enable "      EXTRACT_V3_BETA_URL: http://agent:3000\n      AGENT_INTEROP_SECRET: ${agentInteropSecret}"}
+    ${optionalString cfg.pdfOcr.enable "      PDF_RUST_EXTRACT_ENABLE: \"true\"\n      FIRE_PDF_ENABLE: \"true\"\n      FIRE_PDF_PERCENT: \"100\"\n      FIRE_PDF_BASE_URL: http://pdf-ocr:8080"}
     ${optionalString cfg.llm.enable "      OPENAI_BASE_URL: http://codex-proxy:8317/v1\n      OPENAI_API_KEY: local-firecrawl\n      MODEL_NAME: ${cfg.llm.model}"}
 
         x-default-logging: &default-logging
@@ -143,10 +326,15 @@ let
 
         x-firecrawl-service: &firecrawl-service
           image: ${firecrawlImage}
+          cpus: "2.0"
+          mem_limit: 3g
+          pids_limit: 256
           networks:
             - backend
+    ${optionalString cfg.pdfOcr.enable "        - pdf-backend"}
           environment:
             <<: *common-env
+    ${optionalString cfg.camofox.enable "      entrypoint:\n        - /bin/sh\n        - /opt/firecrawl/patched-entrypoint.sh\n      volumes:\n        - ${firecrawlRuntimePatch}:/opt/firecrawl/runtime-patch.mjs:ro\n        - ${firecrawlRuntimePatches}:/opt/firecrawl/runtime-patches:ro\n        - ${firecrawlPatchedEntrypoint}:/opt/firecrawl/patched-entrypoint.sh:ro"}
           depends_on:
             redis:
               condition: service_healthy
@@ -159,12 +347,17 @@ let
         "        playwright-service:\n          condition: service_started"
     }
     ${optionalString cfg.llm.enable "        codex-proxy:\n          condition: service_started"}
+    ${optionalString cfg.search.imageSearch.enable "        searxng:\n          condition: service_healthy"}
+    ${optionalString cfg.pdfOcr.enable "        pdf-ocr:\n          condition: service_healthy"}
           restart: unless-stopped
           logging: *default-logging
 
         services:
     ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
 
+    ${optionalString cfg.search.imageSearch.enable (indentYaml "      " searxngService)}
+    ${optionalString cfg.pdfOcr.enable (indentYaml "      " pdfOcrService)}
+    ${optionalString cfg.agent.enable (indentYaml "      " agentService)}
     ${indentYaml "      " (if cfg.camofox.enable then camofoxService else playwrightService)}
 
           api:
@@ -251,9 +444,17 @@ let
 
         networks:
           backend:
+    ${optionalString cfg.pdfOcr.enable "      pdf-backend:\n        internal: true"}
 
         volumes:
           nuq-postgres-data:
+  '';
+  firecrawlStart = pkgs.writeShellScript "firecrawl-start" ''
+    set -euo pipefail
+    ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} up --detach --remove-orphans --wait --wait-timeout 600
+    ${pkgs.systemd}/bin/systemd-notify --ready
+    services="$(${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} config --services)"
+    exec ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} wait $services
   '';
 in
 {
@@ -285,6 +486,12 @@ in
       };
     };
 
+    agent.enable = mkEnableOption "local autonomous Firecrawl web agent and image-understanding service";
+
+    search.imageSearch.enable = mkEnableOption "SearXNG-backed web, news, and image search";
+
+    pdfOcr.enable = mkEnableOption "local Rust-first PDF extraction with Poppler and Tesseract OCR fallback";
+
     camofox.enable = mkEnableOption "Camoufox anti-detection browser backend with Playwright retained for rollback";
   };
 
@@ -297,15 +504,35 @@ in
         assertion = !cfg.camofox.enable || pkgs.stdenv.hostPlatform.isx86_64;
         message = "The pinned Firecrawl Camoufox browser bundle currently supports only x86_64-linux.";
       }
+      {
+        assertion = !cfg.agent.enable || cfg.llm.enable;
+        message = "The local Firecrawl agent requires modules.services.firecrawl.llm.enable.";
+      }
+      {
+        assertion = !cfg.agent.enable || cfg.camofox.enable;
+        message = "The local Firecrawl agent API adapter currently requires the guarded Camoufox runtime patch.";
+      }
+      {
+        assertion = !cfg.search.imageSearch.enable || cfg.camofox.enable;
+        message = "SearXNG image-search adaptation currently requires the guarded Camoufox runtime patch.";
+      }
     ];
 
     virtualisation.oci-containers.backend = mkDefault "docker";
 
     environment.systemPackages = [ pkgs.docker-compose ];
 
+    system.build = {
+      firecrawlAgent = firecrawlAgent;
+      firecrawlCompose = composeFile;
+      firecrawlPdfOcrImage = pdfOcrImage;
+    };
+
     systemd.tmpfiles.rules = [
       "d /var/lib/firecrawl 0750 root root -"
       "d /var/lib/firecrawl/codex-auth 0700 root root -"
+      "d /var/lib/firecrawl/agent 0750 1000 1000 -"
+      "d /var/lib/firecrawl/agent/jobs 0750 1000 1000 -"
     ];
 
     systemd.services.firecrawl = {
@@ -324,9 +551,11 @@ in
       ];
 
       serviceConfig = {
-        Type = "exec";
+        Type = "notify";
+        NotifyAccess = "all";
         WorkingDirectory = "/var/lib/firecrawl";
-        ExecStart = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} up --remove-orphans";
+        ExecStartPre = optional cfg.pdfOcr.enable "${config.virtualisation.docker.package}/bin/docker load --input ${pdfOcrImage}";
+        ExecStart = firecrawlStart;
         ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} down";
         Restart = "on-failure";
         RestartSec = "10s";

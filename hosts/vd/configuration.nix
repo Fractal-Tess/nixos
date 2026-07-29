@@ -327,6 +327,9 @@
           enable = true;
           model = "gpt-5.4-mini";
         };
+        agent.enable = true;
+        search.imageSearch.enable = true;
+        pdfOcr.enable = true;
         camofox.enable = true;
       };
 
