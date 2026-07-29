@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785304161,
-        "narHash": "sha256-GZysdq/2AiqCCcRum8JpHqlEVmlTe0KxJgcApFk5Q1k=",
+        "lastModified": 1785306108,
+        "narHash": "sha256-Tc5bnZPmzvIHtApurD8gEQSoFGQhYZk0SRbrHqA1sUg=",
         "ref": "refs/heads/main",
-        "rev": "a31ef41435aca92b4e24c1610075a53d8ec4b0f0",
-        "revCount": 43,
+        "rev": "9a4433f9f51271e57558d901701a4e281e6a8f83",
+        "revCount": 44,
         "type": "git",
         "url": "file:///home/fractal-tess/dev/clip-sync"
       },
