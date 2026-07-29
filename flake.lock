@@ -945,11 +945,11 @@
         "nixpkgs": "nixpkgs_6"
       },
       "locked": {
-        "lastModified": 1785122832,
-        "narHash": "sha256-bvI9eBMhM6Ihjw3SSXokXZC60tHBbQfKvnNY40Zq0vs=",
+        "lastModified": 1785306805,
+        "narHash": "sha256-CTzKeTuuzp6z+AdBeg8l5u97OmYF8azMhXSMZnpWnko=",
         "owner": "Fractal-Tess",
         "repo": "shadoword",
-        "rev": "7645cef78eff9d534602910ee3510a60d7cca471",
+        "rev": "4c9ceb8567b75be5816f1161a861600bd8d9ec04",
         "type": "github"
       },
       "original": {

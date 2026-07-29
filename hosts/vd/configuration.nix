@@ -315,6 +315,7 @@
         enable = true;
         listenAddress = "100.91.0.2";
         tokenFile = config.sops.secrets.shadoword_api_token.path;
+        requestRecordingDir = "/var/lib/shadoword/requests";
       };
 
       # Shared self-hosted web search and scraping API

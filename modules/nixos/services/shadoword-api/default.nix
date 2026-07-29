@@ -54,6 +54,12 @@ in
       default = "turbo";
       description = "Catalog model ensured on disk before startup; the active model remains API-managed.";
     };
+
+    requestRecordingDir = mkOption {
+      type = types.nullOr types.str;
+      default = null;
+      description = "Optional private directory for archived transcription audio and response metadata.";
+    };
   };
 
   #============================================================================
@@ -86,6 +92,9 @@ in
         RUST_LOG = "info";
         XDG_CONFIG_HOME = "/var/lib/shadoword/config";
         XDG_DATA_HOME = "/var/lib/shadoword/data";
+      }
+      // optionalAttrs (cfg.requestRecordingDir != null) {
+        SHADOWORD_REQUEST_RECORDING_DIR = cfg.requestRecordingDir;
       };
 
       serviceConfig = {
