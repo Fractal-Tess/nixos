@@ -16,7 +16,7 @@
     ../../modules/home-manager/configs
     ../../modules/home-manager/theming.nix
     ../../modules/home-manager/services/open-design.nix
-    inputs.nix4nvchad.homeManagerModule
+    inputs.nix4nvchad.homeManagerModules.default
   ];
 
   #============================================================================

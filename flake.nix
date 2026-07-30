@@ -121,7 +121,6 @@
                 (import ./overlays/terax.nix)
                 (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
-                (import ./overlays/netbird-fix.nix)
                 (final: prev: {
                   # openldap's syncrepl test is flaky on this pinned nixpkgs revision
                   # and blocks transitive consumers like bottles during local builds.

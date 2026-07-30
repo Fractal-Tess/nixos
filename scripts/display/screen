@@ -310,15 +310,32 @@ function _lid_close
     set -l monitors_json (_get_monitors_json)
     # External monitors: not starting with 'e' (eDP) and not disabled
     set -l external (echo $monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length')
+    set -l sleep_inhibited false
+    _sleep_is_active; and set sleep_inhibited true
 
-    _lid_log "Lid close event. External monitors: $external"
+    _lid_log "Lid close event. External monitors: $external, sleep inhibited: $sleep_inhibited"
+
+    # Always persist the disabled monitor rule while the lid is closed. If the
+    # laptop suspends with no external display and is later docked, Hyprland
+    # otherwise keeps eDP active because no second lid event is emitted.
+    if hyprctl keyword monitor "$LAPTOP_MONITOR, disable" >/dev/null 2>&1
+        _lid_log "Disabled $LAPTOP_MONITOR"
+    else
+        _lid_log "Failed to disable $LAPTOP_MONITOR"
+        return 1
+    end
 
     if test "$external" -eq 0
-        _lid_log "No external monitors — locking; logind handles suspend"
+        if test "$sleep_inhibited" = true
+            _lid_log "No external monitors — locking and staying awake"
+        else
+            _lid_log "No external monitors — locking; logind handles suspend"
+        end
         _lock_session
+    else if test "$sleep_inhibited" = true
+        _lid_log "$external external monitor(s) — continuing awake with lid sleep inhibited"
     else
-        hyprctl keyword monitor "$LAPTOP_MONITOR, disable" >/dev/null 2>&1
-        _lid_log "$external external monitor(s) — disabled $LAPTOP_MONITOR"
+        _lid_log "$external external monitor(s) — continuing on external displays"
     end
 end
 
@@ -375,19 +392,19 @@ end
 
 function _sleep_print_status
     if _sleep_is_active
-        printf '{"text":"󰛊","tooltip":"Lid close: staying awake","class":"active","alt":"active"}\n'
+        printf '{"text":"󰛊","tooltip":"Lid close: stay awake; lock when no external display","class":"active","alt":"active"}\n'
     else
-        printf '{"text":"󰍁","tooltip":"Lid close: will sleep","class":"inactive","alt":"inactive"}\n'
+        printf '{"text":"󰍁","tooltip":"Lid close: lock and suspend when no external display","class":"inactive","alt":"inactive"}\n'
     end
 end
 
 function _sleep_toggle
     if _sleep_is_active
         _sleep_stop_inhibit
-        notify-send -t 2000 "Lid Sleep" "Lid close will suspend"
+        notify-send -t 2000 "Lid Sleep" "Lid close will lock and suspend without an external display"
     else
         _sleep_start_inhibit
-        notify-send -t 2000 "Lid Sleep" "Lid close will stay awake"
+        notify-send -t 2000 "Lid Sleep" "Lid close will stay awake and lock without an external display"
     end
     _sleep_print_status
 end
