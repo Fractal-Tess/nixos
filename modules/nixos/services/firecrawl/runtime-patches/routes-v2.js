@@ -42,8 +42,7 @@ const agent_1 = require("../controllers/v2/agent");
 const agent_status_1 = require("../controllers/v2/agent-status");
 const agent_cancel_1 = require("../controllers/v2/agent-cancel");
 const image_analyze_1 = require("../controllers/v2/image-analyze");
-const browser_1 = require("../controllers/v2/browser");
-const browser_replay_1 = require("../controllers/v2/browser-replay");
+const interact_local_1 = require("../controllers/v2/interact-local");
 const activity_1 = require("../controllers/v1/activity");
 const team_threat_protection_1 = require("../controllers/v2/team-threat-protection");
 const support_proxy_1 = require("../controllers/v2/support-proxy");
@@ -174,13 +173,11 @@ exports.v2Router.get("/slack/channels", (0, shared_1.authMiddleware)(types_1.Rat
 exports.v2Router.delete("/slack/installation", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.CrawlStatus), (0, shared_1.wrap)(slack_1.slackDisconnectController));
 exports.v2Router.post("/slack/commands", (0, shared_1.wrap)(slack_1.slackCommandsController));
 exports.v2Router.post("/slack/events", (0, shared_1.wrap)(slack_1.slackEventsController));
-exports.v2Router.post(["/browser", "/interact"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.Browser), shared_1.countryCheck, (0, shared_1.checkCreditsMiddleware)(2), (0, shared_1.wrap)(browser_1.browserCreateController));
-exports.v2Router.get(["/browser", "/interact"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute), (0, shared_1.wrap)(browser_1.browserListController));
-exports.v2Router.post(["/browser/:sessionId/execute", "/interact/:sessionId/execute"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute), (0, shared_1.wrap)(browser_1.browserExecuteController));
-exports.v2Router.get(["/browser/:sessionId/replay", "/interact/:sessionId/replay"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserReplay), (0, shared_1.wrap)(browser_replay_1.browserReplayController));
-exports.v2Router.get(["/browser/:sessionId/replay/:pageId", "/interact/:sessionId/replay/:pageId"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserReplay), (0, shared_1.wrap)(browser_replay_1.browserReplayPageController));
-exports.v2Router.delete(["/browser/:sessionId", "/interact/:sessionId"], (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute), (0, shared_1.wrap)(browser_1.browserDeleteController));
-exports.v2Router.post("/browser/webhook/destroyed", (0, shared_1.wrap)(browser_1.browserWebhookDestroyedController));
+exports.v2Router.post("/interact", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.Browser, { allowKeyless: true }), shared_1.countryCheck, (0, shared_1.wrap)(interact_local_1.interactCreateController));
+exports.v2Router.get("/interact", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute, { allowKeyless: true }), (0, shared_1.wrap)(interact_local_1.interactListController));
+exports.v2Router.get("/interact/:sessionId", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute, { allowKeyless: true }), (0, shared_1.wrap)(interact_local_1.interactStatusController));
+exports.v2Router.post("/interact/:sessionId/execute", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute, { allowKeyless: true }), (0, shared_1.wrap)(interact_local_1.interactExecuteController));
+exports.v2Router.delete("/interact/:sessionId", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.BrowserExecute, { allowKeyless: true }), (0, shared_1.wrap)(interact_local_1.interactDeleteController));
 // Support agent proxy — forwards to the support-agent service.
 exports.v2Router.post("/support/ask", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.SupportAsk), (0, shared_1.wrap)(support_proxy_1.supportProxyController));
 exports.v2Router.post("/support/docs-search", (0, shared_1.authMiddleware)(types_1.RateLimiterMode.SupportDocsSearch), (0, shared_1.wrap)(support_proxy_1.supportProxyController));

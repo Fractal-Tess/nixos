@@ -78,25 +78,35 @@ async function searxng_search(q, options) {
         : config_1.config.SEARXNG_ENDPOINT;
     const finalUrl = cleanedUrl + "/search";
     const output = {};
-    try {
-        await Promise.all(requestedTypes(options.type).map(async type => {
+    await Promise.all(requestedTypes(options.type).map(async type => {
+        try {
             const category = type === "web" ? (config_1.config.SEARXNG_CATEGORIES || "general") : type;
             const collected = [];
             const seen = new Set();
             for (let pageOffset = 0; pageOffset < Math.max(1, Math.ceil(requestedResults / 10)); pageOffset += 1) {
-                const response = await axios_1.default.get(finalUrl, {
-                    headers: { "Content-Type": "application/json" },
-                    params: {
-                        q,
-                        language: options.lang,
-                        engines: config_1.config.SEARXNG_ENGINES ?? "",
-                        categories: category,
-                        pageno: startPage + pageOffset,
-                        format: "json",
-                    },
-                    timeout: 15000,
-                });
-                const results = Array.isArray(response.data?.results) ? response.data.results : [];
+                let response;
+                for (let attempt = 1; attempt <= 2; attempt += 1) {
+                    try {
+                        response = await axios_1.default.get(finalUrl, {
+                            headers: { "Content-Type": "application/json" },
+                            params: {
+                                q,
+                                language: options.lang,
+                                engines: type === "web" ? (process.env.SEARXNG_WEB_ENGINES ?? "bing") : "",
+                                categories: category,
+                                pageno: startPage + pageOffset,
+                                format: "json",
+                            },
+                            timeout: 15000,
+                        });
+                        break;
+                    }
+                    catch (error) {
+                        if (attempt === 2) throw error;
+                        await new Promise(resolve => setTimeout(resolve, 250));
+                    }
+                }
+                const results = Array.isArray(response?.data?.results) ? response.data.results : [];
                 for (const candidate of results) {
                     const transformed = transformResult(candidate, type, collected.length + 1);
                     const key = transformed && (type === "images" ? transformed.imageUrl : transformed.url);
@@ -108,12 +118,11 @@ async function searxng_search(q, options) {
                 if (collected.length >= requestedResults || results.length === 0) break;
             }
             if (collected.length > 0) output[type] = collected;
-        }));
-        return output;
-    }
-    catch (error) {
-        logger_1.logger.error("There was an error searching SearXNG", { error });
-        return output;
-    }
+        }
+        catch (error) {
+            logger_1.logger.error(`There was an error searching SearXNG category ${type}`, { error });
+        }
+    }));
+    return output;
 }
 //# sourceMappingURL=searxng.js.map

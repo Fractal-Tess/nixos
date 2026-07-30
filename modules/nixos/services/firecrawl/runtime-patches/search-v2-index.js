@@ -46,14 +46,19 @@ async function search({ query, logger, advanced = false, num_results = 5, tbs = 
         }
         if (!requestedTypes(type).includes("web")) return searxngResults;
         logger.info("Using DuckDuckGo web-search fallback");
-        const ddgResults = await (0, ddgsearch_1.ddgSearch)(query, num_results, {
-            tbs,
-            lang,
-            country,
-            proxy,
-            timeout,
-        });
-        if (ddgResults.web?.length) return { ...searxngResults, web: ddgResults.web };
+        try {
+            const ddgResults = await (0, ddgsearch_1.ddgSearch)(query, num_results, {
+                tbs,
+                lang,
+                country,
+                proxy,
+                timeout: Math.min(timeout, 5000),
+            });
+            if (ddgResults.web?.length) return { ...searxngResults, web: ddgResults.web };
+        }
+        catch (error) {
+            logger.warn("DuckDuckGo fallback failed; preserving SearXNG results", { error });
+        }
         return searxngResults;
     }
     catch (error) {

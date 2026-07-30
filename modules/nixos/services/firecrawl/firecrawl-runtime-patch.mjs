@@ -12,6 +12,7 @@ const searxngPath = `${appRoot}/dist/src/search/v2/searxng.js`;
 const agentStatusPath = `${appRoot}/dist/src/controllers/v2/agent-status.js`;
 const agentCancelPath = `${appRoot}/dist/src/controllers/v2/agent-cancel.js`;
 const imageAnalyzePath = `${appRoot}/dist/src/controllers/v2/image-analyze.js`;
+const interactLocalPath = `${appRoot}/dist/src/controllers/v2/interact-local.js`;
 const routesV2Path = `${appRoot}/dist/src/routes/v2.js`;
 const runtimePatchesRoot = process.env.FIRECRAWL_RUNTIME_PATCHES_ROOT ?? "/opt/firecrawl/runtime-patches";
 
@@ -31,13 +32,35 @@ const originalPlaywrightFeatures = `    playwright: {
             actions: false,
             waitFor: true,
             screenshot: false,
-            "screenshot@fullScreen": false,`;
+            "screenshot@fullScreen": false,
+            pdf: false,
+            document: false,
+            audio: false,
+            video: false,
+            atsv: false,
+            location: false,
+            mobile: false,
+            skipTlsVerification: true,
+            useFastMode: false,
+            stealthProxy: false,
+            branding: false,`;
 const patchedPlaywrightFeatures = `    playwright: {
         features: {
             actions: true,
             waitFor: true,
             screenshot: true,
-            "screenshot@fullScreen": true,`;
+            "screenshot@fullScreen": true,
+            pdf: false,
+            document: false,
+            audio: false,
+            video: false,
+            atsv: false,
+            location: false,
+            mobile: false,
+            skipTlsVerification: true,
+            useFastMode: false,
+            stealthProxy: false,
+            branding: true,`;
 
 const originalActionsCheck = `        // Check if actions are requested but no engines support them
         if (meta.featureFlags.has("actions")) {`;
@@ -56,11 +79,17 @@ const zod_1 = require("zod");
 const config_1 = require("../../../../config");
 const fetch_1 = require("../../lib/fetch");
 const firecrawl_rs_1 = require("@mendable/firecrawl-rs");
+const brandingScript_1 = require("../fire-engine/brandingScript");
 function getScreenshotFormat(formats) {
     return formats?.find(format => format?.type === "screenshot");
 }
 async function scrapeURLWithPlaywright(meta) {
     const screenshotFormat = getScreenshotFormat(meta.options.formats);
+    const wantsBranding = meta.options.formats?.some(format => format === "branding" || format?.type === "branding") ?? false;
+    const actions = [
+        ...(meta.options.actions ?? []),
+        ...(wantsBranding ? [{ type: "executeJavascript", script: (0, brandingScript_1.getBrandingScript)() }] : []),
+    ];
     const response = await (0, fetch_1.robustFetch)({
         url: config_1.config.PLAYWRIGHT_MICROSERVICE_URL,
         headers: {
@@ -72,7 +101,7 @@ async function scrapeURLWithPlaywright(meta) {
             timeout: meta.abort.scrapeTimeout(),
             headers: meta.options.headers,
             skip_tls_verification: meta.options.skipTlsVerification,
-            actions: meta.options.actions,
+            actions,
             screenshot: screenshotFormat
                 ? {
                     fullPage: screenshotFormat.fullPage ?? false,
@@ -216,4 +245,5 @@ await replaceWithRuntimePatch(agentStatusPath, originalHashes.agentStatus, "agen
 await replaceWithRuntimePatch(agentCancelPath, originalHashes.agentCancel, "agent-cancel.js");
 await replaceWithRuntimePatch(routesV2Path, originalHashes.routesV2, "routes-v2.js");
 await installRuntimePatch(imageAnalyzePath, "image-analyze.js");
-console.log("Enabled Camoufox actions, local agent, image analysis, and SearXNG image search in Firecrawl runtime");
+await installRuntimePatch(interactLocalPath, "interact-local.js");
+console.log("Enabled Camoufox actions and sessions, local agent, image analysis, and SearXNG search in Firecrawl runtime");

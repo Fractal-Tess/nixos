@@ -15,14 +15,20 @@ PORT = int(os.environ.get("PORT", "8080"))
 MAX_REQUEST_BYTES = int(os.environ.get("MAX_REQUEST_BYTES", str(42 * 1024 * 1024)))
 MAX_PDF_BYTES = int(os.environ.get("MAX_PDF_BYTES", str(30 * 1024 * 1024)))
 MAX_PAGES = int(os.environ.get("MAX_PAGES", "50"))
-MAX_CONCURRENT = int(os.environ.get("MAX_CONCURRENT", "1"))
+MAX_CONCURRENT = int(os.environ.get("MAX_CONCURRENT", "2"))
+MAX_QUEUED = int(os.environ.get("MAX_QUEUED", "4"))
 PAGE_TIMEOUT_SECONDS = int(os.environ.get("PAGE_TIMEOUT_SECONDS", "45"))
 DEFAULT_DEADLINE_SECONDS = int(os.environ.get("DEFAULT_DEADLINE_SECONDS", "300"))
 OCR_DPI = int(os.environ.get("OCR_DPI", "250"))
 OCR_LANGUAGE = os.environ.get("OCR_LANGUAGE", "eng")
 MIN_NATIVE_TEXT_CHARACTERS = int(os.environ.get("MIN_NATIVE_TEXT_CHARACTERS", "40"))
 
-semaphore = threading.BoundedSemaphore(MAX_CONCURRENT)
+processing_slots = threading.BoundedSemaphore(MAX_CONCURRENT)
+admission_slots = threading.BoundedSemaphore(MAX_CONCURRENT + MAX_QUEUED)
+state_lock = threading.Lock()
+active_requests = 0
+queued_requests = 0
+request_counters = {"completed": 0, "failed": 0, "rejected": 0}
 
 
 def run(command, timeout, text=True):
@@ -170,7 +176,16 @@ class Handler(BaseHTTPRequestHandler):
     def do_GET(self):
         if self.path not in ("/", "/health"):
             return self.respond(404, {"error": "not found"})
-        return self.respond(200, {"status": "ok", "active": MAX_CONCURRENT - semaphore._value})
+        with state_lock:
+            state = {
+                "status": "ok",
+                "active": active_requests,
+                "queued": queued_requests,
+                "capacity": MAX_CONCURRENT,
+                "queue_capacity": MAX_QUEUED,
+                "counters": dict(request_counters),
+            }
+        return self.respond(200, state)
 
     def do_POST(self):
         if self.path != "/ocr":
@@ -181,27 +196,55 @@ class Handler(BaseHTTPRequestHandler):
             return self.respond(400, {"error": "invalid content length"})
         if length <= 0 or length > MAX_REQUEST_BYTES:
             return self.respond(413, {"error": "request body exceeds the configured limit"})
-        if not semaphore.acquire(blocking=False):
-            return self.respond(429, {"error": "PDF OCR worker is busy"})
+        if not admission_slots.acquire(blocking=False):
+            with state_lock:
+                request_counters["rejected"] += 1
+            return self.respond(429, {"error": "PDF OCR queue is full"})
+        acquired_processing = False
+        global active_requests, queued_requests
         try:
             payload = json.loads(self.rfile.read(length))
-            return self.respond(200, parse_pdf(payload))
+            with state_lock:
+                queued_requests += 1
+            acquired_processing = processing_slots.acquire(timeout=DEFAULT_DEADLINE_SECONDS)
+            with state_lock:
+                queued_requests -= 1
+                if acquired_processing:
+                    active_requests += 1
+            if not acquired_processing:
+                with state_lock:
+                    request_counters["failed"] += 1
+                return self.respond(504, {"error": "PDF OCR queue deadline exceeded"})
+            result = parse_pdf(payload)
+            with state_lock:
+                request_counters["completed"] += 1
+            return self.respond(200, result)
         except ValueError as error:
+            with state_lock:
+                request_counters["failed"] += 1
             return self.respond(400, {"error": str(error)})
         except subprocess.TimeoutExpired:
+            with state_lock:
+                request_counters["failed"] += 1
             return self.respond(504, {"error": "PDF OCR deadline exceeded"})
         except Exception as error:
+            with state_lock:
+                request_counters["failed"] += 1
             print(f"PDF OCR failed: {error!r}", flush=True)
             return self.respond(500, {"error": "PDF OCR failed"})
         finally:
-            semaphore.release()
+            if acquired_processing:
+                with state_lock:
+                    active_requests -= 1
+                processing_slots.release()
+            admission_slots.release()
 
 
 if __name__ == "__main__":
     if not 1 <= PORT <= 65535:
         raise SystemExit("PORT must be between 1 and 65535")
-    if MAX_CONCURRENT < 1 or MAX_PAGES < 1:
-        raise SystemExit("MAX_CONCURRENT and MAX_PAGES must be positive")
+    if MAX_CONCURRENT < 1 or MAX_QUEUED < 0 or MAX_PAGES < 1:
+        raise SystemExit("MAX_CONCURRENT and MAX_PAGES must be positive and MAX_QUEUED cannot be negative")
     server = ThreadingHTTPServer((HOST, PORT), Handler)
     print(f"Firecrawl PDF OCR listening on {HOST}:{PORT}", flush=True)
     server.serve_forever()

@@ -1,3 +1,4 @@
+import { randomUUID, timingSafeEqual } from "node:crypto";
 import dns from "node:dns/promises";
 import { setMaxListeners } from "node:events";
 import http from "node:http";
@@ -43,6 +44,13 @@ const maxJavascriptResultBytes = Math.max(
   ) || 1024 * 1024,
 );
 const virtualDisplayResolution = "1280x720x24";
+const interactSecret = process.env.CAMOFOX_INTERACT_SECRET;
+const maxConcurrentSessions = Math.max(
+  1,
+  Math.min(maxConcurrentPages - 1 || 1, Number.parseInt(process.env.MAX_CONCURRENT_SESSIONS ?? "2", 10) || 2),
+);
+const sessionIdleMs = Math.max(10000, Number.parseInt(process.env.SESSION_IDLE_MS ?? "120000", 10) || 120000);
+const sessionMaxMs = Math.max(sessionIdleMs, Number.parseInt(process.env.SESSION_MAX_MS ?? "600000", 10) || 600000);
 
 class DefaultVirtualDisplay extends VirtualDisplay {
   get xvfb_args() {
@@ -145,6 +153,9 @@ class BoundedSemaphore {
 const semaphore = new BoundedSemaphore(maxConcurrentPages);
 const activeContexts = new Set();
 const contextClosures = new WeakMap();
+const sessions = new Map();
+const sessionCounters = { created: 0, closed: 0, expired: 0, actionBatches: 0, errors: 0 };
+let sessionsCreating = 0;
 let browser;
 let browserStart;
 let virtualDisplay;
@@ -580,6 +591,7 @@ async function ensureBrowser() {
     const launched = await firefox.launch(options);
     launched.once("disconnected", () => {
       if (browser === launched) browser = undefined;
+      for (const session of sessions.values()) void destroySession(session, "browser-disconnected");
     });
     browser = launched;
     return launched;
@@ -794,6 +806,12 @@ async function executeActions(page, actions, signal, outputBudget) {
     signal.throwIfAborted();
     try {
       switch (action.type) {
+        case "navigate": {
+          if (typeof action.url !== "string") throw new Error("navigate requires a URL");
+          await assertPublicUrl(action.url, signal);
+          await page.goto(action.url, { waitUntil: "load", timeout: 60000 });
+          break;
+        }
         case "wait":
           if (action.selector !== undefined) {
             await page.waitForSelector(String(action.selector));
@@ -1020,7 +1038,64 @@ async function closeContext(context) {
   return closing;
 }
 
+function secureEqual(supplied, expected) {
+  if (typeof supplied !== "string" || typeof expected !== "string") return false;
+  const left = Buffer.from(supplied);
+  const right = Buffer.from(expected);
+  return left.length === right.length && timingSafeEqual(left, right);
+}
+
+function sessionExpiry(session) {
+  return Math.min(session.absoluteExpiresAt, session.lastActivityAt + sessionIdleMs);
+}
+
+async function destroySession(session, reason = "closed") {
+  if (!session || sessions.get(session.id) !== session) return;
+  sessions.delete(session.id);
+  session.controller.abort(new Error(`Session ${reason}`));
+  await closeContext(session.context);
+  await session.filteringProxy.close().catch(() => {});
+  session.release();
+  sessionCounters.closed += 1;
+  if (reason === "expired") sessionCounters.expired += 1;
+}
+
+function requireInteractAuth(request, response, next) {
+  if (!interactSecret) return response.status(503).json({ success: false, error: "Persistent interact sessions are disabled" });
+  const authorization = request.get("authorization");
+  const supplied = authorization?.startsWith("Bearer ") ? authorization.slice(7) : undefined;
+  if (!secureEqual(supplied, interactSecret)) return response.status(401).json({ success: false, error: "Unauthorized" });
+  next();
+}
+
+function authorizedSession(request, response) {
+  const session = sessions.get(request.params.id);
+  if (!session) {
+    response.status(404).json({ success: false, error: "Session not found or expired" });
+    return undefined;
+  }
+  if (!secureEqual(request.get("x-session-token"), session.token)) {
+    response.status(403).json({ success: false, error: "Invalid session capability" });
+    return undefined;
+  }
+  if (Date.now() >= sessionExpiry(session)) {
+    void destroySession(session, "expired");
+    response.status(410).json({ success: false, error: "Session expired" });
+    return undefined;
+  }
+  return session;
+}
+
+const sessionReaper = setInterval(() => {
+  const now = Date.now();
+  for (const session of sessions.values()) {
+    if (now >= sessionExpiry(session)) void destroySession(session, "expired");
+  }
+}, 5000);
+sessionReaper.unref();
+
 const app = express();
+app.disable("x-powered-by");
 app.use(express.json({ limit: "1mb" }));
 
 app.get("/health", async (_request, response) => {
@@ -1038,10 +1113,163 @@ app.get("/health", async (_request, response) => {
       activePages: semaphore.active,
       queuedPages: semaphore.queued,
       maxConcurrentPages,
+      activeSessions: sessions.size,
+      maxConcurrentSessions,
+      sessionCounters,
     });
   } catch (error) {
     response.status(503).json({ status: "unhealthy", error: error.message });
   }
+});
+
+app.post("/sessions", requireInteractAuth, async (request, response) => {
+  if (sessions.size + sessionsCreating >= maxConcurrentSessions) {
+    return response.status(503).json({ success: false, error: "Persistent browser session capacity is full" });
+  }
+  sessionsCreating += 1;
+  const clientSignal = requestAbortSignal(request, response);
+  const controller = new AbortController();
+  const signal = AbortSignal.any([clientSignal, controller.signal]);
+  let release;
+  let filteringProxy;
+  let context;
+  try {
+    const { url, headers: requestedHeaders, ttlMs: requestedTtlMs } = request.body ?? {};
+    if (typeof url !== "string" || url.length === 0) return response.status(400).json({ success: false, error: "URL is required" });
+    await assertPublicUrl(url, signal);
+    const headers = normalizeHeaders(requestedHeaders);
+    const requestedTtl = Number(requestedTtlMs);
+    const ttlMs = Number.isFinite(requestedTtl) ? Math.min(sessionMaxMs, Math.max(10000, requestedTtl)) : sessionMaxMs;
+
+    release = await semaphore.acquire(signal);
+    filteringProxy = await createFilteringProxy(controller.signal);
+    const currentBrowser = await raceWithSignal(ensureBrowser(), signal, 60000, "Camoufox browser startup timed out");
+    const userAgent = findHeader(headers, "user-agent");
+    context = await raceWithSignal(currentBrowser.newContext({
+      viewport: null,
+      bypassCSP: true,
+      ignoreHTTPSErrors: false,
+      serviceWorkers: "block",
+      proxy: { server: filteringProxy.url },
+      ...(userAgent ? { userAgent } : {}),
+    }), signal, 15000, "Browser context creation timed out");
+    activeContexts.add(context);
+    const page = await context.newPage();
+    await applyRequestHeaders(context, page, url, headers);
+    await page.goto(url, { waitUntil: "load", timeout: 60000 });
+
+    const now = Date.now();
+    const session = {
+      id: randomUUID(),
+      token: randomUUID(),
+      controller,
+      filteringProxy,
+      context,
+      page,
+      release,
+      busy: false,
+      createdAt: now,
+      lastActivityAt: now,
+      absoluteExpiresAt: now + ttlMs,
+    };
+    sessions.set(session.id, session);
+    sessionCounters.created += 1;
+    return response.status(201).json({
+      success: true,
+      id: session.id,
+      token: session.token,
+      url: page.url(),
+      expiresAt: new Date(sessionExpiry(session)).toISOString(),
+    });
+  } catch (error) {
+    sessionCounters.errors += 1;
+    controller.abort(error);
+    await closeContext(context);
+    await filteringProxy?.close().catch(() => {});
+    release?.();
+    if (!response.headersSent) response.status(signal.aborted ? 499 : 400).json({ success: false, error: error.message });
+  } finally {
+    sessionsCreating -= 1;
+  }
+});
+
+app.get("/sessions", requireInteractAuth, (_request, response) => {
+  response.json({
+    success: true,
+    sessions: [...sessions.values()].map(session => ({
+      id: session.id,
+      url: session.page.url(),
+      busy: session.busy,
+      createdAt: new Date(session.createdAt).toISOString(),
+      expiresAt: new Date(sessionExpiry(session)).toISOString(),
+    })),
+  });
+});
+
+app.get("/sessions/:id", requireInteractAuth, (request, response) => {
+  const session = authorizedSession(request, response);
+  if (!session) return;
+  response.json({
+    success: true,
+    id: session.id,
+    url: session.page.url(),
+    busy: session.busy,
+    createdAt: new Date(session.createdAt).toISOString(),
+    expiresAt: new Date(sessionExpiry(session)).toISOString(),
+  });
+});
+
+app.post("/sessions/:id/actions", requireInteractAuth, async (request, response) => {
+  const session = authorizedSession(request, response);
+  if (!session) return;
+  if (session.busy) return response.status(409).json({ success: false, error: "Session is already executing an action batch" });
+  session.busy = true;
+  const clientSignal = requestAbortSignal(request, response);
+  const combinedSignal = AbortSignal.any([clientSignal, session.controller.signal]);
+  let operation;
+  try {
+    const actions = normalizeActions(request.body?.actions);
+    if (actions.length === 0) return response.status(400).json({ success: false, error: "At least one action is required" });
+    operation = createOperationSignal(combinedSignal, Math.min(180000, actionBudget(actions) + 60000));
+    const outputBudget = new OutputBudget();
+    const results = await executeActions(session.page, actions, operation.signal, outputBudget);
+    session.lastActivityAt = Date.now();
+    sessionCounters.actionBatches += 1;
+    return response.json({
+      success: true,
+      id: session.id,
+      url: session.page.url(),
+      actions: results,
+      expiresAt: new Date(sessionExpiry(session)).toISOString(),
+    });
+  } catch (error) {
+    sessionCounters.errors += 1;
+    if (!response.headersSent) response.status(operation?.signal.aborted ? 504 : 400).json({ success: false, error: error.message });
+  } finally {
+    operation?.dispose();
+    session.busy = false;
+  }
+});
+
+app.delete("/sessions/:id", requireInteractAuth, async (request, response) => {
+  const session = authorizedSession(request, response);
+  if (!session) return;
+  await destroySession(session, "deleted");
+  response.json({ success: true, id: session.id });
+});
+
+app.get("/metrics", requireInteractAuth, (_request, response) => {
+  const values = [
+    `firecrawl_camofox_active_pages ${semaphore.active}`,
+    `firecrawl_camofox_queued_pages ${semaphore.queued}`,
+    `firecrawl_camofox_active_sessions ${sessions.size}`,
+    `firecrawl_camofox_sessions_created_total ${sessionCounters.created}`,
+    `firecrawl_camofox_sessions_closed_total ${sessionCounters.closed}`,
+    `firecrawl_camofox_sessions_expired_total ${sessionCounters.expired}`,
+    `firecrawl_camofox_session_action_batches_total ${sessionCounters.actionBatches}`,
+    `firecrawl_camofox_session_errors_total ${sessionCounters.errors}`,
+  ];
+  response.type("text/plain; version=0.0.4").send(`${values.join("\n")}\n`);
 });
 
 app.post("/scrape", async (request, response) => {
@@ -1251,8 +1479,10 @@ async function shutdown(signal) {
   shuttingDown = true;
   console.log(`Received ${signal}; shutting down`);
   semaphore.cancelQueued(new Error("Browser service is shutting down"));
+  clearInterval(sessionReaper);
   server.close();
 
+  await Promise.allSettled([...sessions.values()].map(session => destroySession(session, "shutdown")));
   await Promise.allSettled([...activeContexts].map(closeContext));
   if (browser) await browser.close().catch(() => {});
   if (virtualDisplay) virtualDisplay.kill();

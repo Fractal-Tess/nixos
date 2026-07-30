@@ -9,9 +9,13 @@ async function agentCancelController(req, res) {
     try {
         const response = await fetch(`${config_1.config.EXTRACT_V3_BETA_URL}/internal/extracts/${encodeURIComponent(req.params.jobId)}`, {
             method: "DELETE",
+            signal: AbortSignal.timeout(5000),
             headers: { Authorization: `Bearer ${config_1.config.AGENT_INTEROP_SECRET}` },
         });
+        const declaredLength = Number(response.headers.get("content-length") ?? 0);
+        if (declaredLength > 1024 * 1024) throw new Error("Local agent cancellation response exceeded 1 MiB");
         const text = await response.text();
+        if (Buffer.byteLength(text, "utf8") > 1024 * 1024) throw new Error("Local agent cancellation response exceeded 1 MiB");
         let body;
         try {
             body = JSON.parse(text);

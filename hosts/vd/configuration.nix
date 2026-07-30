@@ -333,7 +333,6 @@
         };
         search.imageSearch.enable = true;
         pdfOcr.enable = true;
-        camofox.enable = true;
       };
 
       # Hermes Agent

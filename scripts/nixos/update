@@ -8,11 +8,20 @@
 #
 # Environment:
 #   NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)
+#   NIXOS_UPDATE_DIR         Override the flake checkout directory
+#   NIXOS_UPDATE_HOST        Override the target NixOS hostname
 #
 # Dependencies: git, sudo, nixos-rebuild, claude (for AI commit messages)
 # Usage: update [--help|-h]
 
 set -l NIXOS_DIR "/home/fractal-tess/nixos"
+if set -q NIXOS_UPDATE_DIR
+    set NIXOS_DIR "$NIXOS_UPDATE_DIR"
+end
+set -l TARGET_HOST (hostname)
+if set -q NIXOS_UPDATE_HOST
+    set TARGET_HOST "$NIXOS_UPDATE_HOST"
+end
 set -l OPENROUTER_KEY_FILE "$HOME/.config/secrets/openrouter_api_key"
 set -l OPENROUTER_MODEL "openai/gpt-5-nano"
 
@@ -78,6 +87,8 @@ if contains -- --help $argv; or contains -- -h $argv
     echo ""
     echo "Environment:"
     echo "  NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)"
+    echo "  NIXOS_UPDATE_DIR         Override the flake checkout directory"
+    echo "  NIXOS_UPDATE_HOST        Override the target NixOS hostname"
     echo ""
     echo "Dependencies: git, sudo, nixos-rebuild, curl (for AI messages)"
     exit 0
@@ -95,6 +106,20 @@ if not test -d "$NIXOS_DIR"
     exit 1
 end
 
+set NIXOS_DIR (realpath -e "$NIXOS_DIR")
+if not contains -- "$TARGET_HOST" kiwi neo vd
+    _log_error "Unsupported NixOS target: $TARGET_HOST"
+    exit 1
+end
+if test "$TARGET_HOST" != (hostname -s)
+    _log_error "Refusing to switch $TARGET_HOST configuration on host "(hostname -s)
+    exit 1
+end
+if not test -f "$NIXOS_DIR/flake.nix"
+    _log_error "flake.nix not found in: $NIXOS_DIR"
+    exit 1
+end
+
 cd "$NIXOS_DIR"
 
 if not git rev-parse --git-dir >/dev/null 2>&1
@@ -104,7 +129,10 @@ end
 
 # ── Banner ────────────────────────────────────────────────────────────────────
 function _show_banner
-    set -l host_name (hostname)
+    set -l host_name (hostname -s)
+    if set -q NIXOS_UPDATE_HOST
+        set host_name "$NIXOS_UPDATE_HOST"
+    end
     set -l kernel (uname -r)
     set -l last_commit (git log -1 --pretty=format:"%h - %s (%cr)" 2>/dev/null; or echo "No commits")
     set -l branch (git branch --show-current 2>/dev/null; or echo "unknown")
@@ -348,13 +376,13 @@ end
 # ── NixOS rebuild ─────────────────────────────────────────────────────────────
 _log_step "Rebuilding NixOS configuration..."
 
-set -l host_name (hostname)
+set -l host_name $TARGET_HOST
 _log_info "Host: $host_name"
 _log_info "Flake: $NIXOS_DIR#$host_name"
 echo ""
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
 
-sudo nixos-rebuild switch --flake "$NIXOS_DIR#$host_name" --impure
+sudo nixos-rebuild switch --flake "path:$NIXOS_DIR#$host_name" --impure
 set -l rebuild_status $status
 
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
