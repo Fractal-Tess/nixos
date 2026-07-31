@@ -78,6 +78,8 @@
 
     shadoword.url = "github:Fractal-Tess/shadoword";
 
+    paseo.url = "github:getpaseo/paseo";
+
     clip-sync = {
       url = "git+file:///home/fractal-tess/dev/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -120,6 +122,7 @@
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
                 (import ./overlays/vibe-kanban.nix)
+                (import ./overlays/paseo.nix { inherit (inputs) paseo; })
                 (import ./overlays/kimi-cli)
                 (final: prev: {
                   # openldap's syncrepl test is flaky on this pinned nixpkgs revision

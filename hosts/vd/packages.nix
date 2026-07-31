@@ -119,6 +119,8 @@
     pi-coding-agent # Minimal terminal coding agent harness
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
     t3code # T3 Code desktop app
+    paseo # Paseo daemon and CLI for AI coding agents
+    paseo-desktop # Paseo desktop app
     firecrawl-cli # Search and scrape through the local self-hosted Firecrawl API
 
     # AI / LLM
