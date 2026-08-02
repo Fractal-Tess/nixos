@@ -5,7 +5,7 @@
 #   cd ~/nixos
 #   systemctl --user stop clip-sync clip-sync-tray
 #   git restore --source=e8ebc69^ -- \
-#     dotfiles/desktop/.config/hypr/hyprconfigs/hyprautostart.conf \
+#     dotfiles/desktop/.config/hypr/hyprconfigs/hyprautostart.lua \
 #     scripts/session/clipboard
 #   ~/nixos/scripts/system/dotfiles apply
 #   wl-paste --watch cliphist store &

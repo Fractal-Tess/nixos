@@ -3,7 +3,7 @@
 #
 # Rewrite of apply-desktop-dotfiles (bash). Applies host-specific
 # waybar and monitor configs, stows the desktop package, and fixes
-# the hypranimations.conf chained symlink.
+# the hypranimations.lua chained symlink.
 #
 # Dependencies: stow, hostname
 # Usage: dotfiles [apply|status] [--help|-h]
@@ -50,44 +50,67 @@ function resolve_host_configs
     switch $host_name
         case kiwi
             set -g waybar_config config-kiwi.jsonc
-            set -g monitor_config monitors-kiwi.conf
+            set -g monitor_config monitors-kiwi.lua
         case neo
             set -g waybar_config config-neo.jsonc
-            set -g monitor_config monitors-neo.conf
+            set -g monitor_config monitors-neo.lua
         case '*'
             set -g waybar_config config-vd.jsonc
-            set -g monitor_config monitors-vd.conf
+            set -g monitor_config monitors-vd.lua
     end
 end
 
-function clean_stale_monitor_links
-    # Remove stale files/symlinks that can make stow fail on host-specific monitor config.
-    rm -f $target_home/.config/hypr/conf.d/monitors.conf
-    for f in monitors-kiwi.conf monitors-neo.conf monitors-vd.conf
-        set p $target_home/.config/hypr/conf.d/$f
-        if test -e $p; and not test -L $p
-            rm -f $p
-        end
-    end
+function clean_stale_hyprland_files
+    # Remove obsolete hyprlang files and links left behind by the Lua migration.
+    rm -f \
+        $target_home/.config/hypr/hyprland.conf \
+        $target_home/.config/colors/hyprcolors.conf \
+        $target_home/.config/matugen/templates/hyprcolors.conf \
+        $target_home/.config/hypr/conf.d/monitors.conf \
+        $target_home/.config/hypr/conf.d/monitors.lua \
+        $target_home/.config/hypr/conf.d/monitors-kiwi.conf \
+        $target_home/.config/hypr/conf.d/monitors-neo.conf \
+        $target_home/.config/hypr/conf.d/monitors-vd.conf \
+        $target_home/.config/RofiScripts/Animations/Horizontal/hypranimations.conf \
+        $target_home/.config/RofiScripts/Animations/Vertical/hypranimations.conf \
+        $target_home/.config/RofiScripts/Rounding/RoundingThemes/0px/hyprdecoration.conf \
+        $target_home/.config/RofiScripts/Rounding/RoundingThemes/10px/hyprdecoration.conf \
+        $target_home/.config/RofiScripts/Rounding/RoundingThemes/20px/hyprdecoration.conf \
+        $target_home/.config/hypr/hyprconfigs/hypranimations.conf \
+        $target_home/.config/hypr/hyprconfigs/hypranimations.lua \
+        $target_home/.config/hypr/hyprconfigs/hyprautostart.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprdecoration.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprenvironment.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprinput.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprkeybinds.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprlookandfeel.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprpermissions.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprplugins.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprprograms.conf \
+        $target_home/.config/hypr/hyprconfigs/hyprwindowsandworkspaces.conf
 end
 
 function cmd_apply
     ensure_dirs
     resolve_host_configs
-    clean_stale_monitor_links
+    clean_stale_hyprland_files
 
-    stow --dir $stow_dir --target $target_home --restow desktop
+    # Zellij owns and rewrites its live config, so do not replace it with a Stow link.
+    stow --dir $stow_dir --target $target_home --restow --ignore=zellij desktop
+        or return 1
 
     # Keep these links relative so stow can manage the directory cleanly.
     ln -sfn $waybar_config $target_home/.config/waybar/config.jsonc
-    ln -sfn $monitor_config $target_home/.config/hypr/conf.d/monitors.conf
+    ln -sfn $monitor_config $target_home/.config/hypr/conf.d/monitors.lua
 
-    # Fix hypranimations.conf — stow can't resolve the chained relative symlink,
+    # Fix hypranimations.lua — stow can't resolve the chained relative symlink,
     # so replace it with a direct link to the RofiScripts animation config.
-    ln -sfn $target_home/.config/RofiScripts/Animations/Horizontal/hypranimations.conf \
-        $target_home/.config/hypr/hyprconfigs/hypranimations.conf
+    ln -sfn $target_home/.config/RofiScripts/Animations/Horizontal/hypranimations.lua \
+        $target_home/.config/hypr/hyprconfigs/hypranimations.lua
 
-    $repo_dir/scripts/wallpaper/sync-library.sh
+    if test -x $repo_dir/scripts/wallpaper/sync-library.sh
+        $repo_dir/scripts/wallpaper/sync-library.sh
+    end
 end
 
 function cmd_status
@@ -96,7 +119,12 @@ function cmd_status
     echo "Waybar  : $waybar_config"
     echo "Monitor : $monitor_config"
     echo ""
-    stow --dir $stow_dir --target $target_home --restow --no desktop
+    # Host-specific monitor and animation links are managed by cmd_apply above.
+    stow --dir $stow_dir --target $target_home --restow --no \
+        --ignore=zellij \
+        --ignore=monitors.lua \
+        --ignore=hypranimations.lua \
+        desktop
 end
 
 # Argument dispatch

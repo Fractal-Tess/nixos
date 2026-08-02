@@ -14,8 +14,8 @@ output_path = '~/.config/colors/colors.css'
 post_hook = 'swaync-client -R; swaync-client -rs'
 
 [templates.hyprland]
-input_path = '~/.config/matugen/templates/hyprcolors.conf'
-output_path = '~/.config/colors/hyprcolors.conf'
+input_path = '~/.config/matugen/templates/hyprcolors.lua'
+output_path = '~/.config/colors/hyprcolors.lua'
 post_hook = 'hyprctl reload'
 
 [templates.rofi]

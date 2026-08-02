@@ -1,5 +1,5 @@
 #!/bin/sh
 
-ln -sf ~/.config/RofiScripts/Animations/Vertical/hypranimations.conf ~/.config/hypr/hyprconfigs/hypranimations.conf
+ln -sf ~/.config/RofiScripts/Animations/Vertical/hypranimations.lua ~/.config/hypr/hyprconfigs/hypranimations.lua
 hyprctl reload
 notify-send "Animations" "Vertical slide applied"
