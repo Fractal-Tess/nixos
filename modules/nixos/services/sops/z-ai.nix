@@ -22,8 +22,8 @@ in
     sops.secrets = {
       z_ai_api_key = {
         owner = username;
-        sopsFile = ../../../../secrets/z-ai.yaml;
-        format = "yaml";
+        sopsFile = ../../../../secrets/z-ai.json;
+        format = "json";
         path = "/home/${username}/.config/secrets/z-ai/apikey";
       };
     };

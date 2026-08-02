@@ -14,6 +14,7 @@ in
 
   imports = [
     ./hermes-agent.nix
+    ./reactbits.nix
     ./ssh.nix
     ./z-ai.nix
     ./minimax.nix
@@ -26,19 +27,18 @@ in
 
   config = mkIf cfg.enable {
     sops = {
-      defaultSopsFile = ../../../../secrets/secrets.yaml;
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
 
       secrets = {
         openrouter_api_key = {
           owner = username;
-          sopsFile = ../../../../secrets/secrets.json;
+          sopsFile = ../../../../secrets/openrouter.json;
           path = "/home/${username}/.config/secrets/openrouter_api_key";
           format = "json";
         };
         moonshot_ai = {
           owner = username;
-          sopsFile = ../../../../secrets/secrets.json;
+          sopsFile = ../../../../secrets/moonshot.json;
           path = "/home/${username}/.config/secrets/moonshot_ai";
           format = "json";
         };

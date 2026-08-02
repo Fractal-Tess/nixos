@@ -140,7 +140,7 @@
   #============================================================================
 
   sops.secrets.shadoword_api_token = {
-    sopsFile = ../../secrets/secrets.json;
+    sopsFile = ../../secrets/shadoword.json;
     format = "json";
     owner = username;
     group = "users";
@@ -148,7 +148,7 @@
   };
 
   sops.secrets.clip_sync_mesh_key = {
-    sopsFile = ../../secrets/secrets.json;
+    sopsFile = ../../secrets/clip-sync.json;
     format = "json";
     owner = username;
     group = "users";
@@ -299,6 +299,7 @@
         z_ai.enable = true;
         minimax.enable = true;
         syncthing.enable = true;
+        reactbits.enable = true;
       };
 
       # Virtualization

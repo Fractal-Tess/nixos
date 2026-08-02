@@ -125,7 +125,7 @@
   #============================================================================
 
   sops.secrets.shadoword_api_token = {
-    sopsFile = ../../secrets/secrets.json;
+    sopsFile = ../../secrets/shadoword.json;
     format = "json";
     owner = "shadoword";
     group = "shadoword";
@@ -133,7 +133,7 @@
   };
 
   sops.secrets.clip_sync_mesh_key = {
-    sopsFile = ../../secrets/secrets.json;
+    sopsFile = ../../secrets/clip-sync.json;
     format = "json";
     owner = username;
     group = "users";
@@ -290,6 +290,7 @@
         minimax.enable = true;
         syncthing.enable = true;
         hermes-agent.enable = true;
+        reactbits.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
       };
 

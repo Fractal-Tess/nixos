@@ -20,22 +20,22 @@ in
       hermes_telegram_bot_token = {
         owner = username;
         group = username;
-        sopsFile = ../../../../secrets/hermes-agent.yaml;
-        format = "yaml";
+        sopsFile = ../../../../secrets/hermes-agent.json;
+        format = "json";
       };
 
       hermes_telegram_allowed_users = {
         owner = username;
         group = username;
-        sopsFile = ../../../../secrets/hermes-agent.yaml;
-        format = "yaml";
+        sopsFile = ../../../../secrets/hermes-agent.json;
+        format = "json";
       };
 
       hermes_exa_api_key = {
         owner = username;
         group = username;
-        sopsFile = ../../../../secrets/hermes-agent.yaml;
-        format = "yaml";
+        sopsFile = ../../../../secrets/hermes-agent.json;
+        format = "json";
       };
     };
 
@@ -48,10 +48,12 @@ in
         TELEGRAM_BOT_TOKEN=${config.sops.placeholder.hermes_telegram_bot_token}
         TELEGRAM_ALLOWED_USERS=${config.sops.placeholder.hermes_telegram_allowed_users}
         EXA_API_KEY=${config.sops.placeholder.hermes_exa_api_key}
-        ${optionalString (config.modules.services.hermes-agent.firecrawlApiUrl != null)
-          "FIRECRAWL_API_URL=${config.modules.services.hermes-agent.firecrawlApiUrl}"}
-        ${optionalString (config.modules.services.hermes-agent.camofoxUrl != null)
-          "CAMOFOX_URL=${config.modules.services.hermes-agent.camofoxUrl}"}
+        ${optionalString (
+          config.modules.services.hermes-agent.firecrawlApiUrl != null
+        ) "FIRECRAWL_API_URL=${config.modules.services.hermes-agent.firecrawlApiUrl}"}
+        ${optionalString (
+          config.modules.services.hermes-agent.camofoxUrl != null
+        ) "CAMOFOX_URL=${config.modules.services.hermes-agent.camofoxUrl}"}
       '';
     };
 

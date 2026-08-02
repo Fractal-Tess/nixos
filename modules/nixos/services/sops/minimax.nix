@@ -22,8 +22,8 @@ in
     sops.secrets = {
       minimax_api_key = {
         owner = username;
-        sopsFile = ../../../../secrets/minimax.yaml;
-        format = "yaml";
+        sopsFile = ../../../../secrets/minimax.json;
+        format = "json";
         path = "/home/${username}/.config/secrets/minimax/apikey";
       };
     };
