@@ -1,5 +1,6 @@
 {
   inputs,
+  lib,
   pkgs,
   ...
 }:
@@ -111,7 +112,7 @@ in
     openvpn # Open-source VPN solution
     proton-vpn # Proton VPN client
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
-    globalProtectGui # Graphical GlobalProtect client; keeps the existing gpclient CLI intact
+    (lib.hiPrio globalProtectGui) # Graphical GlobalProtect client; keeps the existing gpclient CLI intact
     gst_all_1.gst-plugins-base # GStreamer base plugins (appsink, needed by gpclient)
     gst_all_1.gst-plugins-good # GStreamer good plugins
     wakeonlan # Wake devices using Wake-on-LAN
