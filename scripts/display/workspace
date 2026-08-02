@@ -29,7 +29,7 @@ function _swap_workspaces
 
     if test $count -ge 2
         echo "Swapping workspaces between $monitors[1] and $monitors[2]"
-        hyprctl dispatch swapactiveworkspaces $monitors[1] $monitors[2]
+        hyprctl dispatch "hl.dsp.workspace.swap_monitors({ monitor1 = \"$monitors[1]\", monitor2 = \"$monitors[2]\" })"
     else if test $count -eq 1
         echo "Only one active monitor ($monitors[1]). Cannot swap."
     else

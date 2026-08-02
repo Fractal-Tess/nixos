@@ -5,7 +5,16 @@ hl.window_rule({ match = { title = [[^(File Operation Progress)$]] }, float = tr
 hl.window_rule({ match = { class = [[^(discord)$]] }, workspace = "1" })
 hl.window_rule({ match = { class = [[^(dev.zed.Zed)$]] }, workspace = "2" })
 hl.window_rule({ match = { class = [[^(cursor)$]] }, workspace = "2" })
-hl.window_rule({ match = { class = [[^(Vivaldi-stable)$]] }, workspace = "3" })
+hl.window_rule({ match = { class = [[^(vivaldi-stable)$]] }, workspace = "3" })
+hl.window_rule({
+	name = "vivaldi-bitwarden-passkey-float",
+	match = {
+		class = [[^(vivaldi-stable)$]],
+		title = [[^(Bitwarden - Vivaldi)$]],
+	},
+	float = true,
+	center = true,
+})
 hl.window_rule({ match = { class = [[^(com\.gabm\.satty)$]] }, float = true })
 hl.window_rule({
 	match = { class = [[^(clip-sync-switcher)$]] },

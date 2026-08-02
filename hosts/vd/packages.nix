@@ -1,5 +1,29 @@
-{ pkgs, ... }:
+{
+  inputs,
+  pkgs,
+  ...
+}:
 
+let
+  globalProtectGuiPackage = inputs.globalprotect-openconnect.packages.${pkgs.system}.default;
+  globalProtectGui = pkgs.runCommand "globalprotect-openconnect-gui" { } ''
+    mkdir -p $out/bin $out/share
+
+    cat >$out/bin/gp-gui <<'EOF'
+    #!${pkgs.runtimeShell}
+    exec ${globalProtectGuiPackage}/bin/gpclient launch-gui "$@"
+    EOF
+    chmod +x $out/bin/gp-gui
+
+    ln -s ${globalProtectGuiPackage}/bin/gpgui $out/bin/gpgui
+    ln -s ${globalProtectGuiPackage}/bin/gpgui-helper $out/bin/gpgui-helper
+    ln -s ${globalProtectGuiPackage}/bin/gpservice $out/bin/gpservice
+
+    cp -r ${globalProtectGuiPackage}/share/. $out/share/
+    substituteInPlace $out/share/applications/gpgui.desktop \
+      --replace-fail '/run/current-system/sw/bin/gpclient launch-gui' "$out/bin/gp-gui"
+  '';
+in
 {
   #============================================================================
   # SYSTEM-WIDE PACKAGES
@@ -87,6 +111,7 @@
     openvpn # Open-source VPN solution
     proton-vpn # Proton VPN client
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
+    globalProtectGui # Graphical GlobalProtect client; keeps the existing gpclient CLI intact
     gst_all_1.gst-plugins-base # GStreamer base plugins (appsink, needed by gpclient)
     gst_all_1.gst-plugins-good # GStreamer good plugins
     wakeonlan # Wake devices using Wake-on-LAN
