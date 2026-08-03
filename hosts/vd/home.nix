@@ -1,5 +1,4 @@
 {
-  inputs,
   pkgs,
   username,
   lib,
@@ -54,9 +53,9 @@
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
 
-  systemd.user.services.shadoword-egui = {
+  systemd.user.services.shadoword-desktop = {
     Unit = {
-      Description = "Shadoword desktop transcription client";
+      Description = "Shadoword desktop API client";
       After = [
         "graphical-session.target"
         "pipewire.service"
@@ -64,11 +63,12 @@
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-egui-client}/bin/shadoword-egui";
+      ExecStart = "${pkgs.shadoword-desktop-client}/bin/shadoword-desktop";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [
         "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin"
+        "WEBKIT_DISABLE_DMABUF_RENDERER=1"
       ];
     };
     Install.WantedBy = [ "graphical-session.target" ];

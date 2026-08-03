@@ -1,6 +1,5 @@
 {
   config,
-  inputs,
   lib,
   pkgs,
   ...
@@ -22,7 +21,7 @@ in
 
     package = mkOption {
       type = types.package;
-      default = inputs.shadoword.packages.${pkgs.system}.shadoword-api-cuda;
+      default = pkgs.shadoword-api-cuda;
       description = "Shadoword API package to run.";
     };
 

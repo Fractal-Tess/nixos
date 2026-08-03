@@ -78,8 +78,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    shadoword.url = "github:Fractal-Tess/shadoword";
-
     paseo.url = "github:getpaseo/paseo";
 
     clip-sync = {
@@ -121,6 +119,7 @@
                 polymc.overlay
                 nix-matlab.overlay
                 (import ./overlays/responsively-app.nix)
+                (import ./overlays/shadoword.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
                 (import ./overlays/vibe-kanban.nix)
