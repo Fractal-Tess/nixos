@@ -81,7 +81,7 @@
     paseo.url = "github:getpaseo/paseo";
 
     clip-sync = {
-      url = "git+file:///home/fractal-tess/dev/clip-sync";
+      url = "github:Fractal-Tess/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

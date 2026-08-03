@@ -29,17 +29,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1785418502,
-        "narHash": "sha256-LafEn3eN75E+hwIUm7pU7UwElI2FSb9b91PvnUfkJ5M=",
-        "ref": "refs/heads/main",
-        "rev": "80a992496ecfb19e126a7ab93ebb8b5de10c799e",
-        "revCount": 48,
-        "type": "git",
-        "url": "file:///home/fractal-tess/dev/clip-sync"
+        "lastModified": 1785791910,
+        "narHash": "sha256-W8pez9de2RaaN5Yc4zJFn7xuF8yYu48eT5Wl9gBN0Ew=",
+        "owner": "Fractal-Tess",
+        "repo": "clip-sync",
+        "rev": "8be674af4fa8fd01f7e54a063d3fb6d32bce6cb6",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "file:///home/fractal-tess/dev/clip-sync"
+        "owner": "Fractal-Tess",
+        "repo": "clip-sync",
+        "type": "github"
       }
     },
     "comfyui-nix": {
