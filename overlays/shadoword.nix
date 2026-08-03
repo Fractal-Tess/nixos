@@ -1,7 +1,7 @@
 final: _prev:
 
 let
-  version = "0.9.0";
+  version = "0.9.1";
   releaseBase = "https://github.com/Fractal-Tess/shadoword/releases/download/v${version}";
 
   mkShadowordBinary =
@@ -90,7 +90,7 @@ in
   shadoword-api = mkShadowordBinary {
     pname = "shadoword-api";
     asset = "shadoword-api-cpu-x86_64-linux.tar.gz";
-    hash = "sha256-nRAFoRVqzIRC7QCgnAlzEihcIFMsR5+Dt0iN3zni5jY=";
+    hash = "sha256-oSHWW8iRoaAFbsdaZ/1jDkct5RVehf5JcNJBHZDfKqc=";
     executable = "shadoword-api";
     runtimeDeps = daemonRuntimeDeps;
   };
@@ -98,7 +98,7 @@ in
   shadoword-api-cuda = mkShadowordBinary {
     pname = "shadoword-api-cuda";
     asset = "shadoword-api-cuda-x86_64-linux.tar.gz";
-    hash = "sha256-RiTK3pcs08CHhjPm1/OvlGiM/qN3jtGFSwMeNiU86YA=";
+    hash = "sha256-P+YDw6aYviguZOVoJM0uJBwroFUypJCldseTrwcuIDI=";
     executable = "shadoword-api";
     runtimeDeps =
       daemonRuntimeDeps
@@ -109,10 +109,19 @@ in
     extraLibraryPath = "/run/opengl-driver/lib";
   };
 
+  shadoword-api-vulkan = mkShadowordBinary {
+    pname = "shadoword-api-vulkan";
+    asset = "shadoword-api-vulkan-x86_64-linux.tar.gz";
+    hash = "sha256-6C9INvZ+TsOzmvzvgqqDph256XHxnv+jx5qaLS5kFGA=";
+    executable = "shadoword-api";
+    runtimeDeps = daemonRuntimeDeps ++ [ final.vulkan-loader ];
+    extraLibraryPath = "/run/opengl-driver/lib";
+  };
+
   shadoword-desktop-client = mkShadowordBinary {
     pname = "shadoword-desktop-client";
     asset = "shadoword-desktop-client-x86_64-linux.tar.gz";
-    hash = "sha256-XNPHIQj3Lt0tiyPy6AD8tcJ/x3yrgvARB/ehmb7OypQ=";
+    hash = "sha256-CUur+WvjztAzNUBhCmrv4emMqxw4WDmvDgoy4VTLzFA=";
     executable = "shadoword-desktop";
     runtimeDeps = desktopRuntimeDeps;
     extraLibraryPath = "/run/opengl-driver/lib";
