@@ -100,6 +100,9 @@
       RestartSec = 5;
       Environment = [
         "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin"
+        # Keep WebKitGTK on the backend that preserves Tauri's scale and SVG
+        # strokes under Wayland compositors.
+        "GDK_BACKEND=x11"
         "WEBKIT_DISABLE_DMABUF_RENDERER=1"
       ];
     };

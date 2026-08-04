@@ -71,6 +71,9 @@
       RestartSec = 5;
       Environment = [
         "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin"
+        # WebKitGTK's native Wayland backend mis-scales and drops SVG strokes on
+        # NVIDIA/Hyprland. XWayland renders the same Tauri surface correctly.
+        "GDK_BACKEND=x11"
         "WEBKIT_DISABLE_DMABUF_RENDERER=1"
       ];
     };
