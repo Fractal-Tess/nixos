@@ -1112,11 +1112,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785826650,
-        "narHash": "sha256-fGUm9KhVO1rmbXzbUyIhy6mvqcXOB4hi/bTvFcfOhRw=",
+        "lastModified": 1785846819,
+        "narHash": "sha256-M9pK8XktdcKqFFUGQKYDizNO2vukTJfGFedkjK74J+I=",
         "owner": "Fractal-Tess",
         "repo": "shadoword",
-        "rev": "b4cf616ea812609d103b754dabb7f16b9a7e0684",
+        "rev": "d758693a053405262f669902e489e3076e892347",
         "type": "github"
       },
       "original": {

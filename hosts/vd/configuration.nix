@@ -150,6 +150,7 @@
       preload_on_startup = false;
       recording = {
         transcription_mode = "streaming";
+        streaming_pcm_format = "s16le";
         english_only = true;
       };
       output = {
