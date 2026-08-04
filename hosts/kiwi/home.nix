@@ -83,7 +83,7 @@
     backup = true;
   };
 
-  systemd.user.services.shadoword-egui = {
+  systemd.user.services.shadoword-desktop = {
     Unit = {
       Description = "Shadoword desktop transcription client";
       After = [
@@ -93,11 +93,14 @@
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-egui-client}/bin/shadoword-egui";
+      ExecStart = "${
+        inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
+      }/bin/shadoword-desktop";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [
         "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin"
+        "WEBKIT_DISABLE_DMABUF_RENDERER=1"
       ];
     };
     Install.WantedBy = [ "graphical-session.target" ];

@@ -1028,6 +1028,7 @@
         "paseo": "paseo",
         "polymc": "polymc",
         "pwndbg": "pwndbg",
+        "shadoword": "shadoword",
         "shapeshifter": "shapeshifter",
         "sops-nix": "sops-nix",
         "t3code-nix": "t3code-nix"
@@ -1101,6 +1102,26 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "shadoword": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1785826650,
+        "narHash": "sha256-fGUm9KhVO1rmbXzbUyIhy6mvqcXOB4hi/bTvFcfOhRw=",
+        "owner": "Fractal-Tess",
+        "repo": "shadoword",
+        "rev": "b4cf616ea812609d103b754dabb7f16b9a7e0684",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "shadoword",
         "type": "github"
       }
     },

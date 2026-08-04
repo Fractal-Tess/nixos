@@ -343,6 +343,7 @@
 
       shadoword-api = {
         enable = true;
+        package = inputs.shadoword.packages.${pkgs.system}.shadoword-api-cuda;
         listenAddress = "100.91.0.2";
         tokenFile = config.sops.secrets.shadoword_api_token.path;
         requestRecordingDir = "/var/lib/shadoword/requests";
@@ -392,7 +393,7 @@
   ];
 
   environment.systemPackages = [
-    pkgs.shadoword-desktop-client
+    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
     pkgs.wtype
     pkgs.xdotool
   ];
