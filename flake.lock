@@ -29,11 +29,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1785824605,
-        "narHash": "sha256-QibnygebCM+DUviZ/X0Om8VjO0+V+kmx1pDR9mRuQqg=",
+        "lastModified": 1785829118,
+        "narHash": "sha256-rKjhzkjUlQNNUrulI4c94a9L4HBIoDVf+UeEzsdswuE=",
         "owner": "Fractal-Tess",
         "repo": "clip-sync",
-        "rev": "48a1113cd9227298c34ea9ae4dc6ca316e2d783d",
+        "rev": "7da633f14109343531b93a5faf9084b0916577ec",
         "type": "github"
       },
       "original": {
