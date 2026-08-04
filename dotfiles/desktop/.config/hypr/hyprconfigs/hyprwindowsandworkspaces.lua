@@ -17,10 +17,11 @@ hl.window_rule({
 })
 hl.window_rule({ match = { class = [[^(com\.gabm\.satty)$]] }, float = true })
 hl.window_rule({
-	match = { class = [[^(clip-sync-switcher)$]] },
+	name = "clip-sync-float",
+	match = { class = [[^(Clip-sync)$]] },
 	float = true,
 	center = true,
-	size = { 720, 480 },
+	size = { 760, 520 },
 })
 hl.window_rule({ match = { class = ".*" }, suppress_event = "maximize" })
 

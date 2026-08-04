@@ -1,22 +1,13 @@
 #!/usr/bin/env fish
-# clipboard — Open the clip-sync keyboard-first history switcher.
-#
-# Rollback during the initial soak (cliphist remains installed for this):
-#   cd ~/nixos
-#   systemctl --user stop clip-sync clip-sync-tray
-#   git restore --source=e8ebc69^ -- \
-#     dotfiles/desktop/.config/hypr/hyprconfigs/hyprautostart.lua \
-#     scripts/session/clipboard
-#   ~/nixos/scripts/system/dotfiles apply
-#   wl-paste --watch cliphist store &
+# clipboard — Open the ClipSync desktop window.
 
 function _clipboard_help
-    echo "clipboard — clip-sync history switcher"
+    echo "clipboard — ClipSync desktop launcher"
     echo ""
     echo "Usage: clipboard [--help]"
     echo ""
-    echo "Opens the singleton clip-sync switcher. The daemon is started through"
-    echo "the systemd user service when necessary."
+    echo "Opens the ClipSync desktop window. The daemon is managed separately"
+    echo "by the systemd user service."
 end
 
 if contains -- --help $argv; or contains -- -h $argv
@@ -24,4 +15,4 @@ if contains -- --help $argv; or contains -- -h $argv
     exit 0
 end
 
-exec /run/current-system/sw/bin/clip-sync ui switcher
+exec /run/current-system/sw/bin/clip-sync desktop
