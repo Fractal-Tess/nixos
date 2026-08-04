@@ -1,17 +1,22 @@
 -- Hyprland configuration entry point.
--- Each required file is evaluated in an isolated scope, so an error in one
--- module does not prevent the remaining modules from loading.
+-- Load each configuration file by path in the required order.
 
 local config_home = os.getenv("HOME") .. "/.config/hypr/"
 
-require(config_home .. "conf.d/monitors.lua")
-require(config_home .. "hyprconfigs/hyprdecoration.lua")
-require(config_home .. "hyprconfigs/hypranimations.lua")
-require(config_home .. "hyprconfigs/hyprautostart.lua")
-require(config_home .. "hyprconfigs/hyprenvironment.lua")
-require(config_home .. "hyprconfigs/hyprpermissions.lua")
-require(config_home .. "hyprconfigs/hyprlookandfeel.lua")
-require(config_home .. "hyprconfigs/hyprinput.lua")
-require(config_home .. "hyprconfigs/hyprkeybinds.lua")
-require(config_home .. "hyprconfigs/hyprwindowsandworkspaces.lua")
-require(config_home .. "hyprconfigs/hyprplugins.lua")
+local config_files = {
+	"conf.d/monitors.lua",
+	"hyprconfigs/hyprdecoration.lua",
+	"hyprconfigs/hypranimations.lua",
+	"hyprconfigs/hyprautostart.lua",
+	"hyprconfigs/hyprenvironment.lua",
+	"hyprconfigs/hyprpermissions.lua",
+	"hyprconfigs/hyprlookandfeel.lua",
+	"hyprconfigs/hyprinput.lua",
+	"hyprconfigs/hyprkeybinds.lua",
+	"hyprconfigs/hyprwindowsandworkspaces.lua",
+	"hyprconfigs/hyprplugins.lua",
+}
+
+for _, config_file in ipairs(config_files) do
+	dofile(config_home .. config_file)
+end

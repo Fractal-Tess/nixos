@@ -1,4 +1,4 @@
-local programs = require(os.getenv("HOME") .. "/.config/hypr/hyprconfigs/hyprprograms.lua")
+local programs = dofile(os.getenv("HOME") .. "/.config/hypr/hyprconfigs/hyprprograms.lua")
 local mod = programs.main_mod
 
 hl.bind(mod .. " + P", hl.dsp.exec_cmd(programs.menu))

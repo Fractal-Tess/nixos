@@ -140,24 +140,6 @@
                 "kiwi"
               ];
             };
-            "agent-skills" = {
-              path = "/home/fractal-tess/.agents/skills";
-              id = "agent-skills";
-              label = "Agent Skills";
-              devices = [
-                "vd"
-                "kiwi"
-              ];
-            };
-            "pi-agent-config" = {
-              path = "/home/fractal-tess/.pi/agent";
-              id = "pi-agent-config";
-              label = "pi-agent-config";
-              devices = [
-                "vd"
-                "kiwi"
-              ];
-            };
             "obsidian-vault" = {
               path = "/home/fractal-tess/dev/obsidian";
               id = "obsidian-vault";

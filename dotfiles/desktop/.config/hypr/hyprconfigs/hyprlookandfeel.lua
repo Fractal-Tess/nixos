@@ -1,4 +1,4 @@
-local colors = require(os.getenv("HOME") .. "/.config/colors/hyprcolors.lua")
+local colors = dofile(os.getenv("HOME") .. "/.config/colors/hyprcolors.lua")
 
 hl.config({
 	general = {
