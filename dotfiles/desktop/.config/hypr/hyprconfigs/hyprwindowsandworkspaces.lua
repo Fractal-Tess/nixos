@@ -20,8 +20,6 @@ hl.window_rule({
 	name = "clip-sync-float",
 	match = { class = [[^(Clip-sync)$]] },
 	float = true,
-	center = true,
-	size = { 760, 520 },
 })
 hl.window_rule({ match = { class = ".*" }, suppress_event = "maximize" })
 
