@@ -93,9 +93,7 @@
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${
-        inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
-      }/bin/shadoword-desktop";
+      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-desktop}/bin/shadoword";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [

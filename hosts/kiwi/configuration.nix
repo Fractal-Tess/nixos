@@ -191,7 +191,7 @@
   ];
 
   environment.systemPackages = [
-    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
+    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
     pkgs.wtype
     pkgs.xdotool
   ];
