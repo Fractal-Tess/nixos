@@ -205,7 +205,7 @@
     # Services
     services = {
       sshd.enable = true;
-      nessus.enable = true;
+      nessus.enable = false; # Disabled for storage cleanup
       automount.enable = true;
       syncthing = {
         enable = true;
@@ -518,7 +518,7 @@
 
   # Open WebUI for Ollama
   services.open-webui = {
-    enable = true;
+    enable = false; # Disabled for storage cleanup
     port = 9090;
     host = "0.0.0.0";
     environment = {

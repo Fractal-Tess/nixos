@@ -128,7 +128,7 @@ in
     # ELECTRONICS DESIGN TOOLS
     #--------------------------------------------------------------------------
 
-    kicad # Electronics design automation (EDA) for PCB design
+    # kicad # Electronics design automation (EDA) for PCB design — disabled for storage cleanup
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT TOOLS
@@ -241,7 +241,7 @@ in
     # kdePackages.kdenlive # Video editor
     obs-studio # Streaming and recording software
     kooha # Screen recorder for Wayland
-    blender # 3D modeling and animation
+    # blender # 3D modeling and animation — disabled for storage cleanup
 
     # Audio editing
     audacity # Audio editor and recorder
@@ -274,7 +274,7 @@ in
     terax # AI-native terminal emulator
 
     # Web browsers
-    firefox # Open-source web browser
+    # firefox # Open-source web browser — disabled for storage cleanup
     google-chrome # Google's web browser
     vivaldi # Feature-rich web browser
     vivaldi-ffmpeg-codecs # Video codecs for Vivaldi
@@ -287,8 +287,7 @@ in
 
     # Terminals
     neovim # Terminal text editor
-    warp-terminal # Modern terminal with AI features
-    waveterm # Wave terminal for seamless workflows
+    # warp-terminal # Modern terminal with AI features — disabled for storage cleanup
 
     # System tools
     # rpi-imager # Raspberry Pi Imaging Utility (temporarily disabled due to build issues)
@@ -302,7 +301,7 @@ in
     telegram-desktop # Messaging app
     viber # Instant messaging
     slack # Team collaboration platform (temporarily disabled due to download failure)
-    thunderbird # Email client
+    # thunderbird # Email client — disabled for storage cleanup
 
     #--------------------------------------------------------------------------
     # BLUETOOTH UTILITIES
@@ -323,10 +322,7 @@ in
     # DEVELOPMENT ENVIRONMENTS
     #--------------------------------------------------------------------------
 
-    vscode # Open source editor
-    code-cursor # VS Code fork with AI features
     zed-editor # Zed editor
-    antigravity # Development environment tool
     responsively-app # Web development tool for responsive design
     vibe-kanban # Desktop Kanban board for vibe coding workflows
     tradingview # Trading platform desktop app
