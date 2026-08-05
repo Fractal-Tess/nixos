@@ -205,7 +205,6 @@
     # Services
     services = {
       sshd.enable = true;
-      nessus.enable = false; # Disabled for storage cleanup
       automount.enable = true;
       syncthing = {
         enable = true;
@@ -288,6 +287,7 @@
           devtools = true;
           nvidia = true;
         };
+        # kubernetes.enable = true; # Disabled; K3s and Kubernetes tools uninstalled
       };
 
       # Remote Desktop (Sunshine host + Moonlight client)
@@ -377,7 +377,7 @@
   ];
 
   environment.systemPackages = [
-    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
+    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
     pkgs.wtype
     pkgs.xdotool
   ];

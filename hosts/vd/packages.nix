@@ -135,7 +135,6 @@ in
     #--------------------------------------------------------------------------
 
     # Testing
-    playwright-driver.browsers # Playwright browsers for e2e testing
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
     opencode # AI coding assistant
@@ -287,7 +286,6 @@ in
 
     # Terminals
     neovim # Terminal text editor
-    # warp-terminal # Modern terminal with AI features — disabled for storage cleanup
 
     # System tools
     # rpi-imager # Raspberry Pi Imaging Utility (temporarily disabled due to build issues)
@@ -301,7 +299,6 @@ in
     telegram-desktop # Messaging app
     viber # Instant messaging
     slack # Team collaboration platform (temporarily disabled due to download failure)
-    # thunderbird # Email client — disabled for storage cleanup
 
     #--------------------------------------------------------------------------
     # BLUETOOTH UTILITIES

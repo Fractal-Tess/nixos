@@ -2,7 +2,6 @@
   pkgs,
   username,
   inputs,
-  lib,
   ...
 }:
 
@@ -28,27 +27,10 @@
     stateVersion = "25.05"; # Don't change this
     sessionVariables = {
       PNPM_HOME = "$HOME/.local/share/pnpm";
-      PLAYWRIGHT_BROWSERS_PATH = "$HOME/.local/share/playwright-browsers";
-      PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome";
       HF_HOME = "/mnt/vault/ai/huggingface";
       FIRECRAWL_API_URL = "http://vd.netbird.cloud:38473";
     };
-
-    activation.setupPlaywrightBrowsers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
-      BROWSERS_DIR="$HOME/.local/share/playwright-browsers"
-      $DRY_RUN_CMD mkdir -p "$BROWSERS_DIR"
-      for dir in ${pkgs.playwright-driver.browsers}/*/; do
-        name=$(basename "$dir")
-        target="$BROWSERS_DIR/$name"
-        if [ -L "$target" ] && [ "$(readlink "$target")" != "$dir" ]; then
-          $DRY_RUN_CMD rm "$target"
-        fi
-        if [ ! -e "$target" ]; then
-          $DRY_RUN_CMD ln -s "$dir" "$target"
-        fi
-      done
-    '';
   };
 
   # Enable Home Manager self-management
@@ -56,7 +38,7 @@
 
   systemd.user.services.shadoword-desktop = {
     Unit = {
-      Description = "Shadoword desktop API client";
+      Description = "Shadoword desktop transcription client";
       After = [
         "graphical-session.target"
         "pipewire.service"
@@ -65,8 +47,8 @@
     };
     Service = {
       ExecStart = "${
-        inputs.shadoword.packages.${pkgs.system}.shadoword-desktop-client
-      }/bin/shadoword-desktop";
+        inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
+      }/bin/shadoword";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [
