@@ -123,6 +123,11 @@
       # Disable greeting message
       set fish_greeting
 
+      # Refresh the Firecrawl endpoint from the active Home Manager generation.
+      ${lib.optionalString (config.home.sessionVariables ? FIRECRAWL_API_URL) ''
+        set -gx FIRECRAWL_API_URL ${lib.escapeShellArg config.home.sessionVariables.FIRECRAWL_API_URL}
+      ''}
+
       # Zoxide shell integration
       if command -q zoxide
         zoxide init fish | source
