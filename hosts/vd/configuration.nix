@@ -324,6 +324,10 @@
           maxConcurrentJobs = 4;
         };
         search.imageSearch.enable = true;
+        dashboard = {
+          enable = true;
+          listenAddress = "100.91.0.2";
+        };
         pdfOcr.enable = true;
       };
 

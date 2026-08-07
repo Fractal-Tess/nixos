@@ -277,7 +277,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/waybar/gpu --nvidia --id=0",
+  "exec": "fish --no-config ~/nixos/scripts/waybar/gpu --nvidia --id=0",
   "return-type": "json"
 },
 "custom/gpu-mem#nvidia": {
@@ -285,7 +285,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/waybar/gpu --nvidia-mem --id=0",
+  "exec": "fish --no-config ~/nixos/scripts/waybar/gpu --nvidia-mem --id=0",
   "return-type": "json"
 },
 "custom/gpu#nvidia2": {
@@ -293,7 +293,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/waybar/gpu --nvidia --id=1",
+  "exec": "fish --no-config ~/nixos/scripts/waybar/gpu --nvidia --id=1",
   "return-type": "json"
 },
 "custom/gpu-mem#nvidia2": {
@@ -301,7 +301,7 @@
   "format": "{icon}",
   "rotate": 270,
   "format-icons": ["󰝦", "󰪞", "󰪟", "󰪠", "󰪡", "󰪢", "󰪣", "󰪤", "󰪥"],
-  "exec": "~/nixos/scripts/waybar/gpu --nvidia-mem --id=1",
+  "exec": "fish --no-config ~/nixos/scripts/waybar/gpu --nvidia-mem --id=1",
   "return-type": "json"
 },
 "battery": {

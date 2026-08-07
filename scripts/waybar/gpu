@@ -45,16 +45,24 @@ for arg in $argv
     end
 end
 
+# Home Manager gives Waybar a minimal PATH that does not include system
+# packages. Prefer PATH when available, then use the stable system profile.
+set nvidia_smi (command -s nvidia-smi 2>/dev/null)
+if test -z "$nvidia_smi"; and test -x /run/current-system/sw/bin/nvidia-smi
+    set nvidia_smi /run/current-system/sw/bin/nvidia-smi
+end
+
 if contains -- --help $argv; or contains -- -h $argv
-    show_help; exit 0
+    show_help
+    exit 0
 end
 
 if contains -- --nvidia $argv
-    if not type -q nvidia-smi
+    if test -z "$nvidia_smi"
         echo '{"percentage": 0, "text": "N/A", "tooltip": "nvidia-smi not found", "class": "low"}'
         exit 1
     end
-    set data (nvidia-smi --id=$gpu_id \
+    set data ($nvidia_smi --id=$gpu_id \
         --query-gpu=utilization.gpu,temperature.gpu,memory.used,memory.total \
         --format=csv,noheader,nounits 2>/dev/null)
 
@@ -64,21 +72,21 @@ if contains -- --nvidia $argv
     end
 
     set fields (string split ', ' $data)
-    set usage  (string trim $fields[1])
-    set temp   (string trim $fields[2])
-    set mused  (string trim $fields[3])
+    set usage (string trim $fields[1])
+    set temp (string trim $fields[2])
+    set mused (string trim $fields[3])
     set mtotal (string trim $fields[4])
-    set class  (gpu_class $usage)
-    set tip    "GPU Usage: $usage%\\nTemperature: $temp°C\\nMemory: $mused/$mtotal MB"
+    set class (gpu_class $usage)
+    set tip "GPU Usage: $usage%\\nTemperature: $temp°C\\nMemory: $mused/$mtotal MB"
 
     echo "{\"percentage\": $usage, \"text\": \"$usage% $mused/$mtotal MB\", \"tooltip\": \"$tip\", \"class\": \"$class\"}"
 
 else if contains -- --nvidia-mem $argv
-    if not type -q nvidia-smi
+    if test -z "$nvidia_smi"
         echo '{"percentage": 0, "text": "N/A", "tooltip": "nvidia-smi not found", "class": "low"}'
         exit 1
     end
-    set data (nvidia-smi --id=$gpu_id \
+    set data ($nvidia_smi --id=$gpu_id \
         --query-gpu=memory.used,memory.total \
         --format=csv,noheader,nounits 2>/dev/null)
 
@@ -88,10 +96,10 @@ else if contains -- --nvidia-mem $argv
     end
 
     set fields (string split ', ' $data)
-    set mused  (string trim $fields[1])
+    set mused (string trim $fields[1])
     set mtotal (string trim $fields[2])
-    set pct    (math --scale=0 "$mused / $mtotal * 100")
-    set class  (gpu_class $pct)
+    set pct (math --scale=0 "$mused / $mtotal * 100")
+    set class (gpu_class $pct)
 
     echo "{\"percentage\": $pct, \"text\": \"$pct%\", \"tooltip\": \"GPU Memory: $mused/$mtotal MB ($pct%)\", \"class\": \"$class\"}"
 
@@ -141,5 +149,6 @@ else if contains -- --amd $argv
     echo "{\"percentage\": $usage, \"text\": \"$usage% $mused/$mtotal MB\", \"tooltip\": \"$tip\", \"class\": \"$class\"}"
 
 else
-    show_help; exit 1
+    show_help
+    exit 1
 end

@@ -5,8 +5,9 @@
 # into a single script. Handles DPMS, session lock, brightness (multi-backend),
 # per-monitor control, laptop lid events, and sleep inhibition.
 #
-# Dependencies: hyprctl, loginctl, brightnessctl (primary), light (fallback),
-#               xset (fallback), rofi, notify-send, systemd-inhibit, jq
+# Dependencies: hyprctl, loginctl, brightnessctl (laptop), ddcutil (external
+#               monitors), light/xset (fallback), rofi, notify-send,
+#               systemd-inhibit, jq
 # Usage: screen <subcommand> [args]
 
 set -g BRIGHTNESS_CACHE /tmp/brightness-cache
@@ -62,11 +63,23 @@ end
 # ─── Brightness backend detection ────────────────────────────────────────────
 
 function _has_brightnessctl
-    type -q brightnessctl; and test -d /sys/class/backlight
+    type -q brightnessctl; and brightnessctl --class=backlight -l >/dev/null 2>&1
+end
+
+function _ddc_displays
+    type -q ddcutil; or return 1
+    ddcutil detect --brief 2>/dev/null | string match -rg '^Display ([0-9]+)$'
+end
+
+function _has_ddcutil
+    set -l displays (_ddc_displays)
+    test (count $displays) -gt 0
 end
 
 function _has_light
-    type -q light; and test -d /sys/class/backlight
+    type -q light; or return 1
+    set -l devices (find /sys/class/backlight -mindepth 1 -maxdepth 1 -print -quit 2>/dev/null)
+    test (count $devices) -gt 0
 end
 
 # ─── Brightness cache ────────────────────────────────────────────────────────
@@ -77,10 +90,15 @@ function _init_cache
     set -l initial 50
 
     if _has_brightnessctl
-        set -l cur (brightnessctl get 2>/dev/null)
-        set -l max (brightnessctl max 2>/dev/null)
+        set -l cur (brightnessctl --class=backlight get 2>/dev/null)
+        set -l max (brightnessctl --class=backlight max 2>/dev/null)
         if test -n "$cur" -a -n "$max" -a "$max" -gt 0
             set initial (math "round($cur * 100 / $max)")
+        end
+    else if _has_ddcutil
+        set -l values (ddcutil getvcp 10 --brief --display 1 2>/dev/null | string match -rg '^VCP 10 C ([0-9]+) ([0-9]+)$')
+        if test (count $values) -ge 2 -a "$values[2]" -gt 0
+            set initial (math "round($values[1] * 100 / $values[2])")
         end
     else if _has_light
         set -l cur (light -G 2>/dev/null)
@@ -123,7 +141,11 @@ function _set_brightness
     echo $v >$BRIGHTNESS_CACHE
 
     if _has_brightnessctl
-        brightnessctl set "$v%" >/dev/null 2>&1
+        brightnessctl --class=backlight set "$v%" >/dev/null 2>&1
+    else if _has_ddcutil
+        for display in (_ddc_displays)
+            ddcutil setvcp 10 $v --display $display >/dev/null 2>&1
+        end
     else if _has_light
         light -S $v >/dev/null 2>&1
     else if type -q xset
@@ -141,6 +163,8 @@ function _brightness_json
     set -l methods
     if _has_brightnessctl
         set methods $methods brightnessctl
+    else if _has_ddcutil
+        set methods $methods ddcutil
     else if _has_light
         set methods $methods light
     else if type -q xset
@@ -169,14 +193,24 @@ end
 
 function _dpms
     set -l state $argv[1]
-    hyprctl dispatch dpms $state >/dev/null 2>&1
+    set -l monitor $argv[2]
+
+    if test -n "$monitor"
+        hyprctl dispatch "hl.dsp.dpms({ action = \"$state\", monitor = \"$monitor\" })" >/dev/null 2>&1
+    else
+        hyprctl dispatch "hl.dsp.dpms({ action = \"$state\" })" >/dev/null 2>&1
+    end
     return $status
 end
 
 function _screen_off
     if not _dpms off
         if _has_brightnessctl
-            brightnessctl set 0 >/dev/null 2>&1
+            brightnessctl --class=backlight set 0 >/dev/null 2>&1
+        else if _has_ddcutil
+            for display in (_ddc_displays)
+                ddcutil setvcp D6 04 --display $display >/dev/null 2>&1
+            end
         else if _has_light
             light -S 0 >/dev/null 2>&1
         else if type -q xset
@@ -189,7 +223,11 @@ end
 function _screen_on
     if not _dpms on
         if _has_brightnessctl
-            brightnessctl set 100% >/dev/null 2>&1
+            brightnessctl --class=backlight set 100% >/dev/null 2>&1
+        else if _has_ddcutil
+            for display in (_ddc_displays)
+                ddcutil setvcp D6 01 --display $display >/dev/null 2>&1
+            end
         else if _has_light
             light -S 100 >/dev/null 2>&1
         else if type -q xset
@@ -277,7 +315,7 @@ function _monitor_off
     set -l name (_monitor_menu "Turn off monitor:" \
         '.[] | select(.disabled == false) | (if .dpmsStatus then "🟢" else "🔴" end) + " " + .name + ": " + .description + " (" + (.width|tostring) + "x" + (.height|tostring) + ")" + if .focused then " [focused]" else "" end')
     test -z "$name"; and return 0
-    hyprctl dispatch dpms off $name
+    _dpms off $name
     notify-send "Monitor Off" "🔴 $name turned off" -h string:x-canonical-private-synchronous:monitor-status
 end
 
@@ -295,7 +333,7 @@ function _monitor_on
 
     set -l name (_monitor_menu "Turn on monitor:" $filter_expr)
     test -z "$name"; and return 0
-    hyprctl dispatch dpms on $name
+    _dpms on $name
     notify-send "Monitor On" "🟢 $name turned on" -h string:x-canonical-private-synchronous:monitor-status
 end
 
@@ -433,6 +471,8 @@ function _show_status
     set -l methods
     if _has_brightnessctl
         set methods $methods brightnessctl
+    else if _has_ddcutil
+        set methods $methods ddcutil
     else if _has_light
         set methods $methods light
     else if type -q xset

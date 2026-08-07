@@ -31,7 +31,6 @@ hl.bind(mod .. " + Z", hl.dsp.exec_cmd("hyprpicker"))
 hl.bind(mod .. " + B", hl.dsp.exec_cmd("~/.config/RofiScripts/WallpaperChanger/WallMenu.sh"))
 hl.bind(mod .. " + SHIFT + B", hl.dsp.exec_cmd("waypaper"))
 hl.bind(mod .. " + L", hl.dsp.exec_cmd("hyprlock"))
-hl.bind(mod .. " + SHIFT + L", hl.dsp.exec_cmd("uwsm stop"))
 
 for workspace = 1, 6 do
 	hl.bind(mod .. " + " .. workspace, hl.dsp.focus({ workspace = workspace }))
@@ -43,9 +42,9 @@ hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic",
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(mod .. " + ESCAPE", hl.dsp.exec_cmd("~/nixos/scripts/session/powermenu"))
-hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("pkill waybar && waybar &"))
-hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
-hl.bind(mod .. " + ALT + T", hl.dsp.exec_cmd("killall -SIGUSR1 waybar"))
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("pkill waybar; waybar"))
+hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
+hl.bind(mod .. " + ALT + T", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 
 hl.bind("XF86AudioRaiseVolume", hl.dsp.exec_cmd("pactl set-sink-volume @DEFAULT_SINK@ +5%"))
 hl.bind("XF86AudioLowerVolume", hl.dsp.exec_cmd("pactl set-sink-volume @DEFAULT_SINK@ -5%"))
@@ -65,8 +64,8 @@ hl.bind(
 		[[pactl set-source-mute @DEFAULT_SOURCE@ toggle && notify-send "Microphone" "$(pactl get-source-mute @DEFAULT_SOURCE@ | grep -q 'yes' && echo '🎤 Muted' || echo '🎤 Unmuted')" -h string:x-canonical-private-synchronous:mic-status]]
 	)
 )
-hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%+"))
-hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("brightnessctl -e4 -n2 set 5%-"))
+hl.bind("XF86MonBrightnessUp", hl.dsp.exec_cmd("~/nixos/scripts/display/screen bright-up"))
+hl.bind("XF86MonBrightnessDown", hl.dsp.exec_cmd("~/nixos/scripts/display/screen bright-down"))
 hl.bind("XF86AudioPlay", hl.dsp.exec_cmd("playerctl play-pause"))
 hl.bind("XF86AudioNext", hl.dsp.exec_cmd("playerctl next"))
 hl.bind("XF86AudioPrev", hl.dsp.exec_cmd("playerctl previous"))
@@ -76,12 +75,7 @@ hl.bind("XF86HomePage", hl.dsp.exec_cmd(programs.browser))
 hl.bind("Print", hl.dsp.exec_cmd("~/nixos/scripts/session/screenshot"))
 hl.bind("XF86ScreenSaver", hl.dsp.exec_cmd("loginctl lock-session"))
 hl.bind("XF86Sleep", hl.dsp.exec_cmd("systemctl suspend"))
-hl.bind(
-	mod .. " + M",
-	hl.dsp.exec_cmd(
-		[[hyprctl dispatch dpms off && notify-send "Monitors" "Turned off" -h string:x-canonical-private-synchronous:monitor-status]]
-	)
-)
+hl.bind(mod .. " + M", hl.dsp.dpms({ action = "off" }))
 hl.bind(mod .. " + SHIFT + M", hl.dsp.exec_cmd("~/nixos/scripts/display/screen monitor-on"))
 hl.bind(mod .. " + CTRL + M", hl.dsp.exec_cmd("~/nixos/scripts/display/screen monitor-off"))
 hl.bind(mod .. " + CTRL + A", hl.dsp.exec_cmd("~/nixos/scripts/audio/sink menu"))

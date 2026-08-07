@@ -31,15 +31,25 @@ let
   postgresImage = "ghcr.io/firecrawl/nuq-postgres@sha256:aed86f62858f29bd971abddcdeb301c12888098d2cf5d33c1ba42b053bc460f6";
   redisImage = "redis@sha256:8096655e437712b07503796fb64d81359256cfcff0ab29d95a7da72863786efb";
   codexProxyImage = "eceasy/cli-proxy-api@sha256:2d402a3edfbfa0612d7694345f7a05008fe8ce1915fde00ec9adb82afeb370c9";
+  cliProxyDashboardImage = "ghcr.io/itsmylife44/cliproxyapi-dashboard/dashboard@sha256:8d6ac25c48cbc7510ceecda07238e64efa1f42c383df25ea5f7878f0d951a762";
+  cliProxyPostgresImage = "postgres@sha256:57c72fd2a128e416c7fcc499958864df5301e940bca0a56f58fddf30ffc07777";
   nodeImage = "node@sha256:6c74791e557ce11fc957704f6d4fe134a7bc8d6f5ca4403205b2966bd488f6b3";
   searxngImage = "searxng/searxng@sha256:5d6d903ab82afa56ee32792d477f36bc63d3e5ca04fcb6947e28a5cfd987fad3";
   agentInteropSecret = "firecrawl-local-agent-v1";
   camofoxInteractSecret = "firecrawl-local-interact-v1";
+  cliProxyDashboardEnvFile = "/var/lib/firecrawl/cliproxy-dashboard.env";
 
   codexProxyConfig = pkgs.writeText "firecrawl-codex-proxy.yaml" ''
     host: 0.0.0.0
     port: 8317
     auth-dir: /root/.cli-proxy-api
+    api-keys:
+      - local-firecrawl
+    usage-statistics-enabled: true
+    remote-management:
+      allow-remote: ${boolToString cfg.dashboard.enable}
+      secret-key: ""
+      disable-control-panel: true
   '';
   firecrawlRuntimePatch = ./firecrawl-runtime-patch.mjs;
   firecrawlRuntimePatches = pkgs.runCommand "firecrawl-runtime-patches" { } ''
@@ -268,6 +278,72 @@ let
       logging: *default-logging
   '';
 
+  cliProxyDashboardServices = optionalString cfg.dashboard.enable ''
+    cliproxy-postgres:
+      image: ${cliProxyPostgresImage}
+      cpus: "0.5"
+      mem_limit: 256m
+      mem_reservation: 64m
+      networks:
+        - backend
+      environment:
+        POSTGRES_DB: cliproxyapi
+        POSTGRES_USER: cliproxyapi
+        POSTGRES_PASSWORD: "''${POSTGRES_PASSWORD}"
+        TZ: UTC
+      volumes:
+        - cliproxy-postgres-data:/var/lib/postgresql/data
+      healthcheck:
+        test:
+          - CMD-SHELL
+          - pg_isready -U cliproxyapi -d cliproxyapi
+        interval: 10s
+        timeout: 5s
+        retries: 5
+        start_period: 10s
+      restart: unless-stopped
+      logging: *default-logging
+
+    cliproxy-dashboard:
+      image: ${cliProxyDashboardImage}
+      cpus: "1.0"
+      mem_limit: 512m
+      mem_reservation: 128m
+      networks:
+        - backend
+      ports:
+        - "${cfg.dashboard.listenAddress}:${toString cfg.dashboard.port}:3000"
+      environment:
+        DATABASE_URL: "postgresql://cliproxyapi:''${POSTGRES_PASSWORD}@cliproxy-postgres:5432/cliproxyapi"
+        CLIPROXYAPI_MANAGEMENT_URL: http://codex-proxy:8317/v0/management
+        MANAGEMENT_API_KEY: "''${MANAGEMENT_API_KEY}"
+        JWT_SECRET: "''${JWT_SECRET}"
+        NODE_ENV: production
+        API_URL: "http://${cfg.dashboard.listenAddress}:${toString cfg.dashboard.proxyPort}"
+        DASHBOARD_URL: "http://${cfg.dashboard.listenAddress}:${toString cfg.dashboard.port}"
+        CLIPROXYAPI_CONTAINER_NAME: firecrawl-codex-proxy-1
+        ALLOW_LOCAL_PROVIDER_URLS: "true"
+      volumes:
+        - cliproxy-dashboard-backups:/app/backups
+      depends_on:
+        cliproxy-postgres:
+          condition: service_healthy
+        codex-proxy:
+          condition: service_started
+      healthcheck:
+        test:
+          - CMD
+          - node
+          - -e
+          - "fetch('http://localhost:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"
+        interval: 15s
+        timeout: 10s
+        retries: 5
+        start_period: 40s
+      restart: unless-stopped
+      logging: *default-logging
+  '';
+
   pdfOcrService = ''
     pdf-ocr:
       image: firecrawl-pdf-ocr:local
@@ -366,8 +442,9 @@ let
           logging: *default-logging
 
         services:
-    ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
+    ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        environment:\n          MANAGEMENT_PASSWORD: \"\${MANAGEMENT_API_KEY:-}\"\n        ports:\n${optionalString cfg.dashboard.enable "          - \"${cfg.dashboard.listenAddress}:${toString cfg.dashboard.proxyPort}:8317\"\n          - \"${cfg.dashboard.listenAddress}:8085:8085\"\n          - \"${cfg.dashboard.listenAddress}:1455:1455\"\n          - \"${cfg.dashboard.listenAddress}:54545:54545\"\n          - \"${cfg.dashboard.listenAddress}:51121:51121\"\n          - \"${cfg.dashboard.listenAddress}:11451:11451\""}\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
 
+    ${indentYaml "      " cliProxyDashboardServices}
     ${optionalString cfg.search.imageSearch.enable (indentYaml "      " searxngService)}
     ${optionalString cfg.pdfOcr.enable (indentYaml "      " pdfOcrService)}
     ${optionalString cfg.agent.enable (indentYaml "      " agentService)}
@@ -483,13 +560,27 @@ let
 
         volumes:
           nuq-postgres-data:
+    ${optionalString cfg.dashboard.enable "      cliproxy-postgres-data:\n      cliproxy-dashboard-backups:"}
   '';
   firecrawlStart = pkgs.writeShellScript "firecrawl-start" ''
     set -euo pipefail
-    ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} up --detach --remove-orphans --wait --wait-timeout 600
+    ${optionalString cfg.dashboard.enable ''
+      if [[ ! -s ${cliProxyDashboardEnvFile} ]]; then
+        umask 077
+        env_file="$(${pkgs.coreutils}/bin/mktemp ${cliProxyDashboardEnvFile}.XXXXXX)"
+        postgres_password="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
+        management_api_key="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
+        jwt_secret="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
+        ${pkgs.coreutils}/bin/printf 'POSTGRES_PASSWORD=%s\nMANAGEMENT_API_KEY=%s\nJWT_SECRET=%s\n' \
+          "$postgres_password" "$management_api_key" "$jwt_secret" > "$env_file"
+        ${pkgs.coreutils}/bin/install -m 0600 "$env_file" ${cliProxyDashboardEnvFile}
+        ${pkgs.coreutils}/bin/rm -f "$env_file"
+      fi
+    ''}
+    ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} ${optionalString cfg.dashboard.enable "--env-file ${cliProxyDashboardEnvFile}"} up --detach --remove-orphans --wait --wait-timeout 600
     ${pkgs.systemd}/bin/systemd-notify --ready
-    services="$(${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} config --services)"
-    exec ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} wait $services
+    services="$(${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} ${optionalString cfg.dashboard.enable "--env-file ${cliProxyDashboardEnvFile}"} config --services)"
+    exec ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} ${optionalString cfg.dashboard.enable "--env-file ${cliProxyDashboardEnvFile}"} wait $services
   '';
 in
 {
@@ -545,6 +636,28 @@ in
 
     search.imageSearch.enable = mkEnableOption "SearXNG-backed web, news, and image search";
 
+    dashboard = {
+      enable = mkEnableOption "CLIProxyAPI web management dashboard";
+
+      listenAddress = mkOption {
+        type = types.str;
+        default = "127.0.0.1";
+        description = "Address on which the CLIProxyAPI dashboard and proxy are exposed.";
+      };
+
+      port = mkOption {
+        type = types.port;
+        default = 38300;
+        description = "Port on which the CLIProxyAPI dashboard is exposed.";
+      };
+
+      proxyPort = mkOption {
+        type = types.port;
+        default = 38317;
+        description = "Port on which the dashboard-managed CLIProxyAPI endpoint is exposed.";
+      };
+    };
+
     pdfOcr.enable = mkEnableOption "local Rust-first PDF extraction with Poppler and Tesseract OCR fallback";
 
   };
@@ -561,6 +674,10 @@ in
       {
         assertion = !cfg.agent.enable || cfg.llm.enable;
         message = "The local Firecrawl agent requires modules.services.firecrawl.llm.enable.";
+      }
+      {
+        assertion = !cfg.dashboard.enable || cfg.llm.enable;
+        message = "The CLIProxyAPI dashboard requires modules.services.firecrawl.llm.enable.";
       }
     ];
 
@@ -602,7 +719,7 @@ in
         WorkingDirectory = "/var/lib/firecrawl";
         ExecStartPre = optional cfg.pdfOcr.enable "${config.virtualisation.docker.package}/bin/docker load --input ${pdfOcrImage}";
         ExecStart = firecrawlStart;
-        ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} down";
+        ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} ${optionalString cfg.dashboard.enable "--env-file ${cliProxyDashboardEnvFile}"} down";
         Restart = "on-failure";
         RestartSec = "10s";
         TimeoutStartSec = "15min";
