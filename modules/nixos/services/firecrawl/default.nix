@@ -38,6 +38,7 @@ let
   agentInteropSecret = "firecrawl-local-agent-v1";
   camofoxInteractSecret = "firecrawl-local-interact-v1";
   cliProxyDashboardEnvFile = "/var/lib/firecrawl/cliproxy-dashboard.env";
+  codexProxyConfigFile = "/var/lib/firecrawl/codex-config.yaml";
 
   codexProxyConfig = pkgs.writeText "firecrawl-codex-proxy.yaml" ''
     host: 0.0.0.0
@@ -442,7 +443,7 @@ let
           logging: *default-logging
 
         services:
-    ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        environment:\n          MANAGEMENT_PASSWORD: \"\${MANAGEMENT_API_KEY:-}\"\n        ports:\n${optionalString cfg.dashboard.enable "          - \"${cfg.dashboard.listenAddress}:${toString cfg.dashboard.proxyPort}:8317\"\n          - \"${cfg.dashboard.listenAddress}:8085:8085\"\n          - \"${cfg.dashboard.listenAddress}:1455:1455\"\n          - \"${cfg.dashboard.listenAddress}:54545:54545\"\n          - \"${cfg.dashboard.listenAddress}:51121:51121\"\n          - \"${cfg.dashboard.listenAddress}:11451:11451\""}\n        volumes:\n          - ${codexProxyConfig}:/CLIProxyAPI/config.yaml:ro\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
+    ${optionalString cfg.llm.enable "      codex-proxy:\n        image: ${codexProxyImage}\n        networks:\n          - backend\n        environment:\n          MANAGEMENT_PASSWORD: \"\${MANAGEMENT_API_KEY:-}\"\n        ports:\n${optionalString cfg.dashboard.enable "          - \"${cfg.dashboard.listenAddress}:${toString cfg.dashboard.proxyPort}:8317\"\n          - \"${cfg.dashboard.listenAddress}:8085:8085\"\n          - \"${cfg.dashboard.listenAddress}:1455:1455\"\n          - \"${cfg.dashboard.listenAddress}:54545:54545\"\n          - \"${cfg.dashboard.listenAddress}:51121:51121\"\n          - \"${cfg.dashboard.listenAddress}:11451:11451\""}\n        volumes:\n          - ${codexProxyConfigFile}:/CLIProxyAPI/config.yaml\n          - /var/lib/firecrawl/codex-auth:/root/.cli-proxy-api\n        restart: unless-stopped\n        logging: *default-logging"}
 
     ${indentYaml "      " cliProxyDashboardServices}
     ${optionalString cfg.search.imageSearch.enable (indentYaml "      " searxngService)}
@@ -564,6 +565,9 @@ let
   '';
   firecrawlStart = pkgs.writeShellScript "firecrawl-start" ''
     set -euo pipefail
+    if [[ ! -s ${codexProxyConfigFile} ]]; then
+      ${pkgs.coreutils}/bin/install -m 0600 ${codexProxyConfig} ${codexProxyConfigFile}
+    fi
     ${optionalString cfg.dashboard.enable ''
       if [[ ! -s ${cliProxyDashboardEnvFile} ]]; then
         umask 077
