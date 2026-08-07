@@ -43,9 +43,10 @@ in
       description = "NetBird interface allowed through the firewall.";
     };
 
-    tokenFile = mkOption {
-      type = types.path;
-      description = "Protected file containing the API bearer token.";
+    configPath = mkOption {
+      type = types.str;
+      default = "/var/lib/shadoword/config/shadoword/api.json";
+      description = "Mutable API configuration owned by Shadoword, including hashed named-token records.";
     };
 
     modelId = mkOption {
@@ -104,14 +105,14 @@ in
         StateDirectoryMode = "0700";
         ExecStart = concatStringsSep " " [
           "${cfg.package}/bin/shadoword-api"
+          "--config"
+          (escapeShellArg cfg.configPath)
           "--listen"
           (escapeShellArg listenEndpoint)
           "--download-model"
           (escapeShellArg cfg.modelId)
           "--download-dir"
           (escapeShellArg "/var/lib/shadoword/models")
-          "--token-file"
-          (escapeShellArg cfg.tokenFile)
         ];
         Restart = "on-failure";
         RestartSec = "5s";

@@ -124,12 +124,20 @@
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
 
-  sops.secrets.shadoword_api_token = {
+  sops.secrets.shadoword_admin_token = {
     sopsFile = ../../secrets/shadoword.json;
     format = "json";
-    owner = "shadoword";
-    group = "shadoword";
-    mode = "0600";
+    owner = username;
+    group = "users";
+    mode = "0400";
+  };
+
+  sops.secrets.shadoword_user_token = {
+    sopsFile = ../../secrets/shadoword.json;
+    format = "json";
+    owner = username;
+    group = "users";
+    mode = "0400";
   };
 
   sops.secrets.clip_sync_mesh_key = {
@@ -138,36 +146,6 @@
     owner = username;
     group = "users";
     mode = "0400";
-  };
-
-  sops.templates."shadoword-desktop.json" = {
-    owner = username;
-    group = "users";
-    mode = "0600";
-    path = "/home/${username}/.config/shadoword/desktop.json";
-    content = builtins.toJSON {
-      mode = "remote";
-      preload_on_startup = false;
-      recording = {
-        transcription_mode = "streaming";
-        streaming_pcm_format = "s16le";
-        english_only = true;
-      };
-      output = {
-        copy_to_clipboard = true;
-        paste_method = "direct";
-        paste_delay_ms = 120;
-      };
-      remote = {
-        endpoint = "http://100.91.0.2:47813";
-        api_token = config.sops.placeholder.shadoword_api_token;
-      };
-      hotkey = {
-        shortcut = "f2";
-        mode = "push_to_talk";
-      };
-      close_to_tray = true;
-    };
   };
 
   services.clip-sync.enable = true;
@@ -329,7 +307,6 @@
         enable = true;
         package = inputs.shadoword.packages.${pkgs.system}.shadoword-api-cuda;
         listenAddress = "100.91.0.2";
-        tokenFile = config.sops.secrets.shadoword_api_token.path;
         requestRecordingDir = "/var/lib/shadoword/requests";
       };
 
