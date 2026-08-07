@@ -178,6 +178,7 @@
         llm = {
           enable = true;
           model = "gpt-5.6-luna";
+          proModel = "gpt-5.6-terra";
         };
         agent = {
           enable = true;
