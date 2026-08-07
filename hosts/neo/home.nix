@@ -23,7 +23,7 @@
     username = username;
     homeDirectory = "/home/${username}";
     stateVersion = "24.05"; # Don't change this
-    sessionVariables.FIRECRAWL_API_URL = "http://vd.netbird.cloud:38473";
+    sessionVariables.FIRECRAWL_API_URL = "http://neo.netbird.cloud:38473";
   };
 
   # Enable Home Manager self-management

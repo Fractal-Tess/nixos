@@ -173,6 +173,8 @@ let
         - ${camofoxBundle}:/opt/camoufox:ro
       networks:
         - backend
+      ports:
+        - "${cfg.listenAddress}:9377:3000"
       healthcheck:
         test:
           - CMD

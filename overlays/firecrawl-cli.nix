@@ -1,6 +1,6 @@
 final: prev:
 let
-  sharedApiUrl = "http://vd.netbird.cloud:38473";
+  sharedApiUrl = "http://neo.netbird.cloud:38473";
 in
 {
   firecrawl-cli = prev.stdenvNoCC.mkDerivation rec {

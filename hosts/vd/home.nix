@@ -29,7 +29,7 @@
       PNPM_HOME = "$HOME/.local/share/pnpm";
       AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome";
       HF_HOME = "/mnt/vault/ai/huggingface";
-      FIRECRAWL_API_URL = "http://vd.netbird.cloud:38473";
+      FIRECRAWL_API_URL = "http://neo.netbird.cloud:38473";
     };
   };
 
@@ -46,9 +46,7 @@
       PartOf = [ "graphical-session.target" ];
     };
     Service = {
-      ExecStart = "${
-        inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
-      }/bin/shadoword";
+      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-desktop}/bin/shadoword";
       Restart = "on-failure";
       RestartSec = 5;
       Environment = [

@@ -310,27 +310,6 @@
         requestRecordingDir = "/var/lib/shadoword/requests";
       };
 
-      # Shared self-hosted web search and scraping API
-      firecrawl = {
-        enable = true;
-        listenAddress = "100.91.0.2";
-        port = 38473;
-        llm = {
-          enable = true;
-          model = "gpt-5.4-mini";
-        };
-        agent = {
-          enable = true;
-          maxConcurrentJobs = 4;
-        };
-        search.imageSearch.enable = true;
-        dashboard = {
-          enable = true;
-          listenAddress = "100.91.0.2";
-        };
-        pdfOcr.enable = true;
-      };
-
       # Hermes Agent
       hermes-agent = {
         enable = true;
@@ -338,8 +317,8 @@
         provider = "openai-codex";
         container.enable = false;
         model = "gpt-5.3-codex-spark";
-        firecrawlApiUrl = "http://100.91.0.2:38473";
-        camofoxUrl = "http://100.91.0.2:9377";
+        firecrawlApiUrl = "http://100.91.0.3:38473";
+        camofoxUrl = "http://100.91.0.3:9377";
         web = {
           search_backend = "firecrawl";
           extract_backend = "firecrawl";
@@ -368,7 +347,6 @@
       631
       8384
     ];
-    interfaces.wt0.allowedTCPPorts = [ 38473 ];
   };
 
   #============================================================================
