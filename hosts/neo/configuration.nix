@@ -184,11 +184,6 @@
           maxConcurrentJobs = 2;
         };
         search.imageSearch.enable = true;
-        dashboard = {
-          enable = true;
-          listenAddress = "100.91.0.3";
-        };
-        pdfOcr.enable = true;
       };
 
       sops = {
@@ -234,15 +229,8 @@
       8384
     ];
     interfaces.wt0.allowedTCPPorts = [
-      1455
-      8085
       9377
-      11451
-      38300
-      38317
       38473
-      51121
-      54545
     ];
   };
 
