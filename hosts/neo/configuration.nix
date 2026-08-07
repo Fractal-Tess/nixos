@@ -177,7 +177,7 @@
         port = 38473;
         llm = {
           enable = true;
-          model = "gpt-5.4-mini";
+          model = "gpt-5.6-luna";
         };
         agent = {
           enable = true;
