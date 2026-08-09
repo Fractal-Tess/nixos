@@ -19,6 +19,7 @@
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     inputs.clip-sync.nixosModules.default
+    inputs.shadoword.nixosModules.default
     # inputs.comfyui-nix.nixosModules.default # temporarily disabled — re-enable after caches are trusted
 
     # Custom NixOS modules
@@ -124,11 +125,13 @@
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
 
+  # Read by systemd (as root) into the daemon's credential store, not by the
+  # daemon itself, so it deliberately stays out of reach of the login user.
   sops.secrets.shadoword_admin_token = {
     sopsFile = ../../secrets/shadoword.json;
     format = "json";
-    owner = username;
-    group = "users";
+    owner = "root";
+    group = "root";
     mode = "0400";
   };
 
@@ -149,6 +152,21 @@
   };
 
   services.clip-sync.enable = true;
+
+  services.shadoword-api = {
+    enable = true;
+    variant = "cuda";
+    listenAddress = "100.91.0.2";
+    requestRecordingDir = "/var/lib/shadoword/requests";
+    initTokenFile = config.sops.secrets.shadoword_admin_token.path;
+  };
+
+  # The listen address is a NetBird address, so the interface has to exist
+  # before the daemon can bind it.
+  systemd.services.shadoword-api.after = [ "netbird.service" ];
+
+  # Reachable over the mesh only; `openFirewall` would expose it everywhere.
+  networking.firewall.interfaces.wt0.allowedTCPPorts = [ 47813 ];
 
   # virtualisation.libvirtd = {
   #   enable = true;
@@ -301,13 +319,6 @@
         host = "100.91.0.2";
         port = 4096;
         extraArgs = [ "--print-logs" ];
-      };
-
-      shadoword-api = {
-        enable = true;
-        package = inputs.shadoword.packages.${pkgs.system}.shadoword-api-cuda;
-        listenAddress = "100.91.0.2";
-        requestRecordingDir = "/var/lib/shadoword/requests";
       };
 
       # NetBird-accessible OpenAI-compatible proxy and management dashboard

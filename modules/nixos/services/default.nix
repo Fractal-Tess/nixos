@@ -13,7 +13,6 @@
     ./opencode-server/default.nix
     ./remote-desktop/default.nix
     ./samba/default.nix
-    ./shadoword-api/default.nix
     ./sops/default.nix
     ./ssh/default.nix
     ./syncthing/default.nix
