@@ -310,6 +310,13 @@
         requestRecordingDir = "/var/lib/shadoword/requests";
       };
 
+      # NetBird-accessible OpenAI-compatible proxy and management dashboard
+      cliproxyapi = {
+        enable = true;
+        listenAddress = "100.91.0.2";
+        publicHostname = "vd.netbird.cloud";
+      };
+
       # Hermes Agent
       hermes-agent = {
         enable = true;
