@@ -29,7 +29,6 @@
       PNPM_HOME = "$HOME/.local/share/pnpm";
       AGENT_BROWSER_EXECUTABLE_PATH = "${pkgs.google-chrome}/bin/google-chrome";
       HF_HOME = "/mnt/vault/ai/huggingface";
-      FIRECRAWL_API_URL = "http://neo.netbird.cloud:38473";
     };
   };
 

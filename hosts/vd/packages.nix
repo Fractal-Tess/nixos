@@ -146,7 +146,6 @@ in
     t3code # T3 Code desktop app
     paseo # Paseo daemon and CLI for AI coding agents
     paseo-desktop # Paseo desktop app
-    firecrawl-cli # Search and scrape through the local self-hosted Firecrawl API
 
     # AI / LLM
     vllm # High-throughput and memory-efficient inference engine for LLMs

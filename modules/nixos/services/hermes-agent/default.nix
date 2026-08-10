@@ -18,18 +18,6 @@ in
   options.modules.services.hermes-agent = {
     enable = mkEnableOption "Hermes Agent";
 
-    firecrawlApiUrl = mkOption {
-      type = types.nullOr types.str;
-      default = null;
-      description = "Optional Firecrawl API base URL exported via env for Hermes web tools.";
-    };
-
-    camofoxUrl = mkOption {
-      type = types.nullOr types.str;
-      default = null;
-      description = "Optional Camofox browser server URL exported via env (CAMOFOX_URL).";
-    };
-
     baseUrl = mkOption {
       type = types.str;
       default = "http://127.0.0.1:8080/v1";
@@ -65,13 +53,13 @@ in
     web = mkOption {
       type = types.attrsOf types.str;
       default = { };
-      description = "Optional Hermes web tool config, e.g. { search_backend = \"firecrawl\"; extract_backend = \"firecrawl\"; }.";
+      description = "Optional Hermes web-tool provider configuration.";
     };
 
     extraDependencyGroups = mkOption {
       type = types.listOf types.str;
       default = [ "messaging" ];
-      description = "Optional Hermes extra dependency groups (for optional Python extras, e.g. `firecrawl`).";
+      description = "Optional Hermes extra dependency groups.";
     };
   };
 

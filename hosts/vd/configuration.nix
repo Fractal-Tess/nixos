@@ -335,16 +335,10 @@
         provider = "openai-codex";
         container.enable = false;
         model = "gpt-5.3-codex-spark";
-        firecrawlApiUrl = "http://100.91.0.3:38473";
-        camofoxUrl = "http://100.91.0.3:9377";
         web = {
-          search_backend = "firecrawl";
-          extract_backend = "firecrawl";
+          search_backend = "exa";
+          extract_backend = "exa";
         };
-        extraDependencyGroups = [
-          "messaging"
-          "firecrawl"
-        ];
       };
     };
   };

@@ -170,22 +170,6 @@
           };
         };
       };
-      # Shared self-hosted web search, extraction, and CLIProxyAPI stack
-      firecrawl = {
-        enable = true;
-        listenAddress = "100.91.0.3";
-        port = 38473;
-        llm = {
-          enable = true;
-          model = "gpt-5.6-luna";
-          proModel = "gpt-5.6-terra";
-        };
-        agent = {
-          enable = true;
-          maxConcurrentJobs = 2;
-        };
-        search.imageSearch.enable = true;
-      };
 
       sops = {
         enable = true;
@@ -224,16 +208,10 @@
     };
   };
 
-  networking.firewall = {
-    allowedTCPPorts = [
-      631
-      8384
-    ];
-    interfaces.wt0.allowedTCPPorts = [
-      9377
-      38473
-    ];
-  };
+  networking.firewall.allowedTCPPorts = [
+    631
+    8384
+  ];
 
   #============================================================================
   # SYSTEM SERVICES

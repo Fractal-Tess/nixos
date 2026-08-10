@@ -6,7 +6,6 @@
     ./auto_cpu/default.nix
     ./automount/default.nix
     ./cliproxyapi/default.nix
-    ./firecrawl/default.nix
     ./hermes-agent/default.nix
     ./kimi-web/default.nix
     ./nessus/default.nix

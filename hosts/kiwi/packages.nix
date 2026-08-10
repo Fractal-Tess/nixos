@@ -198,7 +198,6 @@ in
     paseo-desktop # Paseo desktop app
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
-    firecrawl-cli # Search and scrape through the shared self-hosted Firecrawl API
 
     # Testing/Automation
     playwright-driver.browsers # Playwright browsers for e2e testing and agent-browser

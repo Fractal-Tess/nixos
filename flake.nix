@@ -91,7 +91,7 @@
     };
 
     scorch = {
-      url = "github:Fractal-Tess/scorch/v0.1.2";
+      url = "github:Fractal-Tess/scorch/v0.1.3";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -115,8 +115,15 @@
           specialArgs = { inherit inputs hostname username; };
           modules = [
             inputs.hermes-agent.nixosModules.default
+            inputs.scorch.nixosModules.default
             ./hosts/${hostname}/configuration.nix
             {
+              programs.scorch = {
+                enable = true;
+                apiUrl = "http://127.0.0.1:33000";
+              };
+              services.scorchd.enable = true;
+
               nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
                 (final: prev: {
@@ -150,7 +157,6 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
                 (import ./overlays/cliproxyapi.nix)
-                (import ./overlays/firecrawl-cli.nix)
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default

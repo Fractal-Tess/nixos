@@ -19,7 +19,6 @@
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
     inputs.clip-sync.nixosModules.default
-    inputs.scorch.nixosModules.default
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
@@ -150,13 +149,6 @@
   };
 
   services.clip-sync.enable = true;
-
-  programs.scorch = {
-    enable = true;
-    apiUrl = "http://127.0.0.1:33000";
-  };
-
-  services.scorchd.enable = true;
 
   systemd.tmpfiles.rules = [
     "d /home/${username}/.config/shadoword 0700 ${username} users -"
