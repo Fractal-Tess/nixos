@@ -153,13 +153,10 @@
 
   programs.scorch = {
     enable = true;
-    apiUrl = "http://127.0.0.1:3001";
+    apiUrl = "http://127.0.0.1:33000";
   };
 
-  services.scorchd = {
-    enable = true;
-    port = 3001;
-  };
+  services.scorchd.enable = true;
 
   systemd.tmpfiles.rules = [
     "d /home/${username}/.config/shadoword 0700 ${username} users -"

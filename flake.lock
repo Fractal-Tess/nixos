@@ -1113,16 +1113,16 @@
         ]
       },
       "locked": {
-        "lastModified": 1786386505,
-        "narHash": "sha256-/+3ak4ccuhLGGIdPSuVAtgtEz/5VF09d466byrGdec4=",
+        "lastModified": 1786388173,
+        "narHash": "sha256-EB3+wTuSJvZNOJHSNqHNEMXiNXZjkHJGPQGULSkSbds=",
         "owner": "Fractal-Tess",
         "repo": "scorch",
-        "rev": "ee67c5ddd5bbc226a34eb017ab07ca3d92ce1d64",
+        "rev": "00cec415decc1483fceb027d24693c8f1e55b17c",
         "type": "github"
       },
       "original": {
         "owner": "Fractal-Tess",
-        "ref": "v0.1.1",
+        "ref": "v0.1.2",
         "repo": "scorch",
         "type": "github"
       }
