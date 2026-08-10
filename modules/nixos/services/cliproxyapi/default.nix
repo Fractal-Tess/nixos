@@ -100,7 +100,7 @@ let
       dashboard-backups:
   '';
 
-  startScript = pkgs.writeShellScript "cliproxyapi-start" ''
+  dashboardStartScript = pkgs.writeShellScript "cliproxyapi-dashboard-start" ''
     set -euo pipefail
 
     if [[ ! -s ${envFile} ]]; then
@@ -144,10 +144,70 @@ let
     services="$(${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} config --services)"
     exec ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} wait $services
   '';
+
+  apiKeyFile = "${stateDir}/api-key";
+  proxyStartScript = pkgs.writeShellScript "cliproxyapi-proxy-start" ''
+    set -euo pipefail
+
+    for _ in $(${pkgs.coreutils}/bin/seq 1 120); do
+      if ${pkgs.iproute2}/bin/ip -4 address show dev ${escapeShellArg cfg.netbirdInterface} \
+        | ${pkgs.gnugrep}/bin/grep -Fq ${escapeShellArg " ${cfg.listenAddress}/"}; then
+        break
+      fi
+      ${pkgs.coreutils}/bin/sleep 1
+    done
+
+    ${pkgs.iproute2}/bin/ip -4 address show dev ${escapeShellArg cfg.netbirdInterface} \
+      | ${pkgs.gnugrep}/bin/grep -Fq ${escapeShellArg " ${cfg.listenAddress}/"}
+
+    if [[ ! -s ${apiKeyFile} ]]; then
+      umask 077
+      temporary_key="$(${pkgs.coreutils}/bin/mktemp ${apiKeyFile}.XXXXXX)"
+      ${pkgs.openssl}/bin/openssl rand -hex 32 > "$temporary_key"
+      ${pkgs.coreutils}/bin/install -m 0600 "$temporary_key" ${apiKeyFile}
+      ${pkgs.coreutils}/bin/rm -f "$temporary_key"
+    fi
+    ${pkgs.coreutils}/bin/chmod 0600 ${apiKeyFile}
+
+    client_api_key="$(${pkgs.coreutils}/bin/tr -d '\n' < ${apiKeyFile})"
+    umask 077
+    temporary_config="$(${pkgs.coreutils}/bin/mktemp ${configFile}.XXXXXX)"
+    ${pkgs.coreutils}/bin/cat > "$temporary_config" <<EOF
+    host: ${cfg.listenAddress}
+    port: ${toString cfg.proxyPort}
+    auth-dir: ${stateDir}/auth
+    api-keys:
+      - $client_api_key
+    remote-management:
+      allow-remote: false
+      disable-control-panel: true
+    oauth-model-alias:
+      codex:
+        - name: gpt-5.6-sol
+          alias: gpt-5.6-luna
+          force-mapping: true
+    EOF
+    ${pkgs.coreutils}/bin/install -m 0600 "$temporary_config" ${configFile}
+    ${pkgs.coreutils}/bin/rm -f "$temporary_config"
+
+    exec ${pkgs.cliproxyapi}/bin/cliproxyapi -config ${configFile}
+  '';
 in
 {
   options.modules.services.cliproxyapi = {
     enable = mkEnableOption "NetBird-accessible CLIProxyAPI and management dashboard";
+
+    proxyOnly = mkOption {
+      type = types.bool;
+      default = false;
+      description = "Run only the native OpenAI-compatible proxy without the dashboard stack.";
+    };
+
+    netbirdInterface = mkOption {
+      type = types.str;
+      default = "wt0";
+      description = "NetBird interface permitted through the firewall and required for the listen address.";
+    };
 
     listenAddress = mkOption {
       type = types.str;
@@ -174,53 +234,103 @@ in
     };
   };
 
-  config = mkIf cfg.enable {
-    virtualisation.oci-containers.backend = mkDefault "docker";
-    environment.systemPackages = [ pkgs.docker-compose ];
-
-    system.build.cliproxyapiCompose = composeFile;
-
-    systemd.tmpfiles.rules = [
-      "d ${stateDir} 0750 root root -"
-      "d ${stateDir}/auth 0700 root root -"
-    ];
-
-    networking.firewall.interfaces.wt0.allowedTCPPorts = [
-      1455
-      8085
-      11451
-      cfg.dashboardPort
-      cfg.proxyPort
-      51121
-      54545
-    ];
-
-    systemd.services.cliproxyapi = {
-      description = "CLIProxyAPI and management dashboard";
-      after = [
-        "docker.service"
-        "network-online.target"
-      ];
-      requires = [ "docker.service" ];
-      wants = [ "network-online.target" ];
-      wantedBy = [ "multi-user.target" ];
-
-      path = [
-        config.virtualisation.docker.package
-        pkgs.docker-compose
+  config = mkIf cfg.enable (mkMerge [
+    {
+      systemd.tmpfiles.rules = [
+        "d ${stateDir} 0700 root root -"
+        "d ${stateDir}/auth 0700 root root -"
       ];
 
-      serviceConfig = {
-        Type = "notify";
-        NotifyAccess = "all";
-        WorkingDirectory = stateDir;
-        ExecStart = startScript;
-        ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} down";
-        Restart = "on-failure";
-        RestartSec = "10s";
-        TimeoutStartSec = "15min";
-        TimeoutStopSec = "2min";
+      networking.firewall.interfaces.${cfg.netbirdInterface}.allowedTCPPorts = [ cfg.proxyPort ];
+    }
+
+    (mkIf cfg.proxyOnly {
+      systemd.services.cliproxyapi = {
+        description = "NetBird-only CLIProxyAPI proxy";
+        after = [
+          "netbird.service"
+          "network-online.target"
+        ];
+        requires = [ "netbird.service" ];
+        wants = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        serviceConfig = {
+          WorkingDirectory = stateDir;
+          ExecStart = proxyStartScript;
+          Restart = "on-failure";
+          RestartSec = "10s";
+          TimeoutStartSec = "3min";
+          UMask = "0077";
+
+          CapabilityBoundingSet = "";
+          LockPersonality = true;
+          NoNewPrivileges = true;
+          PrivateDevices = true;
+          PrivateTmp = true;
+          ProtectClock = true;
+          ProtectControlGroups = true;
+          ProtectHome = true;
+          ProtectHostname = true;
+          ProtectKernelLogs = true;
+          ProtectKernelModules = true;
+          ProtectKernelTunables = true;
+          ProtectSystem = "strict";
+          ReadWritePaths = [ stateDir ];
+          RestrictAddressFamilies = [
+            "AF_INET"
+            "AF_INET6"
+            "AF_UNIX"
+          ];
+          RestrictRealtime = true;
+          RestrictSUIDSGID = true;
+          SystemCallArchitectures = "native";
+        };
       };
-    };
-  };
+    })
+
+    (mkIf (!cfg.proxyOnly) {
+      virtualisation.oci-containers.backend = mkDefault "docker";
+      environment.systemPackages = [ pkgs.docker-compose ];
+
+      system.build.cliproxyapiCompose = composeFile;
+
+      networking.firewall.interfaces.${cfg.netbirdInterface}.allowedTCPPorts = [
+        1455
+        8085
+        11451
+        cfg.dashboardPort
+        51121
+        54545
+      ];
+
+      systemd.services.cliproxyapi = {
+        description = "CLIProxyAPI and management dashboard";
+        after = [
+          "docker.service"
+          "network-online.target"
+        ];
+        requires = [ "docker.service" ];
+        wants = [ "network-online.target" ];
+        wantedBy = [ "multi-user.target" ];
+
+        path = [
+          config.virtualisation.docker.package
+          pkgs.docker-compose
+        ];
+
+        serviceConfig = {
+          Type = "notify";
+          NotifyAccess = "all";
+          WorkingDirectory = stateDir;
+          ExecStart = dashboardStartScript;
+          ExecStop = "${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} down";
+          Restart = "on-failure";
+          RestartSec = "10s";
+          TimeoutStartSec = "15min";
+          TimeoutStopSec = "2min";
+        };
+      };
+    })
+  ]);
 }

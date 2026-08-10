@@ -171,6 +171,13 @@
         };
       };
 
+      cliproxyapi = {
+        enable = true;
+        proxyOnly = true;
+        listenAddress = "100.91.0.3";
+        proxyPort = 8317;
+      };
+
       sops = {
         enable = true;
         z_ai.enable = true;
