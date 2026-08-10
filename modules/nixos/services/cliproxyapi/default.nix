@@ -160,25 +160,28 @@ let
     ${pkgs.iproute2}/bin/ip -4 address show dev ${escapeShellArg cfg.netbirdInterface} \
       | ${pkgs.gnugrep}/bin/grep -Fq ${escapeShellArg " ${cfg.listenAddress}/"}
 
-    if [[ ! -s ${apiKeyFile} ]]; then
-      umask 077
-      temporary_key="$(${pkgs.coreutils}/bin/mktemp ${apiKeyFile}.XXXXXX)"
-      ${pkgs.openssl}/bin/openssl rand -hex 32 > "$temporary_key"
-      ${pkgs.coreutils}/bin/install -m 0600 "$temporary_key" ${apiKeyFile}
-      ${pkgs.coreutils}/bin/rm -f "$temporary_key"
-    fi
-    ${pkgs.coreutils}/bin/chmod 0600 ${apiKeyFile}
+    ${optionalString cfg.requireApiKey ''
+      if [[ ! -s ${apiKeyFile} ]]; then
+        umask 077
+        temporary_key="$(${pkgs.coreutils}/bin/mktemp ${apiKeyFile}.XXXXXX)"
+        ${pkgs.openssl}/bin/openssl rand -hex 32 > "$temporary_key"
+        ${pkgs.coreutils}/bin/install -m 0600 "$temporary_key" ${apiKeyFile}
+        ${pkgs.coreutils}/bin/rm -f "$temporary_key"
+      fi
+      ${pkgs.coreutils}/bin/chmod 0600 ${apiKeyFile}
 
-    client_api_key="$(${pkgs.coreutils}/bin/tr -d '\n' < ${apiKeyFile})"
+      client_api_key="$(${pkgs.coreutils}/bin/tr -d '\n' < ${apiKeyFile})"
+    ''}
     umask 077
     temporary_config="$(${pkgs.coreutils}/bin/mktemp ${configFile}.XXXXXX)"
     ${pkgs.coreutils}/bin/cat > "$temporary_config" <<EOF
     host: ${cfg.listenAddress}
     port: ${toString cfg.proxyPort}
     auth-dir: ${stateDir}/auth
-    api-keys:
-      - $client_api_key
-    remote-management:
+    ${optionalString cfg.requireApiKey ''
+      api-keys:
+        - $client_api_key
+    ''}remote-management:
       allow-remote: false
       disable-control-panel: true
     oauth-model-alias:
@@ -201,6 +204,12 @@ in
       type = types.bool;
       default = false;
       description = "Run only the native OpenAI-compatible proxy without the dashboard stack.";
+    };
+
+    requireApiKey = mkOption {
+      type = types.bool;
+      default = true;
+      description = "Require an API key for proxy-only OpenAI-compatible endpoints.";
     };
 
     netbirdInterface = mkOption {
