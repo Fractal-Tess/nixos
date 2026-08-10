@@ -239,6 +239,14 @@
           };
         };
       };
+      cliproxyapi = {
+        enable = true;
+        proxyOnly = true;
+        requireApiKey = false;
+        listenAddress = "100.91.126.8";
+        proxyPort = 8317;
+      };
+
       sops = {
         enable = true;
         ssh.enable = true;
