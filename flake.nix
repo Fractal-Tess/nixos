@@ -122,7 +122,10 @@
                 enable = true;
                 apiUrl = "http://127.0.0.1:33000";
               };
-              services.scorchd.enable = true;
+              services.scorchd = {
+                enable = true;
+                address = "0.0.0.0";
+              };
 
               nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
