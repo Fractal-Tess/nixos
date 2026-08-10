@@ -12,6 +12,7 @@ let
   stateDir = "/var/lib/cliproxyapi";
   envFile = "${stateDir}/dashboard.env";
   configFile = "${stateDir}/config.yaml";
+  clientApiKeyFile = config.sops.secrets.cliproxyapi_client_api_key.path;
   composeFile = pkgs.writeText "cliproxyapi-compose.yaml" ''
     services:
       proxy:
@@ -109,9 +110,8 @@ let
       postgres_password="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
       management_api_key="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
       jwt_secret="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
-      client_api_key="$(${pkgs.openssl}/bin/openssl rand -hex 32)"
-      ${pkgs.coreutils}/bin/printf 'POSTGRES_PASSWORD=%s\nMANAGEMENT_API_KEY=%s\nJWT_SECRET=%s\nCLIENT_API_KEY=%s\n' \
-        "$postgres_password" "$management_api_key" "$jwt_secret" "$client_api_key" > "$temporary_env"
+      ${pkgs.coreutils}/bin/printf 'POSTGRES_PASSWORD=%s\nMANAGEMENT_API_KEY=%s\nJWT_SECRET=%s\n' \
+        "$postgres_password" "$management_api_key" "$jwt_secret" > "$temporary_env"
       ${pkgs.coreutils}/bin/install -m 0600 "$temporary_env" ${envFile}
       ${pkgs.coreutils}/bin/rm -f "$temporary_env"
     fi
@@ -120,24 +120,28 @@ let
     source ${envFile}
     set +a
 
-    if [[ ! -s ${configFile} ]]; then
-      umask 077
-      temporary_config="$(${pkgs.coreutils}/bin/mktemp ${configFile}.XXXXXX)"
-      ${pkgs.coreutils}/bin/cat > "$temporary_config" <<EOF
+    ${optionalString cfg.requireApiKey ''
+      CLIENT_API_KEY="$(${pkgs.coreutils}/bin/tr -d '\n' < ${clientApiKeyFile})"
+      export CLIENT_API_KEY
+    ''}
+
+    umask 077
+    temporary_config="$(${pkgs.coreutils}/bin/mktemp ${configFile}.XXXXXX)"
+    ${pkgs.coreutils}/bin/cat > "$temporary_config" <<EOF
     host: 0.0.0.0
     port: 8317
     auth-dir: /root/.cli-proxy-api
-    api-keys:
-      - $CLIENT_API_KEY
-    usage-statistics-enabled: true
+    ${optionalString cfg.requireApiKey ''
+      api-keys:
+        - $CLIENT_API_KEY
+    ''}usage-statistics-enabled: true
     remote-management:
       allow-remote: true
       secret-key: ""
       disable-control-panel: true
     EOF
-      ${pkgs.coreutils}/bin/install -m 0600 "$temporary_config" ${configFile}
-      ${pkgs.coreutils}/bin/rm -f "$temporary_config"
-    fi
+    ${pkgs.coreutils}/bin/install -m 0600 "$temporary_config" ${configFile}
+    ${pkgs.coreutils}/bin/rm -f "$temporary_config"
 
     ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} up --detach --remove-orphans --wait --wait-timeout 600
     ${pkgs.systemd}/bin/systemd-notify --ready
@@ -145,7 +149,6 @@ let
     exec ${pkgs.docker-compose}/bin/docker-compose -f ${composeFile} --env-file ${envFile} wait $services
   '';
 
-  apiKeyFile = "${stateDir}/api-key";
   proxyStartScript = pkgs.writeShellScript "cliproxyapi-proxy-start" ''
     set -euo pipefail
 
@@ -161,16 +164,7 @@ let
       | ${pkgs.gnugrep}/bin/grep -Fq ${escapeShellArg " ${cfg.listenAddress}/"}
 
     ${optionalString cfg.requireApiKey ''
-      if [[ ! -s ${apiKeyFile} ]]; then
-        umask 077
-        temporary_key="$(${pkgs.coreutils}/bin/mktemp ${apiKeyFile}.XXXXXX)"
-        ${pkgs.openssl}/bin/openssl rand -hex 32 > "$temporary_key"
-        ${pkgs.coreutils}/bin/install -m 0600 "$temporary_key" ${apiKeyFile}
-        ${pkgs.coreutils}/bin/rm -f "$temporary_key"
-      fi
-      ${pkgs.coreutils}/bin/chmod 0600 ${apiKeyFile}
-
-      client_api_key="$(${pkgs.coreutils}/bin/tr -d '\n' < ${apiKeyFile})"
+      client_api_key="$(${pkgs.coreutils}/bin/tr -d '\n' < ${clientApiKeyFile})"
     ''}
     umask 077
     temporary_config="$(${pkgs.coreutils}/bin/mktemp ${configFile}.XXXXXX)"
@@ -252,6 +246,29 @@ in
 
       networking.firewall.interfaces.${cfg.netbirdInterface}.allowedTCPPorts = [ cfg.proxyPort ];
     }
+
+    (mkIf cfg.requireApiKey {
+      assertions = [
+        {
+          assertion = config.modules.services.sops.enable;
+          message = "CLIProxyAPI API-key authentication requires the SOPS service.";
+        }
+      ];
+
+      sops.secrets.cliproxyapi_client_api_key = {
+        sopsFile = ../../../../secrets/cliproxyapi.json;
+        format = "json";
+        owner = "root";
+        group = "root";
+        mode = "0400";
+        restartUnits = [ "cliproxyapi.service" ];
+      };
+
+      systemd.services.cliproxyapi = {
+        after = [ "sops-nix.service" ];
+        wants = [ "sops-nix.service" ];
+      };
+    })
 
     (mkIf cfg.proxyOnly {
       systemd.services.cliproxyapi = {

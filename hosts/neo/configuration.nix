@@ -174,7 +174,7 @@
       cliproxyapi = {
         enable = true;
         proxyOnly = true;
-        requireApiKey = false;
+        requireApiKey = true;
         listenAddress = "100.91.0.3";
         proxyPort = 8317;
       };
