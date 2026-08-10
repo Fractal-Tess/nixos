@@ -89,6 +89,11 @@
       url = "github:Fractal-Tess/shadoword";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    scorch = {
+      url = "github:Fractal-Tess/scorch/v0.1.1";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

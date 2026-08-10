@@ -1028,6 +1028,7 @@
         "paseo": "paseo",
         "polymc": "polymc",
         "pwndbg": "pwndbg",
+        "scorch": "scorch",
         "shadoword": "shadoword",
         "shapeshifter": "shapeshifter",
         "sops-nix": "sops-nix",
@@ -1102,6 +1103,27 @@
       "original": {
         "owner": "oxalica",
         "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "scorch": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1786386505,
+        "narHash": "sha256-/+3ak4ccuhLGGIdPSuVAtgtEz/5VF09d466byrGdec4=",
+        "owner": "Fractal-Tess",
+        "repo": "scorch",
+        "rev": "ee67c5ddd5bbc226a34eb017ab07ca3d92ce1d64",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "ref": "v0.1.1",
+        "repo": "scorch",
         "type": "github"
       }
     },
