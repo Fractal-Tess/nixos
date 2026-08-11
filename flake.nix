@@ -91,7 +91,7 @@
     };
 
     scorch = {
-      url = "github:Fractal-Tess/scorch/v0.3.0";
+      url = "github:Fractal-Tess/scorch/v0.4.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
