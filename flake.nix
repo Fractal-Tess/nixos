@@ -91,7 +91,7 @@
     };
 
     scorch = {
-      url = "github:Fractal-Tess/scorch/v0.1.3";
+      url = "github:Fractal-Tess/scorch/v0.3.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -118,10 +118,7 @@
             inputs.scorch.nixosModules.default
             ./hosts/${hostname}/configuration.nix
             {
-              programs.scorch = {
-                enable = true;
-                apiUrl = "http://127.0.0.1:33000";
-              };
+              programs.scorch.enable = true;
               services.scorchd = {
                 enable = true;
                 address = "0.0.0.0";
