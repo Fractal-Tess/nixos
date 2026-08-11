@@ -30,8 +30,13 @@ in
       package = waybarPackage;
     };
 
-    # Add fish to waybar's PATH so custom exec scripts (brightness, gpu, swap, etc.)
-    # can find the fish interpreter (they use #!/usr/bin/env fish)
-    systemd.user.services.waybar.path = [ pkgs.fish ];
+    # Dependencies used by Waybar's custom scripts and click handlers. The sudo
+    # wrapper is required for privileged controls such as CPU boost.
+    systemd.user.services.waybar.path = [
+      pkgs.fish
+      pkgs.libnotify
+      pkgs.procps
+      "/run/wrappers"
+    ];
   };
 }
