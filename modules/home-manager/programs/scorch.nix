@@ -11,7 +11,6 @@ in
 {
   home.file = {
     ".agents/skills/scorch/SKILL.md".source = "${skill}/share/agent-skills/scorch/SKILL.md";
-    ".pi/agent/skills/scorch/SKILL.md".source = "${skill}/share/agent-skills/scorch/SKILL.md";
   };
 
   home.activation.removeLegacyFirecrawlSkill = lib.hm.dag.entryBefore [ "checkLinkTargets" ] ''
