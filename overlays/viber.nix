@@ -39,8 +39,14 @@ final: prev: {
     };
   };
 
-  # Override viber to use the compatible libxml2
+  # Override Viber to use the live CDN and the compatible libxml2. Nixpkgs uses
+  # an archive.org snapshot that is unreliable for this large download.
   viber = prev.viber.overrideAttrs (old: {
+    src = final.fetchurl {
+      url = "https://download.cdn.viber.com/cdn/desktop/Linux/viber.deb";
+      hash = "sha256-lhU03Ay5IABux66BCLDhugmkdu7x4TtLNwp5zVLdIPM=";
+    };
+
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];
 
     # Replace system libxml2 with compat version in the RPATH library list

@@ -314,7 +314,7 @@ in
 
     discord # Voice, video and text chat
     telegram-desktop # Messaging app
-    # viber # Instant messaging -- temporarily disabled: viber.deb download fails (archive.org unreachable)
+    viber # Instant messaging
     slack # Team collaboration platform
     thunderbird # Email client
 
