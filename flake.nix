@@ -73,6 +73,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    oh-my-pi = {
+      url = "github:can1357/oh-my-pi";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     open-design = {
       url = "github:nexu-io/open-design/open-design-v0.16.1";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -160,6 +165,7 @@
                 inputs.t3code-nix.overlays.default
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default
+                inputs.oh-my-pi.overlays.default
               ];
             }
           ];

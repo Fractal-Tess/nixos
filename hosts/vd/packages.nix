@@ -142,6 +142,7 @@ in
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
+    omp # oh-my-pi terminal coding agent (https://omp.sh)
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
     t3code # T3 Code desktop app
     paseo # Paseo daemon and CLI for AI coding agents

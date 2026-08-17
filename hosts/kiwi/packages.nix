@@ -191,6 +191,7 @@ in
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
+    omp # oh-my-pi terminal coding agent (https://omp.sh)
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
     shapeshifter-tui # Codex account manager TUI
     t3code # T3 Code desktop app

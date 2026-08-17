@@ -84,6 +84,7 @@
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
+    omp # oh-my-pi terminal coding agent (https://omp.sh)
     t3code # T3 Code desktop app
     cursor-cli # Command-line interface for Cursor AI editor
 
