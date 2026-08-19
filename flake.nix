@@ -166,6 +166,22 @@
                 inputs.shapeshifter.overlays.default
                 inputs.asterveil.overlays.default
                 inputs.oh-my-pi.overlays.default
+                (final: prev: {
+                  # omp's speech runtime (onnxruntime-node) dlopens libstdc++.so.6;
+                  # the bun-compiled binary ships without a loader path, so add
+                  # gcc's lib dir on NixOS.
+                  omp = prev.omp.overrideAttrs (old: {
+                    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];
+                    # postFixup, not postInstall: the package's preFixup runs
+                    # `remove-references-to ${bun}` on $out/bin/omp, and bun is a
+                    # disallowedReference; wrapping earlier would hide the real
+                    # binary behind .omp-wrapped and fail the reference check.
+                    postFixup = (old.postFixup or "") + ''
+                      wrapProgram $out/bin/omp \
+                        --prefix LD_LIBRARY_PATH : ${final.gcc-unwrapped.lib}/lib
+                    '';
+                  });
+                })
               ];
             }
           ];

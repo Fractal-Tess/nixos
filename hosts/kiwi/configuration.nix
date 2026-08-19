@@ -254,6 +254,8 @@
         minimax.enable = true;
         syncthing.enable = true;
         reactbits.enable = true;
+        fal_ai.enable = true;
+        opencode.enable = true;
       };
 
       # Virtualization

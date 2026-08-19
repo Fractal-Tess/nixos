@@ -138,6 +138,15 @@
         source ~/.secrets.fish
       end
 
+      # Load per-service secret exports (conditional)
+      if test -d ~/.secrets.d
+        for f in ~/.secrets.d/*.fish
+          if test -f $f
+            source $f
+          end
+        end
+      end
+
       # Devenv auto-activation hook
       if command -q devenv
         devenv hook fish | source
