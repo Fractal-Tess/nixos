@@ -376,6 +376,26 @@
         "type": "github"
       }
     },
+    "gitadel": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787296135,
+        "narHash": "sha256-g06GlDAGxyPpW311YgaRTTGNxDoDJGYPjF+r0i59ofM=",
+        "owner": "Fractal-Tess",
+        "repo": "gitadel",
+        "rev": "d3d3ee41baca6155347ae07bc992a86d8a4b86a9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "gitadel",
+        "type": "github"
+      }
+    },
     "globalprotect-openconnect": {
       "inputs": {
         "flake-utils": "flake-utils",
@@ -1169,6 +1189,7 @@
         "asterveil": "asterveil",
         "clip-sync": "clip-sync",
         "comfyui-nix": "comfyui-nix",
+        "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",
         "hermes-agent": "hermes-agent",
         "home-manager": "home-manager",

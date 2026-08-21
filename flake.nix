@@ -99,6 +99,11 @@
       url = "github:Fractal-Tess/scorch/v0.7.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    gitadel = {
+      url = "github:Fractal-Tess/gitadel";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

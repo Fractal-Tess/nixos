@@ -17,9 +17,11 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
+    inputs.gitadel.nixosModules.default
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
+    ./gitadel.nix
 
     # System-wide packages
     ./packages.nix
