@@ -383,11 +383,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787311339,
-        "narHash": "sha256-szwUhRbnNasT4DZo0fG1O9Fn6oBF4RWWNk+PkF8ya5Y=",
+        "lastModified": 1787411558,
+        "narHash": "sha256-cfd1lPAilJ+sbMJU3qldL7vpL0MObAZVRijNIqg0XGQ=",
         "owner": "Fractal-Tess",
         "repo": "gitadel",
-        "rev": "d25f60fb0578acee47eed0aa8d0ff7f175e2251d",
+        "rev": "8129caa036897d65448f75923dec0f6c0440e0f0",
         "type": "github"
       },
       "original": {
