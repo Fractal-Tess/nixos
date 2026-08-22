@@ -380,20 +380,22 @@
       "inputs": {
         "nixpkgs": [
           "nixpkgs"
-        ]
+        ],
+        "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1787417027,
-        "narHash": "sha256-e8AhmG8sdTJqYFW/0Fqvzh1gIvsHnHibLzCrNx/osYA=",
-        "owner": "Fractal-Tess",
-        "repo": "gitadel",
-        "rev": "941fa35aa17906ca1a3bd450e812187def9167af",
-        "type": "github"
+        "lastModified": 1787433811,
+        "narHash": "sha256-qYqZblsLfNbdidAEbjxetvH6kNjH25l3mRwLohAHsAA=",
+        "ref": "refs/tags/v0.4.0",
+        "rev": "e8cec4c5c9c037523df3c74f94936f65f7ffb892",
+        "revCount": 16,
+        "type": "git",
+        "url": "https://github.com/Fractal-Tess/gitadel.git"
       },
       "original": {
-        "owner": "Fractal-Tess",
-        "repo": "gitadel",
-        "type": "github"
+        "ref": "refs/tags/v0.4.0",
+        "type": "git",
+        "url": "https://github.com/Fractal-Tess/gitadel.git"
       }
     },
     "globalprotect-openconnect": {
@@ -401,7 +403,7 @@
         "flake-utils": "flake-utils",
         "naersk": "naersk",
         "nixpkgs": "nixpkgs_4",
-        "rust-overlay": "rust-overlay_2"
+        "rust-overlay": "rust-overlay_3"
       },
       "locked": {
         "lastModified": 1786028305,
@@ -936,7 +938,7 @@
           "nixpkgs"
         ],
         "nixpkgs-darwin-x64": "nixpkgs-darwin-x64",
-        "rust-overlay": "rust-overlay_3"
+        "rust-overlay": "rust-overlay_4"
       },
       "locked": {
         "lastModified": 1787000109,
@@ -1248,6 +1250,27 @@
     },
     "rust-overlay_2": {
       "inputs": {
+        "nixpkgs": [
+          "gitadel",
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1787367552,
+        "narHash": "sha256-YT4Fs2k7bi+7YzuLt93EtIRgjpwHK5ZfsQEIh5dEQSk=",
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "rev": "fd2ebb9cc4323d0c5a1336138dab5c3c5a5d8bd9",
+        "type": "github"
+      },
+      "original": {
+        "owner": "oxalica",
+        "repo": "rust-overlay",
+        "type": "github"
+      }
+    },
+    "rust-overlay_3": {
+      "inputs": {
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
@@ -1264,7 +1287,7 @@
         "type": "github"
       }
     },
-    "rust-overlay_3": {
+    "rust-overlay_4": {
       "inputs": {
         "nixpkgs": [
           "oh-my-pi",
@@ -1285,7 +1308,7 @@
         "type": "github"
       }
     },
-    "rust-overlay_4": {
+    "rust-overlay_5": {
       "inputs": {
         "nixpkgs": "nixpkgs_10"
       },
@@ -1349,7 +1372,7 @@
         "nixpkgs": [
           "nixpkgs"
         ],
-        "rust-overlay": "rust-overlay_4",
+        "rust-overlay": "rust-overlay_5",
         "systems": "systems_9"
       },
       "locked": {

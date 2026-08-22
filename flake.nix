@@ -101,7 +101,7 @@
     };
 
     gitadel = {
-      url = "github:Fractal-Tess/gitadel";
+      url = "git+https://github.com/Fractal-Tess/gitadel.git?ref=refs/tags/v0.4.0";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
