@@ -1,1 +1,1 @@
-dofile(os.getenv("HOME") .. "/.config/RofiScripts/Animations/Horizontal/hypranimations.lua")
+/home/fractal-tess/.config/RofiScripts/Animations/Horizontal/hypranimations.lua
