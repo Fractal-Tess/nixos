@@ -983,11 +983,11 @@
         "nixpkgs": "nixpkgs_8"
       },
       "locked": {
-        "lastModified": 1786362228,
-        "narHash": "sha256-rTC/bjfet8ggfrhkUpJdEssMo8MsAajg9HbWOTp51iY=",
+        "lastModified": 1787730821,
+        "narHash": "sha256-Rbl0zj33lbOviUkFzbqyTJ9JuKWZEtlAm0hq83d/1Gs=",
         "owner": "getpaseo",
         "repo": "paseo",
-        "rev": "48e65b407fd7df4d097df7c264fc168f2665ea4f",
+        "rev": "59e6232784a7b7f5147e2b2adc6831d9cc589dd9",
         "type": "github"
       },
       "original": {
