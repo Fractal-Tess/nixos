@@ -34,6 +34,9 @@
   # Release version - DO NOT CHANGE unless you know what you're doing
   system.stateVersion = "25.05";
 
+  # Enable GlobalProtect-compatible VPN connections through NetworkManager.
+  networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+
   # Enable link dynamic
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [

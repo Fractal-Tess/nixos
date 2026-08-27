@@ -87,6 +87,7 @@ in
 
     # Network management
     networkmanagerapplet # Network manager system tray
+    openconnect # CLI client with Palo Alto GlobalProtect support
     openvpn # Open-source VPN solution
     proton-vpn
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
