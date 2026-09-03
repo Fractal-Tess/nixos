@@ -96,7 +96,14 @@ function cmd_apply
     clean_stale_hyprland_files
 
     # Zellij owns and rewrites its live config, so do not replace it with a Stow link.
-    stow --dir $stow_dir --target $target_home --restow --ignore=zellij desktop
+    # monitors.lua and hypranimations.lua are linked explicitly below, so keep them
+    # out of stow's hands — the rofi switcher scripts can turn the in-repo copies
+    # into absolute symlinks, which makes stow abort the whole package.
+    stow --dir $stow_dir --target $target_home --restow \
+        --ignore=zellij \
+        --ignore=monitors.lua \
+        --ignore=hypranimations.lua \
+        desktop
         or return 1
 
     # Keep these links relative so stow can manage the directory cleanly.

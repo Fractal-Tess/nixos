@@ -29,6 +29,14 @@ nixos-switch.log
 # Accidental generated hardware dump
 /\!
 
+# Per-host generated theme output (matugen writes these through the stow
+# symlinks on every wallpaper change, so they churn per machine)
+/dotfiles/desktop/.config/waybar/colors.css
+/dotfiles/desktop/.config/colors/colors.css
+/dotfiles/desktop/.config/colors/colors.rasi
+/dotfiles/desktop/.config/colors/hyprcolors.lua
+/dotfiles/desktop/.config/RofiScripts/WallpaperChanger/last_wallpaper.txt
+
 # Embedded repositories
 Handy/
 k8s/
