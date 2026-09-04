@@ -384,16 +384,16 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1787433811,
-        "narHash": "sha256-qYqZblsLfNbdidAEbjxetvH6kNjH25l3mRwLohAHsAA=",
-        "ref": "refs/tags/v0.4.0",
-        "rev": "e8cec4c5c9c037523df3c74f94936f65f7ffb892",
-        "revCount": 16,
+        "lastModified": 1788497775,
+        "narHash": "sha256-i/V3vdRF6zJCyJUTk0LgSam+2PXvrLr32DolB5dBu3k=",
+        "ref": "refs/tags/v0.5.1",
+        "rev": "bc29101a8b00c07ad08764afb37b9f1c19207d00",
+        "revCount": 25,
         "type": "git",
         "url": "https://github.com/Fractal-Tess/gitadel.git"
       },
       "original": {
-        "ref": "refs/tags/v0.4.0",
+        "ref": "refs/tags/v0.5.1",
         "type": "git",
         "url": "https://github.com/Fractal-Tess/gitadel.git"
       }
