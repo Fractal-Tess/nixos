@@ -2,6 +2,7 @@
 
 set -g SCRIPT_NAME (path basename (status filename))
 set -g DEFAULT_MODEL_DIR /mnt/vault/ai/models/llms
+set -g ADDITIONAL_MODEL_DIR "$HOME/models"
 set -g DEFAULT_CTX 65536
 set -g DEFAULT_DEVICES CUDA0,CUDA1
 set -g DEFAULT_HOST 0.0.0.0
@@ -23,7 +24,7 @@ function show_help
     echo
     echo "Options:"
     echo "  --model PATH|NAME       Model path or basename fragment"
-    echo "  --model-dir PATH        Model search directory (default: $DEFAULT_MODEL_DIR)"
+    echo "  --model-dir PATH        Primary model search directory (also searches $ADDITIONAL_MODEL_DIR)"
     echo "  --ctx N                 Context size (default: $DEFAULT_CTX)"
     echo "  --ctx-per-slot N        Per-slot context target; total ctx becomes N * --parallel"
     echo "  --device LIST           Devices, e.g. CUDA0 or CUDA0,CUDA1"
@@ -123,7 +124,7 @@ function interactive_menu
         echo
         echo "llama-serve"
         echo "  1) model:          "(current_model_label)
-        echo "  2) model dir:      $model_dir"
+        echo "  2) model dirs:     $model_dir, $ADDITIONAL_MODEL_DIR"
         echo "  3) total ctx:      $ctx (default $DEFAULT_CTX)"
         if test -n "$ctx_per_slot"
             echo "  4) ctx per slot:   $ctx_per_slot"
@@ -223,6 +224,23 @@ function interactive_menu
     end
 end
 
+function model_search_dirs -a model_dir
+    if test -d "$model_dir"
+        echo "$model_dir"
+    end
+
+    if test "$ADDITIONAL_MODEL_DIR" != "$model_dir" -a -d "$ADDITIONAL_MODEL_DIR"
+        echo "$ADDITIONAL_MODEL_DIR"
+    end
+end
+
+function list_models -a model_dir
+    set -l search_dirs (model_search_dirs "$model_dir")
+    test (count $search_dirs) -gt 0; or return 1
+
+    find $search_dirs -maxdepth 3 -type f -name "*.gguf" | sort -u
+end
+
 function resolve_model -a selector model_dir
     if test -n "$selector"
         if test -f "$selector"
@@ -230,7 +248,7 @@ function resolve_model -a selector model_dir
             return 0
         end
 
-        set -l matches (find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort | rg -i --fixed-strings "$selector")
+        set -l matches (list_models "$model_dir" | rg -i --fixed-strings "$selector")
         set -l count (count $matches)
 
         if test $count -eq 1
@@ -244,7 +262,7 @@ function resolve_model -a selector model_dir
         return 1
     end
 
-    find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort | fzf --prompt="Select model > " --height=40% --reverse
+    list_models "$model_dir" | fzf --prompt="Select model > " --height=40% --reverse
 end
 
 set -g model_dir $DEFAULT_MODEL_DIR
@@ -370,7 +388,8 @@ while test (count $argv) -gt 0
     end
 end
 
-test -d "$model_dir"; or die "model directory not found: $model_dir"
+set -l available_model_dirs (model_search_dirs "$model_dir")
+test (count $available_model_dirs) -gt 0; or die "model directories not found: $model_dir, $ADDITIONAL_MODEL_DIR"
 test -x "$LLAMA_SERVER_BIN"; or die "llama-server binary not found: $LLAMA_SERVER_BIN"
 
 if test $show_menu -eq 1 -o $initial_argc -eq 0
@@ -378,7 +397,7 @@ if test $show_menu -eq 1 -o $initial_argc -eq 0
 end
 
 if test $list_only -eq 1
-    find "$model_dir" -maxdepth 3 -type f -name "*.gguf" | sort
+    list_models "$model_dir"
     exit 0
 end
 
