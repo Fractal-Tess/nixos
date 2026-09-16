@@ -58,6 +58,11 @@
       url = "github:Fractal-Tess/gitadel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    chorus = {
+      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =

@@ -46,6 +46,26 @@
         "type": "github"
       }
     },
+    "chorus": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789558606,
+        "narHash": "sha256-SXdCB3N/Faa8DMBfYZoWVoaj4pBJWrqDT/7ml85obaM=",
+        "ref": "refs/heads/main",
+        "rev": "50d80347813b6892f23763f866dc04c33443ba88",
+        "revCount": 15,
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
+      }
+    },
     "clip-sync": {
       "inputs": {
         "nixpkgs": [
@@ -486,6 +506,7 @@
     "root": {
       "inputs": {
         "asterveil": "asterveil",
+        "chorus": "chorus",
         "clip-sync": "clip-sync",
         "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",

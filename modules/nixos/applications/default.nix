@@ -6,6 +6,7 @@
     inputs.shadoword.nixosModules.default
     inputs.scorch.nixosModules.default
     inputs.gitadel.nixosModules.default
+    inputs.chorus.nixosModules.default
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.open-design-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default

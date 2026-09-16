@@ -154,6 +154,20 @@
   programs.asterveil.enable = true;
   programs.responsively.enable = true;
 
+  services.chorus = {
+    enable = true;
+    engines = [ "kokoro" ];
+    devices = [
+      "cpu"
+      "cuda:0"
+    ];
+    host = "0.0.0.0";
+    port = 8000;
+    openFirewall = false;
+    downloadMissing = true;
+    preload = [ "kokoro/82m-v1.0" ];
+  };
+
   services.shadoword-api = {
     enable = true;
     variant = "cuda";
@@ -167,7 +181,10 @@
   systemd.services.shadoword-api.after = [ "netbird.service" ];
 
   # Reachable over the mesh only; `openFirewall` would expose it everywhere.
-  networking.firewall.interfaces.wt0.allowedTCPPorts = [ 47813 ];
+  networking.firewall.interfaces.wt0.allowedTCPPorts = [
+    47813
+    8000
+  ];
 
   # virtualisation.libvirtd = {
   #   enable = true;
