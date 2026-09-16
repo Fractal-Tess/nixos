@@ -31,6 +31,13 @@ in
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
 
       secrets = {
+        gitadel_api_token = {
+          owner = username;
+          group = "users";
+          mode = "0600";
+          sopsFile = ../../../../secrets/gitadel.json;
+          format = "json";
+        };
         openrouter_api_key = {
           owner = username;
           sopsFile = ../../../../secrets/openrouter.json;
