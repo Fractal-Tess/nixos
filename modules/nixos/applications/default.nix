@@ -25,10 +25,6 @@
     serverUrl = lib.mkDefault "http://neo.netbird.cloud:3030";
     tokenFile = config.sops.secrets.gitadel_api_token.path;
   };
-  environment.variables = {
-    NO_PROXY = lib.mkDefault "localhost,127.0.0.1,::1,.netbird.cloud";
-    no_proxy = lib.mkDefault "localhost,127.0.0.1,::1,.netbird.cloud";
-  };
   services.scorchd = {
     enable = lib.mkDefault true;
     address = lib.mkDefault "0.0.0.0";
