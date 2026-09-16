@@ -43,7 +43,6 @@ in
     lm_sensors # Hardware monitoring tools
     btop-cuda # A btop application with nvidia support
     nvtopPackages.nvidia # NVIDIA GPU monitoring
-    asterveil # GPU power and fan control TUI
     ddcutil # Monitor control utility (DDC/CI)
     usbutils # USB device utilities
 
@@ -109,6 +108,7 @@ in
 
     # Network management
     networkmanagerapplet # Network manager system tray
+    openconnect # CLI client with Palo Alto GlobalProtect support
     openvpn # Open-source VPN solution
     proton-vpn # Proton VPN client
     gpclient # Interactively authenticate to GlobalProtect VPNs that require SAML
@@ -142,11 +142,7 @@ in
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
-    omp # oh-my-pi terminal coding agent (https://omp.sh)
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
-    t3code # T3 Code desktop app
-    paseo # Paseo daemon and CLI for AI coding agents
-    paseo-desktop # Paseo desktop app
 
     # AI / LLM
     vllm # High-throughput and memory-efficient inference engine for LLMs
@@ -183,9 +179,6 @@ in
     lazygit # Simple terminal UI for git
     graphite-cli # CLI for creating stacked git changes
     git-fame # Git repository statistics by contributor
-
-    # Security tools
-    # burpsuite # Web vulnerability scanner
 
     #--------------------------------------------------------------------------
     # LANGUAGE SERVERS & FORMATTERS
@@ -318,7 +311,6 @@ in
     #--------------------------------------------------------------------------
 
     zed-editor # Zed editor
-    responsively-app # Web development tool for responsive design
     vibe-kanban # Desktop Kanban board for vibe coding workflows
     tradingview # Trading platform desktop app
     dbgate # Database manager

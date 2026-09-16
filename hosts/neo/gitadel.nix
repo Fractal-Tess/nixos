@@ -1,8 +1,4 @@
-{
-  inputs,
-  pkgs,
-  ...
-}:
+{ ... }:
 
 {
   #============================================================================
@@ -11,7 +7,6 @@
 
   services.gitadel = {
     enable = true;
-    package = inputs.gitadel.packages.${pkgs.stdenv.hostPlatform.system}.default;
     publicUrl = "http://neo.netbird.cloud:3030";
 
     http = {

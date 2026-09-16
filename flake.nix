@@ -26,64 +26,18 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    nix-matlab = {
-      url = "gitlab:doronbehar/nix-matlab";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    # Pentesting tools
-    pwndbg = {
-      url = "github:pwndbg/pwndbg/2024.08.29";
-    };
-
-    nixpkgs-burpsuite = {
-      url = "github:NixOS/nixpkgs/e6f23dc08d3624daab7094b701aa3954923c6bbb";
-    };
-
-    nixpkgs-openclaw = {
-      url = "github:chrisportela/nixpkgs/cp/add-moltbot";
-    };
-
-    nix-openclaw = {
-      url = "github:openclaw/nix-openclaw";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     asterveil = {
       url = "github:Fractal-Tess/asterveil";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    t3code-nix = {
-      url = "github:Sawrz/t3code-nix";
-      inputs.nixpkgs.follows = "nixpkgs";
+    oh-my-pi-flake.url = "github:Fractal-Tess/oh-my-pi-flake";
+
+    open-design-flake = {
+      url = "github:Fractal-Tess/open-design-flake";
     };
 
-    comfyui-nix = {
-      url = "github:utensils/comfyui-nix";
-    };
-
-    shapeshifter = {
-      url = "github:Fractal-Tess/shapeshifter";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    hermes-agent = {
-      url = "github:NousResearch/hermes-agent";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    oh-my-pi = {
-      url = "github:can1357/oh-my-pi";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    open-design = {
-      url = "github:nexu-io/open-design/open-design-v0.16.1";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    paseo.url = "github:getpaseo/paseo";
+    responsively-flake.url = "github:Fractal-Tess/responsively-flake";
 
     clip-sync = {
       url = "github:Fractal-Tess/clip-sync";
@@ -96,12 +50,12 @@
     };
 
     scorch = {
-      url = "github:Fractal-Tess/scorch/v0.7.0";
+      url = "github:Fractal-Tess/scorch";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     gitadel = {
-      url = "git+https://github.com/Fractal-Tess/gitadel.git?ref=refs/tags/v0.5.1";
+      url = "github:Fractal-Tess/gitadel";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };
@@ -114,7 +68,6 @@
       sops-nix,
       nix4nvchad,
 
-      nix-matlab,
       ...
     }@inputs:
     let
@@ -124,16 +77,8 @@
           system = "x86_64-linux";
           specialArgs = { inherit inputs hostname username; };
           modules = [
-            inputs.hermes-agent.nixosModules.default
-            inputs.scorch.nixosModules.default
             ./hosts/${hostname}/configuration.nix
             {
-              programs.scorch.enable = true;
-              services.scorchd = {
-                enable = true;
-                address = "0.0.0.0";
-              };
-
               nixpkgs.config.allowBroken = true;
               nixpkgs.overlays = [
                 (final: prev: {
@@ -144,12 +89,9 @@
                   );
                 })
                 polymc.overlay
-                nix-matlab.overlay
-                (import ./overlays/responsively-app.nix)
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
                 (import ./overlays/vibe-kanban.nix)
-                (import ./overlays/paseo.nix { inherit (inputs) paseo; })
                 (import ./overlays/kimi-cli)
                 (final: prev: {
                   # openldap's syncrepl test is flaky on this pinned nixpkgs revision
@@ -167,26 +109,6 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
                 (import ./overlays/cliproxyapi.nix)
-                inputs.t3code-nix.overlays.default
-                inputs.shapeshifter.overlays.default
-                inputs.asterveil.overlays.default
-                inputs.oh-my-pi.overlays.default
-                (final: prev: {
-                  # omp's speech runtime (onnxruntime-node) dlopens libstdc++.so.6;
-                  # the bun-compiled binary ships without a loader path, so add
-                  # gcc's lib dir on NixOS.
-                  omp = prev.omp.overrideAttrs (old: {
-                    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];
-                    # postFixup, not postInstall: the package's preFixup runs
-                    # `remove-references-to ${bun}` on $out/bin/omp, and bun is a
-                    # disallowedReference; wrapping earlier would hide the real
-                    # binary behind .omp-wrapped and fail the reference check.
-                    postFixup = (old.postFixup or "") + ''
-                      wrapProgram $out/bin/omp \
-                        --prefix LD_LIBRARY_PATH : ${final.gcc-unwrapped.lib}/lib
-                    '';
-                  });
-                })
               ];
             }
           ];
@@ -194,6 +116,13 @@
     in
     {
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
+      checks.x86_64-linux.application-interfaces = import ./checks/application-interfaces.nix {
+        inherit inputs;
+      };
+      templates.program-module = {
+        path = ./templates/program-module;
+        description = "A runnable program flake with matching NixOS and Home Manager modules";
+      };
 
       nixosConfigurations = {
         vd = mkHost {

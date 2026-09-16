@@ -14,7 +14,6 @@ in
 
   imports = [
     ./fal-ai.nix
-    ./hermes-agent.nix
     ./opencode.nix
     ./reactbits.nix
     ./ssh.nix

@@ -15,7 +15,6 @@
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs
     ../../modules/home-manager/theming.nix
-    ../../modules/home-manager/services/open-design.nix
     inputs.nix4nvchad.homeManagerModules.default
   ];
 
@@ -82,27 +81,15 @@
     backup = true;
   };
 
-  systemd.user.services.shadoword-desktop = {
-    Unit = {
-      Description = "Shadoword desktop transcription client";
-      After = [
-        "graphical-session.target"
-        "pipewire.service"
-      ];
-      PartOf = [ "graphical-session.target" ];
+  services.clip-sync.enable = true;
+
+  services.shadoword-desktop = {
+    enable = true;
+    environment = {
+      PATH = "/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin";
+      # Preserve this compositor's working WebKit backend.
+      GDK_BACKEND = "x11";
+      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
     };
-    Service = {
-      ExecStart = "${inputs.shadoword.packages.${pkgs.system}.shadoword-desktop}/bin/shadoword";
-      Restart = "on-failure";
-      RestartSec = 5;
-      Environment = [
-        "PATH=/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin"
-        # Keep WebKitGTK on the backend that preserves Tauri's scale and SVG
-        # strokes under Wayland compositors.
-        "GDK_BACKEND=x11"
-        "WEBKIT_DISABLE_DMABUF_RENDERER=1"
-      ];
-    };
-    Install.WantedBy = [ "graphical-session.target" ];
   };
 }

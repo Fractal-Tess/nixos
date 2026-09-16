@@ -1,6 +1,7 @@
 { ... }:
 {
   imports = [
+    ./applications/default.nix
     ./programs/direnv.nix
     ./programs/nextcloud.nix
     ./programs/git.nix

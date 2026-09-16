@@ -18,7 +18,6 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
-    inputs.clip-sync.nixosModules.default
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
@@ -151,14 +150,13 @@
     mode = "0400";
   };
 
-  services.clip-sync.enable = true;
+  programs.responsively.enable = true;
 
   systemd.tmpfiles.rules = [
     "d /home/${username}/.config/shadoword 0700 ${username} users -"
   ];
 
   environment.systemPackages = [
-    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
     pkgs.wtype
     pkgs.xdotool
   ];

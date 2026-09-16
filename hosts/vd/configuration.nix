@@ -18,9 +18,6 @@
     # External modules
     inputs.home-manager.nixosModules.default
     inputs.sops-nix.nixosModules.sops
-    inputs.clip-sync.nixosModules.default
-    inputs.shadoword.nixosModules.default
-    # inputs.comfyui-nix.nixosModules.default # temporarily disabled — re-enable after caches are trusted
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
@@ -35,6 +32,9 @@
 
   # DO NOT CHANGE.
   system.stateVersion = "25.05";
+
+  # Enable GlobalProtect-compatible VPN connections through NetworkManager.
+  networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
 
   services.libinput.enable = true;
   hardware.opentabletdriver.enable = true;
@@ -151,7 +151,8 @@
     mode = "0400";
   };
 
-  services.clip-sync.enable = true;
+  programs.asterveil.enable = true;
+  programs.responsively.enable = true;
 
   services.shadoword-api = {
     enable = true;
@@ -268,7 +269,6 @@
         z_ai.enable = true;
         minimax.enable = true;
         syncthing.enable = true;
-        hermes-agent.enable = true;
         reactbits.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
       };
@@ -328,18 +328,6 @@
         publicHostname = "vd.netbird.cloud";
       };
 
-      # Hermes Agent
-      hermes-agent = {
-        enable = true;
-        baseUrl = "https://chatgpt.com/backend-api/codex";
-        provider = "openai-codex";
-        container.enable = false;
-        model = "gpt-5.3-codex-spark";
-        web = {
-          search_backend = "exa";
-          extract_backend = "exa";
-        };
-      };
     };
   };
 
@@ -349,7 +337,6 @@
   ];
 
   environment.systemPackages = [
-    inputs.shadoword.packages.${pkgs.system}.shadoword-desktop
     pkgs.wtype
     pkgs.xdotool
   ];
@@ -471,7 +458,7 @@
   ];
 
   #============================================================================
-  # COMFYUI
+  # LOCAL AI SERVICES
   #============================================================================
 
   # Ollama LLM service with CUDA
@@ -497,56 +484,17 @@
     };
   };
 
-  # ComfyUI — temporarily disabled, re-enable after caches are trusted
-  # services.comfyui = {
-  #   enable = true;
-  #   gpuSupport = "cuda";
-  #   port = 8188;
-  #   listenAddress = "127.0.0.1";
-  #   dataDir = "/var/lib/comfyui";
-  #   enableManager = true;
-  #   extraArgs = [
-  #     "--lowvram"
-  #     "--extra-model-paths-config"
-  #     (toString (pkgs.writeText "extra-model-paths.yaml" ''
-  #       vault:
-  #         base_path: /mnt/vault/ComfyUI/models
-  #         checkpoints: checkpoints/
-  #         clip: clip/
-  #         clip_vision: clip_vision/
-  #         configs: configs/
-  #         controlnet: controlnet/
-  #         diffusers: diffusers/
-  #         diffusion_models: diffusion_models/
-  #         embeddings: embeddings/
-  #         gligen: gligen/
-  #         hypernetworks: hypernetworks/
-  #         loras: loras/
-  #         photomaker: photomaker/
-  #         style_models: style_models/
-  #         text_encoders: text_encoders/
-  #         unet: unet/
-  #         upscale_models: upscale_models/
-  #         vae: vae/
-  #         vae_approx: vae_approx/
-  #     ''))
-  #   ];
-  # };
-
-  # Binary caches for ComfyUI and CUDA packages (avoids building from source)
+  # Binary caches for community and CUDA packages
   nix.settings = {
     extra-substituters = [
-      "https://comfyui.cachix.org"
       "https://nix-community.cachix.org"
       "https://cuda-maintainers.cachix.org"
     ];
     extra-trusted-public-keys = [
-      "comfyui.cachix.org-1:33mf9VzoIjzVbp0zwj+fT51HG0y31ZTK3nzYZAX0rec="
       "nix-community.cachix.org-1:mB9FSh9qf2dCimDSUo8Zy7bkq5CX+/rkCWyvRCYg3Fs="
       "cuda-maintainers.cachix.org-1:0dq3bujKpuEPMCX6U4WylrUDZ9JyUG0VpVZa7CNfq5E="
     ];
     trusted-substituters = [
-      "https://comfyui.cachix.org"
       "https://nix-community.cachix.org"
       "https://cuda-maintainers.cachix.org"
     ];

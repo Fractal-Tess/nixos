@@ -1,11 +1,4 @@
-{ pkgs, inputs, ... }:
-let
-  pwndbg-pkg = inputs.pwndbg.packages.${pkgs.system}.default;
-  burpsuite-pkgs = import inputs.nixpkgs-burpsuite {
-    inherit (pkgs) system;
-    config.allowUnfree = true;
-  };
-in
+{ pkgs, ... }:
 {
   #============================================================================
   # SYSTEM-WIDE PACKAGES
@@ -113,7 +106,6 @@ in
     bind.dnsutils # DNS utilities (dig, nslookup, etc.)
 
     # Web Application Testing
-    burpsuite-pkgs.burpsuite # Web vulnerability scanner
     gobuster # Directory/file & DNS busting tool
     dirb # Web content scanner
     ffuf # Fast web fuzzer
@@ -154,7 +146,6 @@ in
     # (cutter.withPlugins (ps: with ps; [ rz-ghidra ])) # RE platform with Ghidra decompiler - broken with Qt 6.11
     radare2 # Reverse engineering framework
     rizin # UNIX-like reverse engineering framework
-    pwndbg-pkg # GDB plugin for exploit development
     binutils-unwrapped # Binary tools (objdump, readelf, etc.)
     xxd # Hex dump utility
     ltrace # Library call tracer
@@ -177,12 +168,6 @@ in
     kicad # Electronics design automation (EDA) for PCB design
 
     #--------------------------------------------------------------------------
-    # MATLAB
-    #--------------------------------------------------------------------------
-
-    matlab # MATLAB (requires manual installation first via matlab-shell)
-
-    #--------------------------------------------------------------------------
     # DEVELOPMENT TOOLS
     #--------------------------------------------------------------------------
 
@@ -192,12 +177,7 @@ in
     claude-code # Claude Code CLI
     codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
-    omp # oh-my-pi terminal coding agent (https://omp.sh)
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
-    shapeshifter-tui # Codex account manager TUI
-    t3code # T3 Code desktop app
-    paseo # Paseo daemon and CLI for AI coding agents
-    paseo-desktop # Paseo desktop app
     cursor-cli # Command-line interface for Cursor AI editor
     gemini-cli # CLI interface for google's gemini
 
@@ -337,7 +317,6 @@ in
     zed-editor # Zed editor
     antigravity # Google's vscode fork
     vscode # Open soure editor
-    responsively-app # Web development tool for responsive design
     tradingview # Trading platform desktop app
     tws # Interactive Brokers Trader Workstation
     dbgate # Database manager
