@@ -19,6 +19,16 @@
       port = 2222;
     };
   };
+  # Filesystem storage targets outside dataDir must be whitelisted: the unit
+  # runs with ProtectSystem=strict, so anything not under /var/lib/gitadel
+  # looks like a read-only filesystem (EROFS, os error 30).
+  systemd.tmpfiles.rules = [
+    "d /mnt/blockade/services/gitadel 0750 gitadel gitadel -"
+  ];
+
+  systemd.services.gitadel.serviceConfig.ReadWritePaths = [
+    "/mnt/blockade/services/gitadel"
+  ];
 
   networking.firewall.interfaces.wt0.allowedTCPPorts = [
     3030
