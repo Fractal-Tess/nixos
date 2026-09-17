@@ -173,11 +173,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1789633606,
-        "narHash": "sha256-vM/WHnNrr2jY82fByh1fVXRjG43PszP/TEnbARJsg94=",
+        "lastModified": 1789644643,
+        "narHash": "sha256-gRpFY197cqI+EsBhqnXKinyBuXTDGXiEXeKKkYd7wzo=",
         "owner": "Fractal-Tess",
         "repo": "gitadel",
-        "rev": "c00cab916753deaf1e69ceb61cdd824e68e03b51",
+        "rev": "95b63be009b15499051ded98099065d23a950343",
         "type": "github"
       },
       "original": {
