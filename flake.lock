@@ -53,11 +53,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789558606,
-        "narHash": "sha256-SXdCB3N/Faa8DMBfYZoWVoaj4pBJWrqDT/7ml85obaM=",
+        "lastModified": 1789629327,
+        "narHash": "sha256-WEO/3Z+LDCx/QGMgr2nj9gOrq9dKNtkOmRU05iafVr4=",
         "ref": "refs/heads/main",
-        "rev": "50d80347813b6892f23763f866dc04c33443ba88",
-        "revCount": 15,
+        "rev": "19bf8c5af5e5eb746dfd2801c12daa23a4ed1e2d",
+        "revCount": 21,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
       },
