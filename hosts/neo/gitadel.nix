@@ -24,10 +24,12 @@
   # looks like a read-only filesystem (EROFS, os error 30).
   systemd.tmpfiles.rules = [
     "d /mnt/blockade/services/gitadel 0750 gitadel gitadel -"
+    "d /mnt/blockade/services/gitadel-backups 0750 gitadel gitadel -"
   ];
 
   systemd.services.gitadel.serviceConfig.ReadWritePaths = [
     "/mnt/blockade/services/gitadel"
+    "/mnt/blockade/services/gitadel-backups"
   ];
 
   networking.firewall.interfaces.wt0.allowedTCPPorts = [
