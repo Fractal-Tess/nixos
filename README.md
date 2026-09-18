@@ -58,6 +58,9 @@ Versions come from the input revision and `flake.lock`, not a separate version s
 Each host's `applications.nix` imports the NixOS application modules it needs
 and configures its projects: [`vd`](hosts/vd/applications.nix),
 [`neo`](hosts/neo/applications.nix), and [`kiwi`](hosts/kiwi/applications.nix).
+Settings are grouped by application in `config = lib.mkMerge [ ... ];`.
+Keep each application's program, system/user services, SOPS declarations,
+firewall rules, and directories together in its block.
 User module imports remain in
 [`modules/home-manager/applications`](modules/home-manager/applications/default.nix);
 that file exposes options without enabling applications.
@@ -65,16 +68,14 @@ User-service settings go inside `home-manager.users.${username}` in the host's
 `applications.nix`; general Home Manager configuration stays in `home.nix`.
 
 ```nix
-# In hosts/<host>/applications.nix
-programs.omp.enable = true;
-programs.responsively.enable = true;
-services.scorchd.autoStart = false; # keep a unit for manual starts
-
-# User services, in the same NixOS module
-home-manager.users.${username} = {
-  services.clip-sync.enable = true;
-  services.shadoword-desktop.enable = true;
-};
+# One application block inside config = lib.mkMerge [ ... ];
+{
+  programs.scorch.enable = true;
+  services.scorchd = {
+    enable = true;
+    autoStart = false; # keep a unit for manual starts
+  };
+}
 ```
 
 Service environment overrides use `environment`. Open Design's NixOS facade
