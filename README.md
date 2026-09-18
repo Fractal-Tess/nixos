@@ -78,8 +78,6 @@ Service environment overrides use `environment`. Open Design's NixOS facade
 takes typed options directly alongside `user`; it requires Home Manager.
 Runtime secrets stay in secret files. Disabling a module does not delete its data.
 
-Run the shared lifecycle and package-selection checks with
-`nix build .#checks.x86_64-linux.application-interfaces`.
 For a new program flake, initialize the runnable Hello example from another directory:
 `nix flake init -t /path/to/nixos#program-module`.
 

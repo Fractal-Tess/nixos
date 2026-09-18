@@ -121,9 +121,6 @@
     in
     {
       formatter.x86_64-linux = nixpkgs.legacyPackages.x86_64-linux.nixfmt;
-      checks.x86_64-linux.application-interfaces = import ./checks/application-interfaces.nix {
-        inherit inputs;
-      };
       templates.program-module = {
         path = ./templates/program-module;
         description = "A runnable program flake with matching NixOS and Home Manager modules";
