@@ -1,7 +1,6 @@
 { ... }:
 {
   imports = [
-    ./applications/default.nix
     # Core system modules
     ./core/audio.nix
     ./core/boot.nix

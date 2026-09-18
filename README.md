@@ -55,16 +55,14 @@ Third-party packaging repos use `-flake` (`oh-my-pi-flake`, `open-design-flake`,
 `responsively-flake`). Both expose modules with `enable` and `package` options.
 Versions come from the input revision and `flake.lock`, not a separate version string.
 
-System module imports live in
-[`modules/nixos/applications`](modules/nixos/applications/default.nix);
-user module imports live in
-[`modules/home-manager/applications`](modules/home-manager/applications/default.nix).
-These files expose options without enabling applications.
-Each host's `applications.nix` owns its project configuration:
-[`vd`](hosts/vd/applications.nix), [`neo`](hosts/neo/applications.nix),
-and [`kiwi`](hosts/kiwi/applications.nix). User-service settings go inside
-`home-manager.users.${username}` in that same file; general Home Manager
-configuration stays in `home.nix`.
+Each host's `applications.nix` imports the NixOS application modules it needs
+and configures its projects: [`vd`](hosts/vd/applications.nix),
+[`neo`](hosts/neo/applications.nix), and [`kiwi`](hosts/kiwi/applications.nix).
+User module imports remain in
+[`modules/home-manager/applications`](modules/home-manager/applications/default.nix);
+that file exposes options without enabling applications.
+User-service settings go inside `home-manager.users.${username}` in the host's
+`applications.nix`; general Home Manager configuration stays in `home.nix`.
 
 ```nix
 # In hosts/<host>/applications.nix

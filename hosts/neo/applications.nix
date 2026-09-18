@@ -1,10 +1,18 @@
 {
   config,
+  inputs,
   lib,
   ...
 }:
 
 {
+  imports = [
+    inputs.scorch.nixosModules.default
+    inputs.gitadel.nixosModules.default
+    inputs.gitadel.nixosModules.gitadel-cli
+    inputs.oh-my-pi-flake.nixosModules.default
+  ];
+
   #============================================================================
   # APPLICATION DEFAULTS
   #============================================================================

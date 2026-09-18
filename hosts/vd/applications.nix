@@ -1,11 +1,22 @@
 {
   config,
+  inputs,
   lib,
   username,
   ...
 }:
 
 {
+  imports = [
+    inputs.asterveil.nixosModules.default
+    inputs.shadoword.nixosModules.default
+    inputs.scorch.nixosModules.default
+    inputs.gitadel.nixosModules.gitadel-cli
+    inputs.chorus.nixosModules.default
+    inputs.oh-my-pi-flake.nixosModules.default
+    inputs.responsively-flake.nixosModules.default
+  ];
+
   #============================================================================
   # APPLICATION DEFAULTS
   #============================================================================
