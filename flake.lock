@@ -53,11 +53,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789640586,
-        "narHash": "sha256-kI9dAMTg1g68OFTJAppTUWXjByb8fypfM3/oSOD21HQ=",
+        "lastModified": 1789771207,
+        "narHash": "sha256-gOnr2oz/u+wTel0jG6MnP1gZ3RdqA3674HQ6lKCtB2g=",
         "ref": "refs/heads/main",
-        "rev": "b6e70c0a3018b6af1e295c31be2fcd1d0ecc6689",
-        "revCount": 23,
+        "rev": "0afc859bd9d311f9bce17f5046c23ba40c37da24",
+        "revCount": 28,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
       },
@@ -194,11 +194,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1788792812,
-        "narHash": "sha256-jG0MwTLIwtQcFC4jfzHK3WPr7TKCOjm6qWtXh4pDrd0=",
+        "lastModified": 1789691374,
+        "narHash": "sha256-wbryVm1eyklVD8JRf5x0VlGwANZJqZe5Pm3OI81Mb4o=",
         "owner": "yuezk",
         "repo": "GlobalProtect-openconnect",
-        "rev": "9e4f45997ebee452c58d7d3066dcfc175d65ef82",
+        "rev": "0425ee6ddb8e0cadd8491532dbef466864748dc8",
         "type": "github"
       },
       "original": {
@@ -214,11 +214,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789386765,
-        "narHash": "sha256-4hyLFBhzQC7+qPMELWc7J/sbdA6ckXZxXU9CYRsGhsc=",
+        "lastModified": 1789765459,
+        "narHash": "sha256-voJJ5IZR4w2149u2Jm/j2zifeWROlpZQ+JzmCQwjgn8=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "87c391f49a34660de6010f35bb50fb1bf811be9f",
+        "rev": "17903129f47656fa4d07e78ad87f6592ff4f2527",
         "type": "github"
       },
       "original": {
@@ -341,11 +341,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1789286504,
-        "narHash": "sha256-eiEK7cKZORNEvX0GeF3RtNEF/JXhgf2RqSp3230q13E=",
+        "lastModified": 1789684949,
+        "narHash": "sha256-ZKhUe/2IJUq1JhKxKMu8rbkgSGmPP2ZCqlIPn40aGCM=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "ef34387ddd751e1ab8857adf4676492d32eb24ec",
+        "rev": "e554fab72f81915600f3f449b786fd9af40439a5",
         "type": "github"
       },
       "original": {
@@ -647,11 +647,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789411626,
-        "narHash": "sha256-w2IdHss1IbDBH3oLb9/6ySI2Oz+XuNvNmC2qOJ1apEc=",
+        "lastModified": 1789458037,
+        "narHash": "sha256-kSY//6UJwE6isEXl1enr803g7BckR63QVV6bis9wgc0=",
         "owner": "Fractal-Tess",
         "repo": "shadoword",
-        "rev": "c7f2bc11be7592c2fa4298f1617b2dbab954b9e4",
+        "rev": "b30a43b8e71c54634b10c82d926e4ab4cf6eeaf3",
         "type": "github"
       },
       "original": {
@@ -667,11 +667,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1788914643,
-        "narHash": "sha256-4GuMPW90JSxXWDPUB9M+1m7fYbe3H0apOd86/zBQ2Kw=",
+        "lastModified": 1789691124,
+        "narHash": "sha256-k+I+R6uwHX3VcJ7326qLV6vCahZUgsVl+i8sSU/Stxk=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "13616fff713a9f94055c66f15687ebdc17a335df",
+        "rev": "1e73e8f7176d65e1b55e324de099bbfff4b2c574",
         "type": "github"
       },
       "original": {

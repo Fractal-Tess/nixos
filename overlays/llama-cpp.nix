@@ -7,6 +7,12 @@ in
     (prev.llama-cpp.override {
       cudaSupport = true;
       cudaPackages = final.cudaPackages;
+      # nixpkgs builds the llama.cpp web UI with `nodejs_latest`, which is node 26
+      # on recent revisions. Binary caches lag freshly bumped nodejs majors, so
+      # every llama.cpp build would drag a full V8 compile along with it.
+      # nodejs_22 is already in the system closure and satisfies the UI's
+      # engine floor (vite: ^20.19.0 || >=22.12.0).
+      nodejs_latest = final.nodejs_22;
     }).overrideAttrs
       (old: {
         inherit version;
