@@ -81,15 +81,4 @@
     backup = true;
   };
 
-  services.clip-sync.enable = true;
-
-  services.shadoword-desktop = {
-    enable = true;
-    environment = {
-      PATH = "/run/current-system/sw/bin:/etc/profiles/per-user/${username}/bin:/run/wrappers/bin";
-      # Preserve this compositor's working WebKit backend.
-      GDK_BACKEND = "x11";
-      WEBKIT_DISABLE_DMABUF_RENDERER = "1";
-    };
-  };
 }

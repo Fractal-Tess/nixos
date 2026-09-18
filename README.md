@@ -55,23 +55,28 @@ Third-party packaging repos use `-flake` (`oh-my-pi-flake`, `open-design-flake`,
 `responsively-flake`). Both expose modules with `enable` and `package` options.
 Versions come from the input revision and `flake.lock`, not a separate version string.
 
-System imports and shared defaults live in
+System module imports live in
 [`modules/nixos/applications`](modules/nixos/applications/default.nix);
-user imports live in
+user module imports live in
 [`modules/home-manager/applications`](modules/home-manager/applications/default.nix).
-Set program and system-service options in a host's NixOS configuration, and
-user-service options in its `home.nix`. Do not enable the same user service
-through both NixOS and Home Manager.
+These files expose options without enabling applications.
+Each host's `applications.nix` owns its project configuration:
+[`vd`](hosts/vd/applications.nix), [`neo`](hosts/neo/applications.nix),
+and [`kiwi`](hosts/kiwi/applications.nix). User-service settings go inside
+`home-manager.users.${username}` in that same file; general Home Manager
+configuration stays in `home.nix`.
 
 ```nix
-# NixOS
+# In hosts/<host>/applications.nix
 programs.omp.enable = true;
 programs.responsively.enable = true;
 services.scorchd.autoStart = false; # keep a unit for manual starts
 
-# Home Manager
-services.clip-sync.enable = true;
-services.shadoword-desktop.enable = true;
+# User services, in the same NixOS module
+home-manager.users.${username} = {
+  services.clip-sync.enable = true;
+  services.shadoword-desktop.enable = true;
+};
 ```
 
 Service environment overrides use `environment`. Open Design's NixOS facade

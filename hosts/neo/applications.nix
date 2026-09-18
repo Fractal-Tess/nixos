@@ -1,6 +1,27 @@
-{ ... }:
+{
+  config,
+  lib,
+  ...
+}:
 
 {
+  #============================================================================
+  # APPLICATION DEFAULTS
+  #============================================================================
+
+  programs.omp.enable = lib.mkDefault true;
+  programs.scorch.enable = lib.mkDefault true;
+  programs.gitadel-cli = {
+    enable = lib.mkDefault true;
+    serverUrl = lib.mkDefault "http://neo.netbird.cloud:3030";
+    tokenFile = config.sops.secrets.gitadel_api_token.path;
+  };
+
+  services.scorchd = {
+    enable = lib.mkDefault true;
+    address = lib.mkDefault "0.0.0.0";
+  };
+
   #============================================================================
   # GITADEL ARCHIVE SERVER
   #============================================================================
@@ -19,6 +40,7 @@
       port = 2222;
     };
   };
+
   # Filesystem storage targets outside dataDir must be whitelisted: the unit
   # runs with ProtectSystem=strict, so anything not under /var/lib/gitadel
   # looks like a read-only filesystem (EROFS, os error 30).

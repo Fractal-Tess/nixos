@@ -22,6 +22,9 @@
     # Custom NixOS modules
     ../../modules/nixos/default.nix
 
+    # Personal application configuration
+    ./applications.nix
+
     # System-wide packages
     ./packages.nix
   ];
@@ -141,25 +144,6 @@
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
-
-  sops.secrets.clip_sync_mesh_key = {
-    sopsFile = ../../secrets/clip-sync.json;
-    format = "json";
-    owner = username;
-    group = "users";
-    mode = "0400";
-  };
-
-  programs.responsively.enable = true;
-
-  systemd.tmpfiles.rules = [
-    "d /home/${username}/.config/shadoword 0700 ${username} users -"
-  ];
-
-  environment.systemPackages = [
-    pkgs.wtype
-    pkgs.xdotool
-  ];
 
   modules = {
     # Hardware drivers

@@ -20,7 +20,7 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
-    ./gitadel.nix
+    ./applications.nix
 
     # System-wide packages
     ./packages.nix

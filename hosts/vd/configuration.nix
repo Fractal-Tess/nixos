@@ -1,5 +1,4 @@
 {
-  config,
   pkgs,
   inputs,
   username,
@@ -21,6 +20,7 @@
 
     # Custom NixOS modules
     ../../modules/nixos/default.nix
+    ./applications.nix
 
     # System-wide packages
     ./packages.nix
@@ -124,67 +124,6 @@
   #============================================================================
   # CUSTOM MODULES CONFIGURATION
   #============================================================================
-
-  # Read by systemd (as root) into the daemon's credential store, not by the
-  # daemon itself, so it deliberately stays out of reach of the login user.
-  sops.secrets.shadoword_admin_token = {
-    sopsFile = ../../secrets/shadoword.json;
-    format = "json";
-    owner = "root";
-    group = "root";
-    mode = "0400";
-  };
-
-  sops.secrets.shadoword_user_token = {
-    sopsFile = ../../secrets/shadoword.json;
-    format = "json";
-    owner = username;
-    group = "users";
-    mode = "0400";
-  };
-
-  sops.secrets.clip_sync_mesh_key = {
-    sopsFile = ../../secrets/clip-sync.json;
-    format = "json";
-    owner = username;
-    group = "users";
-    mode = "0400";
-  };
-
-  programs.asterveil.enable = true;
-  programs.responsively.enable = true;
-
-  services.chorus = {
-    enable = true;
-    engines = [ "kokoro" ];
-    devices = [
-      "cpu"
-      "cuda:0"
-    ];
-    host = "0.0.0.0";
-    port = 8000;
-    openFirewall = false;
-    downloadMissing = true;
-    preload = [ "kokoro/82m-v1.0" ];
-  };
-
-  services.shadoword-api = {
-    enable = true;
-    variant = "cuda";
-    listenAddress = "100.91.0.2";
-    requestRecordingDir = "/var/lib/shadoword/requests";
-    initTokenFile = config.sops.secrets.shadoword_admin_token.path;
-  };
-
-  # The listen address is a NetBird address, so the interface has to exist
-  # before the daemon can bind it.
-  systemd.services.shadoword-api.after = [ "netbird.service" ];
-
-  # Reachable over the mesh only; `openFirewall` would expose it everywhere.
-  networking.firewall.interfaces.wt0.allowedTCPPorts = [
-    47813
-    8000
-  ];
 
   # virtualisation.libvirtd = {
   #   enable = true;
@@ -350,7 +289,6 @@
 
   systemd.tmpfiles.rules = [
     "d /mnt/blockade 0755 fractal-tess fractal-tess -"
-    "d /home/${username}/.config/shadoword 0700 ${username} users -"
   ];
 
   environment.systemPackages = [
