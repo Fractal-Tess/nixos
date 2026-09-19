@@ -324,6 +324,10 @@
   # Custom CA certificates
   security.pki.certificateFiles = [ ../../config/certs/carrierx.crt ];
 
+  # Unlock the login keyring through SDDM so desktop apps can store credentials.
+  security.pam.services.login.enableGnomeKeyring = true;
+  security.pam.services.sddm.enableGnomeKeyring = true;
+
   #============================================================================
   # SYSTEM SERVICES
   #============================================================================
@@ -332,6 +336,9 @@
   services = {
     dbus.enable = true;
     gvfs.enable = true;
+
+    # Secret Service provider used by Delta and other desktop applications.
+    gnome.gnome-keyring.enable = true;
 
     # Printing support
     printing = {
