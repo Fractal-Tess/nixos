@@ -17,6 +17,7 @@
     inputs.responsively-flake.nixosModules.default
     inputs.t3code-flake.nixosModules.default
     inputs.delta-flake.nixosModules.default
+    inputs.agent-browser-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -43,6 +44,11 @@
     # Delta
     {
       programs.delta.enable = true;
+    }
+
+    # Agent Browser
+    {
+      programs.agent-browser.enable = true;
     }
 
     # Scorch

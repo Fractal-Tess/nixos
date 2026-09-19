@@ -49,6 +49,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    agent-browser-flake = {
+      url = "github:Fractal-Tess/agent-browser-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clip-sync = {
       url = "github:Fractal-Tess/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -1,5 +1,25 @@
 {
   "nodes": {
+    "agent-browser-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789841372,
+        "narHash": "sha256-qvsmb/zYEiNaJgb1RdRNvCwVYGPIfDAOvsEJcG0u0kE=",
+        "owner": "Fractal-Tess",
+        "repo": "agent-browser-flake",
+        "rev": "fdb0dbcb6d31626ee78d1479879b86508759a379",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "agent-browser-flake",
+        "type": "github"
+      }
+    },
     "asterveil": {
       "inputs": {
         "nixpkgs": [
@@ -525,6 +545,7 @@
     },
     "root": {
       "inputs": {
+        "agent-browser-flake": "agent-browser-flake",
         "asterveil": "asterveil",
         "chorus": "chorus",
         "clip-sync": "clip-sync",
