@@ -13,6 +13,9 @@
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
+    inputs.t3code-flake.nixosModules.default
+    inputs.delta-flake.nixosModules.default
+    inputs.agent-browser-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -24,6 +27,21 @@
     # Responsively
     {
       programs.responsively.enable = true;
+    }
+
+    # T3 Code
+    {
+      programs.t3code.enable = true;
+    }
+
+    # Delta
+    {
+      programs.delta.enable = true;
+    }
+
+    # Agent Browser
+    {
+      programs.agent-browser.enable = true;
     }
 
     # Scorch

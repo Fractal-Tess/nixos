@@ -15,4 +15,4 @@ if contains -- --help $argv; or contains -- -h $argv
     exit 0
 end
 
-exec /run/current-system/sw/bin/clip-sync desktop
+exec clip-sync desktop

@@ -8,7 +8,6 @@
 
 {
   imports = [
-    inputs.scorch.nixosModules.default
     inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.oh-my-pi-flake.nixosModules.default
@@ -20,12 +19,15 @@
       programs.omp.enable = lib.mkDefault true;
     }
 
-    # Scorch
+    # ClipSync
     {
-      programs.scorch.enable = lib.mkDefault true;
-      services.scorchd = {
-        enable = lib.mkDefault true;
-        address = lib.mkDefault "0.0.0.0";
+      home-manager.users.${username}.services.clip-sync.enable = true;
+      sops.secrets.clip_sync_mesh_key = {
+        sopsFile = ../../secrets/clip-sync.json;
+        format = "json";
+        owner = username;
+        group = "users";
+        mode = "0400";
       };
     }
 
