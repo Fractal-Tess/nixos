@@ -16,6 +16,7 @@
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
     inputs.t3code-flake.nixosModules.default
+    inputs.delta-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -37,6 +38,11 @@
     # T3 Code
     {
       programs.t3code.enable = true;
+    }
+
+    # Delta
+    {
+      programs.delta.enable = true;
     }
 
     # Scorch

@@ -44,6 +44,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    delta-flake = {
+      url = "github:Fractal-Tess/delta-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clip-sync = {
       url = "github:Fractal-Tess/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";

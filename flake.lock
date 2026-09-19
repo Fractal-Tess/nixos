@@ -86,6 +86,26 @@
         "type": "github"
       }
     },
+    "delta-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1789836803,
+        "narHash": "sha256-FgLjfEHwHR6+tdYr/Yu5VROWa/pAmJv1yKuJBA1RWY0=",
+        "owner": "Fractal-Tess",
+        "repo": "delta-flake",
+        "rev": "4489b598534e35d9d15a891fec25aba45d47c0d7",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "delta-flake",
+        "type": "github"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -508,6 +528,7 @@
         "asterveil": "asterveil",
         "chorus": "chorus",
         "clip-sync": "clip-sync",
+        "delta-flake": "delta-flake",
         "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",
         "home-manager": "home-manager",
