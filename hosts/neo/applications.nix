@@ -21,7 +21,10 @@
 
     # ClipSync
     {
-      home-manager.users.${username}.services.clip-sync.enable = true;
+      home-manager.users.${username}.services.clip-sync = {
+        enable = true;
+        wantedBy = [ "default.target" ];
+      };
       sops.secrets.clip_sync_mesh_key = {
         sopsFile = ../../secrets/clip-sync.json;
         format = "json";
