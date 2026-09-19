@@ -1,9 +1,8 @@
-{
-  config,
-  inputs,
-  lib,
-  username,
-  ...
+{ config
+, inputs
+, lib
+, username
+, ...
 }:
 
 {
@@ -68,7 +67,7 @@
           "cuda:0"
         ];
         host = "0.0.0.0";
-        port = 8000;
+        port = 8749;
         openFirewall = false;
         downloadMissing = true;
         preload = [ "kokoro/82m-v1.0" ];
