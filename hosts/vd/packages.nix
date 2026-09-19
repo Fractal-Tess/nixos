@@ -6,7 +6,8 @@
 }:
 
 let
-  globalProtectGuiPackage = inputs.globalprotect-openconnect.packages.${pkgs.system}.default;
+  globalProtectGuiPackage =
+    inputs.globalprotect-openconnect.packages.${pkgs.stdenv.hostPlatform.system}.default;
   globalProtectGui = pkgs.runCommand "globalprotect-openconnect-gui" { } ''
     mkdir -p $out/bin $out/share
 
@@ -363,7 +364,7 @@ in
 
     qbittorrent # BitTorrent client
     stress # System stress testing tool
-    xp-pen-g430-driver # Drawing tablet
+    xppen_3 # Drawing tablet
 
     #--------------------------------------------------------------------------
     # BLUETOOTH & AUDIO (from existing configuration.nix)

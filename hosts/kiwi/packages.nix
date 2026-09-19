@@ -179,7 +179,6 @@
     pi-coding-agent # Minimal terminal coding agent harness
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
     cursor-cli # Command-line interface for Cursor AI editor
-    gemini-cli # CLI interface for google's gemini
 
     # Testing/Automation
     playwright-driver.browsers # Playwright browsers for e2e testing and agent-browser
@@ -315,7 +314,6 @@
 
     code-cursor # VS Code fork with AI features
     zed-editor # Zed editor
-    antigravity # Google's vscode fork
     vscode # Open soure editor
     tradingview # Trading platform desktop app
     tws # Interactive Brokers Trader Workstation

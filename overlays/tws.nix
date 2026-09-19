@@ -27,19 +27,19 @@ final: prev: {
         zulu17
 
         # X11 / GUI
-        xorg.libX11
-        xorg.libXext
-        xorg.libXrender
-        xorg.libXtst
-        xorg.libXi
-        xorg.libXrandr
-        xorg.libXcursor
-        xorg.libXfixes
-        xorg.libXinerama
-        xorg.libXcomposite
-        xorg.libXdamage
-        xorg.libXScrnSaver
-        xorg.libxcb
+        libx11
+        libxext
+        libxrender
+        libxtst
+        libxi
+        libxrandr
+        libxcursor
+        libxfixes
+        libxinerama
+        libxcomposite
+        libxdamage
+        libxscrnsaver
+        libxcb
 
         # GTK / Desktop integration
         gtk3
