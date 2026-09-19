@@ -93,11 +93,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789836803,
-        "narHash": "sha256-FgLjfEHwHR6+tdYr/Yu5VROWa/pAmJv1yKuJBA1RWY0=",
+        "lastModified": 1789837036,
+        "narHash": "sha256-8jREbDEQOmCUI5ZABALWZSYVbjSM0KHZ1uKJ9BsQkqU=",
         "owner": "Fractal-Tess",
         "repo": "delta-flake",
-        "rev": "4489b598534e35d9d15a891fec25aba45d47c0d7",
+        "rev": "8906b3d42eebd931c5c2f8ff22e5c39430fcfb38",
         "type": "github"
       },
       "original": {
