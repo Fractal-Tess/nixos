@@ -113,11 +113,11 @@
   # Enable zram for compressed RAM swapping
   zramSwap.enable = true;
 
-  # Add 32GB swap file (swap partition already defined in hardware-configuration.nix)
+  # Add 16GB swap file (swap partition already defined in hardware-configuration.nix)
   swapDevices = [
     {
       device = "/swapfile";
-      size = 32 * 1024; # 32GB in MB
+      size = 16 * 1024; # 16GB in MB
     }
   ];
 
