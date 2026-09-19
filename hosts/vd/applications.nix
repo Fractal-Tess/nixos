@@ -1,8 +1,9 @@
-{ config
-, inputs
-, lib
-, username
-, ...
+{
+  config,
+  inputs,
+  lib,
+  username,
+  ...
 }:
 
 {
@@ -14,6 +15,7 @@
     inputs.chorus.nixosModules.default
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
+    inputs.t3code-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -30,6 +32,11 @@
     # Responsively
     {
       programs.responsively.enable = true;
+    }
+
+    # T3 Code
+    {
+      programs.t3code.enable = true;
     }
 
     # Scorch

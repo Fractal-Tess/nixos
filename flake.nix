@@ -39,6 +39,11 @@
 
     responsively-flake.url = "github:Fractal-Tess/responsively-flake";
 
+    t3code-flake = {
+      url = "github:Fractal-Tess/t3code-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clip-sync = {
       url = "github:Fractal-Tess/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";
