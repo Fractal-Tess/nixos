@@ -10,6 +10,8 @@
 #   NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)
 #   NIXOS_UPDATE_DIR         Override the flake checkout directory
 #   NIXOS_UPDATE_HOST        Override the target NixOS hostname
+#   NIXOS_UPDATE_NO_FLEET=1  Do not update the other configured hosts
+#   NIXOS_UPDATE_FLEET_CHILD Internal flag that prevents recursive fan-out
 #
 # Dependencies: git, sudo, nixos-rebuild, claude (for AI commit messages)
 # Usage: update [--help|-h]
@@ -24,6 +26,8 @@ if set -q NIXOS_UPDATE_HOST
 end
 set -l OPENROUTER_KEY_FILE "$HOME/.config/secrets/openrouter_api_key"
 set -l OPENROUTER_MODEL openai/gpt-5-nano
+set -l FLEET_HOSTS vd kiwi neo
+set -l DEPLOYED_REVISION_FILE "$HOME/.local/state/nixos-update/deployed-revision"
 # Global so helper functions can access it. The script runs in its own process.
 # Avoid PATH-injected sudo shims that can silently skip nixos-rebuild switch.
 set -g SUDO_BIN /run/wrappers/bin/sudo
@@ -92,6 +96,7 @@ if contains -- --help $argv; or contains -- -h $argv
     echo "  NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)"
     echo "  NIXOS_UPDATE_DIR         Override the flake checkout directory"
     echo "  NIXOS_UPDATE_HOST        Override the target NixOS hostname"
+    echo "  NIXOS_UPDATE_NO_FLEET=1  Do not update the other configured hosts"
     echo ""
     echo "Dependencies: git, sudo, nixos-rebuild, curl (for AI messages)"
     exit 0
@@ -132,6 +137,16 @@ cd "$NIXOS_DIR"
 if not git rev-parse --git-dir >/dev/null 2>&1
     _log_error "Not a git repository: $NIXOS_DIR"
     exit 1
+end
+
+# Fleet children only deploy committed work. Refuse to stash, stage, commit, or
+# otherwise disturb edits that somebody may still be making on another host.
+if test "$NIXOS_UPDATE_FLEET_CHILD" = 1
+    set -l child_changes (git status --porcelain 2>/dev/null)
+    if test -n "$child_changes"
+        _log_error "Fleet update blocked: $TARGET_HOST has uncommitted changes"
+        exit 20
+    end
 end
 
 # ── Banner ────────────────────────────────────────────────────────────────────
@@ -284,6 +299,21 @@ if test "$SKIP_GIT" = false
 
 else
     _log_info "Skipping git fetch/stage/commit because NIXOS_UPDATE_NO_GIT=1"
+end
+
+# A successful deployment marker is stronger than the checkout's HEAD:
+# fetching or pulling a revision does not mean that revision was switched.
+if test "$NIXOS_UPDATE_FLEET_CHILD" = 1
+    set -l target_revision (git rev-parse HEAD 2>/dev/null)
+    set -l deployed_revision ""
+    if test -f "$DEPLOYED_REVISION_FILE"
+        set deployed_revision (string trim (cat "$DEPLOYED_REVISION_FILE"))
+    end
+
+    if test -n "$target_revision"; and test "$deployed_revision" = "$target_revision"
+        _log_success "$TARGET_HOST already deployed "(string sub -l 12 "$target_revision")"; nothing to do"
+        exit 0
+    end
 end
 
 # ── Determine if there's actually something staged to commit ─────────────────
@@ -486,6 +516,55 @@ else
     rm -f "$commit_msg_file"
     _log_step "No local changes to commit"
     _log_info "Configuration rebuilt successfully, no new commits needed"
+end
+
+# Record only revisions that actually completed nixos-rebuild switch. On the
+# authoring host, staged changes are committed first so the marker identifies
+# the exact source revision represented by the running system.
+set -l deployed_revision (git rev-parse HEAD 2>/dev/null)
+if test -n "$deployed_revision"
+    mkdir -p (dirname "$DEPLOYED_REVISION_FILE")
+    printf "%s\n" "$deployed_revision" >"$DEPLOYED_REVISION_FILE"
+end
+
+# Fan out only from the command the user started. Each reachable peer runs this
+# same script as a fleet child, pulls first, and either skips or switches.
+if test "$SKIP_GIT" = false; and test "$NIXOS_UPDATE_FLEET_CHILD" != 1; and test "$NIXOS_UPDATE_NO_FLEET" != 1
+    set -l branch (git branch --show-current)
+    set -l local_revision (git rev-parse HEAD 2>/dev/null)
+    set -l remote_revision (git rev-parse "origin/$branch" 2>/dev/null)
+
+    if test -n "$local_revision"; and test "$local_revision" = "$remote_revision"
+        _log_header "Updating Fleet"
+        for fleet_host in $FLEET_HOSTS
+            if test "$fleet_host" = (hostname -s)
+                _log_success "$fleet_host is the initiating host"
+                continue
+            end
+
+            _log_step "Updating $fleet_host..."
+            ssh \
+                -o BatchMode=yes \
+                -o ConnectTimeout=5 \
+                -o ConnectionAttempts=1 \
+                "$fleet_host" \
+                "NIXOS_UPDATE_FLEET_CHILD=1 /home/fractal-tess/nixos/scripts/nixos/update"
+            set -l fleet_status $status
+
+            switch $fleet_status
+                case 0
+                    _log_success "$fleet_host is current"
+                case 20
+                    _log_warning "$fleet_host was skipped because its checkout has local changes"
+                case 255
+                    _log_warning "$fleet_host is offline or unreachable; skipped"
+                case '*'
+                    _log_warning "$fleet_host update failed with status $fleet_status"
+            end
+        end
+    else
+        _log_warning "Skipping fleet update because the local commit is not on origin/$branch"
+    end
 end
 
 # ── Summary ───────────────────────────────────────────────────────────────────
