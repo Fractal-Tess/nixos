@@ -15,4 +15,25 @@ if contains -- --help $argv; or contains -- -h $argv
     exit 0
 end
 
-exec clip-sync desktop
+# Wayland does not deliver keys to an unfocused client. Keep Escape owned by
+# this picker process for exactly its lifetime so pointer-focused windows
+# cannot strand it open.
+clip-sync desktop &
+set -l picker_pid $last_pid
+
+if command -q hyprctl
+    set -l bind_lua (printf 'hl.bind("Escape", hl.dsp.exec_cmd([[kill -TERM %d]]))' $picker_pid)
+    if hyprctl eval "$bind_lua" >/dev/null
+        function _remove_picker_escape_bind --on-event fish_exit
+            hyprctl eval 'hl.unbind("Escape")' >/dev/null 2>&1
+        end
+        function _terminate_picker --on-signal TERM --inherit-variable picker_pid
+            kill -TERM $picker_pid 2>/dev/null
+            exit 143
+        end
+    end
+end
+
+wait $picker_pid
+set -l desktop_status $status
+exit $desktop_status
