@@ -180,6 +180,19 @@
             };
           };
           folders = {
+            "omp-settings" = {
+              path = "/home/fractal-tess/.omp/agent";
+              id = "omp-settings";
+              label = "OMP Settings";
+              devices = [
+                "neo"
+                "kiwi"
+              ];
+              ignorePatterns = [
+                "!/config.yml"
+                "*"
+              ];
+            };
             "opencode-config" = {
               path = "/home/fractal-tess/.config/opencode";
               id = "opencode-config";
