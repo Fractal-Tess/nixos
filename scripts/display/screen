@@ -356,7 +356,7 @@ function _lid_close
     # Always persist the disabled monitor rule while the lid is closed. If the
     # laptop suspends with no external display and is later docked, Hyprland
     # otherwise keeps eDP active because no second lid event is emitted.
-    if hyprctl keyword monitor "$LAPTOP_MONITOR, disable" >/dev/null 2>&1
+    if hyprctl eval "hl.monitor({ output = \"$LAPTOP_MONITOR\", disabled = true })" >/dev/null 2>&1
         _lid_log "Disabled $LAPTOP_MONITOR"
     else
         _lid_log "Failed to disable $LAPTOP_MONITOR"
@@ -380,7 +380,10 @@ end
 function _lid_open
     _lid_log "Lid open event"
 
-    hyprctl keyword monitor "$LAPTOP_MONITOR, preferred, auto, 1" >/dev/null 2>&1
+    if not hyprctl eval "hl.monitor({ output = \"$LAPTOP_MONITOR\", mode = \"preferred\", position = \"auto\", scale = 1, disabled = false })" >/dev/null 2>&1
+        _lid_log "Failed to enable $LAPTOP_MONITOR"
+        return 1
+    end
 
     set -l updated (_get_monitors_json | jq '[.[] | select(.name | startswith("e") | not) | select(.disabled == false)] | length' 2>/dev/null; or echo 0)
     _lid_log "Lid opened with $updated external monitor(s); enabled $LAPTOP_MONITOR"
