@@ -111,7 +111,6 @@
                 polymc.overlay
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
-                (import ./overlays/vibe-kanban.nix)
                 (import ./overlays/kimi-cli)
                 (final: prev: {
                   # openldap's syncrepl test is flaky on this pinned nixpkgs revision

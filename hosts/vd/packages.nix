@@ -312,7 +312,6 @@ in
     #--------------------------------------------------------------------------
 
     zed-editor # Zed editor
-    vibe-kanban # Desktop Kanban board for vibe coding workflows
     tradingview # Trading platform desktop app
     dbgate # Database manager
     postman # API development environment

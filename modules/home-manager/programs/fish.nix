@@ -109,8 +109,6 @@
       ncs-tauri = "_ncs_setup tauri";
       ncs-unity = "_ncs_setup unity";
 
-      # Vibe-Kanban
-      vk = "~/nixos/scripts/dev/vibe-kanban";
     };
 
     # Interactive shell initialization
