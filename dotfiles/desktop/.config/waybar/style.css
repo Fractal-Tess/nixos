@@ -331,10 +331,14 @@ tooltip label {
 }
 
 #custom-claude {
-    background: @surface_container;
+    background-color: @surface_container;
+    background-image: url("/home/fractal-tess/nixos/dotfiles/desktop/.config/waybar/claude.svg");
+    background-repeat: no-repeat;
+    background-position: 0.7rem center;
+    background-size: 0.95rem;
     color: @secondary;
     border-radius: 1.2rem;
-    padding-left: 0.85rem;
+    padding-left: 2rem;
     padding-right: 0.85rem;
     margin: 0.35rem 0.16rem;
     font-size: 0.72rem;
@@ -344,3 +348,4 @@ tooltip label {
 #custom-claude.medium { color: @tertiary; }
 #custom-claude.high, #custom-claude.error { color: @error; }
 #custom-claude.expired { color: @outline; }
+#custom-claude.stale { opacity: 0.6; }

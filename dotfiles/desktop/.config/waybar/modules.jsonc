@@ -224,9 +224,9 @@
 "custom/claude": {
  "format": "{}",
  "return-type": "json",
- "interval": 120,
+ "interval": 60,
  "exec": "fish --no-config ~/nixos/scripts/waybar/claude",
- "on-click": "pkill -SIGRTMIN+11 waybar",
+ "on-click": "fish --no-config ~/nixos/scripts/waybar/claude --force >/dev/null; pkill -SIGRTMIN+11 waybar",
  "signal": 11,
  "tooltip": true,
 },

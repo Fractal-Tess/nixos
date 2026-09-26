@@ -6,32 +6,46 @@
 # ~/.claude/.credentials.json, and outputs Waybar-compatible JSON with the
 # 5-hour session and 7-day weekly utilization.
 #
+# The endpoint is aggressively rate limited, so responses are cached in
+# $XDG_CACHE_HOME/waybar-claude and refetched at most every $fetch_every
+# seconds. After a failed request (e.g. HTTP 429) fetching backs off and the
+# last cached data is shown, marked as stale.
+#
 # The token is never refreshed here — Claude Code rotates it on its own the
 # next time it runs. Until then the module shows an "expired" state.
 #
 # Dependencies: curl, jq
-# Usage: claude [--help|-h]
+# Usage: claude [--force] [--help|-h]
 
 if contains -- --help $argv; or contains -- -h $argv
-    printf "Usage: claude\n\n"
+    printf "Usage: claude [--force]\n\n"
     printf "Outputs Waybar JSON for current Claude Code plan usage.\n"
     printf "Reads the OAuth token from ~/.claude/.credentials.json.\n\n"
-    printf "JSON fields: percentage, text, tooltip, class (low/medium/high/expired/error)\n"
+    printf "  --force  Refetch now, ignoring the cache age (still respects backoff)\n\n"
+    printf "JSON fields: percentage, text, tooltip, class (low/medium/high/stale/expired/error)\n"
     exit 0
 end
 
-set icon "󰚩"
 set creds ~/.claude/.credentials.json
+set fetch_every 300 # seconds between successful fetches
+set backoff_429 600 # minimum wait after being rate limited
+set backoff_err 120 # wait after any other failure
+
+set cache_dir (set -q XDG_CACHE_HOME; and echo $XDG_CACHE_HOME; or echo ~/.cache)/waybar-claude
+set cache $cache_dir/usage.json
+set backoff_file $cache_dir/backoff-until
+set error_file $cache_dir/last-error
+mkdir -p $cache_dir
+
+set now (date +%s)
 
 function emit -a text tooltip class pct
     jq -cn --arg text $text --arg tooltip $tooltip --arg class $class --argjson pct $pct \
-        '{text: $text, tooltip: $tooltip, class: $class, percentage: $pct}'
+        '{text: $text, tooltip: $tooltip, class: ($class | split(" ")), percentage: $pct}'
 end
 
-# Human-readable time until an ISO-8601 timestamp, e.g. "2h 14m" or "3d 5h"
-function until_str -a iso
-    test -z "$iso"; and begin; echo "?"; return; end
-    set secs (math (date -d $iso +%s) - (date +%s))
+# Human-readable duration from seconds, e.g. "2h 14m" or "3d 5h"
+function dur_str -a secs
     test $secs -lt 0; and set secs 0
     set d (math --scale=0 "floor($secs / 86400)")
     set h (math --scale=0 "floor($secs % 86400 / 3600)")
@@ -45,38 +59,98 @@ function until_str -a iso
     end
 end
 
-if not test -r $creds
-    emit "$icon –" "Claude: no credentials found"\n"Run `claude` and log in" error 0
+# Time until an ISO-8601 timestamp
+function until_str -a iso
+    test -z "$iso"; and begin; echo "?"; return; end
+    dur_str (math (date -d $iso +%s) - (date +%s))
+end
+
+function cache_age
+    test -f $cache; or begin; echo 999999; return; end
+    math $now - (stat -c %Y $cache)
+end
+
+#----------------------------------------------------------------------------
+# Fetch (only when the cache is old enough and we are not backing off)
+#----------------------------------------------------------------------------
+
+set backoff_until 0
+test -f $backoff_file; and set backoff_until (cat $backoff_file)
+
+set want_fetch 0
+if contains -- --force $argv; or test (cache_age) -ge $fetch_every
+    set want_fetch 1
+end
+
+if test $want_fetch -eq 1; and test $now -ge $backoff_until
+    if not test -r $creds
+        echo "no credentials found — run `claude` and log in" >$error_file
+        echo (math $now + $backoff_err) >$backoff_file
+    else
+        set token (jq -r '.claudeAiOauth.accessToken // empty' $creds)
+        set expires_ms (jq -r '.claudeAiOauth.expiresAt // 0' $creds)
+
+        if test -z "$token"
+            echo "not logged in" >$error_file
+            echo (math $now + $backoff_err) >$backoff_file
+        else if test (math --scale=0 "$expires_ms / 1000") -lt $now
+            echo expired >$error_file
+        else
+            set tmp $cache_dir/response.tmp
+            set headers $cache_dir/headers.tmp
+            set code (curl -s -m 10 -o $tmp -D $headers -w '%{http_code}' \
+                https://api.anthropic.com/api/oauth/usage \
+                -H "Authorization: Bearer $token" \
+                -H "anthropic-beta: oauth-2025-04-20" \
+                -H "Content-Type: application/json")
+
+            if test "$code" = 200; and jq -e .five_hour $tmp >/dev/null 2>&1
+                mv $tmp $cache
+                rm -f $error_file $backoff_file
+            else if test "$code" = 429
+                set retry (string match -rgi '^retry-after:\s*(\d+)' <$headers)
+                set wait $backoff_429
+                test -n "$retry"; and test $retry -gt $wait; and set wait $retry
+                echo "rate limited (HTTP 429)" >$error_file
+                echo (math $now + $wait) >$backoff_file
+            else
+                echo "request failed (HTTP $code)" >$error_file
+                echo (math $now + $backoff_err) >$backoff_file
+            end
+            rm -f $tmp $headers
+        end
+    end
+end
+
+#----------------------------------------------------------------------------
+# Render
+#----------------------------------------------------------------------------
+
+set err ""
+test -f $error_file; and set err (cat $error_file)
+
+if not test -f $cache
+    if test "$err" = expired
+        emit "⏸" "Claude: OAuth token expired"\n"It refreshes next time Claude Code runs" expired 0
+    else if test -n "$err"
+        set retry_in (dur_str (math (cat $backoff_file 2>/dev/null; or echo $now) - $now))
+        emit "!" "Claude: $err"\n"Retrying in $retry_in" error 0
+    else
+        emit "…" "Claude: waiting for first update" error 0
+    end
     exit 0
 end
 
-set token (jq -r '.claudeAiOauth.accessToken // empty' $creds)
-set expires_ms (jq -r '.claudeAiOauth.expiresAt // 0' $creds)
-
-if test -z "$token"
-    emit "$icon –" "Claude: not logged in" error 0
-    exit 0
-end
-
-if test (math --scale=0 "$expires_ms / 1000") -lt (date +%s)
-    emit "$icon ⏸" "Claude: OAuth token expired"\n"It refreshes next time Claude Code runs" expired 0
-    exit 0
-end
-
-set resp (curl -sf -m 10 https://api.anthropic.com/api/oauth/usage \
-    -H "Authorization: Bearer $token" \
-    -H "anthropic-beta: oauth-2025-04-20" \
-    -H "Content-Type: application/json" | string collect)
-
-if test $status -ne 0; or test -z "$resp"
-    emit "$icon !" "Claude: usage request failed" error 0
-    exit 0
-end
+set resp (cat $cache | string collect)
 
 set session (echo $resp | jq -r '.five_hour.utilization // 0 | round')
 set session_reset (echo $resp | jq -r '.five_hour.resets_at // empty')
 set weekly (echo $resp | jq -r '.seven_day.utilization // 0 | round')
 set weekly_reset (echo $resp | jq -r '.seven_day.resets_at // empty')
+
+# A window that has already reset is back to 0% even if the cache is older
+test -n "$session_reset"; and test (date -d $session_reset +%s) -le $now; and set session 0
+test -n "$weekly_reset"; and test (date -d $weekly_reset +%s) -le $now; and set weekly 0
 
 set peak (math max $session, $weekly)
 if test $peak -lt 50
@@ -98,4 +172,13 @@ for row in (echo $resp | jq -r '.limits[]? | select(.kind == "weekly_scoped") | 
 Weekly $parts[1]: $parts[2]%"
 end
 
-emit "$icon $session% · $weekly%" $tooltip $class $peak
+set tooltip "$tooltip
+
+Updated "(dur_str (cache_age))" ago"
+if test -n "$err"
+    set tooltip "$tooltip — last refresh: $err"
+    test "$err" = expired; and set tooltip "$tooltip (run Claude Code to renew)"
+    set class "$class stale"
+end
+
+emit "$session% · $weekly%" $tooltip $class $peak
