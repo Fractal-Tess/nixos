@@ -138,10 +138,7 @@ in
     # Testing
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
-    opencode # AI coding assistant
     opencode-desktop # Desktop GUI for OpenCode
-    claude-code # Claude Code CLI
-    codex # OpenAI Codex CLI
     pi-coding-agent # Minimal terminal coding agent harness
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
 

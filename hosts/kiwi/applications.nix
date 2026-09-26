@@ -16,6 +16,9 @@
     inputs.t3code-flake.nixosModules.default
     inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
+    inputs.claude-code-flake.nixosModules.default
+    inputs.codex-flake.nixosModules.default
+    inputs.opencode-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -42,6 +45,21 @@
     # Agent Browser
     {
       programs.agent-browser.enable = true;
+    }
+
+    # Claude Code
+    {
+      programs.claude-code.enable = true;
+    }
+
+    # Codex
+    {
+      programs.codex.enable = true;
+    }
+
+    # opencode
+    {
+      programs.opencode.enable = true;
     }
 
     # Scorch

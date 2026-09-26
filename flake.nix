@@ -54,6 +54,21 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    claude-code-flake = {
+      url = "github:Fractal-Tess/claude-code-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    codex-flake = {
+      url = "github:Fractal-Tess/codex-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    opencode-flake = {
+      url = "github:Fractal-Tess/opencode-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     clip-sync = {
       url = "github:Fractal-Tess/clip-sync";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -119,7 +134,6 @@
                     doCheck = false;
                   });
                 })
-                (import ./overlays/claude-code)
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
                 (import ./overlays/llama-cpp.nix)

@@ -86,6 +86,26 @@
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
       }
     },
+    "claude-code-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790443896,
+        "narHash": "sha256-uHh1Is0EavldFe/SquuvB1KGC+4JIH7pKv0pahLJNUw=",
+        "owner": "Fractal-Tess",
+        "repo": "claude-code-flake",
+        "rev": "fdfdfc9f826508859988d148599422e415fd032c",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "claude-code-flake",
+        "type": "github"
+      }
+    },
     "clip-sync": {
       "inputs": {
         "nixpkgs": [
@@ -103,6 +123,26 @@
       "original": {
         "owner": "Fractal-Tess",
         "repo": "clip-sync",
+        "type": "github"
+      }
+    },
+    "codex-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790443896,
+        "narHash": "sha256-YUha/FeWpAHleH+L9kD8+cgaXLLIidq138x2WqaY0SA=",
+        "owner": "Fractal-Tess",
+        "repo": "codex-flake",
+        "rev": "a114a7febc53b8db1381b50e06e980042a041399",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "codex-flake",
         "type": "github"
       }
     },
@@ -381,11 +421,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1790185690,
-        "narHash": "sha256-xJ+X4hBtOcAFGBOe5nAMyMUeF9foJBmIOu3NjBqBycU=",
+        "lastModified": 1790323409,
+        "narHash": "sha256-VVTPf+Hyd5ebpjBMHmrLMSBIeW6ls48Bqtosj7CNKLA=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "4975466d324710c576dc11ad614684e6bd8cad8e",
+        "rev": "e94cb152ed51bd6e24eb4a41f1460252beb52cd2",
         "type": "github"
       },
       "original": {
@@ -469,11 +509,11 @@
         "source": "source"
       },
       "locked": {
-        "lastModified": 1790354931,
-        "narHash": "sha256-iYrwyyOlZ8uyMQz2Zi+JHCBz7X/X3zyJbm1zAFHHtYM=",
+        "lastModified": 1790438670,
+        "narHash": "sha256-rjwryM0UcRG5JYMmATfgHyBqinCdU5aQzpzb/h+1SWY=",
         "owner": "Fractal-Tess",
         "repo": "oh-my-pi-flake",
-        "rev": "deaa19867b064178a67d6b496fd637511b63f8ff",
+        "rev": "171dfe27a29846d2bb650fc13efc12a510a499ef",
         "type": "github"
       },
       "original": {
@@ -501,6 +541,26 @@
         "type": "github"
       }
     },
+    "opencode-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790443896,
+        "narHash": "sha256-9qgFjhIFU7H2yjBCnJkHqXN42uEttYjTGne7+U56Jd0=",
+        "owner": "Fractal-Tess",
+        "repo": "opencode-flake",
+        "rev": "44f889c42d6871fd0f6cbae154264540fcbc0ec6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "opencode-flake",
+        "type": "github"
+      }
+    },
     "polymc": {
       "inputs": {
         "flake-compat": "flake-compat",
@@ -511,11 +571,11 @@
         "tomlplusplus": "tomlplusplus"
       },
       "locked": {
-        "lastModified": 1790006517,
-        "narHash": "sha256-VjNuDh/JogFV6p8rBfiAA1/KkxHYJA1zrrgQJxk0E0M=",
+        "lastModified": 1790384900,
+        "narHash": "sha256-rzUJ7uzvrhbC3Sjz1sPvYu+ZczaS16U3T2i1leyq0/M=",
         "owner": "PolyMC",
         "repo": "PolyMC",
-        "rev": "8a20f64de6bf7ca09d128b3ea176c4e8a8c59c4e",
+        "rev": "1da6b4e11d78313545d5422ac4e06f232368a10e",
         "type": "github"
       },
       "original": {
@@ -548,7 +608,9 @@
         "agent-browser-flake": "agent-browser-flake",
         "asterveil": "asterveil",
         "chorus": "chorus",
+        "claude-code-flake": "claude-code-flake",
         "clip-sync": "clip-sync",
+        "codex-flake": "codex-flake",
         "delta-flake": "delta-flake",
         "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",
@@ -557,6 +619,7 @@
         "nixpkgs": "nixpkgs_3",
         "oh-my-pi-flake": "oh-my-pi-flake",
         "open-design-flake": "open-design-flake",
+        "opencode-flake": "opencode-flake",
         "polymc": "polymc",
         "responsively-flake": "responsively-flake",
         "scorch": "scorch",
@@ -727,11 +790,11 @@
     "source": {
       "flake": false,
       "locked": {
-        "lastModified": 1790343185,
-        "narHash": "sha256-MPzdAdkxv0Hn/7RfRbiUXBxPgo3xmqpIUbrYLtF2TeQ=",
+        "lastModified": 1790437033,
+        "narHash": "sha256-oBDrFc9gYDPSRiZ8KXxTxYUd5aMQdpiPAtM0XLgO0Hw=",
         "owner": "can1357",
         "repo": "oh-my-pi",
-        "rev": "ba344f5e69f28535e7e9a2cf09e5af3643861b73",
+        "rev": "3bb77e65d4adf87d23d7d563070b9a5618f0b203",
         "type": "github"
       },
       "original": {

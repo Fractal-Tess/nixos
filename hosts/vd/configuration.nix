@@ -1,4 +1,5 @@
 {
+  config,
   pkgs,
   inputs,
   username,
@@ -285,6 +286,9 @@
       # OpenCode Remote Server
       opencode-server = {
         enable = true;
+        # Share the opencode-flake build with programs.opencode. The default is
+        # pkgs.opencode, which would put a second, older opencode in PATH.
+        package = config.programs.opencode.package;
         host = "100.91.0.2";
         port = 4096;
         extraArgs = [ "--print-logs" ];
