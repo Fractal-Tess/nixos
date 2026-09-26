@@ -329,3 +329,18 @@ tooltip label {
     margin: 0.5rem 0.2rem;
     margin-right: 0.6rem;
 }
+
+#custom-claude {
+    background: @surface_container;
+    color: @secondary;
+    border-radius: 1.2rem;
+    padding-left: 0.85rem;
+    padding-right: 0.85rem;
+    margin: 0.35rem 0.16rem;
+    font-size: 0.72rem;
+    transition: 0.3s all ease;
+}
+#custom-claude:hover { color: @primary; }
+#custom-claude.medium { color: @tertiary; }
+#custom-claude.high, #custom-claude.error { color: @error; }
+#custom-claude.expired { color: @outline; }

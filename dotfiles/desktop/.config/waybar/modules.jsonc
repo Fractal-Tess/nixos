@@ -221,6 +221,15 @@
  "on-click": "fish --no-config ~/nixos/scripts/display/screen sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
  "signal": 9,
 },
+"custom/claude": {
+ "format": "{}",
+ "return-type": "json",
+ "interval": 120,
+ "exec": "fish --no-config ~/nixos/scripts/waybar/claude",
+ "on-click": "pkill -SIGRTMIN+11 waybar",
+ "signal": 11,
+ "tooltip": true,
+},
 "custom/boost": {
  "format": "{}",
  "return-type": "json",

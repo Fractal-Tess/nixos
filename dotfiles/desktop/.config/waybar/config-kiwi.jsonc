@@ -20,6 +20,7 @@
    "group/idlevol",
    "group/sysmon",
    "group/netblue",
+   "custom/claude",
    "group/datetime",
    "custom/notifications",
    "group/traywermen",

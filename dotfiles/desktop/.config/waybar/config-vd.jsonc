@@ -26,6 +26,7 @@
    "group/sysmon",
    "group/gpumon",
    "group/netblue",
+   "custom/claude",
    "group/datetime",
    "custom/notifications",
   "group/traywermen",

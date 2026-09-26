@@ -33,7 +33,9 @@ in
     # Dependencies used by Waybar's custom scripts and click handlers. The sudo
     # wrapper is required for privileged controls such as CPU boost.
     systemd.user.services.waybar.path = [
+      pkgs.curl
       pkgs.fish
+      pkgs.jq
       pkgs.libnotify
       pkgs.procps
       "/run/wrappers"

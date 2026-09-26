@@ -1,0 +1,101 @@
+#!/usr/bin/env fish
+# claude — Waybar Claude Code usage status
+#
+# Queries the Anthropic OAuth usage endpoint (the same one Claude Code's
+# /usage command uses) with the token Claude Code stores in
+# ~/.claude/.credentials.json, and outputs Waybar-compatible JSON with the
+# 5-hour session and 7-day weekly utilization.
+#
+# The token is never refreshed here — Claude Code rotates it on its own the
+# next time it runs. Until then the module shows an "expired" state.
+#
+# Dependencies: curl, jq
+# Usage: claude [--help|-h]
+
+if contains -- --help $argv; or contains -- -h $argv
+    printf "Usage: claude\n\n"
+    printf "Outputs Waybar JSON for current Claude Code plan usage.\n"
+    printf "Reads the OAuth token from ~/.claude/.credentials.json.\n\n"
+    printf "JSON fields: percentage, text, tooltip, class (low/medium/high/expired/error)\n"
+    exit 0
+end
+
+set icon "󰚩"
+set creds ~/.claude/.credentials.json
+
+function emit -a text tooltip class pct
+    jq -cn --arg text $text --arg tooltip $tooltip --arg class $class --argjson pct $pct \
+        '{text: $text, tooltip: $tooltip, class: $class, percentage: $pct}'
+end
+
+# Human-readable time until an ISO-8601 timestamp, e.g. "2h 14m" or "3d 5h"
+function until_str -a iso
+    test -z "$iso"; and begin; echo "?"; return; end
+    set secs (math (date -d $iso +%s) - (date +%s))
+    test $secs -lt 0; and set secs 0
+    set d (math --scale=0 "floor($secs / 86400)")
+    set h (math --scale=0 "floor($secs % 86400 / 3600)")
+    set m (math --scale=0 "floor($secs % 3600 / 60)")
+    if test $d -gt 0
+        echo "$d"d "$h"h
+    else if test $h -gt 0
+        echo "$h"h "$m"m
+    else
+        echo "$m"m
+    end
+end
+
+if not test -r $creds
+    emit "$icon –" "Claude: no credentials found"\n"Run `claude` and log in" error 0
+    exit 0
+end
+
+set token (jq -r '.claudeAiOauth.accessToken // empty' $creds)
+set expires_ms (jq -r '.claudeAiOauth.expiresAt // 0' $creds)
+
+if test -z "$token"
+    emit "$icon –" "Claude: not logged in" error 0
+    exit 0
+end
+
+if test (math --scale=0 "$expires_ms / 1000") -lt (date +%s)
+    emit "$icon ⏸" "Claude: OAuth token expired"\n"It refreshes next time Claude Code runs" expired 0
+    exit 0
+end
+
+set resp (curl -sf -m 10 https://api.anthropic.com/api/oauth/usage \
+    -H "Authorization: Bearer $token" \
+    -H "anthropic-beta: oauth-2025-04-20" \
+    -H "Content-Type: application/json" | string collect)
+
+if test $status -ne 0; or test -z "$resp"
+    emit "$icon !" "Claude: usage request failed" error 0
+    exit 0
+end
+
+set session (echo $resp | jq -r '.five_hour.utilization // 0 | round')
+set session_reset (echo $resp | jq -r '.five_hour.resets_at // empty')
+set weekly (echo $resp | jq -r '.seven_day.utilization // 0 | round')
+set weekly_reset (echo $resp | jq -r '.seven_day.resets_at // empty')
+
+set peak (math max $session, $weekly)
+if test $peak -lt 50
+    set class low
+else if test $peak -lt 80
+    set class medium
+else
+    set class high
+end
+
+set tooltip "Claude Code usage
+Session (5h): $session% — resets in "(until_str $session_reset)"
+Weekly (7d):  $weekly% — resets in "(until_str $weekly_reset)
+
+# Per-model weekly limits (e.g. Opus/Fable), when the plan has them
+for row in (echo $resp | jq -r '.limits[]? | select(.kind == "weekly_scoped") | "\(.scope.model.display_name // "Scoped")\t\(.percent)"')
+    set parts (string split \t $row)
+    set tooltip "$tooltip
+Weekly $parts[1]: $parts[2]%"
+end
+
+emit "$icon $session% · $weekly%" $tooltip $class $peak
