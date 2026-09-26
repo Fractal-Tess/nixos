@@ -2,6 +2,5 @@
 
 {
   imports = [
-    ./kimi-cli.nix
   ];
 }

@@ -126,7 +126,6 @@
                 polymc.overlay
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
-                (import ./overlays/kimi-cli)
                 (import ./overlays/tws.nix)
                 (import ./overlays/vllm.nix)
                 (import ./overlays/llama-cpp.nix)

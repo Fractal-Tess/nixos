@@ -6,7 +6,6 @@
     ./auto_cpu/default.nix
     ./automount/default.nix
     ./cliproxyapi/default.nix
-    ./kimi-web/default.nix
     ./nessus/default.nix
     ./opencode-server/default.nix
     ./remote-desktop/default.nix
