@@ -224,6 +224,8 @@
 
   # Core system services
   services = {
+    jellyfin.enable = true;
+
     tlp = {
       enable = true;
       settings = {
