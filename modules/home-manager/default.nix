@@ -7,6 +7,7 @@
     ./programs/git.nix
     ./programs/fish.nix
     ./programs/scorch.nix
+    ./programs/agent-skills.nix
     ./programs/bat.nix
     ./services/battery-check.nix
   ];
