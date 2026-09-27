@@ -1,5 +1,5 @@
 #!/usr/bin/env fish
-# claude — Waybar Claude Code usage status
+# claude-usage — Waybar Claude Code usage status
 #
 # Queries the Anthropic OAuth usage endpoint (the same one Claude Code's
 # /usage command uses) with the token Claude Code stores in
@@ -9,32 +9,34 @@
 # The endpoint is aggressively rate limited, so responses are cached in
 # $XDG_CACHE_HOME/waybar-claude and refetched at most every $fetch_every
 # seconds. After a failed request (e.g. HTTP 429) fetching backs off and the
-# last cached data is shown, marked as stale.
+# last cached data is shown.
 #
 # The token is never refreshed here — Claude Code rotates it on its own the
 # next time it runs. Until then the module shows an "expired" state.
 #
 # Dependencies: curl, jq
-# Usage: claude [--force] [--help|-h]
+# Usage: claude-usage [--force] [--help|-h]
 
 if contains -- --help $argv; or contains -- -h $argv
-    printf "Usage: claude [--force]\n\n"
+    printf "Usage: claude-usage [--force]\n\n"
     printf "Outputs Waybar JSON for current Claude Code plan usage.\n"
     printf "Reads the OAuth token from ~/.claude/.credentials.json.\n\n"
     printf "  --force  Refetch now, ignoring the cache age (still respects backoff)\n\n"
-    printf "JSON fields: percentage, text, tooltip, class (low/medium/high/stale/expired/error)\n"
+    printf "JSON fields: percentage, text, tooltip, class (low/medium/high/expired/error)\n"
     exit 0
 end
 
 set creds ~/.claude/.credentials.json
-set fetch_every 300 # seconds between successful fetches
-set backoff_429 600 # minimum wait after being rate limited
+set fetch_every 600 # seconds between successful fetches
+set backoff_429 600 # first wait after being rate limited, doubled per repeat
+set backoff_max 3600 # longest wait between retries
 set backoff_err 120 # wait after any other failure
 
 set cache_dir (set -q XDG_CACHE_HOME; and echo $XDG_CACHE_HOME; or echo ~/.cache)/waybar-claude
 set cache $cache_dir/usage.json
 set backoff_file $cache_dir/backoff-until
 set error_file $cache_dir/last-error
+set strikes_file $cache_dir/strikes
 mkdir -p $cache_dir
 
 set now (date +%s)
@@ -63,6 +65,20 @@ end
 function until_str -a iso
     test -z "$iso"; and begin; echo "?"; return; end
     dur_str (math (date -d $iso +%s) - (date +%s))
+end
+
+# Compact time until an ISO-8601 timestamp, largest unit only: "3d", "2h", "37m"
+function until_short -a iso
+    test -z "$iso"; and begin; echo "?"; return; end
+    set secs (math (date -d $iso +%s) - $now)
+    test $secs -lt 0; and set secs 0
+    if test $secs -ge 86400
+        echo (math --scale=0 "floor($secs / 86400)")d
+    else if test $secs -ge 3600
+        echo (math --scale=0 "floor($secs / 3600)")h
+    else
+        echo (math --scale=0 "floor($secs / 60)")m
+    end
 end
 
 function cache_age
@@ -106,10 +122,14 @@ if test $want_fetch -eq 1; and test $now -ge $backoff_until
 
             if test "$code" = 200; and jq -e .five_hour $tmp >/dev/null 2>&1
                 mv $tmp $cache
-                rm -f $error_file $backoff_file
+                rm -f $error_file $backoff_file $strikes_file
             else if test "$code" = 429
                 set retry (string match -rgi '^retry-after:\s*(\d+)' <$headers)
-                set wait $backoff_429
+                # Back off exponentially across consecutive 429s
+                set strikes 0
+                test -f $strikes_file; and set strikes (cat $strikes_file)
+                echo (math $strikes + 1) >$strikes_file
+                set wait (math "min($backoff_429 * 2 ^ $strikes, $backoff_max)")
                 test -n "$retry"; and test $retry -gt $wait; and set wait $retry
                 echo "rate limited (HTTP 429)" >$error_file
                 echo (math $now + $wait) >$backoff_file
@@ -178,7 +198,8 @@ Updated "(dur_str (cache_age))" ago"
 if test -n "$err"
     set tooltip "$tooltip — last refresh: $err"
     test "$err" = expired; and set tooltip "$tooltip (run Claude Code to renew)"
-    set class "$class stale"
+    test -f $backoff_file; and test (cat $backoff_file) -gt $now
+    and set tooltip "$tooltip, retrying in "(dur_str (math (cat $backoff_file) - $now))
 end
 
-emit "$session% · $weekly%" $tooltip $class $peak
+emit "S $session% "(until_short $session_reset)" · W $weekly% "(until_short $weekly_reset) $tooltip $class $peak

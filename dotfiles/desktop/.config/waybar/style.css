@@ -348,4 +348,3 @@ tooltip label {
 #custom-claude.medium { color: @tertiary; }
 #custom-claude.high, #custom-claude.error { color: @error; }
 #custom-claude.expired { color: @outline; }
-#custom-claude.stale { opacity: 0.6; }
