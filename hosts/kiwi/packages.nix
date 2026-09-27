@@ -32,7 +32,6 @@
     thunar # Lightweight file manager
     tumbler # Thumbnail service for Thunar
     pcmanfm # Alternative lightweight file manager
-    nextcloud-client # Nextcloud sync client
     yazi # Terminal file manager with image preview
 
     # Archive management
