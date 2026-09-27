@@ -1,21 +1,13 @@
 # neo is a headless server: it stores and relays clipboard history for the
 # other hosts but has no Wayland session to capture from.
-[shared]
-mesh_quota_bytes = 1073741824
-capture_threshold_bytes = 20971520
-revision = "5f69ed2c7114bfb54da93dc707e18a7a1cd50e1d248a4e6f34b485ec26c5f729"
-
 [local]
 mesh_key_file = "/run/secrets/clip_sync_mesh_key"
 listen_port = 24892
-discovery_interval_seconds = 15
 reconcile_interval_seconds = 5
 reconnect_min_seconds = 1
 reconnect_max_seconds = 60
 peer_interfaces = ["wt0"]
 peer_addresses = ["100.91.0.2", "100.91.0.3", "100.91.126.8"]
-maximum_explicit_share_bytes = 4294967296
-transfer_free_space_reserve_bytes = 67108864
-materialization_free_space_reserve_bytes = 8388608
-max_concurrent_chunk_streams = 4
+inline_limit_bytes = 5242880
+history_quota_bytes = 1073741824
 clipboard = false
