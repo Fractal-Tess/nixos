@@ -42,6 +42,16 @@
     # T3 Code
     {
       programs.t3code.enable = true;
+      services.t3code-server = {
+        enable = true;
+        user = username;
+        host = "0.0.0.0";
+        port = 3773;
+      };
+      # Keep access on the mesh rather than opening the port on every interface.
+      networking.firewall.interfaces.wt0.allowedTCPPorts = [ 3773 ];
+      # Keep the user service running without an active login session.
+      users.users.${username}.linger = true;
     }
 
     # Delta

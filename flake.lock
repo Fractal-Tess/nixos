@@ -890,11 +890,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789835691,
-        "narHash": "sha256-e+sV0YL0kO658cgbv/53xn0NfNmfUA2s/+qSHg0AKzM=",
+        "lastModified": 1790509662,
+        "narHash": "sha256-gnim3V//pHpoPxjGw80NFJE2suUJoJxpWVI1X9A8kdc=",
         "owner": "Fractal-Tess",
         "repo": "t3code-flake",
-        "rev": "1ebd69c8ece4092c153588f288b87f3f3d9893bf",
+        "rev": "8a6b4e912f153b659f6780f3965874fb8e7bd690",
         "type": "github"
       },
       "original": {
