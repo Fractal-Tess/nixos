@@ -41,7 +41,7 @@
     {
       home-manager.users.${username}.services.clip-sync = {
         enable = true;
-        configFile = ../../dotfiles/desktop/.config/clip-sync/config.toml;
+        configFile = ./clip-sync.toml;
         wantedBy = [ "default.target" ];
       };
       sops.secrets.clip_sync_mesh_key = {
