@@ -18,8 +18,8 @@
  "modules-right": [
    "disk#root",
    "group/idlevol",
-   "group/sysmon",
    "custom/ai-usage",
+   "group/sysmon",
    "group/netblue",
    "group/datetime",
    "custom/notifications",
