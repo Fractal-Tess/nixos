@@ -5,6 +5,7 @@
     ./adb/default.nix
     ./auto_cpu/default.nix
     ./automount/default.nix
+    ./calendar/default.nix
     ./cliproxyapi/default.nix
     ./nessus/default.nix
     ./opencode-server/default.nix

@@ -1,0 +1,299 @@
+#!/usr/bin/env fish
+# ai-usage — Waybar AI plan usage status (Claude Code / Codex)
+#
+# Shows the 5-hour session and 7-day weekly utilization of one provider at a
+# time; `--cycle` switches to the next provider. Usage comes from the same
+# endpoints the CLIs use for /usage and /status, authenticated with the
+# tokens they store locally:
+#
+#   claude  api.anthropic.com/api/oauth/usage       ~/.claude/.credentials.json
+#   codex   chatgpt.com/backend-api/wham/usage      ~/.codex/auth.json
+#
+# These endpoints are aggressively rate limited, so responses are cached per
+# provider in $XDG_CACHE_HOME/waybar-ai-usage/<provider> and refetched at most
+# every $fetch_every seconds. After a failed request fetching backs off
+# (exponentially for HTTP 429) and the last cached data keeps being shown.
+#
+# Tokens are never refreshed here — each CLI rotates its own token the next
+# time it runs. Until then the module shows an "expired" state.
+#
+# Dependencies: curl, jq
+# Usage: ai-usage [--force] [--cycle] [--help|-h]
+
+if contains -- --help $argv; or contains -- -h $argv
+    printf "Usage: ai-usage [--force] [--cycle]\n\n"
+    printf "Outputs Waybar JSON for the active provider's plan usage.\n\n"
+    printf "  --cycle  Switch to the next provider (claude → codex → …) and exit\n"
+    printf "  --force  Refetch now, ignoring the cache age (still respects backoff)\n\n"
+    printf "JSON fields: percentage, text, tooltip,\n"
+    printf "             class (provider + low/medium/high/expired/error)\n"
+    exit 0
+end
+
+set providers claude codex
+
+set fetch_every 600 # seconds between successful fetches
+set backoff_429 600 # first wait after being rate limited, doubled per repeat
+set backoff_max 3600 # longest wait between retries
+set backoff_err 120 # wait after any other failure
+
+set base_dir (set -q XDG_CACHE_HOME; and echo $XDG_CACHE_HOME; or echo ~/.cache)/waybar-ai-usage
+set active_file $base_dir/active
+mkdir -p $base_dir
+
+set now (date +%s)
+
+#----------------------------------------------------------------------------
+# Helpers
+#----------------------------------------------------------------------------
+
+function provider_name -a p
+    switch $p
+        case claude
+            echo "Claude Code"
+        case codex
+            echo Codex
+    end
+end
+
+function emit -a text tooltip class pct
+    jq -cn --arg text $text --arg tooltip $tooltip --arg class $class --argjson pct $pct \
+        '{text: $text, tooltip: $tooltip, class: ($class | split(" ")), percentage: $pct}'
+end
+
+# Human-readable duration from seconds, e.g. "2h 14m" or "3d 5h"
+function dur_str -a secs
+    test $secs -lt 0; and set secs 0
+    set d (math --scale=0 "floor($secs / 86400)")
+    set h (math --scale=0 "floor($secs % 86400 / 3600)")
+    set m (math --scale=0 "floor($secs % 3600 / 60)")
+    if test $d -gt 0
+        echo "$d"d "$h"h
+    else if test $h -gt 0
+        echo "$h"h "$m"m
+    else
+        echo "$m"m
+    end
+end
+
+# Compact duration, largest unit only: "3d", "2h", "37m"
+function short_str -a secs
+    test $secs -lt 0; and set secs 0
+    if test $secs -ge 86400
+        echo (math --scale=0 "floor($secs / 86400)")d
+    else if test $secs -ge 3600
+        echo (math --scale=0 "floor($secs / 3600)")h
+    else
+        echo (math --scale=0 "floor($secs / 60)")m
+    end
+end
+
+# Epoch seconds from an epoch or ISO-8601 timestamp (empty stays empty)
+function to_epoch -a ts
+    test -z "$ts"; and return
+    if string match -qr '^\d+$' -- $ts
+        echo $ts
+    else
+        date -d $ts +%s
+    end
+end
+
+# `exp` claim of a JWT, in epoch seconds
+function jwt_exp -a jwt
+    string split -f2 . -- $jwt | string replace -a -- - + | string replace -a _ / \
+        | read -l payload
+    while test (math (string length -- $payload) % 4) -ne 0
+        set payload "$payload="
+    end
+    echo $payload | base64 -d 2>/dev/null | jq -r '.exp // 0'
+end
+
+#----------------------------------------------------------------------------
+# Active provider
+#----------------------------------------------------------------------------
+
+set active claude
+test -f $active_file; and contains -- (cat $active_file) $providers; and set active (cat $active_file)
+
+if contains -- --cycle $argv
+    set i (contains -i -- $active $providers)
+    set next $providers[(math "$i % "(count $providers)" + 1")]
+    echo $next >$active_file
+    exit 0
+end
+
+set cache_dir $base_dir/$active
+set cache $cache_dir/usage.json
+set backoff_file $cache_dir/backoff-until
+set error_file $cache_dir/last-error
+set strikes_file $cache_dir/strikes
+mkdir -p $cache_dir
+
+function cache_age
+    test -f $cache; or begin; echo 999999; return; end
+    math $now - (stat -c %Y $cache)
+end
+
+#----------------------------------------------------------------------------
+# Credentials + request per provider
+#
+# Sets: token (empty when missing), expires (epoch), url, headers, valid_jq
+#----------------------------------------------------------------------------
+
+set token ""
+set expires 0
+set url ""
+set req_headers
+set login_hint ""
+
+switch $active
+    case claude
+        set creds ~/.claude/.credentials.json
+        set login_hint "run `claude` and log in"
+        if test -r $creds
+            set token (jq -r '.claudeAiOauth.accessToken // empty' $creds)
+            set expires (math --scale=0 (jq -r '.claudeAiOauth.expiresAt // 0' $creds)" / 1000")
+        end
+        set url https://api.anthropic.com/api/oauth/usage
+        set req_headers -H "Authorization: Bearer $token" -H "anthropic-beta: oauth-2025-04-20"
+        set valid_jq .five_hour
+    case codex
+        set creds ~/.codex/auth.json
+        set login_hint "run `codex login`"
+        if test -r $creds
+            set token (jq -r '.tokens.access_token // empty' $creds)
+            set account (jq -r '.tokens.account_id // empty' $creds)
+            test -n "$token"; and set expires (jwt_exp $token)
+        end
+        set url https://chatgpt.com/backend-api/wham/usage
+        set req_headers -H "Authorization: Bearer $token" -H "ChatGPT-Account-Id: $account" -H "User-Agent: codex-cli"
+        set valid_jq .rate_limit
+end
+
+#----------------------------------------------------------------------------
+# Fetch (only when the cache is old enough and we are not backing off)
+#----------------------------------------------------------------------------
+
+set backoff_until 0
+test -f $backoff_file; and set backoff_until (cat $backoff_file)
+
+set want_fetch 0
+if contains -- --force $argv; or test (cache_age) -ge $fetch_every
+    set want_fetch 1
+end
+
+if test $want_fetch -eq 1; and test $now -ge $backoff_until
+    if test -z "$token"
+        echo "not logged in — $login_hint" >$error_file
+        echo (math $now + $backoff_err) >$backoff_file
+    else if test "$expires" -lt $now
+        echo expired >$error_file
+    else
+        set tmp $cache_dir/response.tmp
+        set hdrs $cache_dir/headers.tmp
+        set code (curl -s -m 10 -o $tmp -D $hdrs -w '%{http_code}' $url $req_headers \
+            -H "Content-Type: application/json")
+
+        if test "$code" = 200; and jq -e $valid_jq $tmp >/dev/null 2>&1
+            mv $tmp $cache
+            rm -f $error_file $backoff_file $strikes_file
+        else if test "$code" = 429
+            set retry (string match -rgi '^retry-after:\s*(\d+)' <$hdrs)
+            # Back off exponentially across consecutive 429s
+            set strikes 0
+            test -f $strikes_file; and set strikes (cat $strikes_file)
+            echo (math $strikes + 1) >$strikes_file
+            set wait (math "min($backoff_429 * 2 ^ $strikes, $backoff_max)")
+            test -n "$retry"; and test $retry -gt $wait; and set wait $retry
+            echo "rate limited (HTTP 429)" >$error_file
+            echo (math $now + $wait) >$backoff_file
+        else
+            echo "request failed (HTTP $code)" >$error_file
+            echo (math $now + $backoff_err) >$backoff_file
+        end
+        rm -f $tmp $hdrs
+    end
+end
+
+#----------------------------------------------------------------------------
+# Render
+#----------------------------------------------------------------------------
+
+set name (provider_name $active)
+set other $providers[(math (contains -i -- $active $providers)" % "(count $providers)" + 1")]
+set footer "Click to switch to "(provider_name $other)
+
+set err ""
+test -f $error_file; and set err (cat $error_file)
+
+if not test -f $cache
+    if test "$err" = expired
+        emit ⏸ "$name: token expired"\n"It refreshes next time the CLI runs"\n\n$footer "$active expired" 0
+    else if test -n "$err"
+        set retry_in (dur_str (math (cat $backoff_file 2>/dev/null; or echo $now) - $now))
+        emit ! "$name: $err"\n"Retrying in $retry_in"\n\n$footer "$active error" 0
+    else
+        emit … "$name: waiting for first update"\n\n$footer "$active error" 0
+    end
+    exit 0
+end
+
+# Normalize to: session %, session reset, weekly %, weekly reset, extra lines
+set extra
+switch $active
+    case claude
+        set fields (jq -r '
+            .five_hour.utilization // 0, .five_hour.resets_at // "",
+            .seven_day.utilization // 0, .seven_day.resets_at // ""' $cache)
+        # Per-model weekly limits (e.g. Opus/Fable), when the plan has them
+        set extra (jq -r '.limits[]? | select(.kind == "weekly_scoped")
+            | "Weekly \(.scope.model.display_name // "scoped"): \(.percent)%"' $cache)
+    case codex
+        set fields (jq -r '.rate_limit
+            | .primary_window.used_percent // 0, .primary_window.reset_at // "",
+              .secondary_window.used_percent // 0, .secondary_window.reset_at // ""' $cache)
+        set extra "Plan: "(jq -r '.plan_type // "unknown"' $cache)
+end
+
+set session (math --scale=0 "round($fields[1])")
+set session_reset (to_epoch $fields[2])
+set weekly (math --scale=0 "round($fields[3])")
+set weekly_reset (to_epoch $fields[4])
+
+# A window that has already reset is back to 0% even if the cache is older
+test -n "$session_reset"; and test $session_reset -le $now; and set session 0
+test -n "$weekly_reset"; and test $weekly_reset -le $now; and set weekly 0
+
+set session_left (test -n "$session_reset"; and math $session_reset - $now; or echo 0)
+set weekly_left (test -n "$weekly_reset"; and math $weekly_reset - $now; or echo 0)
+
+set peak (math max $session, $weekly)
+if test $peak -lt 50
+    set class low
+else if test $peak -lt 80
+    set class medium
+else
+    set class high
+end
+
+set tooltip "$name usage
+Session (5h): $session% — resets in "(dur_str $session_left)"
+Weekly (7d):  $weekly% — resets in "(dur_str $weekly_left)
+for line in $extra
+    set tooltip "$tooltip
+$line"
+end
+
+set tooltip "$tooltip
+
+Updated "(dur_str (cache_age))" ago"
+if test -n "$err"
+    set tooltip "$tooltip — last refresh: $err"
+    test "$err" = expired; and set tooltip "$tooltip (run the CLI to renew)"
+    test -f $backoff_file; and test (cat $backoff_file) -gt $now
+    and set tooltip "$tooltip, retrying in "(dur_str (math (cat $backoff_file) - $now))
+end
+set tooltip "$tooltip
+$footer"
+
+emit "$session% "(short_str $session_left)" · $weekly% "(short_str $weekly_left) $tooltip "$active $class" $peak

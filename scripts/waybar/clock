@@ -1,0 +1,353 @@
+#!/usr/bin/env python3
+"""clock — Waybar clock with month calendar and agenda tooltip
+
+Runs as a persistent Waybar custom module (no "interval"): prints one JSON
+line per minute, or immediately when poked by one of the subcommands below.
+
+The tooltip shows a month calendar (days with events highlighted) and the
+agenda for today and tomorrow. Events come from Evolution Data Server — the
+backend GNOME Calendar and GNOME Online Accounts (Google) sync into — via
+GObject introspection. Without EDS the calendar still works, minus events.
+
+Subcommands (used by Waybar click/scroll handlers):
+    clock toggle-format   Switch between time and date in the bar
+    clock shift N         Move the tooltip calendar N months (+/-)
+    clock reset           Jump the tooltip calendar back to this month
+    clock popup           Toggle a floating GNOME Calendar window
+
+Dependencies: python3 + pygobject3, GI_TYPELIB_PATH with EDataServer/ECal/
+ICalGLib typelibs (set by modules/nixos/services/calendar), hyprctl
+"""
+
+import calendar
+import datetime as dt
+import html
+import json
+import os
+import signal
+import subprocess
+import sys
+import threading
+import time
+
+STATE_DIR = os.path.join(
+    os.environ.get("XDG_CACHE_HOME", os.path.expanduser("~/.cache")), "waybar-clock"
+)
+STATE_FILE = os.path.join(STATE_DIR, "state.json")
+PID_FILE = os.path.join(STATE_DIR, "pid")
+
+CALENDAR_CLASS = "org.gnome.Calendar"
+EVENTS_TTL = 60  # seconds before events are re-queried
+REGISTRY_TTL = 300  # seconds before the calendar list is re-read
+
+# Palette (matches colors.css)
+PRIMARY = "#b2c8e7"
+ON_PRIMARY = "#1b324a"
+TERTIARY = "#e4c18e"
+ON_SURFACE = "#e3e2e4"
+OUTLINE = "#8e9197"
+
+ICON_TIME = " "
+ICON_DATE = "\U000f0e17 "
+
+
+# ── State shared between the module process and click handlers ──────────────
+
+
+def load_state():
+    try:
+        with open(STATE_FILE) as f:
+            return {"alt": False, "shift": 0, **json.load(f)}
+    except (OSError, ValueError):
+        return {"alt": False, "shift": 0}
+
+
+def save_state(state):
+    os.makedirs(STATE_DIR, exist_ok=True)
+    with open(STATE_FILE, "w") as f:
+        json.dump(state, f)
+
+
+def poke():
+    """Ask the running module to re-render now."""
+    try:
+        with open(PID_FILE) as f:
+            os.kill(int(f.read().strip()), signal.SIGUSR1)
+    except (OSError, ValueError):
+        pass
+
+
+# ── Calendar events (Evolution Data Server) ─────────────────────────────────
+
+
+class Events:
+    """Event instances from every calendar selected in GNOME Calendar."""
+
+    def __init__(self):
+        self.available = False
+        self.error = None
+        self.registry = None
+        self.registry_at = 0
+        self.clients = {}
+        try:
+            import gi
+
+            gi.require_version("EDataServer", "1.2")
+            gi.require_version("ECal", "2.0")
+            gi.require_version("ICalGLib", "3.0")
+            from gi.repository import ECal, EDataServer, ICalGLib
+
+            self.ECal, self.EDataServer, self.ICalGLib = ECal, EDataServer, ICalGLib
+            self.available = True
+        except (ImportError, ValueError) as e:
+            self.error = f"calendar libraries unavailable ({e})"
+            return
+
+        self.local_zone = self._local_zone()
+
+    def _local_zone(self):
+        path = os.path.realpath("/etc/localtime")
+        name = path.split("zoneinfo/", 1)[1] if "zoneinfo/" in path else "UTC"
+        return self.ICalGLib.Timezone.get_builtin_timezone(
+            name
+        ) or self.ICalGLib.Timezone.get_utc_timezone()
+
+    def _sources(self):
+        now = time.monotonic()
+        if self.registry is None or now - self.registry_at > REGISTRY_TTL:
+            self.registry = self.EDataServer.SourceRegistry.new_sync(None)
+            self.registry_at = now
+        ext_name = self.EDataServer.SOURCE_EXTENSION_CALENDAR
+        return [
+            s
+            for s in self.registry.list_enabled(ext_name)
+            if s.get_extension(ext_name).get_selected()
+        ]
+
+    def _client(self, source):
+        uid = source.get_uid()
+        if uid not in self.clients:
+            client = self.ECal.Client.connect_sync(
+                source, self.ECal.ClientSourceType.EVENTS, 5, None
+            )
+            client.set_default_timezone(self.local_zone)
+            self.clients[uid] = client
+        return self.clients[uid]
+
+    def _to_datetime(self, t):
+        """ICalGLib.Time → (local aware datetime, is_all_day)."""
+        if t.is_date():
+            return dt.datetime(t.get_year(), t.get_month(), t.get_day()).astimezone(), True
+        zone = t.get_timezone() or self.local_zone
+        return dt.datetime.fromtimestamp(t.as_timet_with_zone(zone)).astimezone(), False
+
+    def query(self, start, end):
+        """List of (start, end, all_day, summary, calendar color) in [start, end)."""
+        if not self.available:
+            return []
+        found = []
+        errors = []
+        for source in self._sources():
+            try:
+                client = self._client(source)
+            except Exception as e:  # offline account, auth needed, …
+                errors.append(f"{source.get_display_name()}: {e}")
+                continue
+            color = source.get_extension(
+                self.EDataServer.SOURCE_EXTENSION_CALENDAR
+            ).get_color()
+
+            def collect(icomp, inst_start, inst_end, *_):
+                s, all_day = self._to_datetime(inst_start)
+                e, _ = self._to_datetime(inst_end) if inst_end else (s, all_day)
+                found.append((s, e, all_day, icomp.get_summary() or "(no title)", color))
+                return True
+
+            try:
+                client.generate_instances_sync(
+                    int(start.timestamp()), int(end.timestamp()), None, collect
+                )
+            except Exception as e:
+                self.clients.pop(source.get_uid(), None)
+                errors.append(f"{source.get_display_name()}: {e}")
+        self.error = errors[0] if errors else None
+        found.sort(key=lambda ev: (not ev[2], ev[0]))
+        return found
+
+
+# ── Rendering ────────────────────────────────────────────────────────────────
+
+
+def span(text, color=None, bold=False, bg=None, size=None):
+    attrs = []
+    if color:
+        attrs.append(f"color='{color}'")
+    if bg:
+        attrs.append(f"background='{bg}'")
+    if size:
+        attrs.append(f"size='{size}'")
+    text = f"<b>{text}</b>" if bold else text
+    return f"<span {' '.join(attrs)}>{text}</span>" if attrs else text
+
+
+def month_grid(year, month, today, event_days):
+    """Monday-first month grid with ISO week numbers on the left."""
+    cal = calendar.Calendar(firstweekday=0)
+    title = dt.date(year, month, 1).strftime("%B %Y")
+    lines = [span(title.center(24).rstrip(), PRIMARY, bold=True)]
+    header = "   " + "".join(f"{d[:2]:>3}" for d in calendar.day_abbr)
+    lines.append(span(html.escape(header), TERTIARY, bold=True))
+    for week in cal.monthdatescalendar(year, month):
+        row = span(f"{week[0].isocalendar()[1]:>2} ", OUTLINE)
+        for day in week:
+            if day.month != month:
+                row += "   "
+            elif day == today:
+                row += " " + span(f"{day.day:>2}", ON_PRIMARY, bold=True, bg=PRIMARY)
+            elif day in event_days:
+                row += " " + span(f"{day.day:>2}", PRIMARY, bold=True)
+            else:
+                row += " " + span(f"{day.day:>2}", ON_SURFACE)
+        lines.append(row)
+    return "\n".join(lines)
+
+
+def agenda_lines(events, day):
+    lines = []
+    start = dt.datetime.combine(day, dt.time()).astimezone()
+    end = start + dt.timedelta(days=1)
+    for s, e, all_day, summary, color in events:
+        if not (s < end and e > start) or (e == start and not all_day):
+            continue
+        if all_day and e <= start:
+            continue
+        when = "all day" if all_day else s.strftime("%H:%M") if s >= start else "…" + e.strftime("%H:%M")
+        dot = span("●", color or PRIMARY)
+        lines.append(f"{dot} {span(f'{when:<7}', OUTLINE)} {html.escape(summary)}")
+    return lines
+
+
+def render(state, events_src, events_cache):
+    now = dt.datetime.now().astimezone()
+    today = now.date()
+
+    text = (ICON_DATE + now.strftime("%a %d.%m.%y")) if state["alt"] else (ICON_TIME + now.strftime("%H:%M"))
+
+    # Month shown in the tooltip, shifted by scrolling
+    idx = today.year * 12 + today.month - 1 + state["shift"]
+    year, month = divmod(idx, 12)
+    month += 1
+
+    # Query events once per EVENTS_TTL covering both the shown month and
+    # today + tomorrow for the agenda
+    first = dt.datetime(year, month, 1).astimezone()
+    last = dt.datetime(year + (month == 12), month % 12 + 1, 1).astimezone()
+    window_start = min(first, dt.datetime.combine(today, dt.time()).astimezone())
+    window_end = max(last, dt.datetime.combine(today + dt.timedelta(days=2), dt.time()).astimezone())
+    key = (window_start, window_end)
+    if events_cache.get("key") != key or time.monotonic() - events_cache.get("at", 0) > EVENTS_TTL:
+        try:
+            events_cache["events"] = events_src.query(window_start, window_end)
+        except Exception as e:
+            events_src.error = str(e)
+            events_cache.setdefault("events", [])
+        events_cache["key"], events_cache["at"] = key, time.monotonic()
+    events = events_cache["events"]
+
+    event_days = set()
+    for s, e, all_day, *_ in events:
+        d = s.date()
+        while d < e.date() or d == s.date():
+            event_days.add(d)
+            d += dt.timedelta(days=1)
+
+    tooltip = [
+        span(html.escape(now.strftime("%A, %d %B")), PRIMARY, bold=True, size="large"),
+        span(f"{now.year} · week {now.isocalendar()[1]}", OUTLINE),
+        "",
+        "<tt>" + month_grid(year, month, today, event_days) + "</tt>",
+    ]
+
+    for label, day in (("Today", today), ("Tomorrow", today + dt.timedelta(days=1))):
+        tooltip += ["", span(label, TERTIARY, bold=True)]
+        lines = agenda_lines(events, day)
+        tooltip += lines or [span("No events", OUTLINE)]
+
+    if not events_src.available or events_src.error:
+        tooltip += ["", span(html.escape(f"⚠ {events_src.error}"), OUTLINE)]
+
+    tooltip += ["", span("scroll: month · middle: today · right: open calendar", OUTLINE, size="small")]
+
+    return {"text": text, "tooltip": "\n".join(tooltip), "class": "alt" if state["alt"] else "time"}
+
+
+# ── Popup ────────────────────────────────────────────────────────────────────
+
+
+def toggle_popup():
+    try:
+        clients = json.loads(subprocess.run(["hyprctl", "-j", "clients"], capture_output=True, text=True).stdout)
+    except (OSError, ValueError):
+        clients = []
+    windows = [c for c in clients if c.get("class") == CALENDAR_CLASS]
+    if windows:
+        for w in windows:
+            subprocess.run(
+                ["hyprctl", "dispatch", f'hl.dsp.window.close({{ window = "address:{w["address"]}" }})'],
+                capture_output=True,
+            )
+    else:
+        subprocess.Popen(["gnome-calendar"], start_new_session=True,
+                         stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+
+# ── Main ─────────────────────────────────────────────────────────────────────
+
+
+def run():
+    os.makedirs(STATE_DIR, exist_ok=True)
+    with open(PID_FILE, "w") as f:
+        f.write(str(os.getpid()))
+
+    wake = threading.Event()
+    signal.signal(signal.SIGUSR1, lambda *_: wake.set())
+
+    events_src = Events()
+    events_cache = {}
+    while True:
+        state = load_state()
+        print(json.dumps(render(state, events_src, events_cache)), flush=True)
+        wake.clear()
+        wake.wait(60 - time.time() % 60 + 0.05)  # next minute boundary
+
+
+def main():
+    args = sys.argv[1:]
+    cmd = args[0] if args else "run"
+    if cmd in ("-h", "--help"):
+        print(__doc__)
+    elif cmd == "run":
+        run()
+    elif cmd == "toggle-format":
+        state = load_state()
+        state["alt"] = not state["alt"]
+        save_state(state)
+        poke()
+    elif cmd == "shift":
+        state = load_state()
+        state["shift"] += int(args[1]) if len(args) > 1 else 1
+        save_state(state)
+        poke()
+    elif cmd == "reset":
+        state = load_state()
+        state["shift"] = 0
+        save_state(state)
+        poke()
+    elif cmd == "popup":
+        toggle_popup()
+    else:
+        sys.exit(f"clock: unknown command {cmd!r} (see --help)")
+
+
+if __name__ == "__main__":
+    main()

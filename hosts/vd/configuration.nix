@@ -160,6 +160,7 @@
     services = {
       sshd.enable = true;
       automount.enable = true;
+      calendar.enable = true;
       syncthing = {
         enable = true;
         guiAddress = "0.0.0.0:8384";
@@ -269,7 +270,6 @@
         };
         moonlight = true; # Install Moonlight client
       };
-
 
       # OpenCode Remote Server
       opencode-server = {

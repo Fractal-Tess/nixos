@@ -37,5 +37,14 @@ hl.window_rule({
 	size = { 879, 879 },
 })
 
+-- Opened by right-clicking the Waybar clock; drops down under the bar
+hl.window_rule({
+	name = "gnome-calendar-popup",
+	match = { class = [[^(org\.gnome\.Calendar)$]] },
+	float = true,
+	size = { 960, 680 },
+	move = "monitor_w-980 62",
+})
+
 hl.layer_rule({ match = { namespace = "swaync-control-center" }, animation = "slide" })
 hl.layer_rule({ match = { namespace = "hyprpicker" }, animation = "fade" })

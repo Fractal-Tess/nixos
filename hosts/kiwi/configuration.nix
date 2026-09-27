@@ -164,6 +164,7 @@
       sshd.enable = true;
       nessus.enable = true;
       automount.enable = true;
+      calendar.enable = true;
       syncthing = {
         enable = true;
         guiAddress = "0.0.0.0:8384";

@@ -107,27 +107,21 @@
  "orientation": "horizontal",
  "modules": [
 "hyprland/language",
-"clock"
+"custom/clock"
  ]
 },
-"clock": {
-  "tooltip-format": "<big>{:L%Y %B}</big>\n<tt><small>{calendar}</small></tt>",
-  "format" : " {:%H:%M}",
-  "format-alt" : "󰸗 {:L%a %d.%m.%y}", 
-    "calendar": {
-    "mode"          : "year",
-"mode-mon-col"  : 3,
-"weeks-pos"     : "right",
-"on-scroll"     : 1,
-"format": {
-"months":     "<span color='#c7bfff'><b>{}</b></span>",
-"days":       "<span color='#e5e1eb'>{}</span>",
-"weeks":      "<span color='#928f9e'>W{}</span>",
-"weekdays":   "<span color='#ffb787'><b>{}</b></span>",
-"today":      "<span color='#131319' background='#c7bfff'><b> {} </b></span>"
-  }
-        }, 
-        }, 
+"custom/clock": {
+  "format": "{}",
+  "return-type": "json",
+  "exec": "python3 ~/nixos/scripts/waybar/clock",
+  "restart-interval": 5,
+  "tooltip": true,
+  "on-click": "python3 ~/nixos/scripts/waybar/clock toggle-format",
+  "on-click-right": "python3 ~/nixos/scripts/waybar/clock popup",
+  "on-click-middle": "python3 ~/nixos/scripts/waybar/clock reset",
+  "on-scroll-up": "python3 ~/nixos/scripts/waybar/clock shift -1",
+  "on-scroll-down": "python3 ~/nixos/scripts/waybar/clock shift 1",
+},
 "network": {
   "tooltip": true,
   "format-icons": ["󰤟", "󰤢", "󰤥", "󰤨"],
@@ -221,12 +215,13 @@
  "on-click": "fish --no-config ~/nixos/scripts/display/screen sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
  "signal": 9,
 },
-"custom/claude": {
+"custom/ai-usage": {
  "format": "{}",
  "return-type": "json",
  "interval": 60,
- "exec": "fish --no-config ~/nixos/scripts/waybar/claude-usage",
- "on-click": "fish --no-config ~/nixos/scripts/waybar/claude-usage --force >/dev/null; pkill -SIGRTMIN+11 waybar",
+ "exec": "fish --no-config ~/nixos/scripts/waybar/ai-usage",
+ "on-click": "fish --no-config ~/nixos/scripts/waybar/ai-usage --cycle; pkill -SIGRTMIN+11 waybar",
+ "on-click-right": "fish --no-config ~/nixos/scripts/waybar/ai-usage --force >/dev/null; pkill -SIGRTMIN+11 waybar",
  "signal": 11,
  "tooltip": true,
 },
