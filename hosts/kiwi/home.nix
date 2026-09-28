@@ -35,6 +35,11 @@
       PLAYWRIGHT_BROWSERS_PATH = "$HOME/.local/share/playwright-browsers";
       PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS = "true";
       AGENT_BROWSER_EXECUTABLE_PATH = "/run/current-system/sw/bin/chromium";
+      # agent-browser daemons detach and reparent to systemd --user, so they
+      # outlive the agent that started them. With no GPU they fall back to
+      # swiftshader software rendering and spin on animation frames forever.
+      # Self-terminate after two idle minutes instead of leaking.
+      AGENT_BROWSER_IDLE_TIMEOUT_MS = "120000";
     };
 
     activation.setupPlaywrightBrowsers = lib.hm.dag.entryAfter [ "writeBoundary" ] ''
