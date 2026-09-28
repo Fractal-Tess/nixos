@@ -93,11 +93,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790443896,
-        "narHash": "sha256-uHh1Is0EavldFe/SquuvB1KGC+4JIH7pKv0pahLJNUw=",
+        "lastModified": 1790621602,
+        "narHash": "sha256-PHvdhPx3qh3yqCGVjuiW42WcY5QMvjf+Yjw1LSSP/SY=",
         "owner": "Fractal-Tess",
         "repo": "claude-code-flake",
-        "rev": "fdfdfc9f826508859988d148599422e415fd032c",
+        "rev": "7b09bafc30a29ca4d76d267167ae26ab848529e7",
         "type": "github"
       },
       "original": {
@@ -133,11 +133,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790443896,
-        "narHash": "sha256-YUha/FeWpAHleH+L9kD8+cgaXLLIidq138x2WqaY0SA=",
+        "lastModified": 1790633066,
+        "narHash": "sha256-/TMYuyeDOvMKTzCRgwFKkFehOE0x7MxeqLPq7CrjRls=",
         "owner": "Fractal-Tess",
         "repo": "codex-flake",
-        "rev": "a114a7febc53b8db1381b50e06e980042a041399",
+        "rev": "9d3919b86836952fc54cb1c414f6e71f818c8b16",
         "type": "github"
       },
       "original": {
@@ -253,11 +253,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1789777824,
-        "narHash": "sha256-uC2VqrG16rd/6dh0SldLHs8qOa561WIg8JegnpF8ssM=",
+        "lastModified": 1790598803,
+        "narHash": "sha256-uN/puHDgO7mIqgr9PfpQ2iSu2QOgCANhwQBBPLLPfMg=",
         "owner": "Fractal-Tess",
         "repo": "gitadel",
-        "rev": "3dc8268d19b62857bb8437467f2cee01422aaee1",
+        "rev": "b62d9d641f9c231bf9251adc6d6482c75ca48f07",
         "type": "github"
       },
       "original": {
@@ -421,11 +421,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1790323409,
-        "narHash": "sha256-VVTPf+Hyd5ebpjBMHmrLMSBIeW6ls48Bqtosj7CNKLA=",
+        "lastModified": 1790578696,
+        "narHash": "sha256-ZoxIApko70jCdbH3l20HWXOBaT2HZd87orzd2yJ9dVE=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "e94cb152ed51bd6e24eb4a41f1460252beb52cd2",
+        "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
         "type": "github"
       },
       "original": {
@@ -509,11 +509,11 @@
         "source": "source"
       },
       "locked": {
-        "lastModified": 1790438670,
-        "narHash": "sha256-rjwryM0UcRG5JYMmATfgHyBqinCdU5aQzpzb/h+1SWY=",
+        "lastModified": 1790624049,
+        "narHash": "sha256-J0PokZY5hgNT1H/Rgdiuu5hz+gOvs9uzdX2dDPA3GJc=",
         "owner": "Fractal-Tess",
         "repo": "oh-my-pi-flake",
-        "rev": "171dfe27a29846d2bb650fc13efc12a510a499ef",
+        "rev": "802542e10bf67d1e9c0781500fc5d88252de34a0",
         "type": "github"
       },
       "original": {
@@ -528,11 +528,11 @@
         "source": "source_2"
       },
       "locked": {
-        "lastModified": 1790274253,
-        "narHash": "sha256-g3f+cU8C+Vm9qHVpq10MgLnFxnrANgwrAKVALNI0E8Q=",
+        "lastModified": 1790627204,
+        "narHash": "sha256-yldXyoX8BV8TkrUbuhXChigvao+djdNT0q6R7KpnKD0=",
         "owner": "Fractal-Tess",
         "repo": "open-design-flake",
-        "rev": "774fe8a4a0ef512c16baf830f7354e3dc78f4b8e",
+        "rev": "ddefa526d2daa3c910beb5d042f740cf856802f6",
         "type": "github"
       },
       "original": {
@@ -548,11 +548,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790443896,
-        "narHash": "sha256-9qgFjhIFU7H2yjBCnJkHqXN42uEttYjTGne7+U56Jd0=",
+        "lastModified": 1790622259,
+        "narHash": "sha256-CqFCzX2+orMF2k19LociIARsXfL3H2Zbk+VfuW9k+GM=",
         "owner": "Fractal-Tess",
         "repo": "opencode-flake",
-        "rev": "44f889c42d6871fd0f6cbae154264540fcbc0ec6",
+        "rev": "febac7aefeba21622f76d0a0d0551c5df87891ce",
         "type": "github"
       },
       "original": {
@@ -571,11 +571,11 @@
         "tomlplusplus": "tomlplusplus"
       },
       "locked": {
-        "lastModified": 1790384900,
-        "narHash": "sha256-rzUJ7uzvrhbC3Sjz1sPvYu+ZczaS16U3T2i1leyq0/M=",
+        "lastModified": 1790615605,
+        "narHash": "sha256-lwYZE8Rgqg5jORJfqxUE6CYVJXP4v5Vb4WyvqG1ma0g=",
         "owner": "PolyMC",
         "repo": "PolyMC",
-        "rev": "1da6b4e11d78313545d5422ac4e06f232368a10e",
+        "rev": "4ebe82897638639bc71b15a3b1d61c82400ab237",
         "type": "github"
       },
       "original": {
@@ -671,11 +671,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1787367552,
-        "narHash": "sha256-YT4Fs2k7bi+7YzuLt93EtIRgjpwHK5ZfsQEIh5dEQSk=",
+        "lastModified": 1789889921,
+        "narHash": "sha256-aL/ogiN7qZCGeNovS1f9hX73jwYIKb4Pcq6AZm57WtY=",
         "owner": "oxalica",
         "repo": "rust-overlay",
-        "rev": "fd2ebb9cc4323d0c5a1336138dab5c3c5a5d8bd9",
+        "rev": "1fb104a12a8667045559b2575d6d448ae2fbd99b",
         "type": "github"
       },
       "original": {
@@ -773,11 +773,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790247521,
-        "narHash": "sha256-TNfgoHsqsYYvaJImlWctfRkh4PseTagzegU1Dgdbehw=",
+        "lastModified": 1790498116,
+        "narHash": "sha256-rs9meAYxW3zzrh43yaW7htrqCD+X9+pupDPHN86fumI=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "2bd00bd9bb35fe6d114888c8f1c2e946c541dd8f",
+        "rev": "5efb5a6f4f5ab192817d28557dd4d650fa14d866",
         "type": "github"
       },
       "original": {
@@ -790,11 +790,11 @@
     "source": {
       "flake": false,
       "locked": {
-        "lastModified": 1790437033,
-        "narHash": "sha256-oBDrFc9gYDPSRiZ8KXxTxYUd5aMQdpiPAtM0XLgO0Hw=",
+        "lastModified": 1790622411,
+        "narHash": "sha256-RR+3pIbnxnk8dJZDIZltkBP5jR/9fCNbA03FazJXF+E=",
         "owner": "can1357",
         "repo": "oh-my-pi",
-        "rev": "3bb77e65d4adf87d23d7d563070b9a5618f0b203",
+        "rev": "6dad5de125c2a508983c0f3e7ef9e79205ab71df",
         "type": "github"
       },
       "original": {
@@ -807,11 +807,11 @@
     "source_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1790233106,
-        "narHash": "sha256-H3Nmb3Gx4h0yI74O7PChPT/zaEnDKt6Hkrgiv8ejhA0=",
+        "lastModified": 1790590594,
+        "narHash": "sha256-Z5hToAuGFDCRJyWucHZsCpKp3at/VmzQPbAl9FVzWfY=",
         "owner": "nexu-io",
         "repo": "open-design",
-        "rev": "1b47e60bd46641469fcd8b69c496c4e3a548bc28",
+        "rev": "64710082d02c041da47bf8c6d6c5316b36b28b22",
         "type": "github"
       },
       "original": {
