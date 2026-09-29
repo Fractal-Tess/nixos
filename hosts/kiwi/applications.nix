@@ -34,7 +34,12 @@
 
     # T3 Code
     {
-      programs.t3code.enable = true;
+      programs.t3code = {
+        enable = true;
+        serverExposureMode = "network-accessible";
+        port = 3773;
+        firewallInterfaces = [ "wt0" ];
+      };
     }
 
     # Delta

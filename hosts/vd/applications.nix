@@ -41,16 +41,16 @@
 
     # T3 Code
     {
-      programs.t3code.enable = true;
-      services.t3code-server = {
+      # The desktop app serves other devices itself; a separate headless
+      # service would fight it for port 3773 and ~/.t3.
+      programs.t3code = {
         enable = true;
-        user = username;
-        host = "0.0.0.0";
+        serverExposureMode = "network-accessible";
         port = 3773;
+        # Keep access on the mesh rather than opening the port on every interface.
+        firewallInterfaces = [ "wt0" ];
       };
-      # Keep access on the mesh rather than opening the port on every interface.
-      networking.firewall.interfaces.wt0.allowedTCPPorts = [ 3773 ];
-      # Keep the user service running without an active login session.
+      # Keep user services running without an active login session.
       users.users.${username}.linger = true;
     }
 
