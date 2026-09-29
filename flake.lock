@@ -253,11 +253,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1790665159,
-        "narHash": "sha256-Jbtgz/cGG0GuLRzAD5q48X44mmNiqxKGT3LX4iAFlPM=",
+        "lastModified": 1790684638,
+        "narHash": "sha256-jEy52T3RTT5sB5nkDaXsgyhV19aKRgG+nBzeI8aNfjE=",
         "owner": "Fractal-Tess",
         "repo": "gitadel",
-        "rev": "401ba0a478fc047312ae74939bc2cd8429446ca8",
+        "rev": "dfe435374dd6b1992c3ce10d2e33eb6f01662d83",
         "type": "github"
       },
       "original": {
@@ -374,11 +374,11 @@
         "nvchad-starter": "nvchad-starter"
       },
       "locked": {
-        "lastModified": 1790046371,
-        "narHash": "sha256-j1q/Bx89d5PM7CRBqdV1RDvmTwwfAqIBEthXg39pUWE=",
+        "lastModified": 1790676177,
+        "narHash": "sha256-nN1Fa6l2cVkWA/Fdy6xgsIJ1wVtLmtWN/R35XyM/WxE=",
         "owner": "nix-community",
         "repo": "nix4nvchad",
-        "rev": "706a5c7d9fb40395c9c4805a0316ab32622beb36",
+        "rev": "0d9b3fab7cc2d224e111032eb8338ae120d0562a",
         "type": "github"
       },
       "original": {
