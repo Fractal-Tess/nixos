@@ -1,0 +1,101 @@
+#!/usr/bin/env fish
+# monitors — Turn monitors off or on and show whether each one is powered
+#
+# Works from a Hyprland terminal, a TTY, or over SSH: when the Hyprland
+# socket variable is missing it finds the running instance itself. Status
+# falls back to the kernel's DRM view when Hyprland is not running.
+#
+# Dependencies: hyprctl, jq
+# Usage: monitors [status|off|on] [MONITOR]
+
+function _monitors_help
+    echo "monitors — Turn monitors off or on and show whether each one is powered"
+    echo ""
+    echo "Usage: monitors [COMMAND] [MONITOR]"
+    echo ""
+    echo "Commands:"
+    echo "  status           Show each monitor's power state (default)"
+    echo "  off [MONITOR]    Turn all monitors off, or just MONITOR (e.g. DP-4)"
+    echo "  on [MONITOR]     Turn all monitors on, or just MONITOR"
+    echo "  --help           Show this help message"
+end
+
+# Point hyprctl at the running Hyprland when the shell did not inherit it
+function _find_hyprland
+    if set -q HYPRLAND_INSTANCE_SIGNATURE
+        and test -S "$XDG_RUNTIME_DIR/hypr/$HYPRLAND_INSTANCE_SIGNATURE/.socket.sock"
+        return 0
+    end
+
+    set -q XDG_RUNTIME_DIR; or set -gx XDG_RUNTIME_DIR /run/user/(id -u)
+    set -l dirs $XDG_RUNTIME_DIR/hypr/*/
+    for dir in (ls -td $dirs 2>/dev/null)
+        if test -S "$dir.socket.sock"
+            set -gx HYPRLAND_INSTANCE_SIGNATURE (basename $dir)
+            return 0
+        end
+    end
+    return 1
+end
+
+function _dpms
+    set -l state $argv[1]
+    set -l monitor $argv[2]
+
+    if test -n "$monitor"
+        if not hyprctl monitors -j | jq -e --arg m $monitor 'any(.[]; .name == $m)' >/dev/null
+            echo "No monitor named $monitor. Run 'monitors status' to see the names." >&2
+            return 1
+        end
+        hyprctl dispatch "hl.dsp.dpms({ action = \"$state\", monitor = \"$monitor\" })" >/dev/null
+    else
+        hyprctl dispatch "hl.dsp.dpms({ action = \"$state\" })" >/dev/null
+    end
+end
+
+function _show_status
+    if _find_hyprland
+        hyprctl monitors all -j | jq -r '.[] |
+            (if .disabled then "disabled" elif .dpmsStatus then "on" else "off" end) as $s |
+            "\(.name)\t\($s)\t\(.description)"' \
+            | while read -l -d \t name state desc
+            printf "%-10s %-9s %s\n" $name $state $desc
+        end
+        return 0
+    end
+
+    # No Hyprland: report what the kernel sees on each connected port
+    echo "Hyprland is not running; showing the kernel's view."
+    for conn in /sys/class/drm/card*-*
+        test (cat $conn/status 2>/dev/null) = connected; or continue
+        set -l name (string replace -r '^card\d+-' '' (basename $conn))
+        printf "%-10s %s\n" $name (string lower (cat $conn/dpms))
+    end
+end
+
+# ─── Main ─────────────────────────────────────────────────────────────────────
+
+set -l cmd $argv[1]
+if not set -q argv[1]
+    set cmd status
+end
+
+switch $cmd
+    case status
+        _show_status
+    case off on
+        if not _find_hyprland
+            echo "Hyprland is not running; cannot change monitor power." >&2
+            exit 1
+        end
+        # Let the Enter key be released first, or it can wake the screens again
+        test $cmd = off; and isatty stdin; and sleep 0.5
+        _dpms $cmd $argv[2]; or exit 1
+        _show_status
+    case --help -h help
+        _monitors_help
+    case '*'
+        echo "Unknown command: $cmd" >&2
+        _monitors_help
+        exit 1
+end
