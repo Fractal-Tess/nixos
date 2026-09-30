@@ -133,11 +133,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790716063,
-        "narHash": "sha256-7MT0efV+MFnieb7Nh7IDxXo7YdBruANDP2i5LtJjcW4=",
+        "lastModified": 1790758344,
+        "narHash": "sha256-82LPlOYbkzTvO5k/u7gI7g9gPdEIHfGpY96kNqky0As=",
         "owner": "Fractal-Tess",
         "repo": "codex-flake",
-        "rev": "16dff2221de5fae2b45024609557433c5a66edb7",
+        "rev": "65b140584af00f3ce34a7537bd067b7de7d6228e",
         "type": "github"
       },
       "original": {
