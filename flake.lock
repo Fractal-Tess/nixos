@@ -93,11 +93,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790621602,
-        "narHash": "sha256-PHvdhPx3qh3yqCGVjuiW42WcY5QMvjf+Yjw1LSSP/SY=",
+        "lastModified": 1790788140,
+        "narHash": "sha256-UsyLP19Q33zVTNeqZAjnDu+I4mwlFVbP+m6+b/dIirY=",
         "owner": "Fractal-Tess",
         "repo": "claude-code-flake",
-        "rev": "7b09bafc30a29ca4d76d267167ae26ab848529e7",
+        "rev": "7afbb65248279793afe558e172ab1afc4cd3f66b",
         "type": "github"
       },
       "original": {
@@ -253,11 +253,11 @@
         "rust-overlay": "rust-overlay_2"
       },
       "locked": {
-        "lastModified": 1790722527,
-        "narHash": "sha256-7+wTk6XYIeU/K/WpIgl0iK1vUsTgZquprpnk5iK4WMo=",
+        "lastModified": 1790727781,
+        "narHash": "sha256-3wXVRcZcS+w3PC3AKbKRqDzTRvCBQ9HypfZKtkX88QA=",
         "owner": "Fractal-Tess",
         "repo": "gitadel",
-        "rev": "963aefd29625b0489769903aff49cf94854b5248",
+        "rev": "5e2e8bd1e46135f57b871f9afac79d0a3065b532",
         "type": "github"
       },
       "original": {
@@ -294,16 +294,36 @@
         ]
       },
       "locked": {
-        "lastModified": 1790365885,
-        "narHash": "sha256-iQ0ebhiVo64NktTnwft9hNxlFu4j5cvljVxyJaEVIP4=",
+        "lastModified": 1790802803,
+        "narHash": "sha256-pna6bbbXEqnAWb3GuioIEKu+yFxSVFR0UX+2QjxI6eg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "7b4c5ec4bedaf1e062bbc1bcaeddbc6bd242aa1b",
+        "rev": "e4122ec2a3cf7fede335e5c9975639d1e84dc04d",
         "type": "github"
       },
       "original": {
         "owner": "nix-community",
         "repo": "home-manager",
+        "type": "github"
+      }
+    },
+    "immich-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1790809764,
+        "narHash": "sha256-1ipp6mPNsDRCnvV6bZ+KUtQBZOcQb3q4poGEK+m/a4A=",
+        "owner": "Fractal-Tess",
+        "repo": "immich-flake",
+        "rev": "815bd991698d66624e918c4c290f55bb7d6e0859",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "immich-flake",
         "type": "github"
       }
     },
@@ -421,11 +441,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1790578696,
-        "narHash": "sha256-ZoxIApko70jCdbH3l20HWXOBaT2HZd87orzd2yJ9dVE=",
+        "lastModified": 1790689126,
+        "narHash": "sha256-ilerN1WLSvF+HMjziC/Wv99J5y02maDH+6hZPwsORKg=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "7a0f122f5090cf4c2ade2a13a0e229d4e19ba71f",
+        "rev": "b4fd65b198c599cbe814fcb9f42d25d021595ec9",
         "type": "github"
       },
       "original": {
@@ -509,11 +529,11 @@
         "source": "source"
       },
       "locked": {
-        "lastModified": 1790704576,
-        "narHash": "sha256-I3fon+yXWqOV0bcvt9gMCVaNxL59lJvRp3hWOqCxJaw=",
+        "lastModified": 1790790928,
+        "narHash": "sha256-9MTJ7TViIsig90iAi8cjsrlwav7vEUiS0pHOPhFHGVQ=",
         "owner": "Fractal-Tess",
         "repo": "oh-my-pi-flake",
-        "rev": "e126dfad3f3807ed4b9d5ffb7b6cdee11611deb2",
+        "rev": "1805f5732d8dec368894e9dfcf520741f46e5cda",
         "type": "github"
       },
       "original": {
@@ -528,11 +548,11 @@
         "source": "source_2"
       },
       "locked": {
-        "lastModified": 1790710316,
-        "narHash": "sha256-anvupwAv/SGVDcDU9COiMLZU2Kd+ry/9737kjb54k6w=",
+        "lastModified": 1790795887,
+        "narHash": "sha256-+g+ne0TsHgmN6Nzvj5xIZZUUcnX6KOT/6+O1LtgtxfQ=",
         "owner": "Fractal-Tess",
         "repo": "open-design-flake",
-        "rev": "0f5f950d8689e9d2873e9e1b23cde327bcc05a85",
+        "rev": "52f69e7a42281870ba29bdf46b49509064a5b6e4",
         "type": "github"
       },
       "original": {
@@ -571,11 +591,11 @@
         "tomlplusplus": "tomlplusplus"
       },
       "locked": {
-        "lastModified": 1790615605,
-        "narHash": "sha256-lwYZE8Rgqg5jORJfqxUE6CYVJXP4v5Vb4WyvqG1ma0g=",
+        "lastModified": 1790726885,
+        "narHash": "sha256-OQXvtOXJTKv9+92dnBN3CX8H+bS10vqGa27Tx8DKMgM=",
         "owner": "PolyMC",
         "repo": "PolyMC",
-        "rev": "4ebe82897638639bc71b15a3b1d61c82400ab237",
+        "rev": "9e75db640caeff6c781c8567a978d0b5f91b4989",
         "type": "github"
       },
       "original": {
@@ -615,6 +635,7 @@
         "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",
         "home-manager": "home-manager",
+        "immich-flake": "immich-flake",
         "nix4nvchad": "nix4nvchad",
         "nixpkgs": "nixpkgs_3",
         "oh-my-pi-flake": "oh-my-pi-flake",
@@ -790,11 +811,11 @@
     "source": {
       "flake": false,
       "locked": {
-        "lastModified": 1790699083,
-        "narHash": "sha256-lO2BBB7FyEWiHM+3/r6MkW7Iah0HLrwiWM5P4ix7C2Y=",
+        "lastModified": 1790788266,
+        "narHash": "sha256-6Htm53VV6zFsT7Josx0chSi5PaGZ8YR+SGnOf2ZKVjM=",
         "owner": "can1357",
         "repo": "oh-my-pi",
-        "rev": "4819e4f6d59049f307329d42b226b218582bdf38",
+        "rev": "30aec05d9641e18084b0d7d1c146b9580aac5b72",
         "type": "github"
       },
       "original": {
@@ -807,11 +828,11 @@
     "source_2": {
       "flake": false,
       "locked": {
-        "lastModified": 1790653293,
-        "narHash": "sha256-8QViYhaUsa1NLXeRWWp0PkEggzKByyStNSVD97SADRk=",
+        "lastModified": 1790782307,
+        "narHash": "sha256-FFgtdh/EcFvQWD7F7tv5jz0U1o4IjXBjw6ED/aHRIu0=",
         "owner": "nexu-io",
         "repo": "open-design",
-        "rev": "5b19dfa4351b3eed33826ee72746a7c653c23a54",
+        "rev": "53231d40b778d88eba23f35547bf99485d3ae9fc",
         "type": "github"
       },
       "original": {
@@ -890,11 +911,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790642199,
-        "narHash": "sha256-6tIdahMYdhnlih+antgTzU4gN82bhCiQ1+lU5ZLIbc4=",
+        "lastModified": 1790790792,
+        "narHash": "sha256-EGM5N3XSkrMeRcC/0y4qpSf62t2ymmI5r6sMofjKVOM=",
         "owner": "Fractal-Tess",
         "repo": "t3code-flake",
-        "rev": "fbb3c162944fe0a26b4d7df0742788d48d13c13b",
+        "rev": "7b625fe9b2d0da26d3979409e295e4fbd77848c7",
         "type": "github"
       },
       "original": {

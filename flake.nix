@@ -89,6 +89,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    immich-flake = {
+      url = "github:Fractal-Tess/immich-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     chorus = {
       url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git";
       inputs.nixpkgs.follows = "nixpkgs";

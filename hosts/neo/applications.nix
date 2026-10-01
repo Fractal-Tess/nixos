@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  pkgs,
   username,
   ...
 }:
@@ -10,6 +11,7 @@
   imports = [
     inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
+    inputs.immich-flake.nixosModules.default
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
@@ -51,6 +53,25 @@
         group = "users";
         mode = "0400";
       };
+    }
+
+    # Immich
+    {
+      services.immich = {
+        enable = true;
+        host = "0.0.0.0";
+        openFirewall = true;
+        # Existing library, previously bind-mounted into the Dokploy container
+        mediaLocation = "/mnt/blockade/services/neo-immich-egyjka/uploads";
+        # VA-API transcoding on the AMD iGPU
+        accelerationDevices = [ "/dev/dri/renderD128" ];
+      };
+      users.users.immich.extraGroups = [
+        "video"
+        "render"
+      ];
+      # Database was restored into PostgreSQL 17; keep it pinned
+      services.postgresql.package = pkgs.postgresql_17;
     }
 
     # Gitadel
