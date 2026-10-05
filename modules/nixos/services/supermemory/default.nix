@@ -74,6 +74,10 @@ in
     systemd.services.supermemory-server = {
       after = [ "cliproxyapi.service" ];
       wants = [ "cliproxyapi.service" ];
+      # It idles near 1.5 GB. Cap it so a runaway (it once reached 20 GB when
+      # embeddings fell back to WebAssembly) restarts it instead of starving
+      # the rest of the machine.
+      serviceConfig.MemoryMax = "6G";
     };
   };
 }
