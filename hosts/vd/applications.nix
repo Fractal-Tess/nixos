@@ -40,7 +40,15 @@
 
     # T3 Code
     {
+      # Always-on headless server (port 33773, ~/.t3-server).
       modules.services.t3code-server.enable = true;
+      # Desktop app with its own built-in server (port 3773, ~/.t3).
+      programs.t3code = {
+        enable = true;
+        serverExposureMode = "network-accessible";
+        port = 3773;
+        firewallInterfaces = [ "wt0" ];
+      };
     }
 
     # Supermemory

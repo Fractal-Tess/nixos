@@ -38,8 +38,14 @@ in
 
     port = mkOption {
       type = types.port;
-      default = 3773;
-      description = "Port for the HTTP/WebSocket server";
+      default = 33773;
+      description = "Port for the HTTP/WebSocket server. Kept off 3773, which the desktop app uses";
+    };
+
+    baseDir = mkOption {
+      type = types.str;
+      default = "%h/.t3-server";
+      description = "Data directory. Kept apart from ~/.t3, which the desktop app uses";
     };
 
     firewallInterfaces = mkOption {
@@ -53,14 +59,13 @@ in
   # CONFIG
   #============================================================================
   config = mkIf cfg.enable {
-    # The desktop app is deliberately not installed alongside: it runs its own
-    # server and would fight this one for the port and ~/.t3. Use
-    # http://localhost:<port> on the host itself.
+    # The desktop app runs its own server on port 3773 with ~/.t3, so this one
+    # gets its own port and data directory and the two can run side by side.
     services.t3code-server = {
       enable = true;
       user = username;
       host = "0.0.0.0";
-      inherit (cfg) port firewallInterfaces;
+      inherit (cfg) port baseDir firewallInterfaces;
       path = [
         "${glabGuard}/bin"
         "/run/wrappers/bin"
