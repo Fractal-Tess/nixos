@@ -646,6 +646,7 @@
         "scorch": "scorch",
         "shadoword": "shadoword",
         "sops-nix": "sops-nix",
+        "supermemory-flake": "supermemory-flake",
         "t3code-flake": "t3code-flake"
       }
     },
@@ -856,6 +857,26 @@
         "owner": "responsively-org",
         "ref": "main",
         "repo": "responsively-app",
+        "type": "github"
+      }
+    },
+    "supermemory-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791199375,
+        "narHash": "sha256-OBM3GfHb22HmGnq1Ny5CNXkubKlu4QGRCvKH4YbagxU=",
+        "owner": "Fractal-Tess",
+        "repo": "supermemory-flake",
+        "rev": "634441fec4c751349fb795d50f9aae8d65700f84",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "supermemory-flake",
         "type": "github"
       }
     },

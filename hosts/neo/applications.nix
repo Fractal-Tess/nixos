@@ -19,6 +19,11 @@
   ];
 
   config = lib.mkMerge [
+    # T3 Code
+    {
+      modules.services.t3code-server.enable = true;
+    }
+
     # OMP
     {
       programs.omp.enable = lib.mkDefault true;

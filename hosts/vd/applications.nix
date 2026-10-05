@@ -15,7 +15,6 @@
     inputs.chorus.nixosModules.default
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
-    inputs.t3code-flake.nixosModules.default
     inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
@@ -41,17 +40,12 @@
 
     # T3 Code
     {
-      # The desktop app serves other devices itself; a separate headless
-      # service would fight it for port 3773 and ~/.t3.
-      programs.t3code = {
-        enable = true;
-        serverExposureMode = "network-accessible";
-        port = 3773;
-        # Keep access on the mesh rather than opening the port on every interface.
-        firewallInterfaces = [ "wt0" ];
-      };
-      # Keep user services running without an active login session.
-      users.users.${username}.linger = true;
+      modules.services.t3code-server.enable = true;
+    }
+
+    # Supermemory
+    {
+      modules.services.supermemory.enable = true;
     }
 
     # Delta

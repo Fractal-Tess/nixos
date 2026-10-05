@@ -44,6 +44,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    supermemory-flake = {
+      url = "github:Fractal-Tess/supermemory-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     delta-flake = {
       url = "github:Fractal-Tess/delta-flake";
       inputs.nixpkgs.follows = "nixpkgs";

@@ -12,8 +12,10 @@
     ./remote-desktop/default.nix
     ./samba/default.nix
     ./sops/default.nix
+    ./supermemory/default.nix
     ./ssh/default.nix
     ./syncthing/default.nix
+    ./t3code-server/default.nix
     ./virtualization/default.nix
   ];
 }

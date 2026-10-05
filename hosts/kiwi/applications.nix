@@ -13,7 +13,6 @@
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
-    inputs.t3code-flake.nixosModules.default
     inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
@@ -34,12 +33,7 @@
 
     # T3 Code
     {
-      programs.t3code = {
-        enable = true;
-        serverExposureMode = "network-accessible";
-        port = 3773;
-        firewallInterfaces = [ "wt0" ];
-      };
+      modules.services.t3code-server.enable = true;
     }
 
     # Delta
