@@ -12,6 +12,17 @@ with lib;
 let
   cfg = config.modules.services.t3code-server;
   upstreamPackage = inputs.t3code-flake.packages.${pkgs.stdenv.hostPlatform.system}.t3code-server;
+
+  # T3 Code calls `glab` at startup and on a timer, and waits on it without
+  # killing it. When glab blocks (it does while the desktop keyring is locked)
+  # the whole server stops answering, so bound every call from the service.
+  glabGuard = pkgs.writeShellScriptBin "glab" ''
+    case "$1 $2" in
+      "auth status") limit=3 ;;
+      *) limit=30 ;;
+    esac
+    exec ${pkgs.coreutils}/bin/timeout --signal=KILL "$limit" /run/current-system/sw/bin/glab "$@"
+  '';
 in
 {
   #============================================================================
@@ -50,6 +61,13 @@ in
       user = username;
       host = "0.0.0.0";
       inherit (cfg) port firewallInterfaces;
+      path = [
+        "${glabGuard}/bin"
+        "/run/wrappers/bin"
+        "%h/.nix-profile/bin"
+        "/etc/profiles/per-user/%u/bin"
+        "/run/current-system/sw/bin"
+      ];
       # Upstream hard-codes a 30-day lifetime for paired-device sessions and
       # never extends it, which forces a monthly re-pair. Every session needs
       # an expiry, so use 100 years as "never"; revoke devices by hand with
