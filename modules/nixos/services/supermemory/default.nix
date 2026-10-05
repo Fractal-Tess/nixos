@@ -56,6 +56,8 @@ in
     services.supermemory-server = {
       enable = true;
       inherit (cfg) port firewallInterfaces;
+      # The plugin's search and save tools need MCP, which the server lacks.
+      mcp.enable = true;
       # Memory extraction goes through the CLIProxyAPI already running here,
       # so no separate provider key is needed.
       environment = {
