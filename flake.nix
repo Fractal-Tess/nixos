@@ -143,6 +143,7 @@
                 (import ./overlays/uefi-firmware-parser.nix)
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
+                (import ./overlays/ltrace-fix.nix)
                 (import ./overlays/cliproxyapi.nix)
               ];
             }
