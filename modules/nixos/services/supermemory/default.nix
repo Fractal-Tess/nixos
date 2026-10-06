@@ -9,7 +9,7 @@ with lib;
 
 let
   cfg = config.modules.services.supermemory;
-  proxy = config.modules.services.cliproxyapi;
+  openrouter = "https://openrouter.ai/api/v1";
 in
 {
   #============================================================================
@@ -31,8 +31,20 @@ in
 
     model = mkOption {
       type = types.str;
-      default = "gpt-5.5";
-      description = "Model on the local CLIProxyAPI used for memory extraction";
+      default = "google/gemini-2.5-flash";
+      description = "OpenRouter model that chunks text and extracts memories. Must support tool calling";
+    };
+
+    embeddingModel = mkOption {
+      type = types.str;
+      default = "baai/bge-m3";
+      description = "OpenRouter embedding model. Changing it needs a fresh data directory";
+    };
+
+    embeddingDimensions = mkOption {
+      type = types.int;
+      default = 1024;
+      description = "Vector size the embedding model produces";
     };
 
     firewallInterfaces = mkOption {
@@ -48,8 +60,8 @@ in
   config = mkIf cfg.enable {
     assertions = [
       {
-        assertion = proxy.enable && proxy.requireApiKey;
-        message = "Supermemory uses this host's CLIProxyAPI for memory extraction; enable modules.services.cliproxyapi.";
+        assertion = config.modules.services.sops.enable;
+        message = "Supermemory reads its OpenRouter key from SOPS; enable modules.services.sops.";
       }
     ];
 
@@ -58,28 +70,36 @@ in
       inherit (cfg) port firewallInterfaces;
       # The plugin's search and save tools need MCP, which the server lacks.
       mcp.enable = true;
-      # Memory extraction goes through the CLIProxyAPI already running here,
-      # so no separate provider key is needed.
-      environment = {
-        OPENAI_BASE_URL = "http://${proxy.listenAddress}:${toString proxy.proxyPort}/v1";
-        OPENAI_MODEL = cfg.model;
+      # Extraction and embeddings both go through OpenRouter, so memory keeps
+      # working whatever this host's GPUs are busy with.
+      llm = {
+        baseUrl = openrouter;
+        inherit (cfg) model;
+      };
+      embeddings = {
+        provider = "openai-compatible";
+        baseUrl = openrouter;
+        model = cfg.embeddingModel;
+        dimensions = cfg.embeddingDimensions;
       };
       environmentFile = config.sops.templates."supermemory.env".path;
     };
 
+    sops.secrets.supermemory_openrouter_api_key = {
+      sopsFile = ../../../../secrets/supermemory.json;
+      format = "json";
+      restartUnits = [ "supermemory-server.service" ];
+    };
+
     sops.templates."supermemory.env" = {
-      content = "OPENAI_API_KEY=${config.sops.placeholder.cliproxyapi_client_api_key}";
+      content = "OPENAI_API_KEY=${config.sops.placeholder.supermemory_openrouter_api_key}";
       owner = config.services.supermemory-server.user;
       mode = "0400";
     };
 
-    systemd.services.supermemory-server = {
-      after = [ "cliproxyapi.service" ];
-      wants = [ "cliproxyapi.service" ];
-      # It idles near 1.5 GB. Cap it so a runaway (it once reached 20 GB when
-      # embeddings fell back to WebAssembly) restarts it instead of starving
-      # the rest of the machine.
-      serviceConfig.MemoryMax = "6G";
-    };
+    # It idles near 1.5 GB. Cap it so a runaway (it once reached 20 GB when
+    # embeddings fell back to WebAssembly) restarts it instead of starving
+    # the rest of the machine.
+    systemd.services.supermemory-server.serviceConfig.MemoryMax = "6G";
   };
 }
