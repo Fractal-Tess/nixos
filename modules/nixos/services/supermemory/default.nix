@@ -31,7 +31,7 @@ in
 
     model = mkOption {
       type = types.str;
-      default = "google/gemini-2.5-flash";
+      default = "openai/gpt-oss-120b";
       description = "OpenRouter model that chunks text and extracts memories. Must support tool calling";
     };
 
