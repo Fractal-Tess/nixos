@@ -94,6 +94,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    vencord-flake = {
+      url = "github:Fractal-Tess/vencord-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     immich-flake = {
       url = "github:Fractal-Tess/immich-flake";
       inputs.nixpkgs.follows = "nixpkgs";

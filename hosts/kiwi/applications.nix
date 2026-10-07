@@ -18,6 +18,7 @@
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
     inputs.opencode-flake.nixosModules.default
+    inputs.vencord-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -47,6 +48,11 @@
     # Delta
     {
       programs.delta.enable = true;
+    }
+
+    # Discord with Vencord and the hyper-trader plugin
+    {
+      programs.discord-vencord.enable = true;
     }
 
     # Agent Browser

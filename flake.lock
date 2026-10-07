@@ -647,7 +647,8 @@
         "shadoword": "shadoword",
         "sops-nix": "sops-nix",
         "supermemory-flake": "supermemory-flake",
-        "t3code-flake": "t3code-flake"
+        "t3code-flake": "t3code-flake",
+        "vencord-flake": "vencord-flake"
       }
     },
     "rust-analyzer-src": {
@@ -980,6 +981,26 @@
       "original": {
         "owner": "numtide",
         "repo": "treefmt-nix",
+        "type": "github"
+      }
+    },
+    "vencord-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1791398379,
+        "narHash": "sha256-ORYDi5Vq3d/gjCBAZ6yIGl3ih4NzAzJ0/04oQC113fo=",
+        "owner": "Fractal-Tess",
+        "repo": "vencord-flake",
+        "rev": "73647c41b8b16b96ff2d3e14a73217ddfec7dbe1",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "vencord-flake",
         "type": "github"
       }
     }
