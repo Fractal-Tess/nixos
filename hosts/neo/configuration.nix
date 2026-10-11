@@ -255,6 +255,12 @@
     "/mnt/blockade/services/jellyfin/tvshows:/media/tvshows"
   ];
 
+  # Artwork and profile images are likewise stored under the container's
+  # data directory path.
+  systemd.tmpfiles.rules = [
+    "L /config - - - - /mnt/blockade/services/jellyfin/config"
+  ];
+
   #============================================================================
   # USER CONFIGURATION
   #============================================================================
