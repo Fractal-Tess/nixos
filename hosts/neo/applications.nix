@@ -79,6 +79,65 @@
       services.postgresql.package = pkgs.postgresql_17;
     }
 
+    # Media stack, formerly the Dokploy compose stack next to Jellyfin
+    {
+      # Sonarr, Radarr and qBittorrent run as the media owner so imports and
+      # hardlinks keep working across the libraries and the downloads folder.
+      services.sonarr = {
+        enable = true;
+        openFirewall = true;
+        user = username;
+        group = "users";
+        dataDir = "/mnt/blockade/services/sonarr/config";
+      };
+      services.radarr = {
+        enable = true;
+        openFirewall = true;
+        user = username;
+        group = "users";
+        dataDir = "/mnt/blockade/services/radarr/config";
+      };
+      services.prowlarr = {
+        enable = true;
+        openFirewall = true;
+        dataDir = "/mnt/blockade/services/prowlarr/config";
+      };
+      services.qbittorrent = {
+        enable = true;
+        openFirewall = true;
+        user = username;
+        group = "users";
+        profileDir = "/mnt/blockade/services/qbittorrent/profile";
+        webuiPort = 18080;
+        torrentingPort = 6881;
+      };
+      services.seerr = {
+        enable = true;
+        openFirewall = true;
+      };
+
+      # The databases still refer to media by the container paths and to each
+      # other by the compose service names.
+      systemd.services.sonarr.serviceConfig.BindPaths = [
+        "/mnt/blockade/services/jellyfin/tvshows:/tv"
+        "/mnt/blockade/services/qbittorrent/downloads:/downloads"
+      ];
+      systemd.services.radarr.serviceConfig.BindPaths = [
+        "/mnt/blockade/services/jellyfin/movies:/movies"
+        "/mnt/blockade/services/qbittorrent/downloads:/downloads"
+      ];
+      systemd.services.qbittorrent.serviceConfig.BindPaths = [
+        "/mnt/blockade/services/qbittorrent/downloads:/downloads"
+      ];
+      networking.hosts."127.0.0.1" = [
+        "jellyfin"
+        "sonarr"
+        "radarr"
+        "prowlarr"
+        "qbittorrent"
+      ];
+    }
+
     # Gitadel
     {
       programs.gitadel-cli = {
