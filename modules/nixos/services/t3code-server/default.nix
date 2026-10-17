@@ -76,13 +76,22 @@ in
       # Upstream hard-codes a 30-day lifetime for paired-device sessions and
       # never extends it, which forces a monthly re-pair. Every session needs
       # an expiry, so use 100 years as "never"; revoke devices by hand with
-      # `t3 auth session revoke`. --replace-fail breaks the build if upstream
-      # moves the constant.
+      # `t3 auth session revoke`. The server bundle is split into chunks
+      # whose names carry a content hash, so find the one that defines the
+      # constant; the build fails if none does.
       package = upstreamPackage.overrideAttrs (old: {
         postInstall = (old.postInstall or "") + ''
-          substituteInPlace "$out/lib/t3code/apps/server/dist/bin.mjs" \
-            --replace-fail 'const DEFAULT_SESSION_TTL = days(30);' \
-                           'const DEFAULT_SESSION_TTL = days(36500);'
+          ttlFiles=$(grep -rlF 'const DEFAULT_SESSION_TTL = days(30);' \
+            "$out/lib/t3code/apps/server/dist" || true)
+          if [ -z "$ttlFiles" ]; then
+            echo "t3code-server: DEFAULT_SESSION_TTL not found; update the session TTL patch" >&2
+            exit 1
+          fi
+          for file in $ttlFiles; do
+            substituteInPlace "$file" \
+              --replace-fail 'const DEFAULT_SESSION_TTL = days(30);' \
+                             'const DEFAULT_SESSION_TTL = days(36500);'
+          done
         '';
       });
     };
