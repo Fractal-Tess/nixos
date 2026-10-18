@@ -101,5 +101,10 @@ in
     # embeddings fell back to WebAssembly) restarts it instead of starving
     # the rest of the machine.
     systemd.services.supermemory-server.serviceConfig.MemoryMax = "6G";
+
+    # Since 0.0.9 the server binds 127.0.0.1 unless told otherwise, which cut
+    # off every other machine on the mesh. The firewall still limits the port
+    # to firewallInterfaces.
+    systemd.services.supermemory-server.environment.SUPERMEMORY_HOST = "0.0.0.0";
   };
 }
