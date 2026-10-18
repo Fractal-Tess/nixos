@@ -53,6 +53,16 @@ in
       default = [ "wt0" ];
       description = "Interfaces to open the port on. Defaults to the NetBird mesh only";
     };
+
+    remoteOpenHost = mkOption {
+      type = types.nullOr types.str;
+      default = "${config.networking.hostName}.netbird.cloud";
+      description = ''
+        SSH host that clients use for "open in editor" links (Zed, VS Code).
+        Upstream only offers a Tailscale name and `<hostname>.local`, neither
+        of which reaches this machine over NetBird. Null keeps upstream's list.
+      '';
+    };
   };
 
   #============================================================================
@@ -92,8 +102,26 @@ in
               --replace-fail 'const DEFAULT_SESSION_TTL = days(30);' \
                              'const DEFAULT_SESSION_TTL = days(36500);'
           done
+
+          # Advertise T3CODE_REMOTE_OPEN_HOST first among the SSH hosts for
+          # remote "open in editor" links; clients use the first entry.
+          openFiles=$(grep -rlF 'const shortHostname = (yield* Hostname)' \
+            "$out/lib/t3code/apps/server/dist" || true)
+          if [ -z "$openFiles" ]; then
+            echo "t3code-server: remote open targets not found; update the remote open patch" >&2
+            exit 1
+          fi
+          for file in $openFiles; do
+            substituteInPlace "$file" \
+              --replace-fail 'const shortHostname = (yield* Hostname)' \
+                             'const remoteOpenHost = process.env.T3CODE_REMOTE_OPEN_HOST?.trim(); if (remoteOpenHost) targets.unshift({ kind: "mdns", host: remoteOpenHost }); const shortHostname = (yield* Hostname)'
+          done
         '';
       });
+    };
+
+    systemd.user.services.t3code-server.environment = mkIf (cfg.remoteOpenHost != null) {
+      T3CODE_REMOTE_OPEN_HOST = cfg.remoteOpenHost;
     };
 
     # Start the user service at boot, without an active login session.
