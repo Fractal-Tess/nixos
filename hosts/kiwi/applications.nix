@@ -15,6 +15,7 @@
     inputs.responsively-flake.nixosModules.default
     inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
+    inputs.rea-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
     inputs.opencode-flake.nixosModules.default
@@ -58,6 +59,11 @@
     # Agent Browser
     {
       programs.agent-browser.enable = true;
+    }
+
+    # REA
+    {
+      programs.rea.enable = true;
     }
 
     # Claude Code
@@ -104,7 +110,6 @@
     {
       home-manager.users.${username}.services.clip-sync = {
         enable = true;
-        configFile = ../../dotfiles/desktop/.config/clip-sync/config.toml;
       };
       sops.secrets.clip_sync_mesh_key = {
         sopsFile = ../../secrets/clip-sync.json;

@@ -15,6 +15,8 @@ set -g BRIGHTNESS_STEP 5
 set -g LAPTOP_MONITOR eDP-1
 set -g LID_LOG /tmp/lid-close-handler.log
 set -g LID_PID_FILE /tmp/lid-sleep-inhibit.pid
+# Survives reboots so the stay-awake toggle is re-armed on the next login.
+set -g STAY_AWAKE_STATE (set -q XDG_STATE_HOME; and echo $XDG_STATE_HOME; or echo $HOME/.local/state)/screen/stay-awake
 
 # ─── Help ────────────────────────────────────────────────────────────────────
 
@@ -52,8 +54,9 @@ function _screen_help
     echo "  lid-sync         Reapply the current hardware lid state"
     echo ""
     echo "Sleep Inhibition:"
-    echo "  sleep-toggle              Output waybar JSON for lid sleep inhibition"
-    echo "  sleep-toggle toggle       Toggle lid sleep inhibition, then output waybar JSON"
+    echo "  sleep-toggle              Output waybar JSON for the stay-awake toggle"
+    echo "  sleep-toggle toggle       Toggle stay-awake, then output waybar JSON"
+    echo "  idle-suspend              Suspend a laptop unless stay-awake is on (for hypridle)"
     echo ""
     echo "General:"
     echo "  status           Show brightness, dpms, and lock state"
@@ -417,10 +420,23 @@ end
 
 function _sleep_start_inhibit
     _sleep_is_active; and return
-    systemd-inhibit --what=handle-lid-switch --who=screen \
-        --why="User toggled lid sleep inhibition" --mode=block \
+    systemd-inhibit --what=handle-lid-switch:idle --who=screen \
+        --why="User toggled stay-awake" --mode=block \
         sleep infinity &
     echo $last_pid >$LID_PID_FILE
+end
+
+# Re-arm the inhibitor after a reboot or relogin if the toggle was left on.
+function _sleep_restore
+    test -f $STAY_AWAKE_STATE; and _sleep_start_inhibit
+end
+
+# Idle suspend for hypridle. Desktops stay up; stay-awake always wins.
+function _idle_suspend
+    count /sys/class/power_supply/BAT* >/dev/null; or return 0
+    _sleep_restore
+    _sleep_is_active; and return 0
+    systemctl suspend
 end
 
 function _sleep_stop_inhibit
@@ -432,20 +448,24 @@ function _sleep_stop_inhibit
 end
 
 function _sleep_print_status
+    _sleep_restore
     if _sleep_is_active
-        printf '{"text":"󰛊","tooltip":"Lid close: stay awake; lock when no external display","class":"active","alt":"active"}\n'
+        printf '{"text":"󰛊","tooltip":"Stay awake: on — never suspends on idle or lid close","class":"active","alt":"active"}\n'
     else
-        printf '{"text":"󰍁","tooltip":"Lid close: lock and suspend when no external display","class":"inactive","alt":"inactive"}\n'
+        printf '{"text":"󰍁","tooltip":"Stay awake: off — suspends on idle and lid close","class":"inactive","alt":"inactive"}\n'
     end
 end
 
 function _sleep_toggle
     if _sleep_is_active
+        rm -f $STAY_AWAKE_STATE
         _sleep_stop_inhibit
-        notify-send -t 2000 "Lid Sleep" "Lid close will lock and suspend without an external display"
+        notify-send -t 2000 "Stay Awake" "Off — suspends on idle and lid close"
     else
+        mkdir -p (path dirname $STAY_AWAKE_STATE)
+        touch $STAY_AWAKE_STATE
         _sleep_start_inhibit
-        notify-send -t 2000 "Lid Sleep" "Lid close will stay awake and lock without an external display"
+        notify-send -t 2000 "Stay Awake" "On — never suspends on idle or lid close"
     end
     _sleep_print_status
 end
@@ -607,7 +627,11 @@ switch $cmd
         _lid_open
 
     case lid-sync
+        _sleep_restore
         _lid_sync
+
+    case idle-suspend
+        _idle_suspend
 
     case sleep-toggle
         if test "$arg2" = toggle

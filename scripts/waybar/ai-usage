@@ -129,6 +129,12 @@ set error_file $cache_dir/last-error
 set strikes_file $cache_dir/strikes
 mkdir -p $cache_dir
 
+# Integer contents of a state file, or 0 when it is missing, empty or corrupt
+function read_int -a file
+    set -l v (cat $file 2>/dev/null)
+    string match -qr '^\d+$' -- "$v"; and echo $v; or echo 0
+end
+
 function cache_age
     test -f $cache; or begin; echo 999999; return; end
     math $now - (stat -c %Y $cache)
@@ -174,8 +180,7 @@ end
 # Fetch (only when the cache is old enough and we are not backing off)
 #----------------------------------------------------------------------------
 
-set backoff_until 0
-test -f $backoff_file; and set backoff_until (cat $backoff_file)
+set backoff_until (read_int $backoff_file)
 
 set want_fetch 0
 if contains -- --force $argv; or test (cache_age) -ge $fetch_every
@@ -200,8 +205,7 @@ if test $want_fetch -eq 1; and test $now -ge $backoff_until
         else if test "$code" = 429
             set retry (string match -rgi '^retry-after:\s*(\d+)' <$hdrs)
             # Back off exponentially across consecutive 429s
-            set strikes 0
-            test -f $strikes_file; and set strikes (cat $strikes_file)
+            set strikes (read_int $strikes_file)
             echo (math $strikes + 1) >$strikes_file
             set wait (math "min($backoff_429 * 2 ^ $strikes, $backoff_max)")
             test -n "$retry"; and test $retry -gt $wait; and set wait $retry
@@ -230,7 +234,7 @@ if not test -f $cache
     if test "$err" = expired
         emit ⏸ "$name: token expired"\n"It refreshes next time the CLI runs"\n\n$footer "$active expired" 0
     else if test -n "$err"
-        set retry_in (dur_str (math (cat $backoff_file 2>/dev/null; or echo $now) - $now))
+        set retry_in (dur_str (math (read_int $backoff_file) - $now))
         emit ! "$name: $err"\n"Retrying in $retry_in"\n\n$footer "$active error" 0
     else
         emit … "$name: waiting for first update"\n\n$footer "$active error" 0
@@ -238,20 +242,27 @@ if not test -f $cache
     exit 0
 end
 
-# Normalize to: session %, session reset, weekly %, weekly reset, extra lines
+# Normalize to: session %, session reset, weekly %, weekly reset, has session
+# window, extra lines
 set extra
 switch $active
     case claude
         set fields (jq -r '
             .five_hour.utilization // 0, .five_hour.resets_at // "",
-            .seven_day.utilization // 0, .seven_day.resets_at // ""' $cache)
+            .seven_day.utilization // 0, .seven_day.resets_at // "",
+            (.five_hour != null)' $cache)
         # Per-model weekly limits (e.g. Opus/Fable), when the plan has them
         set extra (jq -r '.limits[]? | select(.kind == "weekly_scoped")
             | "Weekly \(.scope.model.display_name // "scoped"): \(.percent)%"' $cache)
     case codex
-        set fields (jq -r '.rate_limit
-            | .primary_window.used_percent // 0, .primary_window.reset_at // "",
-              .secondary_window.used_percent // 0, .secondary_window.reset_at // ""' $cache)
+        # Windows are matched by length: some plans (e.g. Plus) only have the
+        # weekly one, and it then arrives as the primary window
+        set fields (jq -r '[.rate_limit | .primary_window, .secondary_window | select(. != null)]
+            | (map(select(.limit_window_seconds < 86400)) | first) as $s
+            | (map(select(.limit_window_seconds >= 86400)) | first) as $w
+            | $s.used_percent // 0, $s.reset_at // "",
+              $w.used_percent // 0, $w.reset_at // "",
+              ($s != null)' $cache)
         set extra "Plan: "(jq -r '.plan_type // "unknown"' $cache)
 end
 
@@ -259,6 +270,7 @@ set session (math --scale=0 "round($fields[1])")
 set session_reset (to_epoch $fields[2])
 set weekly (math --scale=0 "round($fields[3])")
 set weekly_reset (to_epoch $fields[4])
+set has_session $fields[5]
 
 # A window that has already reset is back to 0% even if the cache is older
 test -n "$session_reset"; and test $session_reset -le $now; and set session 0
@@ -276,8 +288,11 @@ else
     set class high
 end
 
-set tooltip "$name usage
-Session (5h): $session% — resets in "(dur_str $session_left)"
+set tooltip "$name usage"
+test $has_session = true
+and set tooltip "$tooltip
+Session (5h): $session% — resets in "(dur_str $session_left)
+set tooltip "$tooltip
 Weekly (7d):  $weekly% — resets in "(dur_str $weekly_left)
 for line in $extra
     set tooltip "$tooltip
@@ -290,10 +305,13 @@ Updated "(dur_str (cache_age))" ago"
 if test -n "$err"
     set tooltip "$tooltip — last refresh: $err"
     test "$err" = expired; and set tooltip "$tooltip (run the CLI to renew)"
-    test -f $backoff_file; and test (cat $backoff_file) -gt $now
-    and set tooltip "$tooltip, retrying in "(dur_str (math (cat $backoff_file) - $now))
+    test (read_int $backoff_file) -gt $now
+    and set tooltip "$tooltip, retrying in "(dur_str (math (read_int $backoff_file) - $now))
 end
 set tooltip "$tooltip
 $footer"
 
-emit "$session% "(short_str $session_left)" · $weekly% "(short_str $weekly_left) $tooltip "$active $class" $peak
+set text "$weekly% "(short_str $weekly_left)
+test $has_session = true; and set text "$session% "(short_str $session_left)" · $text"
+
+emit $text $tooltip "$active $class" $peak

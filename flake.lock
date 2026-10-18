@@ -441,11 +441,11 @@
     },
     "nixpkgs_3": {
       "locked": {
-        "lastModified": 1791956154,
-        "narHash": "sha256-jBYGPi4udQ9uo4KQp9m2J0546nJVQitG15gvZSaVVAs=",
+        "lastModified": 1792094642,
+        "narHash": "sha256-zp8ToDMnqZcu4o4IH9pdwXFXGp7yLm/M0dEnNWnyd7I=",
         "owner": "nixos",
         "repo": "nixpkgs",
-        "rev": "55bfb4d7437bd4e09ab7cba58a43bd68eb310044",
+        "rev": "fe13242281a67641c0102cdb1087f0ebe586c7df",
         "type": "github"
       },
       "original": {
@@ -604,6 +604,26 @@
         "type": "github"
       }
     },
+    "rea-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792056475,
+        "narHash": "sha256-CIvqYkZ+Jqe5vzn1IX5rJMR7trgAOtnUQEscaoZzmMQ=",
+        "owner": "Fractal-Tess",
+        "repo": "rea-flake",
+        "rev": "5073be6775cf60c196a12f4fe0a4c9bc21b186e6",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "rea-flake",
+        "type": "github"
+      }
+    },
     "responsively-flake": {
       "inputs": {
         "nixpkgs": "nixpkgs_6",
@@ -642,6 +662,7 @@
         "open-design-flake": "open-design-flake",
         "opencode-flake": "opencode-flake",
         "polymc": "polymc",
+        "rea-flake": "rea-flake",
         "responsively-flake": "responsively-flake",
         "scorch": "scorch",
         "shadoword": "shadoword",

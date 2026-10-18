@@ -37,6 +37,12 @@ in
     programs.hyprlock.enable = true;
     # Enable Hypridle
     services.hypridle.enable = true;
+    # The unit's PATH is store-only, so the listeners in hypridle.conf could
+    # not find fish, jq or brightnessctl and silently never ran.
+    systemd.user.services.hypridle.path = [
+      "/run/current-system/sw"
+      "/etc/profiles/per-user/${username}"
+    ];
 
     # Enable XDG Desktop Portal for sandboxed/Wayland apps
     xdg.portal = {

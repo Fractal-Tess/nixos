@@ -59,6 +59,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    rea-flake = {
+      url = "github:Fractal-Tess/rea-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     claude-code-flake = {
       url = "github:Fractal-Tess/claude-code-flake";
       inputs.nixpkgs.follows = "nixpkgs";
