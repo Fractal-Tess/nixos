@@ -28,6 +28,12 @@ in
           '';
         };
         npmDepsHash = "sha256-0dctM/apI3ysMIEVBaBXO9hZMWskpJpNpOws1gwiOYc=";
+        # nixpkgs patches a test file of its own llama.cpp release; the patch
+        # does not apply to the pinned tag and is not needed by it.
+        patches = [ ];
+        # The pinned tag's test suite downloads models, which the build
+        # sandbox cannot do.
+        doCheck = false;
         cmakeFlags =
           let
             keepFlag = flag: !(final.lib.hasInfix "CMAKE_CUDA_ARCHITECTURES" flag);

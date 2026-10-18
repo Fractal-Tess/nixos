@@ -2,6 +2,7 @@
   config,
   inputs,
   lib,
+  pkgs,
   username,
   ...
 }:
@@ -169,6 +170,26 @@
       services.shadoword-api = {
         enable = true;
         variant = "cuda";
+        # The CUDA release binary is built against CUDA 12, but the flake
+        # links it with nixpkgs' default CUDA, which is now 13. Swap its two
+        # CUDA runtime libraries for the 12.x ones until the shadoword flake
+        # pins them itself.
+        package =
+          let
+            upstream = inputs.shadoword.packages.${pkgs.stdenv.hostPlatform.system}.shadoword-api-cuda;
+            cudaRuntime = [
+              "cuda_cudart"
+              "libcublas"
+            ];
+          in
+          upstream.override (old: {
+            runtimeDeps =
+              builtins.filter (dep: !(builtins.elem (dep.pname or "") cudaRuntime)) old.runtimeDeps
+              ++ map lib.getLib [
+                pkgs.cudaPackages_12.cuda_cudart
+                pkgs.cudaPackages_12.libcublas
+              ];
+          });
         listenAddress = "100.91.0.2";
         requestRecordingDir = "/var/lib/shadoword/requests";
         initTokenFile = config.sops.secrets.shadoword_admin_token.path;

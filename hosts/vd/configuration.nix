@@ -114,13 +114,41 @@
   # Enable zram for compressed RAM swapping
   zramSwap.enable = true;
 
-  # Add 16GB swap file (swap partition already defined in hardware-configuration.nix)
-  swapDevices = [
-    {
-      device = "/swapfile";
-      size = 16 * 1024; # 16GB in MB
-    }
-  ];
+  # Disk swap overflow: just the swap partition from hardware-configuration.nix.
+
+  # Once RAM frees up again, pull swapped-out pages back into RAM so the system
+  # doesn't stay sluggish. A swap device is cycled (swapoff + swapon) only when
+  # everything on it fits in available RAM with a safety margin left over.
+  systemd.services.auto-unswap = {
+    description = "Move swapped pages back into RAM when there is room";
+    serviceConfig = {
+      Type = "oneshot";
+      Nice = 19;
+      IOSchedulingClass = "idle";
+    };
+    path = [ pkgs.util-linux pkgs.gawk ];
+    script = ''
+      margin_kb=$((4 * 1024 * 1024)) # keep 4GB of RAM free afterwards
+
+      # Disk swap first (slowest), then zram; /proc/swaps sizes are in KB.
+      tail -n +2 /proc/swaps | sort -k5 -n | while read -r dev type size used prio; do
+        [ "$used" -gt 0 ] || continue
+        avail=$(awk '/^MemAvailable:/ {print $2}' /proc/meminfo)
+        if [ $((avail - used)) -gt "$margin_kb" ]; then
+          echo "Moving $((used / 1024))MB from $dev back into RAM"
+          swapoff "$dev" && swapon --priority "$prio" "$dev"
+        fi
+      done
+    '';
+  };
+
+  systemd.timers.auto-unswap = {
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "10min";
+      OnUnitActiveSec = "5min";
+    };
+  };
 
   #============================================================================
   # CUSTOM MODULES CONFIGURATION

@@ -777,11 +777,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789411626,
-        "narHash": "sha256-VO6BozO+0e9iZeArmAN38Yr4eqtHmZ63rIsGTGXbxoM=",
+        "lastModified": 1792335278,
+        "narHash": "sha256-f09Us2MIKZwqZWvt0LBU3z10GhqaT7VCP9Ky6CtAOTs=",
         "owner": "Fractal-Tess",
         "repo": "scorch",
-        "rev": "2e7d9cbf92929b5b0b08f707de81fb30569b89d4",
+        "rev": "003bdbf6047474b34fd1a9df1814ced0741babb4",
         "type": "github"
       },
       "original": {
@@ -797,11 +797,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789458037,
-        "narHash": "sha256-kSY//6UJwE6isEXl1enr803g7BckR63QVV6bis9wgc0=",
+        "lastModified": 1792335237,
+        "narHash": "sha256-YvG6uJLs6/sB0G+gwUM2fDRJ9LHg4/RGgnkl9TnM6/A=",
         "owner": "Fractal-Tess",
         "repo": "shadoword",
-        "rev": "b30a43b8e71c54634b10c82d926e4ab4cf6eeaf3",
+        "rev": "44a031842379fc90594a815b394c62e309a81f8e",
         "type": "github"
       },
       "original": {

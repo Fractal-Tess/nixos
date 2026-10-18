@@ -22,8 +22,14 @@ let
     ln -s ${globalProtectGuiPackage}/bin/gpservice $out/bin/gpservice
 
     cp -r ${globalProtectGuiPackage}/share/. $out/share/
-    substituteInPlace $out/share/applications/gpgui.desktop \
-      --replace-fail '/run/current-system/sw/bin/gpclient launch-gui' "$out/bin/gp-gui"
+    # The copy keeps the store's read-only modes; sed -i needs to write
+    # beside the file.
+    chmod -R u+w $out/share
+    # Point the launcher at the wrapper above. Upstream has rewritten this
+    # line more than once, so replace it whole; fail if it disappears.
+    desktop=$out/share/applications/gpgui.desktop
+    grep -q '^Exec=' "$desktop" || { echo "gpgui.desktop has no Exec line" >&2; exit 1; }
+    sed -i "s|^Exec=.*|Exec=$out/bin/gp-gui %u|" "$desktop"
   '';
 in
 {
