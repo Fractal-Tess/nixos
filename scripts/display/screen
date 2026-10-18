@@ -420,7 +420,9 @@ end
 
 function _sleep_start_inhibit
     _sleep_is_active; and return
-    systemd-inhibit --what=handle-lid-switch:idle --who=screen \
+    # Block sleep only, not idle: hypridle drops every listener while an idle
+    # inhibitor is held, so stay-awake would also stop the lock and screen-off.
+    systemd-inhibit --what=handle-lid-switch:sleep --who=screen \
         --why="User toggled stay-awake" --mode=block \
         sleep infinity &
     echo $last_pid >$LID_PID_FILE
@@ -450,7 +452,7 @@ end
 function _sleep_print_status
     _sleep_restore
     if _sleep_is_active
-        printf '{"text":"󰛊","tooltip":"Stay awake: on — never suspends on idle or lid close","class":"active","alt":"active"}\n'
+        printf '{"text":"󰛊","tooltip":"Stay awake: on — never suspends; still locks and blanks the screen","class":"active","alt":"active"}\n'
     else
         printf '{"text":"󰍁","tooltip":"Stay awake: off — suspends on idle and lid close","class":"inactive","alt":"inactive"}\n'
     end
@@ -465,7 +467,7 @@ function _sleep_toggle
         mkdir -p (path dirname $STAY_AWAKE_STATE)
         touch $STAY_AWAKE_STATE
         _sleep_start_inhibit
-        notify-send -t 2000 "Stay Awake" "On — never suspends on idle or lid close"
+        notify-send -t 2000 "Stay Awake" "On — never suspends; still locks and blanks the screen"
     end
     _sleep_print_status
 end

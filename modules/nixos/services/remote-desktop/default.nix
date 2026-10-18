@@ -69,6 +69,22 @@ in
         default = true;
         description = "Enable Avahi/mDNS for automatic service discovery.";
       };
+
+      capture = mkOption {
+        type = types.enum [
+          "wlr"
+          "kms"
+          "portal"
+        ];
+        default = "wlr";
+        description = ''
+          Screen capture backend. Left unset, Sunshine tries the XDG portal
+          first, which pops Hyprland's "Select what to share" picker at every
+          login and stalls startup until it is answered. "wlr" uses Hyprland's
+          screencopy protocol directly and streams the first monitor; switch
+          monitors with Sunshine's output_name setting.
+        '';
+      };
     };
 
     moonlight = mkOption {
@@ -124,6 +140,7 @@ in
         autoStart = cfg.sunshine.autoStart;
         capSysAdmin = cfg.sunshine.capSysAdmin;
         openFirewall = cfg.sunshine.openFirewall;
+        settings.capture = cfg.sunshine.capture;
       };
 
       # Kernel module for input emulation (virtual mouse/keyboard/gamepad)
