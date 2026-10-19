@@ -34,6 +34,7 @@ in
       path = "/home/${username}/.secrets.d/fal-ai.fish";
       content = ''
         set -gx FAL_AI "${config.sops.placeholder.fal_ai_api_key}"
+        set -gx FAL_KEY "${config.sops.placeholder.fal_ai_api_key}"
       '';
     };
   };

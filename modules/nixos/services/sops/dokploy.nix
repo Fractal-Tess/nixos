@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   username,
   ...
 }:
@@ -27,6 +28,17 @@ in
       format = "json";
       key = "API_KEY";
     };
+
+    # Claude Code's Dokploy MCP server: `claude mcp add -s user dokploy -- dokploy-mcp`.
+    # Reads the key at launch so it never lands in ~/.claude.json.
+    environment.systemPackages = [
+      (pkgs.writeShellScriptBin "dokploy-mcp" ''
+        export DOKPLOY_URL="https://dokploy.fractal-tess.xyz/api"
+        DOKPLOY_API_KEY="$(cat ${config.sops.secrets.dokploy_api_key.path})"
+        export DOKPLOY_API_KEY
+        exec ${pkgs.nodejs}/bin/npx -y @ahdev/dokploy-mcp@1.6.0 "$@"
+      '')
+    ];
 
     sops.templates."dokploy.fish" = {
       owner = username;

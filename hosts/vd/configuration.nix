@@ -270,6 +270,8 @@
         syncthing.enable = true;
         reactbits.enable = true;
         dokploy.enable = true;
+        fal_ai.enable = true;
+        opencode.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
       };
 

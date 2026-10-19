@@ -28,6 +28,10 @@ in
   };
 
   config = mkIf cfg.enable {
+    systemd.tmpfiles.rules = [
+      "d /home/${username}/.secrets.d 0755 ${username} users -"
+    ];
+
     sops = {
       age.keyFile = "/home/${username}/.config/sops/age/keys.txt";
 
@@ -44,6 +48,26 @@ in
           path = "/home/${username}/.config/secrets/moonshot_ai";
           format = "json";
         };
+      };
+
+      templates."openrouter.fish" = {
+        owner = username;
+        group = username;
+        mode = "0600";
+        path = "/home/${username}/.secrets.d/openrouter.fish";
+        content = ''
+          set -gx OPENROUTER_API_KEY "${config.sops.placeholder.openrouter_api_key}"
+        '';
+      };
+
+      templates."moonshot.fish" = {
+        owner = username;
+        group = username;
+        mode = "0600";
+        path = "/home/${username}/.secrets.d/moonshot.fish";
+        content = ''
+          set -gx MOONSHOT_API_KEY "${config.sops.placeholder.moonshot_ai}"
+        '';
       };
     };
   };

@@ -200,6 +200,9 @@
         syncthing.enable = true;
         reactbits.enable = true;
         dokploy.enable = true;
+        fal_ai.enable = true;
+        opencode.enable = true;
+        minimax.enable = true;
       };
 
       # Virtualization
