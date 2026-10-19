@@ -1,3 +1,5 @@
+# When adding, removing or renaming a secret or its exported variable, also
+# update the shell-secrets agent skill (~/.agents/skills/shell-secrets/SKILL.md).
 {
   config,
   lib,

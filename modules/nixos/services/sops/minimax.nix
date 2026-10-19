@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.minimax = {
-    enable = mkEnableOption "Minimax secrets management via SOPS";
+    enable = mkEnableOption "Minimax secrets management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

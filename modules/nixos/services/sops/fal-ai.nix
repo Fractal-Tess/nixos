@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.fal_ai = {
-    enable = mkEnableOption "FAL AI secrets management via SOPS";
+    enable = mkEnableOption "FAL AI secrets management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

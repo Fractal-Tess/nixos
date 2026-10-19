@@ -13,7 +13,9 @@ let
 in
 {
   options.modules.services.sops.dokploy = {
-    enable = mkEnableOption "Dokploy API key management via SOPS";
+    enable = mkEnableOption "Dokploy API key management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

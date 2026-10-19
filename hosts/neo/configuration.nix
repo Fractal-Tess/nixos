@@ -193,17 +193,8 @@
         proxyPort = 8317;
       };
 
-      sops = {
-        enable = true;
-        z_ai.enable = true;
-        ssh.enable = true;
-        syncthing.enable = true;
-        reactbits.enable = true;
-        dokploy.enable = true;
-        fal_ai.enable = true;
-        opencode.enable = true;
-        minimax.enable = true;
-      };
+      # Every secret module under modules/nixos/services/sops is on by default.
+      sops.enable = true;
 
       # Virtualization
       virtualization = {

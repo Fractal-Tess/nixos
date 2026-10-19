@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.reactbits = {
-    enable = mkEnableOption "React Bits Pro license key management via SOPS";
+    enable = mkEnableOption "React Bits Pro license key management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {
@@ -27,7 +29,7 @@ in
       owner = username;
       group = username;
       mode = "0600";
-      path = "/home/${username}/.secrets.fish";
+      path = "/home/${username}/.secrets.d/reactbits.fish";
       content = ''
         set -gx REACTBITS_LICENSE_KEY "${config.sops.placeholder.reactbits_license_key}"
       '';

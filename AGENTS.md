@@ -23,6 +23,7 @@ This document contains essential information for agentic coding assistants worki
 ### Secrets (SOPS)
 - Edit secrets: `sops secrets/secrets.yaml`
 - Update age key: Ensure `/home/<username>/.config/sops/age/keys.txt` exists
+- After adding, removing or renaming a secret (or the variable it exports), update `~/.agents/skills/shell-secrets/SKILL.md` to match
 
 ## Code Style Guidelines
 

@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.syncthing = {
-    enable = mkEnableOption "Syncthing secrets management via SOPS";
+    enable = mkEnableOption "Syncthing secrets management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

@@ -126,7 +126,10 @@
       Nice = 19;
       IOSchedulingClass = "idle";
     };
-    path = [ pkgs.util-linux pkgs.gawk ];
+    path = [
+      pkgs.util-linux
+      pkgs.gawk
+    ];
     script = ''
       margin_kb=$((4 * 1024 * 1024)) # keep 4GB of RAM free afterwards
 
@@ -262,18 +265,8 @@
           };
         };
       };
-      sops = {
-        enable = true;
-        ssh.enable = true;
-        z_ai.enable = true;
-        minimax.enable = true;
-        syncthing.enable = true;
-        reactbits.enable = true;
-        dokploy.enable = true;
-        fal_ai.enable = true;
-        opencode.enable = true;
-        # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
-      };
+      # Every secret module under modules/nixos/services/sops is on by default.
+      sops.enable = true;
 
       # Virtualization
       # NOTE: Changed rootless to false for Dokploy/Swarm compatibility

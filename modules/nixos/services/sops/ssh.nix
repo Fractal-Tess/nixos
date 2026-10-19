@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.ssh = {
-    enable = mkEnableOption "SSH secrets management via SOPS";
+    enable = mkEnableOption "SSH secrets management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

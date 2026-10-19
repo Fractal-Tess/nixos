@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.z_ai = {
-    enable = mkEnableOption "Z-AI secrets management via SOPS";
+    enable = mkEnableOption "Z-AI secrets management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {

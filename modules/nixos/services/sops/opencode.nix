@@ -12,7 +12,9 @@ let
 in
 {
   options.modules.services.sops.opencode = {
-    enable = mkEnableOption "OpenCode account keys management via SOPS";
+    enable = mkEnableOption "OpenCode account keys management via SOPS" // {
+      default = true;
+    };
   };
 
   config = mkIf (config.modules.services.sops.enable && cfg.enable) {
