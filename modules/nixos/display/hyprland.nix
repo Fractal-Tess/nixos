@@ -14,6 +14,11 @@ in
   # Options for Hyprland configuration
   options.modules.display.hyprland = {
     enable = mkEnableOption "Hyprland";
+    # Without hyprlock, hypridle's lock_cmd and `loginctl lock-session` do
+    # nothing, while its dim and screen-off listeners keep working.
+    lock.enable = mkEnableOption "hyprlock screen locking" // {
+      default = true;
+    };
   };
 
   config = mkIf cfg.enable {
@@ -34,7 +39,7 @@ in
     };
 
     # Enable Hyprlock
-    programs.hyprlock.enable = true;
+    programs.hyprlock.enable = cfg.lock.enable;
     # Enable Hypridle
     services.hypridle.enable = true;
     # The unit's PATH is store-only, so the listeners in hypridle.conf could

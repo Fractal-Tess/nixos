@@ -181,7 +181,11 @@
 
     # Display system
     display = {
-      hyprland.enable = true;
+      hyprland = {
+        enable = true;
+        # No screen locking on the desktop; idle still dims and turns screens off.
+        lock.enable = false;
+      };
       waybar.enable = true;
       sddm.enable = true;
       autologin.enable = true;
