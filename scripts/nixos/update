@@ -14,7 +14,7 @@
 #   NIXOS_UPDATE_FLEET_CHILD Internal flag that prevents recursive fan-out
 #
 # Dependencies: git, sudo, nixos-rebuild, claude (for AI commit messages)
-# Usage: update [--help|-h]
+# Usage: update [--hosts all|local|<host>[,<host>...]] [--help|-h]
 
 set -l NIXOS_DIR /home/fractal-tess/nixos
 if set -q NIXOS_UPDATE_DIR
@@ -77,8 +77,12 @@ function _log_dim
 end
 
 # ── Help ──────────────────────────────────────────────────────────────────────
-if contains -- --help $argv; or contains -- -h $argv
-    echo "Usage: update [--help|-h]"
+if not argparse --name=update h/help 'hosts=' -- $argv
+    exit 2
+end
+
+if set -q _flag_help
+    echo "Usage: update [--hosts all|local|<host>[,<host>...]] [--help|-h]"
     echo ""
     echo "NixOS Flake Update Manager"
     echo ""
@@ -92,14 +96,42 @@ if contains -- --help $argv; or contains -- -h $argv
     echo "  7. Push to remote"
     echo "  8. Display success summary"
     echo ""
+    echo "Options:"
+    echo "  --hosts all             This host, then every other fleet host (default)"
+    echo "  --hosts local           Only this host"
+    echo "  --hosts kiwi,neo        This host, then only the listed hosts"
+    echo "  This host is always rebuilt first: a commit is pushed only after it builds."
+    echo ""
     echo "Environment:"
     echo "  NIXOS_UPDATE_NO_GIT=1   Skip all git operations (rebuild only)"
     echo "  NIXOS_UPDATE_DIR         Override the flake checkout directory"
     echo "  NIXOS_UPDATE_HOST        Override the target NixOS hostname"
-    echo "  NIXOS_UPDATE_NO_FLEET=1  Do not update the other configured hosts"
+    echo "  NIXOS_UPDATE_NO_FLEET=1  Same as --hosts local"
     echo ""
     echo "Dependencies: git, sudo, nixos-rebuild, curl (for AI messages)"
     exit 0
+end
+
+# ── Fleet targets ─────────────────────────────────────────────────────────────
+set -l FLEET_TARGETS $FLEET_HOSTS
+if test "$NIXOS_UPDATE_NO_FLEET" = 1
+    set FLEET_TARGETS
+end
+if set -q _flag_hosts
+    switch $_flag_hosts
+        case all
+            set FLEET_TARGETS $FLEET_HOSTS
+        case local
+            set FLEET_TARGETS
+        case '*'
+            set FLEET_TARGETS (string split -n , -- $_flag_hosts)
+            for fleet_host in $FLEET_TARGETS
+                if not contains -- $fleet_host $FLEET_HOSTS
+                    _log_error "Unknown host '$fleet_host' (known: $FLEET_HOSTS)"
+                    exit 2
+                end
+            end
+    end
 end
 
 # ── SKIP_GIT flag ─────────────────────────────────────────────────────────────
@@ -529,14 +561,14 @@ end
 
 # Fan out only from the command the user started. Each reachable peer runs this
 # same script as a fleet child, pulls first, and either skips or switches.
-if test "$SKIP_GIT" = false; and test "$NIXOS_UPDATE_FLEET_CHILD" != 1; and test "$NIXOS_UPDATE_NO_FLEET" != 1
+if test "$SKIP_GIT" = false; and test "$NIXOS_UPDATE_FLEET_CHILD" != 1; and test (count $FLEET_TARGETS) -gt 0
     set -l branch (git branch --show-current)
     set -l local_revision (git rev-parse HEAD 2>/dev/null)
     set -l remote_revision (git rev-parse "origin/$branch" 2>/dev/null)
 
     if test -n "$local_revision"; and test "$local_revision" = "$remote_revision"
         _log_header "Updating Fleet"
-        for fleet_host in $FLEET_HOSTS
+        for fleet_host in $FLEET_TARGETS
             if test "$fleet_host" = (hostname -s)
                 _log_success "$fleet_host is the initiating host"
                 continue
