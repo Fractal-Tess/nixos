@@ -269,6 +269,7 @@
         minimax.enable = true;
         syncthing.enable = true;
         reactbits.enable = true;
+        dokploy.enable = true;
         # linux_wallpaperengine.enable = true; # Disabled - using waypaper instead
       };
 

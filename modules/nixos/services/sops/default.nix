@@ -13,6 +13,7 @@ in
 {
 
   imports = [
+    ./dokploy.nix
     ./fal-ai.nix
     ./opencode.nix
     ./reactbits.nix

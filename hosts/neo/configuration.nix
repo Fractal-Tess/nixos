@@ -199,6 +199,7 @@
         ssh.enable = true;
         syncthing.enable = true;
         reactbits.enable = true;
+        dokploy.enable = true;
       };
 
       # Virtualization
