@@ -4,11 +4,10 @@
 # Merged from gpvpn-connect and gpvpn-disconnect. Handles connecting
 # to gpvpn.carrierx.com with proper Wayland/GTK environment variables.
 #
-# Dependencies: sudo, gpclient, dig, curl, sed, pgrep, pkill
+# Dependencies: sudo, gpclient, pgrep, pkill
 # Usage: vpn [connect|disconnect|status] [--help|-h]
 
 set VPN_HOST gpvpn.carrierx.com
-set PIN_MARKER "# vpn-pin"
 
 function show_help
     echo "Usage: vpn <subcommand>"
@@ -22,55 +21,14 @@ function show_help
     echo "  --help, -h  Show this help message"
 end
 
-# The portal name resolves to two firewalls that keep separate SAML state.
-# gpclient and its login window each resolve the name on their own, so a
-# login can be split across both and fail. Probe both nodes like the official
-# client does, then pin the first healthy one in /etc/hosts for this session.
-function pin_portal
-    unpin_portal
-    # VPN_PORTAL_IP forces a specific node, e.g. to test one that misbehaves
-    set ips (dig +short $VPN_HOST A | sort -R)
-    set -q VPN_PORTAL_IP; and set ips $VPN_PORTAL_IP
-    for ip in $ips
-        set prelogin (curl -s -m 5 --resolve $VPN_HOST:443:$ip -X POST \
-            "https://$VPN_HOST/global-protect/prelogin.esp?clientos=Linux")
-        if string match -q '*<status>Success</status>*' -- $prelogin
-            echo "$ip $VPN_HOST $PIN_MARKER" | sudo tee -a /etc/hosts >/dev/null
-            # The resolver picks up /etc/hosts changes after about two seconds.
-            # Until then DNS still returns both nodes in random order, so wait
-            # until the pinned address is the only answer.
-            for i in (seq 40)
-                if test "$(getent ahostsv4 $VPN_HOST | string split -f1 ' ' | sort -u)" = $ip
-                    echo "Portal pinned to $ip"
-                    return 0
-                end
-                sleep 0.25
-            end
-            echo "vpn: pin to $ip did not take effect" >&2
-            return 1
-        end
-        echo "Portal node $ip not responding, trying next" >&2
-    end
-    echo "vpn: no healthy portal node for $VPN_HOST" >&2
-    return 1
-end
-
-function unpin_portal
-    sudo sed -i "/$PIN_MARKER\$/d" /etc/hosts
-end
-
 function cmd_connect
-    pin_portal; or return 1
+    # gp-portal-pin.service keeps the portal pinned to one firewall
     sudo -E gpclient connect --auto-gateway $VPN_HOST
-    set code $status
-    unpin_portal
-    return $code
 end
 
 function cmd_disconnect
     if pgrep -f "gpclient connect" >/dev/null
         sudo pkill -f "gpclient connect"
-        unpin_portal
         echo "VPN disconnected"
     else
         echo "No active VPN connection found"

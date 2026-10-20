@@ -27,6 +27,9 @@
 
     # System-wide packages
     ./packages.nix
+
+    # Keep the CarrierX GlobalProtect portal on one firewall
+    ./gp-portal-pin.nix
   ];
 
   #============================================================================
@@ -38,10 +41,6 @@
 
   # Enable GlobalProtect-compatible VPN connections through NetworkManager.
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
-
-  # Writable /etc/hosts: `vpn connect` pins the CarrierX portal to one healthy
-  # firewall per session (the two nodes keep separate SAML state).
-  environment.etc.hosts.mode = "0644";
 
   # Enable link dynamic
   programs.nix-ld.enable = true;
