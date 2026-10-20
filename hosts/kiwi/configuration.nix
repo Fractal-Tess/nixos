@@ -27,9 +27,6 @@
 
     # System-wide packages
     ./packages.nix
-
-    # Keep the CarrierX GlobalProtect portal on one firewall
-    ./gp-portal-pin.nix
   ];
 
   #============================================================================
@@ -41,6 +38,22 @@
 
   # Enable GlobalProtect-compatible VPN connections through NetworkManager.
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
+
+  # gpvpn.carrierx.com resolves to two firewalls with separate SAML state, and
+  # DNS returns them in random order. gpclient, its login window and the
+  # NetworkManager auth dialog each look the name up, so one login could land
+  # on both and fail. Ranking one firewall first makes every lookup agree,
+  # while the other stays in the answer as a fallback.
+  networking.getaddrinfo.precedence = {
+    # glibc defaults, restated because any entry replaces the whole table
+    "::1/128" = 50;
+    "::/0" = 40;
+    "2002::/16" = 30;
+    "::/96" = 20;
+    "::ffff:0:0/96" = 10;
+    # CarrierX portal02, ahead of portal01 (104.166.97.226)
+    "::ffff:162.251.180.130/128" = 15;
+  };
 
   # Enable link dynamic
   programs.nix-ld.enable = true;

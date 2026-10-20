@@ -22,7 +22,6 @@ function show_help
 end
 
 function cmd_connect
-    # gp-portal-pin.service keeps the portal pinned to one firewall
     sudo -E gpclient connect --auto-gateway $VPN_HOST
 end
 
