@@ -56,7 +56,7 @@ end
 
 function cmd_connect
     pin_portal; or return 1
-    sudo -E gpclient connect $VPN_HOST
+    sudo -E gpclient connect --auto-gateway $VPN_HOST
     set code $status
     unpin_portal
     return $code
