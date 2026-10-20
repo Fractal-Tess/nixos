@@ -4,10 +4,11 @@
 # Merged from gpvpn-connect and gpvpn-disconnect. Handles connecting
 # to gpvpn.carrierx.com with proper Wayland/GTK environment variables.
 #
-# Dependencies: sudo, gpclient, pgrep, pkill
+# Dependencies: sudo, gpclient, resolvectl, curl, unshare, mount, pgrep, pkill
 # Usage: vpn [connect|disconnect|status] [--help|-h]
 
 set VPN_HOST gpvpn.carrierx.com
+set VPN_PREFERRED 162.251.180.130
 
 function show_help
     echo "Usage: vpn <subcommand>"
@@ -21,8 +22,46 @@ function show_help
     echo "  --help, -h  Show this help message"
 end
 
+# The portal name resolves to two firewalls that keep separate SAML state.
+# networking.getaddrinfo ranks portal02 first system-wide so every lookup
+# agrees. Before connecting, check the portal answers on the preferred node,
+# fall back to the other one if not, and rank the healthy node first in a
+# private gai.conf seen only by gpclient and its login window.
+function pick_portal
+    set ips (resolvectl query --legend=no --synthesize=no $VPN_HOST 2>/dev/null \
+        | string match -r '\d+\.\d+\.\d+\.\d+')
+    if contains $VPN_PREFERRED $ips
+        set ips $VPN_PREFERRED (string match -v $VPN_PREFERRED $ips)
+    else
+        echo "vpn: $VPN_PREFERRED no longer in DNS for $VPN_HOST, update networking.getaddrinfo" >&2
+    end
+    for ip in $ips
+        set prelogin (curl -s -m 5 --resolve $VPN_HOST:443:$ip -X POST \
+            "https://$VPN_HOST/global-protect/prelogin.esp?clientos=Linux")
+        if string match -q '*<status>Success</status>*' -- $prelogin
+            echo $ip
+            return 0
+        end
+        echo "vpn: portal on $ip not responding, trying next" >&2
+    end
+    echo "vpn: no portal node answering for $VPN_HOST" >&2
+    return 1
+end
+
 function cmd_connect
-    sudo -E gpclient connect --auto-gateway $VPN_HOST
+    set ip (pick_portal); or return 1
+    echo "Using portal $ip"
+
+    set gai (mktemp)
+    string match -v -r '^precedence ::ffff:[0-9.]+/128 ' </etc/gai.conf >$gai
+    echo "precedence ::ffff:$ip/128 15" >>$gai
+
+    set bin (path dirname (path resolve (command -v unshare)))
+    sudo -E $bin/unshare -m sh -c \
+        "$bin/mount --bind $gai \$(readlink -f /etc/gai.conf) && exec gpclient connect --auto-gateway $VPN_HOST"
+    set code $status
+    rm -f $gai
+    return $code
 end
 
 function cmd_disconnect
