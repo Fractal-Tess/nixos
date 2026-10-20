@@ -28,14 +28,19 @@ end
 # client does, then pin the first healthy one in /etc/hosts for this session.
 function pin_portal
     unpin_portal
-    for ip in (dig +short $VPN_HOST A | sort -R)
+    # VPN_PORTAL_IP forces a specific node, e.g. to test one that misbehaves
+    set ips (dig +short $VPN_HOST A | sort -R)
+    set -q VPN_PORTAL_IP; and set ips $VPN_PORTAL_IP
+    for ip in $ips
         set prelogin (curl -s -m 5 --resolve $VPN_HOST:443:$ip -X POST \
             "https://$VPN_HOST/global-protect/prelogin.esp?clientos=Linux")
         if string match -q '*<status>Success</status>*' -- $prelogin
             echo "$ip $VPN_HOST $PIN_MARKER" | sudo tee -a /etc/hosts >/dev/null
-            # The resolver picks up /etc/hosts changes after about a second
-            for i in (seq 20)
-                if getent ahostsv4 $VPN_HOST | string match -q "$ip *"
+            # The resolver picks up /etc/hosts changes after about two seconds.
+            # Until then DNS still returns both nodes in random order, so wait
+            # until the pinned address is the only answer.
+            for i in (seq 40)
+                if test "$(getent ahostsv4 $VPN_HOST | string split -f1 ' ' | sort -u)" = $ip
                     echo "Portal pinned to $ip"
                     return 0
                 end
