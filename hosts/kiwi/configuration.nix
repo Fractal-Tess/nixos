@@ -39,6 +39,10 @@
   # Enable GlobalProtect-compatible VPN connections through NetworkManager.
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
 
+  # The CarrierX portal resolves to two firewalls with separate SAML state;
+  # pin one so prelogin, SAML callback and portal config hit the same node.
+  networking.hosts."162.251.180.130" = [ "gpvpn.carrierx.com" ];
+
   # Enable link dynamic
   programs.nix-ld.enable = true;
   programs.nix-ld.libraries = with pkgs; [
