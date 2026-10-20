@@ -39,9 +39,9 @@
   # Enable GlobalProtect-compatible VPN connections through NetworkManager.
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
 
-  # The CarrierX portal resolves to two firewalls with separate SAML state;
-  # pin one so prelogin, SAML callback and portal config hit the same node.
-  networking.hosts."162.251.180.130" = [ "gpvpn.carrierx.com" ];
+  # Writable /etc/hosts: `vpn connect` pins the CarrierX portal to one healthy
+  # firewall per session (the two nodes keep separate SAML state).
+  environment.etc.hosts.mode = "0644";
 
   # Enable link dynamic
   programs.nix-ld.enable = true;

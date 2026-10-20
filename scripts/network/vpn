@@ -4,10 +4,11 @@
 # Merged from gpvpn-connect and gpvpn-disconnect. Handles connecting
 # to gpvpn.carrierx.com with proper Wayland/GTK environment variables.
 #
-# Dependencies: sudo, gpclient, pgrep, pkill, notify-send
+# Dependencies: sudo, gpclient, dig, curl, sed, pgrep, pkill
 # Usage: vpn [connect|disconnect|status] [--help|-h]
 
 set VPN_HOST gpvpn.carrierx.com
+set PIN_MARKER "# vpn-pin"
 
 function show_help
     echo "Usage: vpn <subcommand>"
@@ -21,16 +22,42 @@ function show_help
     echo "  --help, -h  Show this help message"
 end
 
+# The portal name resolves to two firewalls that keep separate SAML state.
+# gpclient and its login window each resolve the name on their own, so a
+# login can be split across both and fail. Probe both nodes like the official
+# client does, then pin the first healthy one in /etc/hosts for this session.
+function pin_portal
+    unpin_portal
+    for ip in (dig +short $VPN_HOST A | sort -R)
+        set prelogin (curl -s -m 5 --resolve $VPN_HOST:443:$ip -X POST \
+            "https://$VPN_HOST/global-protect/prelogin.esp?clientos=Linux")
+        if string match -q '*<status>Success</status>*' -- $prelogin
+            echo "$ip $VPN_HOST $PIN_MARKER" | sudo tee -a /etc/hosts >/dev/null
+            echo "Portal pinned to $ip"
+            return 0
+        end
+        echo "Portal node $ip not responding, trying next" >&2
+    end
+    echo "vpn: no healthy portal node for $VPN_HOST" >&2
+    return 1
+end
+
+function unpin_portal
+    sudo sed -i "/$PIN_MARKER\$/d" /etc/hosts
+end
+
 function cmd_connect
-    # Use the default browser instead of the embedded webkit2gtk window.
-    # The embedded browser requires GTK3 init which panics on NixOS
-    # (tao crate → gtk::init() fails). --default-browser bypasses it entirely.
-    gpclient connect $VPN_HOST --default-browser
+    pin_portal; or return 1
+    sudo -E gpclient connect $VPN_HOST
+    set code $status
+    unpin_portal
+    return $code
 end
 
 function cmd_disconnect
     if pgrep -f "gpclient connect" >/dev/null
         sudo pkill -f "gpclient connect"
+        unpin_portal
         echo "VPN disconnected"
     else
         echo "No active VPN connection found"
