@@ -33,8 +33,16 @@ function pin_portal
             "https://$VPN_HOST/global-protect/prelogin.esp?clientos=Linux")
         if string match -q '*<status>Success</status>*' -- $prelogin
             echo "$ip $VPN_HOST $PIN_MARKER" | sudo tee -a /etc/hosts >/dev/null
-            echo "Portal pinned to $ip"
-            return 0
+            # The resolver picks up /etc/hosts changes after about a second
+            for i in (seq 20)
+                if getent ahostsv4 $VPN_HOST | string match -q "$ip *"
+                    echo "Portal pinned to $ip"
+                    return 0
+                end
+                sleep 0.25
+            end
+            echo "vpn: pin to $ip did not take effect" >&2
+            return 1
         end
         echo "Portal node $ip not responding, trying next" >&2
     end
