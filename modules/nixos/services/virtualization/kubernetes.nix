@@ -33,6 +33,7 @@ in
       kubernetes
       kubectl
       kubernetes-helm
+      minikube
       k9s
       kubeshark
       certmgr
