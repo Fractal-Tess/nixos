@@ -509,7 +509,6 @@
         "input" # Required for Sunshine remote desktop input
         "fractal-tess"
         "wireshark"
-        "docker" # Rootful Docker socket, needed by minikube
         "lp" # Allow printer management
         "scanner" # Allow scanner usage
       ];
