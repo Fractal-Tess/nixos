@@ -215,13 +215,38 @@
  "on-click": "fish --no-config ~/nixos/scripts/display/screen sleep-toggle toggle; pkill -SIGRTMIN+9 waybar",
  "signal": 9,
 },
-"custom/ai-usage": {
+"group/ai-usage": {
+ "orientation": "horizontal",
+ "modules": [
+"custom/ai-claude",
+"custom/ai-claude-personal",
+"custom/ai-codex"
+ ]
+},
+"custom/ai-claude": {
  "format": "{}",
  "return-type": "json",
  "interval": 60,
- "exec": "fish --no-config ~/nixos/scripts/waybar/ai-usage",
- "on-click": "fish --no-config ~/nixos/scripts/waybar/ai-usage --cycle; pkill -SIGRTMIN+11 waybar",
- "on-click-right": "fish --no-config ~/nixos/scripts/waybar/ai-usage --force >/dev/null; pkill -SIGRTMIN+11 waybar",
+ "exec": "fish --no-config ~/nixos/scripts/waybar/ai-usage claude",
+ "on-click-right": "fish --no-config ~/nixos/scripts/waybar/ai-usage claude --force >/dev/null; pkill -SIGRTMIN+11 waybar",
+ "signal": 11,
+ "tooltip": true,
+},
+"custom/ai-claude-personal": {
+ "format": "{}",
+ "return-type": "json",
+ "interval": 60,
+ "exec": "fish --no-config ~/nixos/scripts/waybar/ai-usage claude-personal",
+ "on-click-right": "fish --no-config ~/nixos/scripts/waybar/ai-usage claude-personal --force >/dev/null; pkill -SIGRTMIN+11 waybar",
+ "signal": 11,
+ "tooltip": true,
+},
+"custom/ai-codex": {
+ "format": "{}",
+ "return-type": "json",
+ "interval": 60,
+ "exec": "fish --no-config ~/nixos/scripts/waybar/ai-usage codex",
+ "on-click-right": "fish --no-config ~/nixos/scripts/waybar/ai-usage codex --force >/dev/null; pkill -SIGRTMIN+11 waybar",
  "signal": 11,
  "tooltip": true,
 },

@@ -217,28 +217,6 @@
             };
           };
           folders = {
-            "omp-settings" = {
-              path = "/home/fractal-tess/.omp/agent";
-              id = "omp-settings";
-              label = "OMP Settings";
-              devices = [
-                "neo"
-                "kiwi"
-              ];
-              ignorePatterns = [
-                "!/config.yml"
-                "*"
-              ];
-            };
-            "opencode-config" = {
-              path = "/home/fractal-tess/.config/opencode";
-              id = "opencode-config";
-              label = "opencode-config";
-              devices = [
-                "neo"
-                "kiwi"
-              ];
-            };
             "obsidian-vault" = {
               path = "/home/fractal-tess/dev/obsidian";
               id = "obsidian-vault";
@@ -297,17 +275,6 @@
           avahi = true;
         };
         moonlight = true; # Install Moonlight client
-      };
-
-      # OpenCode Remote Server
-      opencode-server = {
-        enable = true;
-        # Share the opencode-flake build with programs.opencode. The default is
-        # pkgs.opencode, which would put a second, older opencode in PATH.
-        package = config.programs.opencode.package;
-        host = "100.91.0.2";
-        port = 4096;
-        extraArgs = [ "--print-logs" ];
       };
 
       # NetBird-accessible OpenAI-compatible proxy and management dashboard

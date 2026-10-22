@@ -11,23 +11,15 @@
   imports = [
     inputs.scorch.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
-    inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
-    inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.rea-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
-    inputs.opencode-flake.nixosModules.default
     inputs.vencord-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
-    # OMP
-    {
-      programs.omp.enable = lib.mkDefault true;
-    }
-
     # Responsively
     {
       programs.responsively.enable = true;
@@ -44,11 +36,6 @@
         port = 3773;
         firewallInterfaces = [ "wt0" ];
       };
-    }
-
-    # Delta
-    {
-      programs.delta.enable = true;
     }
 
     # Discord with Vencord and the hyper-trader plugin
@@ -74,11 +61,6 @@
     # Codex
     {
       programs.codex.enable = true;
-    }
-
-    # opencode
-    {
-      programs.opencode.enable = true;
     }
 
     # Scorch

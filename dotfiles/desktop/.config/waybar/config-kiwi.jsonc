@@ -13,12 +13,12 @@
  "modules-left": [
  "custom/System",
  "hyprland/workspaces",
+ "group/ai-usage",
 ],
  "modules-center": [],
  "modules-right": [
    "disk#root",
    "group/idlevol",
-   "custom/ai-usage",
    "group/sysmon",
    "group/netblue",
    "group/datetime",

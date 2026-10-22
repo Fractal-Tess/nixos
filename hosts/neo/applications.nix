@@ -12,21 +12,14 @@
     inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.immich-flake.nixosModules.default
-    inputs.oh-my-pi-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
-    inputs.opencode-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
     # T3 Code
     {
       modules.services.t3code-server.enable = true;
-    }
-
-    # OMP
-    {
-      programs.omp.enable = lib.mkDefault true;
     }
 
     # Claude Code
@@ -37,11 +30,6 @@
     # Codex
     {
       programs.codex.enable = true;
-    }
-
-    # opencode
-    {
-      programs.opencode.enable = true;
     }
 
     # ClipSync

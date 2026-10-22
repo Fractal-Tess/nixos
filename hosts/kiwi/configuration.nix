@@ -202,28 +202,6 @@
             };
           };
           folders = {
-            "omp-settings" = {
-              path = "/home/fractal-tess/.omp/agent";
-              id = "omp-settings";
-              label = "OMP Settings";
-              devices = [
-                "vd"
-                "neo"
-              ];
-              ignorePatterns = [
-                "!/config.yml"
-                "*"
-              ];
-            };
-            "opencode-config" = {
-              path = "/home/fractal-tess/.config/opencode";
-              id = "opencode-config";
-              label = "opencode-config";
-              devices = [
-                "vd"
-                "neo"
-              ];
-            };
             "obsidian-vault" = {
               path = "/home/fractal-tess/dev/obsidian";
               id = "obsidian-vault";

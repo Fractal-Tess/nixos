@@ -143,8 +143,6 @@ in
     # Testing
     appimage-run # AppImage execution support
     cursor-cli # Command-line interface for Cursor AI editor
-    opencode-desktop # Desktop GUI for OpenCode
-    pi-coding-agent # Minimal terminal coding agent harness
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
 
     # AI / LLM
@@ -237,7 +235,7 @@ in
     # blender # 3D modeling and animation — disabled for storage cleanup
 
     # Audio editing
-    audacity # Audio editor and recorder
+    # audacity # Audio editor and recorder (disabled: 4.0.0 fails to build on nixpkgs 2026-10-20)
 
     #--------------------------------------------------------------------------
     # WAYLAND/HYPRLAND UTILITIES

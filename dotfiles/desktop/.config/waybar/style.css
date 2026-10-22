@@ -330,7 +330,7 @@ tooltip label {
     margin-right: 0.6rem;
 }
 
-#custom-ai-usage {
+#custom-ai-claude, #custom-ai-claude-personal, #custom-ai-codex {
     background-color: @surface_container;
     background-repeat: no-repeat;
     background-position: 0.7rem center;
@@ -343,9 +343,10 @@ tooltip label {
     font-size: 0.72rem;
     transition: 0.3s all ease;
 }
-#custom-ai-usage:hover { color: @primary; }
-#custom-ai-usage.claude { background-image: url("/home/fractal-tess/nixos/dotfiles/desktop/.config/waybar/claude.svg"); }
-#custom-ai-usage.codex { background-image: url("/home/fractal-tess/nixos/dotfiles/desktop/.config/waybar/openai.svg"); }
-#custom-ai-usage.medium { color: @tertiary; }
-#custom-ai-usage.high, #custom-ai-usage.error { color: @error; }
-#custom-ai-usage.expired { color: @outline; }
+#custom-ai-claude:hover, #custom-ai-claude-personal:hover, #custom-ai-codex:hover { color: @primary; }
+#custom-ai-claude, #custom-ai-claude-personal { background-image: url("/home/fractal-tess/nixos/dotfiles/desktop/.config/waybar/claude.svg"); }
+#custom-ai-codex { background-image: url("/home/fractal-tess/nixos/dotfiles/desktop/.config/waybar/openai.svg"); }
+#custom-ai-claude.medium, #custom-ai-claude-personal.medium, #custom-ai-codex.medium { color: @tertiary; }
+#custom-ai-claude.high, #custom-ai-claude-personal.high, #custom-ai-codex.high,
+#custom-ai-claude.error, #custom-ai-claude-personal.error, #custom-ai-codex.error { color: @error; }
+#custom-ai-claude.expired, #custom-ai-claude-personal.expired, #custom-ai-codex.expired { color: @outline; }

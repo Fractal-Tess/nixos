@@ -51,7 +51,7 @@ Apply the local host configuration with the repository helper:
 ## Application modules
 
 Application repos keep their source names (`scorch`, `shadoword`, etc.).
-Third-party packaging repos use `-flake` (`oh-my-pi-flake`, `open-design-flake`,
+Third-party packaging repos use `-flake` (`claude-code-flake`, `open-design-flake`,
 `responsively-flake`). Both expose modules with `enable` and `package` options.
 Versions come from the input revision and `flake.lock`, not a separate version string.
 

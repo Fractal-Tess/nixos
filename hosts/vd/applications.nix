@@ -14,21 +14,13 @@
     inputs.scorch.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.chorus.nixosModules.default
-    inputs.oh-my-pi-flake.nixosModules.default
     inputs.responsively-flake.nixosModules.default
-    inputs.delta-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
-    inputs.opencode-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
-    # OMP
-    {
-      programs.omp.enable = lib.mkDefault true;
-    }
-
     # Asterveil
     {
       programs.asterveil.enable = true;
@@ -57,11 +49,6 @@
       modules.services.supermemory.enable = true;
     }
 
-    # Delta
-    {
-      programs.delta.enable = true;
-    }
-
     # Agent Browser
     {
       programs.agent-browser.enable = true;
@@ -75,11 +62,6 @@
     # Codex
     {
       programs.codex.enable = true;
-    }
-
-    # opencode
-    {
-      programs.opencode.enable = true;
     }
 
     # Scorch

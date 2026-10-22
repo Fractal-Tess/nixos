@@ -8,7 +8,6 @@
     ./calendar/default.nix
     ./cliproxyapi/default.nix
     ./nessus/default.nix
-    ./opencode-server/default.nix
     ./remote-desktop/default.nix
     ./samba/default.nix
     ./sops/default.nix

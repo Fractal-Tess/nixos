@@ -171,8 +171,6 @@
     #--------------------------------------------------------------------------
 
     # AI assistants
-    opencode-desktop # Desktop GUI for OpenCode
-    pi-coding-agent # Minimal terminal coding agent harness
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
     cursor-cli # Command-line interface for Cursor AI editor
 
@@ -236,7 +234,7 @@
     blender # 3D modeling and animation
 
     # Audio editing
-    audacity # Audio editor and recorder
+    # audacity # Audio editor and recorder (disabled: 4.0.0 fails to build on nixpkgs 2026-10-20)
 
     #--------------------------------------------------------------------------
     # WAYLAND/HYPRLAND UTILITIES

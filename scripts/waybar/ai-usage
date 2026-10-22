@@ -1,16 +1,19 @@
 #!/usr/bin/env fish
 # ai-usage — Waybar AI plan usage status (Claude Code / Codex)
 #
-# Shows the 5-hour session and 7-day weekly utilization of one provider at a
-# time; `--cycle` switches to the next provider. Usage comes from the same
-# endpoints the CLIs use for /usage and /status, authenticated with the
-# tokens they store locally:
+# Shows the 5-hour session and 7-day weekly utilization of one account; Waybar
+# runs one module per account. Usage comes from the same endpoints the CLIs
+# use for /usage and /status, authenticated with the tokens they store locally:
 #
-#   claude  api.anthropic.com/api/oauth/usage       ~/.claude/.credentials.json
-#   codex   chatgpt.com/backend-api/wham/usage      ~/.codex/auth.json
+#   claude           api.anthropic.com/api/oauth/usage   ~/.claude/.credentials.json
+#   claude-personal  api.anthropic.com/api/oauth/usage   ~/.claude-personal/.credentials.json
+#   codex            chatgpt.com/backend-api/wham/usage  ~/.codex/auth.json
+#
+# Each Claude account is a separate CLAUDE_CONFIG_DIR (the same directories the
+# T3 Code provider instances point at); add more in the `accounts` table below.
 #
 # These endpoints are aggressively rate limited, so responses are cached per
-# provider in $XDG_CACHE_HOME/waybar-ai-usage/<provider> and refetched at most
+# account in $XDG_CACHE_HOME/waybar-ai-usage/<account> and refetched at most
 # every $fetch_every seconds. After a failed request fetching backs off
 # (exponentially for HTTP 429) and the last cached data keeps being shown.
 #
@@ -18,19 +21,26 @@
 # time it runs. Until then the module shows an "expired" state.
 #
 # Dependencies: curl, jq
-# Usage: ai-usage [--force] [--cycle] [--help|-h]
+# Usage: ai-usage [--force] [--help|-h] [<account>]
+
+#                id               kind    config dir          label
+set accounts \
+    claude          claude  ~/.claude           CarrierX \
+    claude-personal claude  ~/.claude-personal  Personal \
+    codex           codex   ~/.codex            ""
 
 if contains -- --help $argv; or contains -- -h $argv
-    printf "Usage: ai-usage [--force] [--cycle]\n\n"
-    printf "Outputs Waybar JSON for the active provider's plan usage.\n\n"
-    printf "  --cycle  Switch to the next provider (claude → codex → …) and exit\n"
-    printf "  --force  Refetch now, ignoring the cache age (still respects backoff)\n\n"
+    printf "Usage: ai-usage [--force] [<account>]\n\n"
+    printf "Outputs Waybar JSON for one account's plan usage (default: claude).\n\n"
+    printf "  <account>  One of:"
+    for i in (seq 1 4 (count $accounts))
+        printf " %s" $accounts[$i]
+    end
+    printf "\n  --force    Refetch now, ignoring the cache age (still respects backoff)\n\n"
     printf "JSON fields: percentage, text, tooltip,\n"
-    printf "             class (provider + low/medium/high/expired/error)\n"
+    printf "             class (account + kind + low/medium/high/expired/error)\n"
     exit 0
 end
-
-set providers claude codex
 
 set fetch_every 600 # seconds between successful fetches
 set backoff_429 600 # first wait after being rate limited, doubled per repeat
@@ -38,7 +48,6 @@ set backoff_max 3600 # longest wait between retries
 set backoff_err 120 # wait after any other failure
 
 set base_dir (set -q XDG_CACHE_HOME; and echo $XDG_CACHE_HOME; or echo ~/.cache)/waybar-ai-usage
-set active_file $base_dir/active
 mkdir -p $base_dir
 
 set now (date +%s)
@@ -46,15 +55,6 @@ set now (date +%s)
 #----------------------------------------------------------------------------
 # Helpers
 #----------------------------------------------------------------------------
-
-function provider_name -a p
-    switch $p
-        case claude
-            echo "Claude Code"
-        case codex
-            echo Codex
-    end
-end
 
 function emit -a text tooltip class pct
     jq -cn --arg text $text --arg tooltip $tooltip --arg class $class --argjson pct $pct \
@@ -109,20 +109,35 @@ function jwt_exp -a jwt
 end
 
 #----------------------------------------------------------------------------
-# Active provider
+# Account
 #----------------------------------------------------------------------------
 
-set active claude
-test -f $active_file; and contains -- (cat $active_file) $providers; and set active (cat $active_file)
+set account (string match -v -- '-*' $argv)[1]
+test -z "$account"; and set account claude
 
-if contains -- --cycle $argv
-    set i (contains -i -- $active $providers)
-    set next $providers[(math "$i % "(count $providers)" + 1")]
-    echo $next >$active_file
-    exit 0
+set ids
+for i in (seq 1 4 (count $accounts))
+    set -a ids $accounts[$i]
 end
+set i (contains -i -- $account $ids)
+if test -z "$i"
+    echo "ai-usage: unknown account '$account' (known: $ids)" >&2
+    exit 1
+end
+set i (math "($i - 1) * 4 + 1")
+set kind $accounts[(math $i + 1)]
+set config_dir (string replace -r '^~' $HOME -- $accounts[(math $i + 2)])
+set label $accounts[(math $i + 3)]
 
-set cache_dir $base_dir/$active
+switch $kind
+    case claude
+        set name "Claude Code"
+    case codex
+        set name Codex
+end
+test -n "$label"; and set name "$name ($label)"
+
+set cache_dir $base_dir/$account
 set cache $cache_dir/usage.json
 set backoff_file $cache_dir/backoff-until
 set error_file $cache_dir/last-error
@@ -152,10 +167,12 @@ set url ""
 set req_headers
 set login_hint ""
 
-switch $active
+switch $kind
     case claude
-        set creds ~/.claude/.credentials.json
-        set login_hint "run `claude` and log in"
+        set creds $config_dir/.credentials.json
+        set login_hint "run `claude auth login`"
+        test $config_dir != $HOME/.claude
+        and set login_hint "run `env CLAUDE_CONFIG_DIR=$config_dir claude auth login`"
         if test -r $creds
             set token (jq -r '.claudeAiOauth.accessToken // empty' $creds)
             set expires (math --scale=0 (jq -r '.claudeAiOauth.expiresAt // 0' $creds)" / 1000")
@@ -164,15 +181,15 @@ switch $active
         set req_headers -H "Authorization: Bearer $token" -H "anthropic-beta: oauth-2025-04-20"
         set valid_jq .five_hour
     case codex
-        set creds ~/.codex/auth.json
+        set creds $config_dir/auth.json
         set login_hint "run `codex login`"
         if test -r $creds
             set token (jq -r '.tokens.access_token // empty' $creds)
-            set account (jq -r '.tokens.account_id // empty' $creds)
+            set account_id (jq -r '.tokens.account_id // empty' $creds)
             test -n "$token"; and set expires (jwt_exp $token)
         end
         set url https://chatgpt.com/backend-api/wham/usage
-        set req_headers -H "Authorization: Bearer $token" -H "ChatGPT-Account-Id: $account" -H "User-Agent: codex-cli"
+        set req_headers -H "Authorization: Bearer $token" -H "ChatGPT-Account-Id: $account_id" -H "User-Agent: codex-cli"
         set valid_jq .rate_limit
 end
 
@@ -223,21 +240,20 @@ end
 # Render
 #----------------------------------------------------------------------------
 
-set name (provider_name $active)
-set other $providers[(math (contains -i -- $active $providers)" % "(count $providers)" + 1")]
-set footer "Click to switch to "(provider_name $other)
+set footer "Right-click to refresh"
+set classes "$account $kind"
 
 set err ""
 test -f $error_file; and set err (cat $error_file)
 
 if not test -f $cache
     if test "$err" = expired
-        emit ⏸ "$name: token expired"\n"It refreshes next time the CLI runs"\n\n$footer "$active expired" 0
+        emit ⏸ "$name: token expired"\n"It refreshes next time the CLI runs"\n\n$footer "$classes expired" 0
     else if test -n "$err"
         set retry_in (dur_str (math (read_int $backoff_file) - $now))
-        emit ! "$name: $err"\n"Retrying in $retry_in"\n\n$footer "$active error" 0
+        emit ! "$name: $err"\n"Retrying in $retry_in"\n\n$footer "$classes error" 0
     else
-        emit … "$name: waiting for first update"\n\n$footer "$active error" 0
+        emit … "$name: waiting for first update"\n\n$footer "$classes error" 0
     end
     exit 0
 end
@@ -245,7 +261,7 @@ end
 # Normalize to: session %, session reset, weekly %, weekly reset, has session
 # window, extra lines
 set extra
-switch $active
+switch $kind
     case claude
         set fields (jq -r '
             .five_hour.utilization // 0, .five_hour.resets_at // "",
@@ -314,4 +330,6 @@ $footer"
 set text "$weekly% "(short_str $weekly_left)
 test $has_session = true; and set text "$session% "(short_str $session_left)" · $text"
 
-emit $text $tooltip "$active $class" $peak
+test -n "$label"; and set text "$label $text"
+
+emit $text $tooltip "$classes $class" $peak

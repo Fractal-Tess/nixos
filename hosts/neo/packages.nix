@@ -80,7 +80,6 @@
     #--------------------------------------------------------------------------
 
     # AI assistants
-    pi-coding-agent # Minimal terminal coding agent harness
     cursor-cli # Command-line interface for Cursor AI editor
 
     # Programming languages and runtimes

@@ -31,8 +31,6 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
-    oh-my-pi-flake.url = "github:Fractal-Tess/oh-my-pi-flake";
-
     open-design-flake = {
       url = "github:Fractal-Tess/open-design-flake";
     };
@@ -46,11 +44,6 @@
 
     supermemory-flake = {
       url = "github:Fractal-Tess/supermemory-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    delta-flake = {
-      url = "github:Fractal-Tess/delta-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -71,11 +64,6 @@
 
     codex-flake = {
       url = "github:Fractal-Tess/codex-flake";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
-    opencode-flake = {
-      url = "github:Fractal-Tess/opencode-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
