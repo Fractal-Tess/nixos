@@ -122,6 +122,26 @@
         "type": "github"
       }
     },
+    "fader": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1792763594,
+        "narHash": "sha256-vrUbSJLUObRcXvk2jd/+uz4JuRxWjatthNuS2gq+o7Q=",
+        "ref": "refs/heads/main",
+        "rev": "41f4da15144aa4ba49f493d6742a1bda93f01a37",
+        "revCount": 3,
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
+      }
+    },
     "fenix": {
       "inputs": {
         "nixpkgs": [
@@ -506,6 +526,7 @@
         "claude-code-flake": "claude-code-flake",
         "clip-sync": "clip-sync",
         "codex-flake": "codex-flake",
+        "fader": "fader",
         "gitadel": "gitadel",
         "globalprotect-openconnect": "globalprotect-openconnect",
         "home-manager": "home-manager",

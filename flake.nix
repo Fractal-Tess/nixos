@@ -101,6 +101,11 @@
       url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    fader = {
+      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -142,6 +147,7 @@
                 (import ./overlays/viber.nix)
                 (import ./overlays/wfuzz-fix.nix)
                 (import ./overlays/ltrace-fix.nix)
+                (import ./overlays/vmware-modules-fix.nix)
                 (import ./overlays/cliproxyapi.nix)
               ];
             }

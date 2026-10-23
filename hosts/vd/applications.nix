@@ -14,6 +14,7 @@
     inputs.scorch.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.chorus.nixosModules.default
+    inputs.fader.nixosModules.default
     inputs.responsively-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
@@ -107,6 +108,16 @@
       };
       # Keep access on the mesh rather than opening the port on every interface.
       networking.firewall.interfaces.wt0.allowedTCPPorts = [ 8000 ];
+    }
+
+    # Fader: lets neo's fader hub control this machine's audio
+    {
+      services.fader = {
+        enable = true;
+        user = username;
+        port = 7700;
+        firewallInterfaces = [ "wt0" ];
+      };
     }
 
     # ClipSync

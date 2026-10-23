@@ -9,6 +9,7 @@
 
 {
   imports = [
+    inputs.fader.nixosModules.default
     inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.immich-flake.nixosModules.default
@@ -17,6 +18,28 @@
   ];
 
   config = lib.mkMerge [
+    # Fader hub: open http://neo.netbird.cloud:7700 to control the audio
+    # of neo, vd and kiwi. neo relays each change to the peer's own fader.
+    {
+      services.fader = {
+        enable = true;
+        user = username;
+        port = 7700;
+        # Mesh only; every device on it is ours, so no token.
+        firewallInterfaces = [ "wt0" ];
+        settings.peers = [
+          {
+            name = "vd";
+            url = "http://vd.netbird.cloud:7700";
+          }
+          {
+            name = "kiwi";
+            url = "http://kiwi.netbird.cloud:7700";
+          }
+        ];
+      };
+    }
+
     # T3 Code
     {
       modules.services.t3code-server.enable = true;
