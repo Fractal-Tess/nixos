@@ -10,6 +10,33 @@ with lib;
 
 let
   cfg = config.modules.services.syncthing;
+
+  claudeStignore = pkgs.writeText "claude-stignore" ''
+    // Managed by NixOS (modules/nixos/services/syncthing).
+    /.claude.json
+    /.claude.json.*
+    /.credentials.json.*
+    /*.bak*
+    /*.lock
+    /.last-cleanup
+    /backups
+    /cache
+    /debug
+    /ide
+    /paste-cache
+    /plugins
+    /session-env
+    /sessions
+    /shell-snapshots
+    /skills
+    /state
+    /statsig
+    /telemetry
+    /mcp-needs-auth-cache.json
+    /policy-limits.json*
+    /remote-settings.json*
+    /stats-cache.json
+  '';
 in
 {
   options.modules.services.syncthing = {
@@ -80,9 +107,39 @@ in
       default = null;
       description = "Path to file containing the plaintext password for Syncthing's GUI.";
     };
+
+    claude = {
+      devices = mkOption {
+        type = types.listOf types.str;
+        default = [ ];
+        description = "Devices to share the Claude Code config directories with. Empty disables Claude syncing.";
+      };
+
+      # One Syncthing folder per account; each host picks its own local path
+      # (on kiwi the work account is ~/.claude, elsewhere the personal one is).
+      dirs = mkOption {
+        type = types.attrsOf types.str;
+        default = { };
+        example = {
+          claude-personal = "/home/${username}/.claude";
+          claude-carrierx = "/home/${username}/.claude-carrierx";
+        };
+        description = "Syncthing folder id -> local CLAUDE_CONFIG_DIR for each synced Claude account.";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
+    # .stignore is never synced, so every host writes its own. Credentials,
+    # settings, memory and transcripts sync; per-machine runtime state and the
+    # home-manager managed skills/plugins stay local.
+    system.activationScripts.syncthing-claude-stignore = mkIf (cfg.claude.devices != [ ]) (
+      concatMapStrings (path: ''
+        install -d -o ${cfg.user} -g ${cfg.group} ${escapeShellArg path}
+        install -m 0644 -o ${cfg.user} -g ${cfg.group} ${claudeStignore} ${escapeShellArg "${path}/.stignore"}
+      '') (attrValues cfg.claude.dirs)
+    );
+
     services.syncthing = {
       enable = true;
       user = cfg.user;
@@ -107,6 +164,13 @@ in
           };
         }
         cfg.settings
+        (mkIf (cfg.claude.devices != [ ]) {
+          folders = mapAttrs (id: path: {
+            inherit id path;
+            label = "Claude (${removePrefix "claude-" id})";
+            devices = cfg.claude.devices;
+          }) cfg.claude.dirs;
+        })
       ]);
     };
 

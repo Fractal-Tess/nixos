@@ -203,6 +203,16 @@
         overrideFolders = false;
         guiUser = "vgfractal";
         guiPasswordFile = "/home/fractal-tess/.config/secrets/syncthing/pass";
+        claude = {
+          devices = [
+            "neo"
+            "kiwi"
+          ];
+          dirs = {
+            claude-personal = "/home/fractal-tess/.claude";
+            claude-carrierx = "/home/fractal-tess/.claude-carrierx";
+          };
+        };
         settings = {
           devices = {
             "neo" = {
