@@ -454,6 +454,12 @@ _log_info "Flake: $NIXOS_DIR#$host_name"
 echo ""
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
 
+# Fetch flake inputs as the user first. Private git+ssh inputs (Gitadel on
+# neo) need the user's SSH key and known_hosts; root has neither, but finds
+# the locked sources already in the store afterwards.
+nix flake archive "path:$NIXOS_DIR" >/dev/null
+or _log_warning "Could not prefetch flake inputs as $USER; the rebuild will fetch them as root"
+
 "$SUDO_BIN" nixos-rebuild switch --flake "path:$NIXOS_DIR#$host_name" --impure
 set -l rebuild_status $status
 
@@ -568,20 +574,33 @@ if test "$SKIP_GIT" = false; and test "$NIXOS_UPDATE_FLEET_CHILD" != 1; and test
 
     if test -n "$local_revision"; and test "$local_revision" = "$remote_revision"
         _log_header "Updating Fleet"
+        # Peers rebuild in parallel. Each child's output is prefixed with its
+        # host name so the interleaved lines stay readable; its exit status
+        # goes to a file because a backgrounded pipeline's status is lost.
+        set -l status_dir (mktemp -d)
+        set -l peers
         for fleet_host in $FLEET_TARGETS
             if test "$fleet_host" = (hostname -s)
                 _log_success "$fleet_host is the initiating host"
                 continue
             end
 
+            set -a peers $fleet_host
             _log_step "Updating $fleet_host..."
-            ssh \
-                -o BatchMode=yes \
-                -o ConnectTimeout=5 \
-                -o ConnectionAttempts=1 \
-                "$fleet_host" \
-                "NIXOS_UPDATE_FLEET_CHILD=1 /home/fractal-tess/nixos/scripts/nixos/update"
-            set -l fleet_status $status
+            fish --no-config -c '
+                ssh \
+                    -o BatchMode=yes \
+                    -o ConnectTimeout=5 \
+                    -o ConnectionAttempts=1 \
+                    $argv[1] \
+                    "NIXOS_UPDATE_FLEET_CHILD=1 /home/fractal-tess/nixos/scripts/nixos/update"
+                echo $status >$argv[2]
+            ' $fleet_host "$status_dir/$fleet_host" 2>&1 | sed -u "s/^/[$fleet_host] /" &
+        end
+        wait
+
+        for fleet_host in $peers
+            set -l fleet_status (cat "$status_dir/$fleet_host" 2>/dev/null; or echo 1)
 
             switch $fleet_status
                 case 0
@@ -594,6 +613,7 @@ if test "$SKIP_GIT" = false; and test "$NIXOS_UPDATE_FLEET_CHILD" != 1; and test
                     _log_warning "$fleet_host update failed with status $fleet_status"
             end
         end
+        rm -rf "$status_dir"
     else
         _log_warning "Skipping fleet update because the local commit is not on origin/$branch"
     end
