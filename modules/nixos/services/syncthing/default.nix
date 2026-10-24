@@ -115,14 +115,13 @@ in
         description = "Devices to share the Claude Code config directories with. Empty disables Claude syncing.";
       };
 
-      # One Syncthing folder per account; each host picks its own local path
-      # (on kiwi the work account is ~/.claude, elsewhere the personal one is).
+      # One Syncthing folder per account. Every host uses kiwi's layout:
+      # plain `claude` is the work account, Personal needs CLAUDE_CONFIG_DIR.
       dirs = mkOption {
         type = types.attrsOf types.str;
-        default = { };
-        example = {
-          claude-personal = "/home/${username}/.claude";
-          claude-carrierx = "/home/${username}/.claude-carrierx";
+        default = {
+          claude-carrierx = "/home/${username}/.claude";
+          claude-personal = "/home/${username}/.claude-personal";
         };
         description = "Syncthing folder id -> local CLAUDE_CONFIG_DIR for each synced Claude account.";
       };

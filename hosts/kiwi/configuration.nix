@@ -193,10 +193,6 @@
             "vd"
             "neo"
           ];
-          dirs = {
-            claude-personal = "/home/fractal-tess/.claude-personal";
-            claude-carrierx = "/home/fractal-tess/.claude";
-          };
         };
         settings = {
           devices = {

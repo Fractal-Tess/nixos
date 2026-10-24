@@ -123,10 +123,6 @@
             "vd"
             "kiwi"
           ];
-          dirs = {
-            claude-personal = "/home/fractal-tess/.claude";
-            claude-carrierx = "/home/fractal-tess/.claude-carrierx";
-          };
         };
         settings = {
           devices = {

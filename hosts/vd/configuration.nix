@@ -208,6 +208,8 @@
             "neo"
             "kiwi"
           ];
+          # Old layout until scripts/claude-code/claude-profiles-to-kiwi-layout
+          # has run here; then drop this to use the module default.
           dirs = {
             claude-personal = "/home/fractal-tess/.claude";
             claude-carrierx = "/home/fractal-tess/.claude-carrierx";

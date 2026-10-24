@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+# claude-profiles-to-kiwi-layout - one-off migration of a host from
+#   ~/.claude = Personal, ~/.claude-carrierx = CarrierX
+# to kiwi's layout
+#   ~/.claude = CarrierX, ~/.claude-personal = Personal
+#
+# Both Syncthing folders are paused while the directories swap and are only
+# resumed once their paths point at the right place, so neither profile is
+# ever scanned under the other's folder id. Run it with every Claude Code
+# session on this host closed, before rebuilding with the new paths.
+#
+# Usage: claude-profiles-to-kiwi-layout <carrierx .claude.json>
+#   The argument is a copy of kiwi's ~/.claude.json (the CarrierX profile's
+#   account state, which Syncthing does not sync).
+set -euo pipefail
+
+carrierx_json=${1:?usage: $0 <carrierx .claude.json>}
+[[ -f $carrierx_json ]] || { echo "error: $carrierx_json not found" >&2; exit 1; }
+
+if pgrep -x claude >/dev/null; then
+  echo "error: Claude Code is running on $(hostname); close every session first" >&2
+  exit 1
+fi
+if [[ -e ~/.claude-personal || ! -d ~/.claude-carrierx ]]; then
+  echo "error: $(hostname) is not in the old layout (already migrated?)" >&2
+  exit 1
+fi
+
+api=http://127.0.0.1:8384/rest
+key=$(grep -oP '(?<=<apikey>)[^<]+' ~/.config/syncthing/config.xml)
+st() { curl -sf -H "X-API-Key: $key" -H "Content-Type: application/json" "$@"; }
+
+echo "Pausing Syncthing folders"
+for f in claude-personal claude-carrierx; do
+  st -X PATCH -d '{"paused":true}' "$api/config/folders/$f"
+done
+
+echo "Swapping directories"
+mv ~/.claude ~/.claude-personal
+mv ~/.claude-carrierx ~/.claude
+mv ~/.claude.json ~/.claude-personal/.claude.json
+install -m 600 "$carrierx_json" ~/.claude.json
+
+# Plugins and skills are per host (not synced) and shared by both profiles
+# through symlinks, as on kiwi.
+for d in plugins skills; do
+  if [[ -d ~/.claude-personal/$d && ! -L ~/.claude-personal/$d ]]; then
+    rm -rf ~/.claude/"$d"
+    mv ~/.claude-personal/"$d" ~/.claude/"$d"
+  fi
+  ln -sfn ~/.claude/"$d" ~/.claude-personal/"$d"
+done
+
+echo "Repointing and resuming Syncthing folders"
+st -X PATCH -d "{\"path\":\"$HOME/.claude-personal\",\"paused\":false}" "$api/config/folders/claude-personal"
+st -X PATCH -d "{\"path\":\"$HOME/.claude\",\"paused\":false}" "$api/config/folders/claude-carrierx"
+
+# T3 Code: the same two Claude providers as on kiwi.
+t3=~/.t3/userdata/settings.json
+if [[ -f $t3 ]]; then
+  echo "Adding the CarrierX and Personal providers to T3 Code"
+  jq '.providerInstances += {
+        claude_carrierx: {driver: "claudeAgent", displayName: "CarrierX", accentColor: "#ebdd25", enabled: true},
+        claude_personal: {driver: "claudeAgent", displayName: "Personal", accentColor: "#8b5cf6", enabled: true,
+                          config: {homePath: "~/.claude-personal"}}
+      }' "$t3" >"$t3.tmp" && mv "$t3.tmp" "$t3"
+fi
+
+echo "Done on $(hostname): ~/.claude = CarrierX, ~/.claude-personal = Personal"
