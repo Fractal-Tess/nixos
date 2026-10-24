@@ -41,13 +41,13 @@ in
 
     fallbackModel = mkOption {
       type = types.str;
-      default = "/mnt/vault/ai/models/llms/Ornith-1.5-9B-Q4_K_M.gguf";
-      description = "Local GGUF used when CLIProxyAPI fails. Loaded on demand and unloaded when idle";
+      default = "/var/lib/supermemory-models/Ornith-1.5-9B-Q4_K_M.gguf";
+      description = "Local GGUF used when CLIProxyAPI fails. Loaded on demand and unloaded when idle, so keep it on the NVMe for fast cold starts (copied from /mnt/vault by hand)";
     };
 
     embeddingModel = mkOption {
       type = types.str;
-      default = "/mnt/vault/ai/models/embeddings/ggml-org-bge-m3-q8_0.gguf";
+      default = "/var/lib/supermemory-models/ggml-org-bge-m3-q8_0.gguf";
       description = ''
         Local bge-m3 GGUF for embeddings. The stored vectors are bge-m3, so a
         different model needs a fresh data directory
