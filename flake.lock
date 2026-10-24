@@ -7,11 +7,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1791994577,
-        "narHash": "sha256-7boJ/vS1aNFugmucPmbxdTvzVBAYtR04P8Lcsq/fjSc=",
+        "lastModified": 1792771972,
+        "narHash": "sha256-1IVO4uL9KcUqPRrTTB/R837jv5HT73HgcGWs83cFHYQ=",
         "owner": "Fractal-Tess",
         "repo": "agent-browser-flake",
-        "rev": "66b4b340583c4b181bf10d28adaf4f96032a795b",
+        "rev": "84f74935998f1be7f63f2773c3e85684d9b133f4",
         "type": "github"
       },
       "original": {
@@ -49,11 +49,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1789846695,
-        "narHash": "sha256-ZQgzOjfEgRxOEpJz5XwMOzourf59Et7zjZhUGoZFwc4=",
+        "lastModified": 1792352770,
+        "narHash": "sha256-QLqw+CYikAhSpx24fG34sZ63x7hmAROVfzRt0iDtYDk=",
         "ref": "refs/heads/main",
-        "rev": "722dfa04dca5e6d2b66fca99958d0d81eeea6fa6",
-        "revCount": 36,
+        "rev": "272596a15b244572aeb8058173e9ed66359a1b19",
+        "revCount": 37,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
       },
@@ -69,11 +69,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792599278,
-        "narHash": "sha256-NRPu41tNTWEex9U7vVbZskS5DaaHgrvmlIfxxjbk4CI=",
+        "lastModified": 1792771391,
+        "narHash": "sha256-dl/o080mapUvPhlgJeNgMeq2G8HyLSdyzS/CqRKmWIE=",
         "owner": "Fractal-Tess",
         "repo": "claude-code-flake",
-        "rev": "4a8faba7400eb20189dbf9687aee23182591f26a",
+        "rev": "e09ddda731a9b2c1a2e5d611b56acdab0c447e21",
         "type": "github"
       },
       "original": {
@@ -109,11 +109,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792165823,
-        "narHash": "sha256-rAQDKYFkFfPF4nGM1oiDIfTL/lHJ96cf/8Idk6wSaSE=",
+        "lastModified": 1792771870,
+        "narHash": "sha256-9E1wwroBBOwSTwOJthDWuMutV8qYR6TPyDsO/htpcMc=",
         "owner": "Fractal-Tess",
         "repo": "codex-flake",
-        "rev": "e50eb41d8d616225becf8afc3d58baa9f331b84f",
+        "rev": "87e946a5c2375ae505ff5213f5bf56ef5fc363f0",
         "type": "github"
       },
       "original": {
@@ -129,11 +129,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792763594,
-        "narHash": "sha256-vrUbSJLUObRcXvk2jd/+uz4JuRxWjatthNuS2gq+o7Q=",
+        "lastModified": 1792771009,
+        "narHash": "sha256-iEoyxR2tD0oqyvDHJm7HOsXgXbh4/qqqigLybXgCOe8=",
         "ref": "refs/heads/main",
-        "rev": "41f4da15144aa4ba49f493d6742a1bda93f01a37",
-        "revCount": 3,
+        "rev": "def10c8130bf8bb49d4f96e1e4468022af147c61",
+        "revCount": 4,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
       },
@@ -228,11 +228,11 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1792512230,
-        "narHash": "sha256-563u1aH1XfMCUfCQkdwX8ofwc+T9bHXMz2qUrYxxaV4=",
+        "lastModified": 1792727601,
+        "narHash": "sha256-IHIoICvvZULjKoY5VC8wyS4yIEIqfW0u2YfdPxjnCdc=",
         "owner": "yuezk",
         "repo": "GlobalProtect-openconnect",
-        "rev": "69d67721a6d4086011b21a725320925bf9ee3c7d",
+        "rev": "e509cbccdb8c3815f6b45d6dc7479a27df591744",
         "type": "github"
       },
       "original": {
@@ -248,11 +248,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792605213,
-        "narHash": "sha256-J73EBU30r2hXvHCcBtaigQDAIu/GGPYk1nc6P9THcmg=",
+        "lastModified": 1792818371,
+        "narHash": "sha256-yhEZAzZRNvzYpoAlyFY3wM75V9BmkIXJIueof8S5gOg=",
         "owner": "nix-community",
         "repo": "home-manager",
-        "rev": "ab97a5d09e0f2aa7339cfd35ec5824fd6653e27c",
+        "rev": "2cd3234928f60bbff695a7ee56115ef7799c47cd",
         "type": "github"
       },
       "original": {
@@ -268,11 +268,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1790809764,
-        "narHash": "sha256-1ipp6mPNsDRCnvV6bZ+KUtQBZOcQb3q4poGEK+m/a4A=",
+        "lastModified": 1792838058,
+        "narHash": "sha256-/I93COFuh4G2Qcz3Mnyl5JDcOFMDS15s98nq4id85PM=",
         "owner": "Fractal-Tess",
         "repo": "immich-flake",
-        "rev": "815bd991698d66624e918c4c290f55bb7d6e0859",
+        "rev": "d7c9ec20b0a171fc1ec7c7cda709a7d6184e7b4b",
         "type": "github"
       },
       "original": {
@@ -358,11 +358,11 @@
     },
     "nixpkgs_2": {
       "locked": {
-        "lastModified": 1792116957,
-        "narHash": "sha256-EjZqHKObBfIOeHZnMRVV87HB3pPq/WBkmRJWyFxmZu8=",
+        "lastModified": 1792506237,
+        "narHash": "sha256-Q/8KLB6jNfpaUN1HAedE/u/Et9feE/zYSsutBLKrCFk=",
         "owner": "NixOS",
         "repo": "nixpkgs",
-        "rev": "f20cd90e28fe0403873f473b29e42662cd86e8c4",
+        "rev": "5adc50831c259f87faeb09ddf930d43597197473",
         "type": "github"
       },
       "original": {
@@ -669,11 +669,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792056300,
-        "narHash": "sha256-YU1LjDe1o2Ymg5zEiCHbmMXLkDCtxHQRiVqZ3nC5GGk=",
+        "lastModified": 1792809984,
+        "narHash": "sha256-KV+CaZX7QS0hcdKxwGKehDb1jmUgx6lbkTPpaoIW5Nw=",
         "owner": "Mic92",
         "repo": "sops-nix",
-        "rev": "44931708c62937c2b1bf7953902989fa5bb9ee1b",
+        "rev": "442449fa7b1fe6c692d0103ac9fc8f9e82931cf3",
         "type": "github"
       },
       "original": {
@@ -774,11 +774,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792601957,
-        "narHash": "sha256-MYdmhgcljQLgVBVLI2CU++r58D3Fcg0N6jqaL0BXCc0=",
+        "lastModified": 1792774235,
+        "narHash": "sha256-SRZXljhe51VPj9qm9PYIn9YKfJDjGNWhWjHvePs8WaA=",
         "owner": "Fractal-Tess",
         "repo": "t3code-flake",
-        "rev": "995a46def615e1c6a975e85930d2535bfd6adb88",
+        "rev": "9f5b7310ecc61503b9377a8749fc6ea0ca044abe",
         "type": "github"
       },
       "original": {
