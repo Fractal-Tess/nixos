@@ -724,11 +724,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792364540,
-        "narHash": "sha256-v1Ru5gjWGwN9Q9CJwjkzQh/VjWZM+Dbfmttt3cF2yfU=",
+        "lastModified": 1792872581,
+        "narHash": "sha256-G3YgxAmM2FFMWyTB4Gw9A31+WymmqkVmMToXHNpRF7w=",
         "owner": "Fractal-Tess",
         "repo": "supermemory-flake",
-        "rev": "0ad6f5473fe8ad7e2088cf852fed5877b87adc89",
+        "rev": "0a3ebb3d37fcd0bb08b7a0f249a5aaaa6d843e9d",
         "type": "github"
       },
       "original": {
