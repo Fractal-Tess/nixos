@@ -111,8 +111,10 @@ in
       environment.OPENAI_API_KEY = "local";
     };
 
-    # Embeddings stay loaded (0.6 GB). The fallback LLM (about 6.5 GB) loads
-    # only when CLIProxyAPI fails and unloads after 15 idle minutes.
+    # Embeddings stay loaded (0.6 GB). The fallback LLM (about 7.5 GB) loads
+    # only when CLIProxyAPI fails and unloads after 15 idle minutes. Its
+    # context fits the server's first pass over a long session, which
+    # overflowed 32k.
     services.llama-swap = {
       enable = true;
       port = cfg.modelPort;
@@ -124,7 +126,7 @@ in
             env = [ "CUDA_VISIBLE_DEVICES=${cfg.gpu}" ];
           };
           fallback = {
-            cmd = "${llama-server} --port \${PORT} -m ${cfg.fallbackModel} --jinja -c 32768 -ngl 999 -fit off --flash-attn on --parallel 1 --cache-ram 0 --no-ui";
+            cmd = "${llama-server} --port \${PORT} -m ${cfg.fallbackModel} --jinja -c 65536 -ngl 999 -fit off --flash-attn on --parallel 1 --cache-ram 0 --no-ui";
             env = [ "CUDA_VISIBLE_DEVICES=${cfg.gpu}" ];
             ttl = 900;
           };
@@ -149,6 +151,9 @@ in
       serviceConfig.MemoryDenyWriteExecute = mkForce false;
     };
 
+    # Also makes the server's memory agent handle one new session turn per
+    # run; router.py says why. It reads sessions through the API and keeps
+    # the turns it has handled in its state directory.
     systemd.services.supermemory-llm-router = {
       description = "Supermemory LLM router: CLIProxyAPI with a local fallback";
       wantedBy = [ "multi-user.target" ];
@@ -163,10 +168,15 @@ in
         PRIMARY_MODEL = cfg.model;
         FALLBACK_URL = swapUrl;
         FALLBACK_MODEL = "fallback";
+        SUPERMEMORY_URL = "http://127.0.0.1:${toString cfg.port}";
       };
       serviceConfig = {
         ExecStart = "${pkgs.python3}/bin/python3 -u ${./router.py}";
-        LoadCredential = "primary-key:${config.sops.secrets.cliproxyapi_client_api_key.path}";
+        LoadCredential = [
+          "primary-key:${config.sops.secrets.cliproxyapi_client_api_key.path}"
+          "supermemory-key:${config.services.supermemory-server.dataDir}/api-key"
+        ];
+        StateDirectory = "supermemory-llm-router";
         DynamicUser = true;
         Restart = "always";
         RestartSec = 3;
