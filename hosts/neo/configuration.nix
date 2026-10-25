@@ -123,6 +123,9 @@
             "vd"
             "kiwi"
           ];
+          # Refresh order across hosts: neo, then vd, then kiwi.
+          refreshBeforeMinutes = 180;
+          repairAfterMinutes = 0;
         };
         settings = {
           devices = {

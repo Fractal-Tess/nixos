@@ -125,6 +125,20 @@ in
         };
         description = "Syncthing folder id -> local CLAUDE_CONFIG_DIR for each synced Claude account.";
       };
+
+      # Stagger these per host so only the first host online refreshes; see
+      # claude-token-keeper.sh.
+      refreshBeforeMinutes = mkOption {
+        type = types.int;
+        default = 120;
+        description = "Refresh each synced Claude login once it has less than this many minutes left.";
+      };
+
+      repairAfterMinutes = mkOption {
+        type = types.int;
+        default = 0;
+        description = "Repair a blanked Claude login from a Syncthing conflict copy once it has been blank this long.";
+      };
     };
   };
 
@@ -168,9 +182,48 @@ in
             inherit id path;
             label = "Claude (${removePrefix "claude-" id})";
             devices = cfg.claude.devices;
+            # A refreshed login should reach the other hosts within seconds.
+            fsWatcherDelayS = 1;
           }) cfg.claude.dirs;
         })
       ]);
+    };
+
+    # Keep the synced Claude logins fresh so Claude Code never refreshes them
+    # itself, which races across hosts and blanks the shared file.
+    systemd.services.claude-token-keeper = mkIf (cfg.claude.devices != [ ]) {
+      description = "Refresh synced Claude Code logins ahead of expiry";
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      environment = {
+        REFRESH_BEFORE_MIN = toString cfg.claude.refreshBeforeMinutes;
+        REPAIR_AFTER_MIN = toString cfg.claude.repairAfterMinutes;
+      };
+      serviceConfig = {
+        Type = "oneshot";
+        User = cfg.user;
+        Group = cfg.group;
+        ExecStart = "${
+          pkgs.writeShellApplication {
+            name = "claude-token-keeper";
+            runtimeInputs = with pkgs; [
+              coreutils
+              curl
+              findutils
+              jq
+            ];
+            text = builtins.readFile ./claude-token-keeper.sh;
+          }
+        }/bin/claude-token-keeper ${escapeShellArgs (attrValues cfg.claude.dirs)}";
+      };
+    };
+
+    systemd.timers.claude-token-keeper = mkIf (cfg.claude.devices != [ ]) {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "2min";
+        OnUnitActiveSec = "5min";
+      };
     };
 
     # Ensure the user has access to Syncthing data
