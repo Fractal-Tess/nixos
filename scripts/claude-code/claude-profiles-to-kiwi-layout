@@ -17,7 +17,7 @@ set -euo pipefail
 carrierx_json=${1:?usage: $0 <carrierx .claude.json>}
 [[ -f $carrierx_json ]] || { echo "error: $carrierx_json not found" >&2; exit 1; }
 
-if pgrep -x claude >/dev/null; then
+if pgrep -x '(claude|\.claude-wrapped)' >/dev/null; then
   echo "error: Claude Code is running on $(hostname); close every session first" >&2
   exit 1
 fi
