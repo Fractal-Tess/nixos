@@ -42,7 +42,7 @@ hl.bind(mod .. " + SHIFT + S", hl.dsp.window.move({ workspace = "special:magic",
 hl.bind(mod .. " + mouse:272", hl.dsp.window.drag(), { mouse = true })
 hl.bind(mod .. " + mouse:273", hl.dsp.window.resize(), { mouse = true })
 hl.bind(mod .. " + ESCAPE", hl.dsp.exec_cmd("~/nixos/scripts/session/powermenu"))
-hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("pkill waybar; waybar"))
+hl.bind(mod .. " + SHIFT + R", hl.dsp.exec_cmd("systemctl --user restart waybar"))
 hl.bind(mod .. " + SHIFT + T", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 hl.bind(mod .. " + ALT + T", hl.dsp.exec_cmd("pkill -SIGUSR1 waybar"))
 
