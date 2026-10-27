@@ -186,9 +186,11 @@
       };
       # Oracle is the only peer that needs direct backend access.
       networking.firewall.extraCommands = ''
+        iptables -I nixos-fw 1 ! -i lo ! -s 100.91.0.4 -p tcp --dport 8222 -j DROP
         iptables -A nixos-fw -i wt0 -s 100.91.0.4 -p tcp --dport 8222 -j nixos-fw-accept
       '';
       networking.firewall.extraStopCommands = ''
+        iptables -D nixos-fw ! -i lo ! -s 100.91.0.4 -p tcp --dport 8222 -j DROP 2>/dev/null || true
         iptables -D nixos-fw -i wt0 -s 100.91.0.4 -p tcp --dport 8222 -j nixos-fw-accept 2>/dev/null || true
       '';
     }
