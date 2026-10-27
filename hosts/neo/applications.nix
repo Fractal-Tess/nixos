@@ -149,6 +149,50 @@
       ];
     }
 
+    # Vaultwarden: HTTPS terminates at Oracle's Traefik, over the NetBird mesh.
+    {
+      services.vaultwarden = {
+        enable = true;
+        dbBackend = "sqlite";
+        backupDir = "/mnt/blockade/services/vaultwarden-backups";
+        environmentFile = "/var/lib/vaultwarden-admin/environment";
+        config = {
+          DOMAIN = "https://vaultwarden.fractal-tess.xyz";
+          ROCKET_ADDRESS = "0.0.0.0";
+          ROCKET_PORT = 8222;
+          SIGNUPS_ALLOWED = false;
+          INVITATIONS_ALLOWED = true;
+          SHOW_PASSWORD_HINT = false;
+        };
+      };
+      # Generate once on the host; never put the admin token in the Nix store.
+      systemd.services.vaultwarden-admin-secret = {
+        description = "Initialize Vaultwarden admin credential";
+        before = [ "vaultwarden.service" ];
+        requiredBy = [ "vaultwarden.service" ];
+        serviceConfig = {
+          Type = "oneshot";
+          RemainAfterExit = true;
+          StateDirectory = "vaultwarden-admin";
+          StateDirectoryMode = "0700";
+          UMask = "0077";
+        };
+        script = ''
+          if [ ! -s /var/lib/vaultwarden-admin/environment ]; then
+            token=$(${pkgs.openssl}/bin/openssl rand -hex 48)
+            printf 'ADMIN_TOKEN=%s\n' "$token" > /var/lib/vaultwarden-admin/environment
+          fi
+        '';
+      };
+      # Oracle is the only peer that needs direct backend access.
+      networking.firewall.extraCommands = ''
+        iptables -A nixos-fw -i wt0 -s 100.91.0.4 -p tcp --dport 8222 -j nixos-fw-accept
+      '';
+      networking.firewall.extraStopCommands = ''
+        iptables -D nixos-fw -i wt0 -s 100.91.0.4 -p tcp --dport 8222 -j nixos-fw-accept 2>/dev/null || true
+      '';
+    }
+
     # Gitadel
     {
       programs.gitadel-cli = {

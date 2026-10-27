@@ -1,0 +1,20 @@
+# Install on Oracle at /etc/dokploy/traefik/dynamic/vaultwarden.yml.
+http:
+  routers:
+    vaultwarden-http:
+      rule: Host(`vaultwarden.fractal-tess.xyz`)
+      service: vaultwarden
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+    vaultwarden-https:
+      rule: Host(`vaultwarden.fractal-tess.xyz`)
+      service: vaultwarden
+      entryPoints: [websecure]
+      tls:
+        certResolver: letsencrypt
+  services:
+    vaultwarden:
+      loadBalancer:
+        servers:
+          - url: http://100.91.0.3:8222
+        passHostHeader: true
