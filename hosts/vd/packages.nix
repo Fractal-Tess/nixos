@@ -135,6 +135,13 @@ in
     #--------------------------------------------------------------------------
 
     # kicad # Electronics design automation (EDA) for PCB design — disabled for storage cleanup
+    (octaveFull.withPackages (
+      ps: with ps; [
+        communications
+        geometry
+        statistics
+      ]
+    ))
 
     #--------------------------------------------------------------------------
     # DEVELOPMENT TOOLS
