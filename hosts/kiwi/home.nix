@@ -6,39 +6,13 @@
   ...
 }:
 
-let
-  azerothSurvivors = pkgs.writeShellApplication {
-    name = "azeroth-survivors";
-    runtimeInputs = [ pkgs.steam-run ];
-    text = ''
-      GAME_ROOT="/home/${username}/Games/azeroth-survivors"
-      GAME_EXE="$GAME_ROOT/windows/AzerothSurvivors/AzerothSurvivors.exe"
-      export STEAM_COMPAT_CLIENT_INSTALL_PATH="/home/${username}/.local/share/Steam"
-      PROTON="$STEAM_COMPAT_CLIENT_INSTALL_PATH/steamapps/common/Proton - Experimental/proton"
-
-      if [[ ! -f "$GAME_EXE" || ! -f "$PROTON" ]]; then
-        echo "Azeroth Survivors requires the installed Windows game and Steam's Proton Experimental." >&2
-        exit 1
-      fi
-
-      mkdir -p "$GAME_ROOT/proton-prefix"
-      export STEAM_COMPAT_DATA_PATH="$GAME_ROOT/proton-prefix"
-      export SteamAppId=0
-      export SteamGameId=0
-      export WGPU_BACKEND=vulkan
-      export PROTON_LOG=1
-      export PROTON_LOG_DIR="$GAME_ROOT"
-      cd "$(dirname "$GAME_EXE")"
-      exec steam-run "$PROTON" run "$GAME_EXE" "$@"
-    '';
-  };
-in
 {
   #============================================================================
   # IMPORTS
   #============================================================================
 
   imports = [
+    ../../modules/home-manager/applications/azeroth-survivors.nix
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/configs
     ../../modules/home-manager/theming.nix
@@ -88,16 +62,6 @@ in
 
   # Enable Home Manager self-management
   programs.home-manager.enable = true;
-
-  home.packages = [ azerothSurvivors ];
-  xdg.desktopEntries.azeroth-survivors-native = {
-    name = "Azeroth Survivors (Proton)";
-    comment = "Official Windows game through Proton with Vulkan";
-    exec = "${azerothSurvivors}/bin/azeroth-survivors";
-    icon = "applications-games";
-    terminal = false;
-    categories = [ "Game" ];
-  };
 
   # Laptop battery monitoring
   modules.services.battery-check.enable = true;

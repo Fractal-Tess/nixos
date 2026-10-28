@@ -10,6 +10,7 @@
   #============================================================================
 
   imports = [
+    ../../modules/home-manager/applications/azeroth-survivors.nix
     ../../modules/home-manager/default.nix
     ../../modules/home-manager/theming.nix
   ];
