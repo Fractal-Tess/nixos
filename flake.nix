@@ -98,7 +98,7 @@
     };
 
     azeroth-survivors = {
-      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/azeroth-survivors-flake.git";
+      url = "github:Fractal-Tess/azeroth-survivors-flake";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 

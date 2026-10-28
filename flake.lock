@@ -49,17 +49,17 @@
         ]
       },
       "locked": {
-        "lastModified": 1793180313,
-        "narHash": "sha256-zKtQuKZatmQEuzs1KXRvs0U7S5c43C3Znod2MbW46GA=",
-        "ref": "refs/heads/main",
-        "rev": "e85c4963c154f436a328a79603ecd831f6184712",
-        "revCount": 2,
-        "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/azeroth-survivors-flake.git"
+        "lastModified": 1793181464,
+        "narHash": "sha256-7S3XqkaokYwqo7oZEfgcUFanbHkZwhs0xIcjmIGz2mc=",
+        "owner": "Fractal-Tess",
+        "repo": "azeroth-survivors-flake",
+        "rev": "0bbc209a6ac3333b900a810fbddea3e0e362a6d5",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/azeroth-survivors-flake.git"
+        "owner": "Fractal-Tess",
+        "repo": "azeroth-survivors-flake",
+        "type": "github"
       }
     },
     "chorus": {
