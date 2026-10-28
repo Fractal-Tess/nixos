@@ -671,11 +671,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793206714,
-        "narHash": "sha256-rw14U4eO7sylSVSKdxrf+heQqse6lms8b6PaV53Ycew=",
+        "lastModified": 1793206866,
+        "narHash": "sha256-+1s1fdTXvPF5Eac8dh3sf4aDsJSgsPB0Ovu45K6ekxo=",
         "ref": "refs/heads/main",
-        "rev": "a6f5dd9e6d6fcc31df95cb8ac7051c14e91a4d85",
-        "revCount": 5,
+        "rev": "d1d32662557f4f1ca6541e41f2466f1964141794",
+        "revCount": 6,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/sentinel.git"
       },
