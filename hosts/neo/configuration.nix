@@ -141,15 +141,6 @@
             };
           };
           folders = {
-            "obsidian-vault" = {
-              path = "/home/fractal-tess/dev/obsidian";
-              id = "obsidian-vault";
-              label = "Obsidian Vault";
-              devices = [
-                "vd"
-                "kiwi"
-              ];
-            };
             "vivaldi-default" = {
               path = "/home/fractal-tess/.config/vivaldi/Default/Sessions";
               id = "vivaldi-default";
