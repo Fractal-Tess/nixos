@@ -49,11 +49,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1793180066,
-        "narHash": "sha256-w8GfGDNozlhOEtb2dL3kFkbZ2FiijV5eyEVyR8jfRjU=",
+        "lastModified": 1793180313,
+        "narHash": "sha256-zKtQuKZatmQEuzs1KXRvs0U7S5c43C3Znod2MbW46GA=",
         "ref": "refs/heads/main",
-        "rev": "268072da154995d2097586b762a1f606d776a23c",
-        "revCount": 1,
+        "rev": "e85c4963c154f436a328a79603ecd831f6184712",
+        "revCount": 2,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/azeroth-survivors-flake.git"
       },
