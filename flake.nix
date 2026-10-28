@@ -97,6 +97,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    azeroth-survivors = {
+      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/azeroth-survivors-flake.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     chorus = {
       url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git";
       inputs.nixpkgs.follows = "nixpkgs";
