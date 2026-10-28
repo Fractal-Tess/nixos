@@ -107,6 +107,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    sentinel = {
+      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/sentinel.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     fader = {
       url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git";
       inputs.nixpkgs.follows = "nixpkgs";

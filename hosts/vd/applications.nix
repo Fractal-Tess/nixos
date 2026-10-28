@@ -15,6 +15,7 @@
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.chorus.nixosModules.default
     inputs.fader.nixosModules.default
+    inputs.sentinel.nixosModules.default
     inputs.responsively-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
@@ -22,6 +23,19 @@
   ];
 
   config = lib.mkMerge [
+    # Sentinel — C920 camera monitoring, available through NetBird.
+    {
+      services.sentinel = {
+        enable = true;
+        port = 30090;
+        backendPort = 30091;
+        cameraDevice = "/dev/v4l/by-id/usb-046d_HD_Pro_Webcam_C920_645B253F-video-index0";
+        environmentFile = "/etc/sentinel.env";
+        openFirewall = true;
+        firewallInterfaces = [ "wt0" ];
+      };
+    }
+
     # Asterveil
     {
       programs.asterveil.enable = true;
