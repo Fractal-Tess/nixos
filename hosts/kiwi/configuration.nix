@@ -473,6 +473,18 @@
     };
 
     power-profiles-daemon.enable = false;
+
+    # UPower - Shut down at 10% so the USB-C charger can still negotiate PD
+    # (this machine won't charge over USB-C from a fully drained battery).
+    # Runs system-wide, so it also covers the SDDM login screen.
+    upower = {
+      enable = true;
+      usePercentageForPolicy = true; # Time estimates are unreliable with this generic battery gauge
+      percentageLow = 15;
+      percentageCritical = 12;
+      percentageAction = 10;
+      criticalPowerAction = "PowerOff";
+    };
   };
 
   #============================================================================
