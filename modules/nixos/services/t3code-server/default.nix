@@ -54,6 +54,22 @@ in
       description = "Interfaces to open the port on. Defaults to the NetBird mesh only";
     };
 
+    # Every host gets the same provider profiles. Merged into settings.json on
+    # each start; profiles added in the UI stay, declared ones win.
+    providerInstances = mkOption {
+      type = types.attrsOf types.attrs;
+      default = {
+        claude_personal = {
+          driver = "claudeAgent";
+          displayName = "Personal";
+          accentColor = "#8b5cf6";
+          enabled = true;
+          config.homePath = "~/.claude-personal";
+        };
+      };
+      description = "T3 Code provider instances (profiles) to write into the server's settings.json.";
+    };
+
     remoteOpenHost = mkOption {
       type = types.nullOr types.str;
       default = "${config.networking.hostName}.netbird.cloud";
@@ -120,8 +136,18 @@ in
       });
     };
 
-    systemd.user.services.t3code-server.environment = mkIf (cfg.remoteOpenHost != null) {
-      T3CODE_REMOTE_OPEN_HOST = cfg.remoteOpenHost;
+    systemd.user.services.t3code-server = {
+      environment = mkIf (cfg.remoteOpenHost != null) {
+        T3CODE_REMOTE_OPEN_HOST = cfg.remoteOpenHost;
+      };
+      serviceConfig.ExecStartPre = "${pkgs.writeShellScript "t3code-server-profiles" ''
+        settings=$1/userdata/settings.json
+        ${pkgs.coreutils}/bin/mkdir -p "$(${pkgs.coreutils}/bin/dirname "$settings")"
+        [ -s "$settings" ] || echo '{}' >"$settings"
+        ${pkgs.jq}/bin/jq --argjson p ${escapeShellArg (builtins.toJSON cfg.providerInstances)} \
+          '.providerInstances = ((.providerInstances // {}) * $p)' "$settings" >"$settings.tmp" \
+          && ${pkgs.coreutils}/bin/mv "$settings.tmp" "$settings"
+      ''} ${cfg.baseDir}";
     };
 
     # Start the user service at boot, without an active login session.

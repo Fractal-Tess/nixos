@@ -197,6 +197,8 @@
           refreshBeforeMinutes = 60;
           repairAfterMinutes = 6;
         };
+        # Same order for Codex, a couple of hours apart.
+        codex.refreshBeforeHours = 68;
         settings = {
           devices = {
             "vd" = {

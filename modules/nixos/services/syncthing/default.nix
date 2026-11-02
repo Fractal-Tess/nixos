@@ -24,6 +24,12 @@ let
     /debug
     /ide
     /paste-cache
+    /file-history
+    /history.jsonl
+    /todos
+    // Session transcripts stay on the host that ran them; memory still syncs.
+    !/projects/*/memory
+    /projects/*/*
     /plugins
     /session-env
     /sessions
@@ -36,6 +42,19 @@ let
     /policy-limits.json*
     /remote-settings.json*
     /stats-cache.json
+  '';
+
+  # Allow-list: only the login and configuration sync. Sessions, logs and
+  # the SQLite state stay per host.
+  codexStignore = pkgs.writeText "codex-stignore" ''
+    // Managed by NixOS (modules/nixos/services/syncthing).
+    !/auth.json
+    !/.credentials.json
+    !/config.toml
+    !/AGENTS.md
+    !/accounts
+    !/rules
+    *
   '';
 in
 {
@@ -140,18 +159,46 @@ in
         description = "Repair a blanked Claude login from a Syncthing conflict copy once it has been blank this long.";
       };
     };
+
+    codex = {
+      devices = mkOption {
+        type = types.listOf types.str;
+        default = cfg.claude.devices;
+        defaultText = literalExpression "config.modules.services.syncthing.claude.devices";
+        description = "Devices to share the Codex login and configuration with. Empty disables Codex syncing.";
+      };
+
+      dir = mkOption {
+        type = types.str;
+        default = "/home/${username}/.codex";
+        description = "Local CODEX_HOME.";
+      };
+
+      # Stagger per host like claude.refreshBeforeMinutes; see
+      # codex-token-keeper.sh.
+      refreshBeforeHours = mkOption {
+        type = types.int;
+        default = 72;
+        description = "Refresh the synced Codex login once its access token has less than this many hours left.";
+      };
+    };
   };
 
   config = mkIf cfg.enable {
     # .stignore is never synced, so every host writes its own. Credentials,
-    # settings, memory and transcripts sync; per-machine runtime state and the
-    # home-manager managed skills/plugins stay local.
+    # settings and memory sync; session transcripts, per-machine runtime state
+    # and the home-manager managed skills/plugins stay local.
     system.activationScripts.syncthing-claude-stignore = mkIf (cfg.claude.devices != [ ]) (
       concatMapStrings (path: ''
         install -d -o ${cfg.user} -g ${cfg.group} ${escapeShellArg path}
         install -m 0644 -o ${cfg.user} -g ${cfg.group} ${claudeStignore} ${escapeShellArg "${path}/.stignore"}
       '') (attrValues cfg.claude.dirs)
     );
+
+    system.activationScripts.syncthing-codex-stignore = mkIf (cfg.codex.devices != [ ]) ''
+      install -d -o ${cfg.user} -g ${cfg.group} ${escapeShellArg cfg.codex.dir}
+      install -m 0644 -o ${cfg.user} -g ${cfg.group} ${codexStignore} ${escapeShellArg "${cfg.codex.dir}/.stignore"}
+    '';
 
     services.syncthing = {
       enable = true;
@@ -185,6 +232,15 @@ in
             # A refreshed login should reach the other hosts within seconds.
             fsWatcherDelayS = 1;
           }) cfg.claude.dirs;
+        })
+        (mkIf (cfg.codex.devices != [ ]) {
+          folders.codex = {
+            id = "codex";
+            label = "Codex";
+            path = cfg.codex.dir;
+            devices = cfg.codex.devices;
+            fsWatcherDelayS = 1;
+          };
         })
       ]);
     };
@@ -223,6 +279,37 @@ in
       timerConfig = {
         OnBootSec = "2min";
         OnUnitActiveSec = "5min";
+      };
+    };
+
+    systemd.services.codex-token-keeper = mkIf (cfg.codex.devices != [ ]) {
+      description = "Refresh the synced Codex login ahead of expiry";
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      environment.REFRESH_BEFORE_HOURS = toString cfg.codex.refreshBeforeHours;
+      serviceConfig = {
+        Type = "oneshot";
+        User = cfg.user;
+        Group = cfg.group;
+        ExecStart = "${
+          pkgs.writeShellApplication {
+            name = "codex-token-keeper";
+            runtimeInputs = with pkgs; [
+              coreutils
+              curl
+              jq
+            ];
+            text = builtins.readFile ./codex-token-keeper.sh;
+          }
+        }/bin/codex-token-keeper ${escapeShellArg cfg.codex.dir}";
+      };
+    };
+
+    systemd.timers.codex-token-keeper = mkIf (cfg.codex.devices != [ ]) {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "3min";
+        OnUnitActiveSec = "15min";
       };
     };
 

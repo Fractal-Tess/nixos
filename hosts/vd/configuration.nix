@@ -212,6 +212,8 @@
           refreshBeforeMinutes = 120;
           repairAfterMinutes = 3;
         };
+        # Same order for Codex, a couple of hours apart.
+        codex.refreshBeforeHours = 70;
         settings = {
           devices = {
             "neo" = {
