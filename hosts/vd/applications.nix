@@ -20,6 +20,7 @@
     inputs.agent-browser-flake.nixosModules.default
     inputs.claude-code-flake.nixosModules.default
     inputs.codex-flake.nixosModules.default
+    inputs.vencord-flake.nixosModules.default
   ];
 
   config = lib.mkMerge [
@@ -44,6 +45,23 @@
     # Responsively
     {
       programs.responsively.enable = true;
+    }
+
+    # Discord with Vencord and the hyper-trader plugin, kept running so the
+    # plugin forwards trade calls to the backend on this host.
+    {
+      programs.discord-vencord.enable = true;
+      systemd.user.services.discord = {
+        description = "Discord with the hyper-trader forwarder";
+        wantedBy = [ "graphical-session.target" ];
+        partOf = [ "graphical-session.target" ];
+        after = [ "graphical-session.target" ];
+        serviceConfig = {
+          ExecStart = "${pkgs.discord}/bin/discord --start-minimized";
+          Restart = "always";
+          RestartSec = 10;
+        };
+      };
     }
 
     # T3 Code
