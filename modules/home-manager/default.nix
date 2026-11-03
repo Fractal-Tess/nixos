@@ -9,6 +9,7 @@
     ./programs/scorch.nix
     ./programs/agent-skills.nix
     ./programs/bat.nix
+    ./programs/vite-plus.nix
     ./services/battery-check.nix
   ];
 }
