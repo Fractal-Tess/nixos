@@ -80,7 +80,7 @@ in
     interface = mkOption {
       type = types.str;
       default = "wt0";
-      description = "Only interface Samba listens on and opens the firewall for (NetBird).";
+      description = "Only interface the firewall opens Samba on (NetBird).";
     };
 
     allowedNetwork = mkOption {
@@ -107,9 +107,10 @@ in
           "passdb backend" = "tdbsam";
           "map to guest" = "never";
 
-          # NetBird only
-          interfaces = "lo ${cfg.interface}";
-          "bind interfaces only" = "yes";
+          # NetBird only: the firewall opens 445 on the NetBird interface
+          # alone and smbd refuses any other source address. Not binding to
+          # the interface, because wt0 is point-to-point (smbd skips it) and
+          # NetBird restarts would leave smbd without a socket.
           "hosts allow" = "${cfg.allowedNetwork} 127.0.0.1";
           "hosts deny" = "0.0.0.0/0";
 
