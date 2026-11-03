@@ -185,6 +185,7 @@
       samba.mount = {
         enable = true;
         mounts."/mnt/nettest".device = "//neo.netbird.cloud/nettest";
+        mounts."/mnt/vault".device = "//vd.netbird.cloud/vault";
       };
       calendar.enable = true;
       syncthing = {

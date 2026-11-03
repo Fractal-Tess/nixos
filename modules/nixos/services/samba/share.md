@@ -1,58 +1,48 @@
-# Samba Share Server Module for NixOS
+# Samba share and mount
 
-This module provides a Samba server for sharing directories over the network using the SMB/CIFS protocol.
+`share.nix` (server) and `mount.nix` (client) share directories between hosts
+over NetBird without ever changing the owner, mode or ACL of an existing file.
 
-## Features
+## How permissions stay intact
 
-- Export local directories as SMB/CIFS shares
-- Per-share access control and configuration
-- Integration with NixOS firewall and systemd
+- Clients log in as `fractal-tess` (password from `secrets/samba.json`). There
+  is no `force user`/`force group`: smbd runs as that user, so the server's
+  kernel decides access exactly as if you were working on it over SSH.
+  Files owned by other users (gitadel, vaultwarden, root, containers with
+  other uids) cannot be modified, chmodded or chowned.
+- `nt acl support = no`, `smb3 unix extensions = no`: a client has no way to
+  send a chmod, chown or ACL change. `chmod` on a client succeeds locally and
+  does nothing on the server.
+- `store dos attributes = yes` with all `map *` off: DOS attributes
+  (read-only, hidden, archive) go into a `user.DOSATTRIB` xattr instead of
+  being emulated with chmod. That xattr appears on files created or written
+  through the share; reading never adds it.
+- `inherit permissions = yes`: new files copy the parent directory's mode
+  (minus execute) and ACL. New files are owned `fractal-tess:users`.
+- On the client every file shows as `uid`/`gid` with `fileMode`/`dirMode`.
+  That is display only; the server still enforces the real permissions.
 
-## Usage Example
+Port 445 is opened on `wt0` only and smbd accepts only `100.91.0.0/16`.
 
-In your host configuration (e.g., `/host/<host>/configuration`):
+## Usage
 
 ```nix
-modules.services.samba-share = {
+# server (neo)
+modules.services.samba.share = {
   enable = true;
-  shares = [
-    {
-      name = "home";
-      path = "/home/username";
-      validUsers = [ "username" ];
-      readOnly = false;
-      guestOk = false;
-      forceUser = "username";
-      forceGroup = "users";
-      createMask = "0644";
-      directoryMask = "0755";
-    }
-  ];
+  shares.blockade.path = "/mnt/blockade";
+};
+
+# client (vd, kiwi)
+modules.services.samba.mount = {
+  enable = true;
+  mounts."/mnt/blockade".device = "//neo.netbird.cloud/blockade";
 };
 ```
 
-## Security Note
+Mounts happen on first access and unmount after 10 minutes idle. They never
+block boot when the server is offline.
 
-- Ensure only trusted users have access to exported shares.
-- Use strong passwords for Samba users.
-- Consider restricting guest access (`guestOk = false`) for sensitive shares.
-
-## Options
-
-- `enable` (boolean): Enable the Samba share service.
-- `shares` (list): List of share definitions. Each entry defines a share to export.
-  - `name` (string): Share name (as seen by clients).
-  - `path` (string): Path to the directory to share.
-  - `validUsers` (list of strings): Users allowed to access the share.
-  - `readOnly` (bool, default: false): If true, share is read-only.
-  - `guestOk` (bool, default: false): If true, allow guest access.
-  - `forceUser` (string, optional): Force all access as this user.
-  - `forceGroup` (string, optional): Force all access as this group.
-  - `createMask` (string, default: "0644"): File creation mask.
-  - `directoryMask` (string, default: "0755"): Directory creation mask.
-- `openFirewall` (bool, default: true): Open firewall ports for Samba.
-- `extraGlobal` (attrs, default: `{}`): Extra global Samba settings.
-
-## How it works
-
-This module enables the Samba service, configures the firewall, and exports the specified shares with the given options. Each share is configured with access control, masks, and optional forced user/group settings. Global Samba settings can be extended via `extraGlobal`.
+Do not put `systemd.tmpfiles` rules on a client's mount point. With these
+settings they cannot change the server, but they are pointless and would
+be dangerous with any other mount type.

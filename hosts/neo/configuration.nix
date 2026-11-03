@@ -117,6 +117,12 @@
         enable = true;
         shares.nettest.path = "/srv/nettest";
       };
+
+      # vd's /mnt/vault over Samba
+      samba.mount = {
+        enable = true;
+        mounts."/mnt/vault".device = "//vd.netbird.cloud/vault";
+      };
       automount.enable = true;
       syncthing = {
         enable = true;

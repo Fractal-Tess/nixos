@@ -197,6 +197,12 @@
       automount.enable = true;
 
       # Samba mount of neo's test share (see modules/nixos/services/samba)
+      # Share /mnt/vault with the other hosts (see modules/nixos/services/samba)
+      samba.share = {
+        enable = true;
+        shares.vault.path = "/mnt/vault";
+      };
+
       samba.mount = {
         enable = true;
         mounts."/mnt/nettest".device = "//neo.netbird.cloud/nettest";
