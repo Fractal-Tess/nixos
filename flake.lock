@@ -564,7 +564,8 @@
         "sops-nix": "sops-nix",
         "supermemory-flake": "supermemory-flake",
         "t3code-flake": "t3code-flake",
-        "vencord-flake": "vencord-flake"
+        "vencord-flake": "vencord-flake",
+        "vite-plus-flake": "vite-plus-flake"
       }
     },
     "rust-analyzer-src": {
@@ -863,6 +864,26 @@
         "owner": "Fractal-Tess",
         "repo": "vencord-flake",
         "type": "github"
+      }
+    },
+    "vite-plus-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1793708583,
+        "narHash": "sha256-bTtiU8Ah4NQuc3TZ7gmaIiOWDiAutUl5pxfi4aYQgbA=",
+        "ref": "refs/heads/main",
+        "rev": "d09c6e0721fd23a68f9070fc3bc9279e87d17388",
+        "revCount": 1,
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
       }
     }
   },

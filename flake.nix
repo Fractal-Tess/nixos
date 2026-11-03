@@ -52,6 +52,11 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    vite-plus-flake = {
+      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     rea-flake = {
       url = "github:Fractal-Tess/rea-flake";
       inputs.nixpkgs.follows = "nixpkgs";
