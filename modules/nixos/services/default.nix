@@ -8,6 +8,7 @@
     ./calendar/default.nix
     ./cliproxyapi/default.nix
     ./nessus/default.nix
+    ./netmount/default.nix
     ./remote-desktop/default.nix
     ./samba/default.nix
     ./sops/default.nix

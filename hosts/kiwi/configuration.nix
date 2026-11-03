@@ -180,6 +180,15 @@
       sshd.enable = true;
       nessus.enable = true;
       automount.enable = true;
+
+      # SSHFS network mounts (test folder first, see netmount module)
+      netmount = {
+        enable = true;
+        mounts."/mnt/nettest" = {
+          host = "neo.netbird.cloud";
+          remotePath = "/srv/nettest";
+        };
+      };
       calendar.enable = true;
       syncthing = {
         enable = true;
