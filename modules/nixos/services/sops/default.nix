@@ -23,6 +23,7 @@ in
     ./z-ai.nix
     ./minimax.nix
     ./syncthing.nix
+    ./samba.nix
   ];
 
   options.modules.services.sops = {

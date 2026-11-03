@@ -110,6 +110,13 @@
     # Services
     services = {
       sshd.enable = true;
+
+      # Samba over NetBird; preserves existing ownership and permissions
+      # (see modules/nixos/services/samba). Test share first.
+      samba.share = {
+        enable = true;
+        shares.nettest.path = "/srv/nettest";
+      };
       automount.enable = true;
       syncthing = {
         enable = true;

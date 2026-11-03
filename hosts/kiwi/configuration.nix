@@ -181,13 +181,10 @@
       nessus.enable = true;
       automount.enable = true;
 
-      # SSHFS network mounts (test folder first, see netmount module)
-      netmount = {
+      # Samba mount of neo's test share (see modules/nixos/services/samba)
+      samba.mount = {
         enable = true;
-        mounts."/mnt/nettest" = {
-          host = "neo.netbird.cloud";
-          remotePath = "/srv/nettest";
-        };
+        mounts."/mnt/nettest".device = "//neo.netbird.cloud/nettest";
       };
       calendar.enable = true;
       syncthing = {
