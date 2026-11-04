@@ -56,6 +56,7 @@ let
   watcher = pkgs.writeShellApplication {
     name = "samba-mount-watch";
     runtimeInputs = with pkgs; [
+      bash
       coreutils
       util-linux
       systemd
