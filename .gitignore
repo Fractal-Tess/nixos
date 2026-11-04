@@ -40,3 +40,6 @@ nixos-switch.log
 # Embedded repositories
 Handy/
 k8s/
+
+# Browser automation output (Playwright MCP)
+.playwright-mcp/
