@@ -26,23 +26,27 @@ Port 445 is opened on `wt0` only and smbd accepts only `100.91.0.0/16`.
 
 ## Usage
 
-```nix
-# server (neo)
-modules.services.samba.share = {
-  enable = true;
-  shares.blockade.path = "/mnt/blockade";
-};
+Shares are listed once in `fleet.nix` (`modules.services.samba.fleet.hosts`):
 
-# client (vd, kiwi)
-modules.services.samba.mount = {
-  enable = true;
-  mounts."/mnt/blockade".device = "//neo.netbird.cloud/blockade";
-};
-```
+| Host | Shares |
+| --- | --- |
+| neo | `blockade` (/mnt/blockade), `home` (/home/fractal-tess) |
+| vd | `vault` (/mnt/vault), `home` (/home/fractal-tess) |
 
-Mounts happen on first access and unmount after 10 minutes idle. They never
-block boot when the server is offline.
+Every host with `modules.services.samba.fleet.enable = true` exports its own
+entries and mounts every other host's at `/mnt/<host>/<share>`, e.g.
+`/mnt/neo/blockade` and `/mnt/vd/vault`. kiwi only mounts.
 
-Do not put `systemd.tmpfiles` rules on a client's mount point. With these
-settings they cannot change the server, but they are pointless and would
-be dangerous with any other mount type.
+## Offline hosts
+
+Shares are never mounted on access. `samba-mount-watch.timer` runs every 20s
+(`mount.checkInterval`) and tests each host's port 445:
+
+- reachable and not mounted: mount it
+- mounted and unreachable for 3 checks in a row (`mount.missesBeforeDetach`):
+  lazily detach it, so the directory shows empty instead of hanging
+
+A host that is offline therefore never blocks a file manager, and it is
+mounted again within one check after it comes back. If a host dies while a
+share is in use, the operation in flight fails after ~30s (`soft`,
+`echo_interval=10`); shorter values drop healthy sessions on slow uplinks.
