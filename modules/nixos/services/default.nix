@@ -7,6 +7,7 @@
     ./automount/default.nix
     ./calendar/default.nix
     ./cliproxyapi/default.nix
+    ./fader/default.nix
     ./nessus/default.nix
     ./remote-desktop/default.nix
     ./samba/default.nix
