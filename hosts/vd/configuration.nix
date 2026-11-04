@@ -196,17 +196,10 @@
       sshd.enable = true;
       automount.enable = true;
 
-      # Samba mount of neo's test share (see modules/nixos/services/samba)
-      # Share /mnt/vault with the other hosts (see modules/nixos/services/samba)
-      samba.share = {
-        enable = true;
-        shares.vault.path = "/mnt/vault";
-      };
+      # Share this host's folders and mount the others' at /mnt/<host>/<share>
+      # (see modules/nixos/services/samba)
+      samba.fleet.enable = true;
 
-      samba.mount = {
-        enable = true;
-        mounts."/mnt/nettest".device = "//neo.netbird.cloud/nettest";
-      };
       calendar.enable = true;
       syncthing = {
         enable = true;
@@ -306,10 +299,6 @@
 
     };
   };
-
-  systemd.tmpfiles.rules = [
-    "d /mnt/blockade 0755 fractal-tess fractal-tess -"
-  ];
 
   environment.systemPackages = [
     pkgs.wtype

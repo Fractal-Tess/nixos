@@ -181,12 +181,10 @@
       nessus.enable = true;
       automount.enable = true;
 
-      # Samba mount of neo's test share (see modules/nixos/services/samba)
-      samba.mount = {
-        enable = true;
-        mounts."/mnt/nettest".device = "//neo.netbird.cloud/nettest";
-        mounts."/mnt/vault".device = "//vd.netbird.cloud/vault";
-      };
+      # Share this host's folders and mount the others' at /mnt/<host>/<share>
+      # (see modules/nixos/services/samba)
+      samba.fleet.enable = true;
+
       calendar.enable = true;
       syncthing = {
         enable = true;

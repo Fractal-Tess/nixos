@@ -111,19 +111,11 @@
     services = {
       sshd.enable = true;
 
-      # Samba over NetBird; preserves existing ownership and permissions
-      # (see modules/nixos/services/samba). Test share first.
-      samba.share = {
-        enable = true;
-        shares.nettest.path = "/srv/nettest";
-      };
-
-      # vd's /mnt/vault over Samba
-      samba.mount = {
-        enable = true;
-        mounts."/mnt/vault".device = "//vd.netbird.cloud/vault";
-      };
       automount.enable = true;
+
+      # Share this host's folders and mount the others' at /mnt/<host>/<share>
+      # (see modules/nixos/services/samba)
+      samba.fleet.enable = true;
       syncthing = {
         enable = true;
         guiAddress = "0.0.0.0:8384";

@@ -1,6 +1,7 @@
 {
   config,
   lib,
+  pkgs,
   utils,
   ...
 }:
@@ -9,6 +10,11 @@ with lib;
 
 let
   cfg = config.modules.services.samba.mount;
+
+  # "//neo.netbird.cloud/blockade" -> "neo.netbird.cloud"
+  hostOf = device: head (filter (s: s != "") (splitString "/" device));
+
+  unitOf = mountPoint: "${utils.escapeSystemdPath mountPoint}.mount";
 
   mountOptions =
     m:
@@ -28,20 +34,56 @@ let
       "dir_mode=${m.dirMode}"
       "nounix"
 
-      # Mount on first access, unmount after idle, never block boot or hang
-      # forever when the server is offline
-      "x-systemd.automount"
+      # Mounted only by the watcher below, never on access, so a file
+      # manager touching the directory can never block on a dead host
       "noauto"
       "nofail"
       "_netdev"
-      "x-systemd.idle-timeout=${m.idleTimeout}"
       "x-systemd.mount-timeout=10s"
-      "x-systemd.after=network-online.target"
-      "x-systemd.after=netbird.service"
+
+      # If the host disappears while mounted, fail calls instead of hanging,
+      # and notice a dead connection within ~10s
       "soft"
-      "echo_interval=15"
+      "echo_interval=5"
     ]
     ++ optional m.readOnly "ro";
+
+  # One line per mount: <mount point> <host> <unit>
+  mountTable = concatStringsSep "\n" (
+    mapAttrsToList (mp: m: "${mp} ${hostOf m.device} ${unitOf mp}") cfg.mounts
+  );
+
+  watcher = pkgs.writeShellApplication {
+    name = "samba-mount-watch";
+    runtimeInputs = with pkgs; [
+      coreutils
+      util-linux
+      systemd
+    ];
+    text = ''
+      reachable() {
+        timeout 3 bash -c "exec 3<>/dev/tcp/$1/445" 2>/dev/null
+      }
+
+      while read -r mp host unit; do
+        [ -n "$mp" ] || continue
+        if mountpoint -q "$mp"; then
+          if ! reachable "$host"; then
+            echo "$host unreachable, detaching $mp"
+            # Lazy + forced: returns immediately even if the share is hung
+            umount -f -l "$mp" || true
+            systemctl reset-failed "$unit" 2>/dev/null || true
+          fi
+        elif reachable "$host"; then
+          echo "$host reachable, mounting $mp"
+          systemctl reset-failed "$unit" 2>/dev/null || true
+          systemctl start --no-block "$unit" || true
+        fi
+      done <<'EOF'
+      ${mountTable}
+      EOF
+    '';
+  };
 
 in
 {
@@ -51,11 +93,21 @@ in
   options.modules.services.samba.mount = {
     enable = mkEnableOption "SMB share mounting";
 
+    checkInterval = mkOption {
+      type = types.str;
+      default = "20s";
+      description = ''
+        How often to check each share's host. Reachable hosts get mounted,
+        unreachable ones get detached so the directory shows empty instead of
+        hanging.
+      '';
+    };
+
     mounts = mkOption {
       default = { };
       description = "SMB shares to mount, keyed by local mount point.";
       example = {
-        "/mnt/blockade".device = "//neo.netbird.cloud/blockade";
+        "/mnt/neo/blockade".device = "//neo.netbird.cloud/blockade";
       };
       type = types.attrsOf (
         types.submodule {
@@ -95,11 +147,6 @@ in
               default = false;
               description = "Mount read-only.";
             };
-            idleTimeout = mkOption {
-              type = types.str;
-              default = "10min";
-              description = "Unmount after this long without access.";
-            };
           };
         }
       );
@@ -109,36 +156,43 @@ in
   #============================================================================
   # CONFIG
   #============================================================================
-  config = mkIf cfg.enable {
+  config = mkIf (cfg.enable && cfg.mounts != { }) {
     fileSystems = mapAttrs (_: m: {
       inherit (m) device;
       fsType = "cifs";
       options = mountOptions m;
     }) cfg.mounts;
 
-    # While the server is unreachable every access (a file manager polls
-    # constantly) is a failed mount. Without this, systemd's start limit
-    # trips and disables the automount, leaving the empty local directory
-    # until someone runs reset-failed.
-    systemd.units = listToAttrs (
-      concatMap (
-        mountPoint:
-        map
-          (
-            type:
-            nameValuePair "${utils.escapeSystemdPath mountPoint}.${type}" {
-              overrideStrategy = "asDropin";
-              text = ''
-                [Unit]
-                StartLimitIntervalSec=0
-              '';
-            }
-          )
-          [
-            "mount"
-            "automount"
-          ]
-      ) (attrNames cfg.mounts)
-    );
+    # The watcher starts these repeatedly; never let systemd's start limit
+    # lock a mount out
+    systemd.units = mapAttrs' (
+      mp: _:
+      nameValuePair (unitOf mp) {
+        overrideStrategy = "asDropin";
+        text = ''
+          [Unit]
+          StartLimitIntervalSec=0
+        '';
+      }
+    ) cfg.mounts;
+
+    systemd.services.samba-mount-watch = {
+      description = "Mount reachable Samba shares, detach unreachable ones";
+      after = [ "network-online.target" ];
+      wants = [ "network-online.target" ];
+      serviceConfig = {
+        Type = "oneshot";
+        ExecStart = getExe watcher;
+      };
+    };
+
+    systemd.timers.samba-mount-watch = {
+      wantedBy = [ "timers.target" ];
+      timerConfig = {
+        OnBootSec = "15s";
+        OnUnitActiveSec = cfg.checkInterval;
+        AccuracySec = "1s";
+      };
+    };
   };
 }
