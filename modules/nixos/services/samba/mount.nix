@@ -39,12 +39,13 @@ let
       "noauto"
       "nofail"
       "_netdev"
-      "x-systemd.mount-timeout=10s"
+      "x-systemd.mount-timeout=30s"
 
-      # If the host disappears while mounted, fail calls instead of hanging,
-      # and notice a dead connection within ~10s
+      # If the host disappears while mounted, fail calls instead of hanging.
+      # A connection counts as dead after ~3 missed echoes (~30s); shorter
+      # drops healthy sessions when a slow uplink is saturated.
       "soft"
-      "echo_interval=5"
+      "echo_interval=10"
     ]
     ++ optional m.readOnly "ro";
 
@@ -60,21 +61,43 @@ let
       coreutils
       util-linux
       systemd
+      findutils
     ];
     text = ''
+      state=/run/samba-mount-watch
+      mkdir -p "$state"
+
+      # Checked once per host per run. A congested link can miss one check,
+      # so a mount is only detached after several misses in a row.
+      declare -A up=()
       reachable() {
-        timeout 3 bash -c "exec 3<>/dev/tcp/$1/445" 2>/dev/null
+        if [ -z "''${up[$1]:-}" ]; then
+          if timeout 5 bash -c "exec 3<>/dev/tcp/$1/445" 2>/dev/null; then
+            up[$1]=yes
+            rm -f "$state/$1.misses"
+          else
+            up[$1]=no
+            echo $(( $(cat "$state/$1.misses" 2>/dev/null || echo 0) + 1 )) > "$state/$1.misses"
+          fi
+        fi
+        [ "''${up[$1]}" = yes ]
       }
+      misses() { cat "$state/$1.misses" 2>/dev/null || echo 0; }
+
+      # Read the kernel mount table; never stat the share (hangs when stalled)
+      mounted() { findmnt -rn -t cifs -M "$1" >/dev/null 2>&1; }
 
       while read -r mp host unit; do
         [ -n "$mp" ] || continue
-        if mountpoint -q "$mp"; then
-          if ! reachable "$host"; then
-            echo "$host unreachable, detaching $mp"
+        if mounted "$mp"; then
+          if ! reachable "$host" && [ "$(misses "$host")" -ge ${toString cfg.missesBeforeDetach} ]; then
+            echo "$host unreachable for $(misses "$host") checks, detaching $mp"
             # Lazy + forced: returns immediately even if the share is hung
             umount -f -l "$mp" || true
             systemctl reset-failed "$unit" 2>/dev/null || true
           fi
+        elif [ "$(systemctl is-active "$unit" 2>/dev/null)" = activating ]; then
+          : # a mount attempt is still running
         elif reachable "$host"; then
           echo "$host reachable, mounting $mp"
           systemctl reset-failed "$unit" 2>/dev/null || true
@@ -101,6 +124,15 @@ in
         How often to check each share's host. Reachable hosts get mounted,
         unreachable ones get detached so the directory shows empty instead of
         hanging.
+      '';
+    };
+
+    missesBeforeDetach = mkOption {
+      type = types.int;
+      default = 3;
+      description = ''
+        Consecutive failed checks before a mounted share is detached. Keeps a
+        busy or flaky link from unmounting a share in the middle of a copy.
       '';
     };
 
