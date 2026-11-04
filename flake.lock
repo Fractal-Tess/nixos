@@ -149,11 +149,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1792771009,
-        "narHash": "sha256-iEoyxR2tD0oqyvDHJm7HOsXgXbh4/qqqigLybXgCOe8=",
+        "lastModified": 1793820947,
+        "narHash": "sha256-YaQRTNfR+kO7F15L/U1CqDy6FLzh/uS69b97BfVSSVY=",
         "ref": "refs/heads/main",
-        "rev": "def10c8130bf8bb49d4f96e1e4468022af147c61",
-        "revCount": 4,
+        "rev": "b594351b6d418cde6efa7cc38c1e5a030385672b",
+        "revCount": 5,
         "type": "git",
         "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
       },
