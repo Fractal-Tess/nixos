@@ -1,4 +1,9 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  utils,
+  ...
+}:
 
 with lib;
 
@@ -30,7 +35,7 @@ let
       "nofail"
       "_netdev"
       "x-systemd.idle-timeout=${m.idleTimeout}"
-      "x-systemd.mount-timeout=20s"
+      "x-systemd.mount-timeout=10s"
       "x-systemd.after=network-online.target"
       "x-systemd.after=netbird.service"
       "soft"
@@ -110,5 +115,30 @@ in
       fsType = "cifs";
       options = mountOptions m;
     }) cfg.mounts;
+
+    # While the server is unreachable every access (a file manager polls
+    # constantly) is a failed mount. Without this, systemd's start limit
+    # trips and disables the automount, leaving the empty local directory
+    # until someone runs reset-failed.
+    systemd.units = listToAttrs (
+      concatMap (
+        mountPoint:
+        map
+          (
+            type:
+            nameValuePair "${utils.escapeSystemdPath mountPoint}.${type}" {
+              overrideStrategy = "asDropin";
+              text = ''
+                [Unit]
+                StartLimitIntervalSec=0
+              '';
+            }
+          )
+          [
+            "mount"
+            "automount"
+          ]
+      ) (attrNames cfg.mounts)
+    );
   };
 }
