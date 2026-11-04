@@ -35,6 +35,12 @@ in
           vault = "/mnt/vault";
           home = "/home/${username}";
         };
+        # Ubuntu, not in the flake: share set up by
+        # scripts/network/oracle-samba/setup. It only shares; nothing is
+        # mounted on it, so the internet-facing box cannot reach the others.
+        oracle = {
+          home = "/home/ubuntu";
+        };
       };
       description = "Per host: share name -> local path it exports.";
     };

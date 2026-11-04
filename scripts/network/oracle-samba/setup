@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+# Install or update the Samba share on oracle (Ubuntu, not in the flake).
+# Idempotent. Run from a fleet host with the SOPS age key.
+set -euo pipefail
+here=$(cd "$(dirname "$0")" && pwd)
+repo=$(cd "$here/../../.." && pwd)
+host=oracle
+tmp=/tmp/oracle-samba-setup
+
+ssh "$host" "rm -rf $tmp && mkdir -m 0700 $tmp"
+scp -q "$here/smb.conf" "$here/users.map" "$here/remote.sh" "$host:$tmp/"
+# Password goes over stdin, never on a command line
+sops decrypt --extract '["password"]' "$repo/secrets/samba.json" |
+	ssh "$host" "sudo bash $tmp/remote.sh; rc=\$?; rm -rf $tmp; exit \$rc"
