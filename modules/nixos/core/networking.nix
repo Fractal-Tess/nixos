@@ -41,6 +41,9 @@ with lib;
         ];
       };
 
+      # Reach these oracle sites over NetBird instead of the public internet.
+      # Their admin panels only answer requests coming from the mesh.
+      hosts."100.91.0.4" = [ "pb-indecisive.fractal-tess.xyz" ];
     };
 
     services.netbird = {
