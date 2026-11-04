@@ -41,9 +41,11 @@ with lib;
         ];
       };
 
-      # Reach these oracle sites over NetBird instead of the public internet.
-      # Their admin panels only answer requests coming from the mesh.
-      hosts."100.91.0.4" = [ "pb-indecisive.fractal-tess.xyz" ];
+      # Admin-only hostnames on oracle, reached over NetBird: their apps only
+      # answer admin requests from the mesh. Never list a hostname a public
+      # site fetches from: browsers block public pages from calling private
+      # (100.64.0.0/10) addresses.
+      hosts."100.91.0.4" = [ "pb-indecisive-admin.fractal-tess.xyz" ];
     };
 
     services.netbird = {
