@@ -53,7 +53,7 @@
     };
 
     vite-plus-flake = {
-      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git";
+      url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/vite-plus-flake.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -108,17 +108,17 @@
     };
 
     chorus = {
-      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git";
+      url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/chorus.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     sentinel = {
-      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/sentinel.git";
+      url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/sentinel.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
     fader = {
-      url = "git+ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git";
+      url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/fader.git";
       inputs.nixpkgs.follows = "nixpkgs";
     };
   };

@@ -75,11 +75,11 @@
         "rev": "272596a15b244572aeb8058173e9ed66359a1b19",
         "revCount": 37,
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/chorus.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/chorus.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/chorus.git"
       }
     },
     "claude-code-flake": {
@@ -155,11 +155,11 @@
         "rev": "9e0989241aa577cb581694bf0b48c5f51f6f82ea",
         "revCount": 17,
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/fader.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/fader.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/fader.git"
       }
     },
     "fenix": {
@@ -678,11 +678,11 @@
         "rev": "d2f160876448d21ebfdbe1124ab4cf385170010f",
         "revCount": 8,
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/sentinel.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/sentinel.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/sentinel.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/sentinel.git"
       }
     },
     "shadoword": {
@@ -879,11 +879,11 @@
         "rev": "d09c6e0721fd23a68f9070fc3bc9279e87d17388",
         "revCount": 1,
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
       },
       "original": {
         "type": "git",
-        "url": "ssh://git@neo.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/vite-plus-flake.git"
       }
     }
   },

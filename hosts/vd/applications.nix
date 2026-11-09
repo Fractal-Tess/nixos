@@ -135,6 +135,8 @@
         };
       };
       systemd.tmpfiles.rules = [
+        "d /var/lib/gitadel/lfs 0750 gitadel gitadel -"
+        "d /var/lib/gitadel/registry 0750 gitadel gitadel -"
         "d /mnt/vault/services/gitadel 0750 gitadel gitadel -"
         "d /mnt/vault/services/gitadel-backups 0750 gitadel gitadel -"
       ];
