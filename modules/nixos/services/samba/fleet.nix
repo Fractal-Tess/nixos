@@ -28,11 +28,11 @@ in
       type = types.attrsOf (types.attrsOf types.str);
       default = {
         neo = {
-          blockade = "/mnt/blockade";
           home = "/home/${username}";
         };
         vd = {
           vault = "/mnt/vault";
+          blockade = "/mnt/blockade";
           home = "/home/${username}";
         };
         # Ubuntu, not in the flake: share set up by

@@ -204,16 +204,6 @@
 
   # Core system services
   services = {
-    # Reuses the data of the former Dokploy container. It runs as the media
-    # owner so it can keep writing next to the *arr-managed libraries.
-    jellyfin = {
-      enable = true;
-      openFirewall = true;
-      user = "fractal-tess";
-      group = "users";
-      dataDir = "/mnt/blockade/services/jellyfin/config";
-    };
-
     tlp = {
       enable = true;
       settings = {
@@ -227,19 +217,6 @@
       };
     };
   };
-
-  # The Jellyfin libraries were created inside the container, so the database
-  # still refers to the media by its container paths.
-  systemd.services.jellyfin.serviceConfig.BindPaths = [
-    "/mnt/blockade/services/jellyfin/movies:/media/movies"
-    "/mnt/blockade/services/jellyfin/tvshows:/media/tvshows"
-  ];
-
-  # Artwork and profile images are likewise stored under the container's
-  # data directory path.
-  systemd.tmpfiles.rules = [
-    "L /config - - - - /mnt/blockade/services/jellyfin/config"
-  ];
 
   #============================================================================
   # USER CONFIGURATION

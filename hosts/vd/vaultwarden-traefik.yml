@@ -16,5 +16,5 @@ http:
     vaultwarden:
       loadBalancer:
         servers:
-          - url: http://100.91.0.3:8222
+          - url: http://100.91.0.2:8222
         passHostHeader: true

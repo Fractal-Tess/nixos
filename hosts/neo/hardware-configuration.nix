@@ -35,11 +35,6 @@
     ];
   };
 
-  fileSystems."/mnt/blockade" = {
-    device = "/dev/disk/by-uuid/f0958b59-82df-4344-81c4-53b3c4bcc2bd";
-    fsType = "ext4";
-  };
-
   swapDevices = [ { device = "/dev/disk/by-uuid/63e3f965-8535-4f85-aaac-9af40cc510aa"; } ];
 
   # Enables DHCP on each ethernet and wireless interface. In case of scripted networking

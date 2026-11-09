@@ -30,12 +30,12 @@ Shares are listed once in `fleet.nix` (`modules.services.samba.fleet.hosts`):
 
 | Host | Shares |
 | --- | --- |
-| neo | `blockade` (/mnt/blockade), `home` (/home/fractal-tess) |
-| vd | `vault` (/mnt/vault), `home` (/home/fractal-tess) |
+| neo | `home` (/home/fractal-tess) |
+| vd | `vault` (/mnt/vault), `blockade` (/mnt/blockade), `home` (/home/fractal-tess) |
 
 Every host with `modules.services.samba.fleet.enable = true` exports its own
 entries and mounts every other host's at `/mnt/<host>/<share>`, e.g.
-`/mnt/neo/blockade` and `/mnt/vd/vault`. kiwi only mounts.
+`/mnt/vd/blockade` and `/mnt/vd/vault`. kiwi only mounts.
 
 ## Offline hosts
 

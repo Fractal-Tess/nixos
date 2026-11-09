@@ -22,6 +22,7 @@
     # Custom NixOS modules
     ../../modules/nixos/default.nix
     ./applications.nix
+    ./server.nix
 
     # System-wide packages
     ./packages.nix
