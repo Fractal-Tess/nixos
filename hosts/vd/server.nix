@@ -86,6 +86,22 @@ in
     };
 
   #============================================================================
+  # DOKPLOY REMOTE SERVER
+  #============================================================================
+
+  # Dokploy on Oracle deploys the "vd" project (RustFS, InfluxDB, cloudflared)
+  # here over SSH as this user. Its key lives in /home/dokploy/.ssh.
+  users.users.dokploy = {
+    isNormalUser = true;
+    description = "Dokploy service user";
+    uid = 1002;
+    home = "/home/dokploy";
+    createHome = true;
+    shell = pkgs.bash;
+    extraGroups = [ "docker" ];
+  };
+
+  #============================================================================
   # IMMICH
   #============================================================================
 
