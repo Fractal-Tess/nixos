@@ -81,7 +81,7 @@
     {
       programs.gitadel-cli = {
         enable = lib.mkDefault true;
-        serverUrl = lib.mkDefault "http://neo.netbird.cloud:3030";
+        serverUrl = lib.mkDefault "http://vd.netbird.cloud:3030";
         tokenFile = config.sops.secrets.gitadel_api_token.path;
       };
       sops.secrets.gitadel_api_token = lib.mkIf config.modules.services.sops.enable {

@@ -12,6 +12,7 @@
     inputs.asterveil.nixosModules.default
     inputs.shadoword.nixosModules.default
     inputs.scorch.nixosModules.default
+    inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.chorus.nixosModules.default
     inputs.sentinel.nixosModules.default
@@ -105,11 +106,13 @@
       };
     }
 
-    # Gitadel
+    # Gitadel (moved from neo). Database, repositories and SSH host key live in
+    # /var/lib/gitadel; LFS and registry objects live on the "Vault" storage
+    # target at /mnt/vault/services/gitadel (set in the database, not here).
     {
       programs.gitadel-cli = {
         enable = lib.mkDefault true;
-        serverUrl = lib.mkDefault "http://neo.netbird.cloud:3030";
+        serverUrl = lib.mkDefault "http://vd.netbird.cloud:3030";
         tokenFile = config.sops.secrets.gitadel_api_token.path;
       };
       sops.secrets.gitadel_api_token = lib.mkIf config.modules.services.sops.enable {
@@ -119,6 +122,34 @@
         sopsFile = ../../secrets/gitadel.json;
         format = "json";
       };
+      services.gitadel = {
+        enable = true;
+        publicUrl = "http://vd.netbird.cloud:3030";
+        http = {
+          address = "0.0.0.0";
+          port = 3030;
+        };
+        ssh = {
+          address = "0.0.0.0";
+          port = 2222;
+        };
+      };
+      systemd.tmpfiles.rules = [
+        "d /mnt/vault/services/gitadel 0750 gitadel gitadel -"
+        "d /mnt/vault/services/gitadel-backups 0750 gitadel gitadel -"
+      ];
+      # ProtectSystem=strict requires explicit write access outside /var/lib/gitadel.
+      systemd.services.gitadel = {
+        unitConfig.RequiresMountsFor = [ "/mnt/vault" ];
+        serviceConfig.ReadWritePaths = [
+          "/mnt/vault/services/gitadel"
+          "/mnt/vault/services/gitadel-backups"
+        ];
+      };
+      networking.firewall.interfaces.wt0.allowedTCPPorts = [
+        3030
+        2222
+      ];
     }
 
     # Chorus
