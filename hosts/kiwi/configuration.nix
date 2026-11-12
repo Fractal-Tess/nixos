@@ -143,6 +143,15 @@
   };
   services.blueman.enable = true;
 
+  # The RTL8821CE combo card shares one antenna between Wi-Fi and Bluetooth, and
+  # the Wi-Fi driver (rtw88) arbitrates it. Power saving on either half makes the
+  # Bluetooth side go deaf mid-connection (links time out, scans come back empty).
+  boot.extraModprobeConfig = ''
+    options btusb enable_autosuspend=0
+    options rtw88_core disable_lps_deep=y
+    options rtw88_pci disable_aspm=y
+  '';
+
   # Unblock bluetooth rfkill soft-block on boot (systemd-rfkill restores off state otherwise)
   systemd.services.bluetooth-rfkill-unblock = {
     description = "Unblock bluetooth rfkill on boot";
@@ -476,6 +485,9 @@
         CPU_SCALING_MAX_FREQ_ON_AC = 3700000; # 3.7GHz max on AC (-200MHz)
         CPU_SCALING_MIN_FREQ_ON_BAT = 1400000; # ~1.4GHz minimum on battery
         CPU_SCALING_MAX_FREQ_ON_BAT = 3200000; # 3.2GHz max on battery for efficiency (-200MHz)
+
+        # Keep the Bluetooth chip out of USB autosuspend (it drops links when suspended)
+        USB_EXCLUDE_BTUSB = 1;
       };
     };
 

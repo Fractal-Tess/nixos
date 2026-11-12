@@ -346,6 +346,7 @@
 
     # bottles # Wine wrapper -- temporarily disabled: dep patool test failures on Python 3.14
     # heroic # Game launcher -- broken: electron-39 patch failure (upstream nixpkgs bug)
+    polymc # Minecraft launcher
     mangohud # FPS counter overlay
     protonup-qt # Proton version manager
     # (lutris.override { extraPkgs = pkgs: [ ]; }) # Game manager
