@@ -42,9 +42,10 @@ final: prev: {
   # Override Viber to use the live CDN and the compatible libxml2. Nixpkgs uses
   # an archive.org snapshot that is unreliable for this large download.
   viber = prev.viber.overrideAttrs (old: {
+    version = "29.4.0.7";
     src = final.fetchurl {
       url = "https://download.cdn.viber.com/cdn/desktop/Linux/viber.deb";
-      hash = "sha256-lhU03Ay5IABux66BCLDhugmkdu7x4TtLNwp5zVLdIPM=";
+      hash = "sha256-NLPBj11EGpgTBmgR0DfpceEgfUOcJGdmq9KOGFp+zTc=";
     };
 
     nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];

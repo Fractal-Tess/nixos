@@ -4,6 +4,9 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
 
+    # Retain the deployed Waybar and Gitadel builds while updating the rest of the system.
+    previous-nixpkgs.url = "github:NixOS/nixpkgs/1c89083e451e891152365b799595cf7790a43325";
+
     globalprotect-openconnect.url = "github:yuezk/GlobalProtect-openconnect";
 
     sops-nix = {
@@ -88,8 +91,9 @@
     };
 
     gitadel = {
-      url = "github:Fractal-Tess/gitadel";
-      inputs.nixpkgs.follows = "nixpkgs";
+      # The default branch is older than the migrations already applied to production.
+      url = "github:Fractal-Tess/gitadel/234c994de45345a3a6187031527f58c02d05f4a8";
+      inputs.nixpkgs.follows = "previous-nixpkgs";
     };
 
     vencord-flake = {

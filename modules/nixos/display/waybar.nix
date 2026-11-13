@@ -1,5 +1,6 @@
 {
   config,
+  inputs,
   lib,
   pkgs,
   username,
@@ -11,13 +12,16 @@ with lib;
 let
   cfg = config.modules.display.waybar;
   hyprlandEnabled = config.modules.display.hyprland.enable;
+  waybarPkgs = import inputs.previous-nixpkgs {
+    system = pkgs.stdenv.hostPlatform.system;
+  };
   waybarPackage =
     if hyprlandEnabled then
-      pkgs.waybar.overrideAttrs (oldAttrs: {
+      waybarPkgs.waybar.overrideAttrs (oldAttrs: {
         mesonFlags = oldAttrs.mesonFlags ++ [ "-Dexperimental=true" ];
       })
     else
-      pkgs.waybar;
+      waybarPkgs.waybar;
 in
 
 {

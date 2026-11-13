@@ -3,6 +3,7 @@
   hostname,
   inputs,
   lib,
+  pkgs,
   username,
   ...
 }:
@@ -42,6 +43,10 @@ in
   config = mkIf cfg.enable {
     services.fader = {
       enable = true;
+      package = inputs.fader.packages.${pkgs.stdenv.hostPlatform.system}.default.overrideAttrs (old: {
+        nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ pkgs.pkg-config ];
+        buildInputs = (old.buildInputs or [ ]) ++ [ pkgs.aws-lc ];
+      });
       user = username;
       port = 7700;
       # Mesh only; every device on it is ours, so no token.
