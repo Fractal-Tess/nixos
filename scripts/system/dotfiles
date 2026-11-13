@@ -51,9 +51,6 @@ function resolve_host_configs
         case kiwi
             set -g waybar_config config-kiwi.jsonc
             set -g monitor_config monitors-kiwi.lua
-        case neo
-            set -g waybar_config config-neo.jsonc
-            set -g monitor_config monitors-neo.lua
         case '*'
             set -g waybar_config config-vd.jsonc
             set -g monitor_config monitors-vd.lua
@@ -69,7 +66,6 @@ function clean_stale_hyprland_files
         $target_home/.config/hypr/conf.d/monitors.conf \
         $target_home/.config/hypr/conf.d/monitors.lua \
         $target_home/.config/hypr/conf.d/monitors-kiwi.conf \
-        $target_home/.config/hypr/conf.d/monitors-neo.conf \
         $target_home/.config/hypr/conf.d/monitors-vd.conf \
         $target_home/.config/RofiScripts/Animations/Horizontal/hypranimations.conf \
         $target_home/.config/RofiScripts/Animations/Vertical/hypranimations.conf \

@@ -30,7 +30,6 @@ Shares are listed once in `fleet.nix` (`modules.services.samba.fleet.hosts`):
 
 | Host | Shares |
 | --- | --- |
-| neo | `home` (/home/fractal-tess) |
 | vd | `vault` (/mnt/vault), `blockade` (/mnt/blockade), `home` (/home/fractal-tess) |
 
 Every host with `modules.services.samba.fleet.enable = true` exports its own

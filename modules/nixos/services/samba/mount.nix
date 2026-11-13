@@ -11,7 +11,7 @@ with lib;
 let
   cfg = config.modules.services.samba.mount;
 
-  # "//neo.netbird.cloud/blockade" -> "neo.netbird.cloud"
+  # "//vd.netbird.cloud/blockade" -> "vd.netbird.cloud"
   hostOf = device: head (filter (s: s != "") (splitString "/" device));
 
   unitOf = mountPoint: "${utils.escapeSystemdPath mountPoint}.mount";
@@ -140,14 +140,14 @@ in
       default = { };
       description = "SMB shares to mount, keyed by local mount point.";
       example = {
-        "/mnt/neo/blockade".device = "//neo.netbird.cloud/blockade";
+        "/mnt/vd/blockade".device = "//vd.netbird.cloud/blockade";
       };
       type = types.attrsOf (
         types.submodule {
           options = {
             device = mkOption {
               type = types.str;
-              description = "UNC path of the share, e.g. //neo.netbird.cloud/blockade.";
+              description = "UNC path of the share, e.g. //vd.netbird.cloud/blockade.";
             };
             credentialsFile = mkOption {
               type = types.str;

@@ -4,8 +4,7 @@
   ...
 }:
 
-# Home-server role, moved here from neo on 2026-11-09 together with the
-# "blockade" USB disk. Media, photo and library data live on blockade; small
+# Home-server role, with the "blockade" USB disk. Media, photo and library data live on blockade; small
 # service state lives under /var/lib.
 let
   blockade = "/mnt/blockade";

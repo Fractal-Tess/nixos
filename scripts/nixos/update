@@ -26,7 +26,7 @@ if set -q NIXOS_UPDATE_HOST
 end
 set -l OPENROUTER_KEY_FILE "$HOME/.config/secrets/openrouter_api_key"
 set -l OPENROUTER_MODEL openai/gpt-5-nano
-set -l FLEET_HOSTS vd kiwi neo
+set -l FLEET_HOSTS vd kiwi
 set -l DEPLOYED_REVISION_FILE "$HOME/.local/state/nixos-update/deployed-revision"
 # Global so helper functions can access it. The script runs in its own process.
 # Avoid PATH-injected sudo shims that can silently skip nixos-rebuild switch.
@@ -99,7 +99,7 @@ if set -q _flag_help
     echo "Options:"
     echo "  --hosts all             This host, then every other fleet host (default)"
     echo "  --hosts local           Only this host"
-    echo "  --hosts kiwi,neo        This host, then only the listed hosts"
+    echo "  --hosts kiwi            This host, then only the listed hosts"
     echo "  This host is always rebuilt first: a commit is pushed only after it builds."
     echo ""
     echo "Environment:"
@@ -147,7 +147,7 @@ if not test -d "$NIXOS_DIR"
 end
 
 set NIXOS_DIR (realpath -e "$NIXOS_DIR")
-if not contains -- "$TARGET_HOST" kiwi neo vd
+if not contains -- "$TARGET_HOST" kiwi vd
     _log_error "Unsupported NixOS target: $TARGET_HOST"
     exit 1
 end
@@ -455,7 +455,7 @@ echo ""
 printf "$DIM─────────────────────────────────────────────────────────────$NC\n"
 
 # Fetch flake inputs as the user first. Private git+ssh inputs (Gitadel on
-# neo) need the user's SSH key and known_hosts; root has neither, but finds
+# vd) need the user's SSH key and known_hosts; root has neither, but finds
 # the locked sources already in the store afterwards.
 nix flake archive "path:$NIXOS_DIR" >/dev/null
 or _log_warning "Could not prefetch flake inputs as $USER; the rebuild will fetch them as root"

@@ -222,11 +222,8 @@
         guiUser = "vgfractal";
         guiPasswordFile = "/home/fractal-tess/.config/secrets/syncthing/pass";
         claude = {
-          devices = [
-            "vd"
-            "neo"
-          ];
-          # Refresh order across hosts: neo, then vd, then kiwi.
+          devices = [ "vd" ];
+          # Refresh order across hosts: vd, then kiwi.
           refreshBeforeMinutes = 60;
           repairAfterMinutes = 6;
         };
@@ -237,11 +234,6 @@
             "vd" = {
               id = "EMPKFGK-UVXVPWQ-U2XOBDT-GIBZPXG-CTFEFFC-AV3OFNI-ZOCPY3M-UHOSCQ6";
               addresses = [ "tcp://vd.netbird.cloud" ];
-              untrusted = false;
-            };
-            "neo" = {
-              id = "S2Y37JJ-ENKW65X-NTY3XIS-OEYF4PG-VACBQUK-N3CZVCF-MEK5QH3-PTNJUAR";
-              addresses = [ "tcp://neo.netbird.cloud" ];
               untrusted = false;
             };
           };
@@ -256,19 +248,13 @@
               path = "/home/fractal-tess/.config/vivaldi/Default/Sessions";
               id = "vivaldi-default";
               label = "Vivaldi Default Sessions";
-              devices = [
-                "vd"
-                "neo"
-              ];
+              devices = [ "vd" ];
             };
             "vivaldi-profile1" = {
               path = "/home/fractal-tess/.config/vivaldi/Profile 1/Sessions";
               id = "vivaldi-profile1";
               label = "Vivaldi Profile 1 Sessions";
-              devices = [
-                "vd"
-                "neo"
-              ];
+              devices = [ "vd" ];
             };
           };
         };

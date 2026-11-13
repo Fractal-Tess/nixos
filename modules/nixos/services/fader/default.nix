@@ -28,7 +28,6 @@ in
       type = types.listOf types.str;
       default = [
         "vd"
-        "neo"
         "kiwi"
       ];
       description = "Fleet hosts running fader. Each one lists all the others as peers.";

@@ -13,7 +13,6 @@ This document contains essential information for agentic coding assistants worki
 
 ### Hostnames
 - `vd` - Desktop
-- `neo` - Laptop
 - `kiwi` - Laptop
 
 ### Development Shells

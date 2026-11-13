@@ -18,7 +18,6 @@ A modular NixOS and Home Manager configuration for three systems, with shared de
 | Host | Type |
 | --- | --- |
 | `vd` | Desktop |
-| `neo` | Laptop |
 | `kiwi` | Laptop |
 
 ## Repository Layout
@@ -40,7 +39,7 @@ Build a host configuration from the repository root:
 sudo nixos-rebuild build --flake .#<hostname> --impure
 ```
 
-Replace `<hostname>` with `vd`, `neo`, or `kiwi`.
+Replace `<hostname>` with `vd` or `kiwi`.
 
 Apply the local host configuration with the repository helper:
 
@@ -56,8 +55,8 @@ Third-party packaging repos use `-flake` (`claude-code-flake`, `open-design-flak
 Versions come from the input revision and `flake.lock`, not a separate version string.
 
 Each host's `applications.nix` imports the NixOS application modules it needs
-and configures its projects: [`vd`](hosts/vd/applications.nix),
-[`neo`](hosts/neo/applications.nix), and [`kiwi`](hosts/kiwi/applications.nix).
+and configures its projects: [`vd`](hosts/vd/applications.nix) and
+[`kiwi`](hosts/kiwi/applications.nix).
 Settings are grouped by application in `config = lib.mkMerge [ ... ];`.
 Keep each application's program, system/user services, SOPS declarations,
 firewall rules, and directories together in its block.

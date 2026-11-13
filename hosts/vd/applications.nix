@@ -106,7 +106,7 @@
       };
     }
 
-    # Gitadel (moved from neo). Database, repositories and SSH host key live in
+    # Gitadel. Database, repositories and SSH host key live in
     # /var/lib/gitadel; LFS and registry objects live on the "Vault" storage
     # target at /mnt/vault/services/gitadel (set in the database, not here).
     {
@@ -174,7 +174,7 @@
       networking.firewall.interfaces.wt0.allowedTCPPorts = [ 8000 ];
     }
 
-    # Fader: mesh of vd, neo and kiwi; each controls the others
+    # Fader: mesh of vd and kiwi; each controls the other
     {
       modules.services.fader.enable = true;
     }

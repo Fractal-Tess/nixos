@@ -27,9 +27,6 @@ in
     hosts = mkOption {
       type = types.attrsOf (types.attrsOf types.str);
       default = {
-        neo = {
-          home = "/home/${username}";
-        };
         vd = {
           vault = "/mnt/vault";
           blockade = "/mnt/blockade";

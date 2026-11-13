@@ -181,10 +181,6 @@
           hostname = "vd";
           username = "fractal-tess";
         };
-        neo = mkHost {
-          hostname = "neo";
-          username = "fractal-tess";
-        };
         kiwi = mkHost {
           hostname = "kiwi";
           username = "fractal-tess";

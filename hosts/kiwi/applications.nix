@@ -20,7 +20,7 @@
   ];
 
   config = lib.mkMerge [
-    # Fader: mesh of vd, neo and kiwi; each controls the others
+    # Fader: mesh of vd and kiwi; each controls the other
     {
       modules.services.fader.enable = true;
     }
