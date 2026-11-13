@@ -92,7 +92,7 @@
 
     gitadel = {
       # The default branch is older than the migrations already applied to production.
-      url = "github:Fractal-Tess/gitadel/234c994de45345a3a6187031527f58c02d05f4a8";
+      url = "github:Fractal-Tess/gitadel/4188974b4792d808d815a885f17ff4a122deb004";
       inputs.nixpkgs.follows = "previous-nixpkgs";
     };
 
