@@ -162,6 +162,12 @@
         "sbc_xq"
         "aac"
       ];
+      # No HFP/HSP gateway: the speaker hangs mid HFP handshake (right after
+      # AT+CIND) and drops the link before A2DP comes up. Music-only roles.
+      "bluez5.roles" = [
+        "a2dp_sink"
+        "a2dp_source"
+      ];
     };
   };
 
