@@ -136,6 +136,10 @@
   hardware.bluetooth.enable = true;
   hardware.bluetooth.powerOnBoot = true;
   hardware.bluetooth.settings = {
+    # Skip GATT client setup on incoming connections. The ULT FIELD 1
+    # stopped replying after Client Supported Features was written; an
+    # incoming reconnect with this disabled completed A2DP setup.
+    GATT.Client = false;
     Policy = {
       AutoEnable = true;
       AvrcpAbsoluteVolume = true;
