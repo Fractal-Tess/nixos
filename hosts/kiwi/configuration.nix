@@ -152,8 +152,8 @@
     options rtw88_pci disable_aspm=y
   '';
 
-  # Only advertise standard A2DP codecs. With PipeWire's full list (opus_05,
-  # faststream, aptx_ll, ...) the Sony ULT Field 1 hangs while probing kiwi's
+  # Only advertise standard A2DP codecs. With PipeWire's full list (LDAC, aptX,
+  # opus_05, faststream, ...) the Sony ULT Field 1 hangs while probing kiwi's
   # endpoints when it reconnects on its own, and the link times out.
   services.pipewire.wireplumber.extraConfig."12-bluetooth-codecs" = {
     "monitor.bluez.properties" = {
@@ -161,9 +161,6 @@
         "sbc"
         "sbc_xq"
         "aac"
-        "ldac"
-        "aptx"
-        "aptx_hd"
       ];
     };
   };
