@@ -22,6 +22,7 @@ in
     ./ssh.nix
     ./z-ai.nix
     ./minimax.nix
+    ./posthog.nix
     ./syncthing.nix
     ./samba.nix
   ];
