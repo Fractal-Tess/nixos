@@ -149,6 +149,7 @@ in
 
     # Testing
     appimage-run # AppImage execution support
+    opencode # OpenCode terminal coding assistant
     cursor-cli # Command-line interface for Cursor AI editor
     gogcli # Google Workspace CLI for Gmail, Calendar, Drive, Contacts, Sheets, and Docs
 

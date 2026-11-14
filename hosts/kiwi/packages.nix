@@ -172,6 +172,7 @@
 
     # AI assistants
     cliproxyapi # Proxy for using AI CLI subscriptions as APIs
+    opencode # OpenCode terminal coding assistant
     cursor-cli # Command-line interface for Cursor AI editor
 
     # Testing/Automation
