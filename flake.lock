@@ -236,8 +236,8 @@
       },
       "original": {
         "owner": "Fractal-Tess",
+        "ref": "main",
         "repo": "gitadel",
-        "rev": "654bc008388b440a33de00d4d8317c87940d3083",
         "type": "github"
       }
     },
