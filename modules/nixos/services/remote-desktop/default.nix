@@ -155,9 +155,10 @@ in
       # Avahi/mDNS for service discovery (optional but recommended)
       services.avahi = mkIf cfg.sunshine.avahi {
         enable = mkDefault true;
-        publish = {
-          enable = mkDefault true;
-          userServices = mkDefault true;
+        settings.publish = {
+          disable-publishing = mkDefault false;
+          disable-user-service-publishing = mkDefault false;
+          publish-addresses = mkDefault true;
         };
       };
 

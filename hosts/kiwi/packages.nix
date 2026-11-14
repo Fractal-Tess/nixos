@@ -395,8 +395,7 @@
     gutenprint # High-quality printer drivers
 
     # Scanner support
-    sane-frontends # Scanner utilities
-    xsane # GUI scanner frontend
+    sane-backends # Scanner utilities, including scanimage
 
     # User printing utilities
     system-config-printer # GUI printer management

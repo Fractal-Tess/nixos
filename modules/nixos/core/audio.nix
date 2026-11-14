@@ -21,6 +21,7 @@ with lib;
         playerctl
         pavucontrol
         wev
+        pipewire.jack # Run JACK applications with pw-jack
       ])
     ];
 
@@ -34,8 +35,6 @@ with lib;
       };
       # Enable PulseAudio compatibility layer
       pulse.enable = mkDefault true;
-      # Enable JACK compatibility layer for professional audio
-      jack.enable = mkDefault true;
 
       # Disable session suspend to prevent audio ramp-up on playback start
       wireplumber.extraConfig."10-disable-suspend" = {

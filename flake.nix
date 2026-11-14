@@ -155,6 +155,12 @@
                   );
                 })
                 polymc.overlay
+                (_final: prev: {
+                  # PolyMC's default still reads the deprecated stdenv.isLinux alias.
+                  polymc = prev.polymc.override {
+                    gamemodeSupport = prev.stdenv.hostPlatform.isLinux;
+                  };
+                })
                 (import ./overlays/cursor.nix)
                 (import ./overlays/terax.nix)
                 (import ./overlays/tws.nix)

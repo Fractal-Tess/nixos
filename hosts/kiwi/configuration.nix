@@ -452,10 +452,10 @@
       openFirewall = true;
 
       # Publish CUPS printers on the network
-      publish = {
-        enable = true;
-        userServices = true;
-        addresses = true;
+      settings.publish = {
+        disable-publishing = false;
+        disable-user-service-publishing = false;
+        publish-addresses = true;
       };
     };
 
