@@ -44,10 +44,25 @@ in
     services.hypridle.enable = true;
     # The unit's PATH is store-only, so the listeners in hypridle.conf could
     # not find fish, jq or brightnessctl and silently never ran.
-    systemd.user.services.hypridle.path = [
-      "/run/current-system/sw"
-      "/etc/profiles/per-user/${username}"
-    ];
+    # The upstream module also puts hyprlock on this PATH even when it is
+    # disabled, so idle still locked the desktop. Force it out there.
+    systemd.user.services.hypridle.path =
+      let
+        base = [
+          "/run/current-system/sw"
+          "/etc/profiles/per-user/${username}"
+        ];
+      in
+      if cfg.lock.enable then
+        base
+      else
+        mkForce (
+          [
+            config.programs.hyprland.package
+            pkgs.procps
+          ]
+          ++ base
+        );
 
     # Enable XDG Desktop Portal for sandboxed/Wayland apps
     xdg.portal = {
