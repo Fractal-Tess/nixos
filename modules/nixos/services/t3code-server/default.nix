@@ -107,6 +107,16 @@ in
       # constant; the build fails if none does.
       package = upstreamPackage.overrideAttrs (old: {
         postInstall = (old.postInstall or "") + ''
+          # The extracted server bypasses the AppImage runtime's library paths.
+          # Make the bundled speech Vulkan backend and host GPU drivers visible.
+          wrapProgram "$out/bin/t3" \
+            --prefix LD_LIBRARY_PATH : "${
+              lib.makeLibraryPath [
+                pkgs.vulkan-loader
+                pkgs.stdenv.cc.cc.lib
+              ]
+            }:/run/opengl-driver/lib"
+
           ttlFiles=$(grep -rlF 'const DEFAULT_SESSION_TTL = days(30);' \
             "$out/lib/t3code/apps/server/dist" || true)
           if [ -z "$ttlFiles" ]; then
