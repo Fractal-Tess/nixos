@@ -108,12 +108,31 @@ in
       package = upstreamPackage.overrideAttrs (old: {
         postInstall = (old.postInstall or "") + ''
           # The extracted server bypasses the AppImage runtime's library paths.
-          # Make the bundled speech Vulkan backend and host GPU drivers visible.
+          # Supply speech GPU and managed Chromium runtime dependencies.
           wrapProgram "$out/bin/t3" \
             --prefix LD_LIBRARY_PATH : "${
               lib.makeLibraryPath [
                 pkgs.vulkan-loader
                 pkgs.stdenv.cc.cc.lib
+                pkgs.glib
+                pkgs.nspr
+                pkgs.nss
+                pkgs.atk
+                pkgs.at-spi2-atk
+                pkgs.at-spi2-core
+                pkgs.dbus
+                pkgs.libX11
+                pkgs.libXcomposite
+                pkgs.libXdamage
+                pkgs.libXext
+                pkgs.libXfixes
+                pkgs.libXrandr
+                pkgs.libgbm
+                pkgs.expat
+                pkgs.libxcb
+                pkgs.libxkbcommon
+                pkgs.systemd
+                pkgs.alsa-lib
               ]
             }:/run/opengl-driver/lib"
 
