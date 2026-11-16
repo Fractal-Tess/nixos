@@ -28,6 +28,8 @@
     {
       services.oxevu = {
         enable = true;
+        bind = "127.0.0.1:8096";
+        origin = "http://localhost:8096";
         user = username;
         group = "users";
         # Retain accounts, sessions and existing library state during takeover.

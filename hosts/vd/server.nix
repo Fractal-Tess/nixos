@@ -48,24 +48,33 @@ in
           ];
         }
       );
-      sonarr = needsBlockade // {
-        serviceConfig.BindPaths = [
-          "${services}/jellyfin/tvshows:/tv"
-          "${services}/qbittorrent/downloads:/downloads"
-        ];
-      };
-      radarr = needsBlockade // {
-        serviceConfig.BindPaths = [
-          "${services}/jellyfin/movies:/movies"
-          "${services}/qbittorrent/downloads:/downloads"
-        ];
-      };
-      prowlarr = needsBlockade;
-      qbittorrent = needsBlockade // {
-        serviceConfig.BindPaths = [
-          "${services}/qbittorrent/downloads:/downloads"
-        ];
-      };
+      sonarr = lib.mkIf config.services.sonarr.enable (
+        needsBlockade
+        // {
+          serviceConfig.BindPaths = [
+            "${services}/jellyfin/tvshows:/tv"
+            "${services}/qbittorrent/downloads:/downloads"
+          ];
+        }
+      );
+      radarr = lib.mkIf config.services.radarr.enable (
+        needsBlockade
+        // {
+          serviceConfig.BindPaths = [
+            "${services}/jellyfin/movies:/movies"
+            "${services}/qbittorrent/downloads:/downloads"
+          ];
+        }
+      );
+      prowlarr = lib.mkIf config.services.prowlarr.enable needsBlockade;
+      qbittorrent = lib.mkIf config.services.qbittorrent.enable (
+        needsBlockade
+        // {
+          serviceConfig.BindPaths = [
+            "${services}/qbittorrent/downloads:/downloads"
+          ];
+        }
+      );
       vaultwarden = needsBlockade;
 
       # Generate once on the host; never put the admin token in the Nix store.
@@ -140,26 +149,26 @@ in
     dataDir = "${services}/jellyfin/config";
   };
   services.sonarr = {
-    enable = true;
+    enable = false;
     openFirewall = true;
     user = username;
     group = "users";
     dataDir = "${services}/sonarr/config";
   };
   services.radarr = {
-    enable = true;
+    enable = false;
     openFirewall = true;
     user = username;
     group = "users";
     dataDir = "${services}/radarr/config";
   };
   services.prowlarr = {
-    enable = true;
+    enable = false;
     openFirewall = true;
     dataDir = "${services}/prowlarr/config";
   };
   services.qbittorrent = {
-    enable = true;
+    enable = false;
     openFirewall = true;
     user = username;
     group = "users";
@@ -168,7 +177,7 @@ in
     torrentingPort = 6881;
   };
   services.seerr = {
-    enable = true;
+    enable = false;
     openFirewall = true;
   };
 
