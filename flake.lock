@@ -427,6 +427,22 @@
     },
     "nixpkgs_5": {
       "locked": {
+        "lastModified": 1794386569,
+        "narHash": "sha256-x9sADJvoVG0L6RejZB+/BB4YiGZFBZrfTlhF4uBq1tQ=",
+        "owner": "NixOS",
+        "repo": "nixpkgs",
+        "rev": "d4f25a3e562008648d45bcf2d70bcc7422cad84e",
+        "type": "github"
+      },
+      "original": {
+        "owner": "NixOS",
+        "ref": "nixos-unstable",
+        "repo": "nixpkgs",
+        "type": "github"
+      }
+    },
+    "nixpkgs_6": {
+      "locked": {
         "lastModified": 1789286504,
         "narHash": "sha256-eiEK7cKZORNEvX0GeF3RtNEF/JXhgf2RqSp3230q13E=",
         "owner": "NixOS",
@@ -475,6 +491,24 @@
         "owner": "Fractal-Tess",
         "repo": "open-design-flake",
         "type": "github"
+      }
+    },
+    "oxevu": {
+      "inputs": {
+        "nixpkgs": "nixpkgs_5"
+      },
+      "locked": {
+        "lastModified": 1794870104,
+        "narHash": "sha256-x3XuVIKEJiebEOAIGCDSAemlft1eoFFwxO6uYdorb1U=",
+        "ref": "refs/heads/main",
+        "rev": "0fba86c4a5282d870442ebf8ff55c31fa85e1d98",
+        "revCount": 44,
+        "type": "git",
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/oxevu.git"
+      },
+      "original": {
+        "type": "git",
+        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/oxevu.git"
       }
     },
     "polymc": {
@@ -538,7 +572,7 @@
     },
     "responsively-flake": {
       "inputs": {
-        "nixpkgs": "nixpkgs_5",
+        "nixpkgs": "nixpkgs_6",
         "source": "source_2"
       },
       "locked": {
@@ -572,6 +606,7 @@
         "nix4nvchad": "nix4nvchad",
         "nixpkgs": "nixpkgs_3",
         "open-design-flake": "open-design-flake",
+        "oxevu": "oxevu",
         "polymc": "polymc",
         "previous-nixpkgs": "previous-nixpkgs",
         "rea-flake": "rea-flake",

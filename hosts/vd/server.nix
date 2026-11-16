@@ -1,4 +1,6 @@
 {
+  config,
+  lib,
   pkgs,
   username,
   ...
@@ -35,14 +37,17 @@ in
     {
       immich-server = needsBlockade;
       immich-machine-learning = needsBlockade;
-      jellyfin = needsBlockade // {
-        # The libraries were created inside a container, so the database
-        # still refers to the media by its container paths.
-        serviceConfig.BindPaths = [
-          "${services}/jellyfin/movies:/media/movies"
-          "${services}/jellyfin/tvshows:/media/tvshows"
-        ];
-      };
+      jellyfin = lib.mkIf config.services.jellyfin.enable (
+        needsBlockade
+        // {
+          # The libraries were created inside a container, so the database
+          # still refers to the media by its container paths.
+          serviceConfig.BindPaths = [
+            "${services}/jellyfin/movies:/media/movies"
+            "${services}/jellyfin/tvshows:/media/tvshows"
+          ];
+        }
+      );
       sonarr = needsBlockade // {
         serviceConfig.BindPaths = [
           "${services}/jellyfin/tvshows:/tv"
@@ -126,7 +131,9 @@ in
   # Jellyfin, Sonarr, Radarr and qBittorrent run as the media owner so imports
   # and hardlinks keep working across the libraries and the downloads folder.
   services.jellyfin = {
-    enable = true;
+    # Oxevu now serves these same read-only media roots. Retain Jellyfin's
+    # state and configuration so enabling it again remains a rollback option.
+    enable = false;
     openFirewall = true;
     user = username;
     group = "users";

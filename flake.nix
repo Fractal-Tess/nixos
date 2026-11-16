@@ -115,6 +115,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    oxevu = {
+      url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/oxevu.git";
+    };
+
     sentinel = {
       url = "git+ssh://git@vd.netbird.cloud:2222/fractal-tess/sentinel.git";
       inputs.nixpkgs.follows = "nixpkgs";

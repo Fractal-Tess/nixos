@@ -15,6 +15,7 @@
     inputs.gitadel.nixosModules.default
     inputs.gitadel.nixosModules.gitadel-cli
     inputs.chorus.nixosModules.default
+    inputs.oxevu.nixosModules.default
     inputs.sentinel.nixosModules.default
     inputs.responsively-flake.nixosModules.default
     inputs.agent-browser-flake.nixosModules.default
@@ -24,6 +25,20 @@
   ];
 
   config = lib.mkMerge [
+    {
+      services.oxevu = {
+        enable = true;
+        user = username;
+        group = "users";
+        # Retain accounts, sessions and existing library state during takeover.
+        dataDir = "/home/${username}/.local/share/oxevu-dev/server";
+        mediaDirectories = [
+          "/mnt/blockade/services/jellyfin/movies"
+          "/mnt/blockade/services/jellyfin/tvshows"
+          "/home/${username}/.local/share/oxevu-dev/media"
+        ];
+      };
+    }
     # Sentinel — C920 camera monitoring, available through NetBird.
     {
       services.sentinel = {
