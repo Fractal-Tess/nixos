@@ -28,18 +28,25 @@
     {
       services.oxevu = {
         enable = true;
-        bind = "127.0.0.1:8096";
-        origin = "http://localhost:8096";
+        bind = "0.0.0.0:8096";
+        origin = "http://vd.netbird.cloud:8096";
+        allowedOrigins = [
+          "http://localhost:8096"
+          "http://127.0.0.1:8096"
+          "http://0.0.0.0:8096"
+          "http://192.168.0.2:8096"
+          "http://100.91.0.2:8096"
+        ];
         user = username;
         group = "users";
         # Retain accounts, sessions and existing library state during takeover.
         dataDir = "/home/${username}/.local/share/oxevu-dev/server";
         mediaDirectories = [
-          "/mnt/blockade/services/jellyfin/movies"
-          "/mnt/blockade/services/jellyfin/tvshows"
-          "/home/${username}/.local/share/oxevu-dev/media"
+          "/mnt/blockade/services/oxevu/movies"
+          "/mnt/blockade/services/oxevu/tvshows"
         ];
       };
+      networking.firewall.allowedTCPPorts = [ 8096 ];
     }
     # Sentinel — C920 camera monitoring, available through NetBird.
     {
