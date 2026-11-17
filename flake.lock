@@ -498,11 +498,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1794953240,
-        "narHash": "sha256-e7nz9zPmFbKGzrbhQXVFnaTmcLGlq/lQkTtHlrZlkjw=",
+        "lastModified": 1794955243,
+        "narHash": "sha256-9M7BYL7EXQc/98RiP+WDCeelv9UN/8biuDppVTp9gD4=",
         "ref": "refs/heads/main",
-        "rev": "81d67d30574f78d3bc070e73ca42668d16df9987",
-        "revCount": 60,
+        "rev": "184e12e3abf23838bf230b6e340b5bce9a9f63d5",
+        "revCount": 63,
         "type": "git",
         "url": "ssh://git@vd.netbird.cloud:2222/twofold/oxevu.git"
       },
