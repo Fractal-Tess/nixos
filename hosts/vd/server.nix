@@ -163,8 +163,8 @@ in
     dataDir = "${services}/radarr/config";
   };
   services.prowlarr = {
-    # Oxevu uses the existing Prowlarr indexers over loopback.
-    enable = true;
+    # Oxevu searches the configured sources directly.
+    enable = false;
     openFirewall = false;
     settings.server.bindaddress = "127.0.0.1";
     dataDir = "${services}/prowlarr/config";
