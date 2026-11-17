@@ -498,11 +498,11 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1794885129,
-        "narHash": "sha256-nIwP/pbGM7v81RcuTGBXea3lGQAV3+SD3LRy4ZiOgC8=",
+        "lastModified": 1794888272,
+        "narHash": "sha256-kgMtnRZ7zesh9k41JmNmZJ9wZ8a+ewjwkr6XE/l3B4Q=",
         "ref": "refs/heads/main",
-        "rev": "32c9afd16bebea4099fda8bcbc348ac3707394d8",
-        "revCount": 50,
+        "rev": "07f86d8d20d99bade5d9a5176fbbd9b0f99a8968",
+        "revCount": 51,
         "type": "git",
         "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/oxevu.git"
       },
