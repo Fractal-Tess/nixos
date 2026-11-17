@@ -163,8 +163,10 @@ in
     dataDir = "${services}/radarr/config";
   };
   services.prowlarr = {
-    enable = false;
-    openFirewall = true;
+    # Oxevu uses the existing Prowlarr indexers over loopback.
+    enable = true;
+    openFirewall = false;
+    settings.server.bindaddress = "127.0.0.1";
     dataDir = "${services}/prowlarr/config";
   };
   services.qbittorrent = {
