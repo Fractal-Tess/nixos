@@ -55,7 +55,8 @@ final: prev: {
       builtins.replaceStrings
         [ (builtins.toString prev.libxml2.out) ]
         [ (builtins.toString final.libxml2-viber-compat.out) ]
-        old.libPath;
+        old.libPath
+      + ":${final.libpng}/lib";
 
     # Add missing libraries to wrapper (libxshmfence, libxcb-cursor, libxcb-util)
     postInstall = (old.postInstall or "") + ''
