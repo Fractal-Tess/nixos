@@ -41,29 +41,50 @@ final: prev: {
 
   # Override Viber to use the live CDN and the compatible libxml2. Nixpkgs uses
   # an archive.org snapshot that is unreliable for this large download.
-  viber = prev.viber.overrideAttrs (old: {
-    version = "29.4.0.7";
-    src = final.fetchurl {
-      url = "https://download.cdn.viber.com/cdn/desktop/Linux/viber.deb";
-      hash = "sha256-NLPBj11EGpgTBmgR0DfpceEgfUOcJGdmq9KOGFp+zTc=";
-    };
+  viber = prev.viber.overrideAttrs (
+    old:
+    let
+      fontConfig = final.writeText "viber-fonts.conf" ''
+        <?xml version="1.0"?>
+        <!DOCTYPE fontconfig SYSTEM "urn:fontconfig:fonts.dtd">
+        <fontconfig>
+          <include>/etc/fonts/fonts.conf</include>
+          <!-- Viber uses this face for spaces, which makes words unusually far apart. -->
+          <selectfont>
+            <rejectfont>
+              <pattern>
+                <patelt name="family"><string>Noto Color Emoji</string></patelt>
+              </pattern>
+            </rejectfont>
+          </selectfont>
+        </fontconfig>
+      '';
+    in
+    {
+      version = "29.4.0.7";
+      src = final.fetchurl {
+        url = "https://download.cdn.viber.com/cdn/desktop/Linux/viber.deb";
+        hash = "sha256-NLPBj11EGpgTBmgR0DfpceEgfUOcJGdmq9KOGFp+zTc=";
+      };
 
-    nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];
+      nativeBuildInputs = (old.nativeBuildInputs or [ ]) ++ [ final.makeWrapper ];
 
-    # Replace system libxml2 with compat version in the RPATH library list
-    libPath =
-      builtins.replaceStrings
-        [ (builtins.toString prev.libxml2.out) ]
-        [ (builtins.toString final.libxml2-viber-compat.out) ]
-        old.libPath
-      + ":${final.libpng}/lib";
+      # Replace system libxml2 with compat version in the RPATH library list
+      libPath =
+        builtins.replaceStrings
+          [ (builtins.toString prev.libxml2.out) ]
+          [ (builtins.toString final.libxml2-viber-compat.out) ]
+          old.libPath
+        + ":${final.libpng}/lib";
 
-    # Add missing libraries to wrapper (libxshmfence, libxcb-cursor, libxcb-util)
-    postInstall = (old.postInstall or "") + ''
-      wrapProgram $out/bin/viber \
-        --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib:${final.xcbutil}/lib \
-        --set SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt \
-        --set QTWEBENGINE_CHROMIUM_FLAGS "--no-sandbox --disable-gpu"
-    '';
-  });
+      # Add missing libraries to wrapper (libxshmfence, libxcb-cursor, libxcb-util)
+      postInstall = (old.postInstall or "") + ''
+        wrapProgram $out/bin/viber \
+          --prefix LD_LIBRARY_PATH : ${final.libxshmfence}/lib:${final.libxcb-cursor}/lib:${final.xcbutil}/lib \
+          --set SSL_CERT_FILE /etc/ssl/certs/ca-certificates.crt \
+          --set-default FONTCONFIG_FILE ${fontConfig} \
+          --set QTWEBENGINE_CHROMIUM_FLAGS "--no-sandbox --disable-gpu"
+      '';
+    }
+  );
 }
