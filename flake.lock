@@ -498,13 +498,13 @@
         "nixpkgs": "nixpkgs_5"
       },
       "locked": {
-        "lastModified": 1794942059,
-        "narHash": "sha256-0IIyomPOQCWfYZdz12Hyhcdor4nGP0nFQ5RYnjg2MzQ=",
+        "lastModified": 1794947867,
+        "narHash": "sha256-0XuREE9koWgOhdgLGQfRL/T2ukdrl+WE0W7tNIHgu1I=",
         "ref": "refs/heads/main",
-        "rev": "0139d8447879a53ac7ffd450dccb6af3566c7498",
-        "revCount": 55,
+        "rev": "b08ec2d471574fe05a581d7ec702e5cf1a25ca5d",
+        "revCount": 57,
         "type": "git",
-        "url": "ssh://git@vd.netbird.cloud:2222/fractal-tess/oxevu.git"
+        "url": "ssh://git@vd.netbird.cloud:2222/twofold/oxevu.git"
       },
       "original": {
         "type": "git",

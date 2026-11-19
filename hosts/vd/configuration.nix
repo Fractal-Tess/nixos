@@ -38,6 +38,21 @@
   # Enable GlobalProtect-compatible VPN connections through NetworkManager.
   networking.networkmanager.plugins = [ pkgs.networkmanager-openconnect ];
 
+  # WebKit's resolver can ignore glibc precedence and split SAML state
+  # across the two firewalls. Keep portal authentication on portal02.
+  networking.hosts."162.251.180.130" = [ "gpvpn.carrierx.com" ];
+
+  # Keep the SAML login on the same CarrierX firewall, as on kiwi.
+  # Any precedence entry replaces glibc's table, so retain its defaults.
+  networking.getaddrinfo.precedence = {
+    "::1/128" = 50;
+    "::/0" = 40;
+    "2002::/16" = 30;
+    "::/96" = 20;
+    "::ffff:0:0/96" = 10;
+    "::ffff:162.251.180.130/128" = 15;
+  };
+
   services.libinput.enable = true;
   hardware.opentabletdriver.enable = true;
 
@@ -460,6 +475,9 @@
   #============================================================================
 
   environment.variables = {
+    # Avoid a black/flickering WebKit SAML login in NetworkManager on NVIDIA.
+    WEBKIT_DISABLE_DMABUF_RENDERER = "1";
+
     # Default editor configuration
     VISUAL = "nvim";
     SUDO_EDITOR = "nvim";

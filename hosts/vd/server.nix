@@ -11,6 +11,37 @@
 let
   blockade = "/mnt/blockade";
   services = "${blockade}/services";
+  # Match the disk paths and owner used by the existing erasure set.
+  rustfsService = {
+    description = "RustFS object storage";
+    wantedBy = [ "multi-user.target" ];
+    unitConfig.RequiresMountsFor = [
+      blockade
+      "/mnt/vault"
+    ];
+    environment = {
+      RUSTFS_ADDRESS = "0.0.0.0:9000";
+      RUSTFS_CONSOLE_ADDRESS = "0.0.0.0:9001";
+      RUSTFS_CONSOLE_ENABLE = "true";
+      RUSTFS_STORAGE_CLASS_STANDARD = "EC:1";
+      RUSTFS_STORAGE_CLASS_RRS = "EC:1";
+      RUSTFS_ERASURE_SET_DRIVE_COUNT = "2";
+      RUSTFS_CORS_ALLOWED_ORIGINS = "*";
+      RUSTFS_CONSOLE_CORS_ALLOWED_ORIGINS = "*";
+    };
+    serviceConfig = {
+      User = "rustfs";
+      Group = "rustfs";
+      EnvironmentFile = "/var/lib/rustfs/environment";
+      ExecStart = "${lib.getExe pkgs.rustfs} /data{1...2}";
+      Restart = "on-failure";
+      RestartSec = "5s";
+      BindPaths = [
+        "${services}/rustfs-redundant:/data1"
+        "/mnt/vault/services/rustfs-redundant:/data2"
+      ];
+    };
+  };
 in
 {
   #============================================================================
@@ -18,6 +49,11 @@ in
   #============================================================================
 
   # External USB disk; nofail so vd still boots when it is unplugged.
+  fileSystems."/mnt/vault".options = [
+    "nofail"
+    "x-systemd.device-timeout=15s"
+  ];
+
   fileSystems.${blockade} = {
     device = "/dev/disk/by-uuid/f0958b59-82df-4344-81c4-53b3c4bcc2bd";
     fsType = "ext4";
@@ -36,6 +72,7 @@ in
     in
     {
       immich-server = needsBlockade;
+      rustfs = rustfsService;
       immich-machine-learning = needsBlockade;
       jellyfin = lib.mkIf config.services.jellyfin.enable (
         needsBlockade
@@ -102,7 +139,7 @@ in
   # DOKPLOY REMOTE SERVER
   #============================================================================
 
-  # Dokploy on Oracle deploys the "vd" project (RustFS, InfluxDB, cloudflared)
+  # Dokploy on Oracle deploys the "vd" project (InfluxDB, cloudflared)
   # here over SSH as this user. Its key lives in /home/dokploy/.ssh.
   users.users.dokploy = {
     isNormalUser = true;
@@ -113,6 +150,18 @@ in
     shell = pkgs.bash;
     extraGroups = [ "docker" ];
   };
+
+  users.groups.rustfs.gid = 10001;
+  users.users.rustfs = {
+    isSystemUser = true;
+    uid = 10001;
+    group = "rustfs";
+  };
+
+  networking.firewall.interfaces.wt0.allowedTCPPorts = [
+    9000
+    9001
+  ];
 
   #============================================================================
   # IMMICH

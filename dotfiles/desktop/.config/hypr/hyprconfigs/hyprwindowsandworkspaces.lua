@@ -1,6 +1,12 @@
 hl.window_rule({ match = { title = [[^(UnityEngine.*)]] }, min_size = { 200, 400 }, float = true })
 hl.window_rule({ match = { title = [[^(UnityEditor.*)]] }, min_size = { 200, 400 }, float = true })
 hl.window_rule({ match = { class = [[^(dev.warp.Warp)$]] }, float = true })
+hl.window_rule({
+	name = "openconnect-vpn-login-float",
+	match = { class = [[^([Nn]m-openconnect-auth-dialog)$]] },
+	float = true,
+	center = true,
+})
 hl.window_rule({ match = { title = [[^(File Operation Progress)$]] }, float = true })
 hl.window_rule({ match = { class = [[^(discord)$]] }, workspace = "1" })
 hl.window_rule({ match = { class = [[^(dev.zed.Zed)$]] }, workspace = "2" })
