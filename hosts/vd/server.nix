@@ -212,8 +212,10 @@ in
     dataDir = "${services}/radarr/config";
   };
   services.prowlarr = {
+    # Oxevu searches the configured sources directly.
     enable = false;
-    openFirewall = true;
+    openFirewall = false;
+    settings.server.bindaddress = "127.0.0.1";
     dataDir = "${services}/prowlarr/config";
   };
   services.qbittorrent = {
