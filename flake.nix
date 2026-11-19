@@ -40,6 +40,11 @@
 
     responsively-flake.url = "github:Fractal-Tess/responsively-flake";
 
+    viber-flake = {
+      url = "github:Fractal-Tess/viber-flake";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     t3code-flake = {
       url = "github:Fractal-Tess/t3code-flake";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -172,7 +177,7 @@
                 (import ./overlays/llama-cpp.nix)
                 (import ./overlays/ollama.nix)
                 (import ./overlays/uefi-firmware-parser.nix)
-                (import ./overlays/viber.nix)
+                inputs.viber-flake.overlays.default
                 (import ./overlays/wfuzz-fix.nix)
                 (import ./overlays/ltrace-fix.nix)
                 (import ./overlays/vmware-modules-fix.nix)

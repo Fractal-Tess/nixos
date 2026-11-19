@@ -618,6 +618,7 @@
         "supermemory-flake": "supermemory-flake",
         "t3code-flake": "t3code-flake",
         "vencord-flake": "vencord-flake",
+        "viber-flake": "viber-flake",
         "vite-plus-flake": "vite-plus-flake"
       }
     },
@@ -916,6 +917,26 @@
       "original": {
         "owner": "Fractal-Tess",
         "repo": "vencord-flake",
+        "type": "github"
+      }
+    },
+    "viber-flake": {
+      "inputs": {
+        "nixpkgs": [
+          "nixpkgs"
+        ]
+      },
+      "locked": {
+        "lastModified": 1795092044,
+        "narHash": "sha256-TQSFvS8xBayCAcyAdt1q3dLvMXsNRNzNJ9GP8Vj9Uok=",
+        "owner": "Fractal-Tess",
+        "repo": "viber-flake",
+        "rev": "09b61ec4f2e56f9c83550bd1a5778d305ecdb977",
+        "type": "github"
+      },
+      "original": {
+        "owner": "Fractal-Tess",
+        "repo": "viber-flake",
         "type": "github"
       }
     },
