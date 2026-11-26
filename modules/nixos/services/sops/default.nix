@@ -15,6 +15,7 @@ in
 {
 
   imports = [
+    ./cloudflare.nix
     ./dokploy.nix
     ./fal-ai.nix
     ./opencode.nix
